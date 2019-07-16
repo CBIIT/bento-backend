@@ -1,4 +1,0 @@
-- name: install tree
-  yum:
-    name: tree
-    state: present

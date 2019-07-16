@@ -1,0 +1,9 @@
+---
+- name: setup nat server
+  hosts: all
+  become: yes
+
+
+  roles:
+    - setup-nat-instance
+

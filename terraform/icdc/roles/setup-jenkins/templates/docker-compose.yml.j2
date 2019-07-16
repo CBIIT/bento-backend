@@ -1,0 +1,37 @@
+version: '3.1'
+services:
+  jenkins:
+    image: k9dc/jenkins
+    ports:
+      - 80:8080
+      - 5001:5000
+    volumes:
+      - /local/jenkins:/var/jenkins_home
+    secrets:
+      - jenkinsAdmin
+      - bearer
+      - vdonkor
+      - neo4j
+      - sshkey
+    environment:
+      - CASC_JENKINS_CONFIG=https://raw.githubusercontent.com/vdonkor/ctn/master/jenkins.yaml
+      - DOCKER_AGENT_IP={{ docker_agent_ip }}
+      - TOMCAT01_IP={{ tomcat01_ip }}
+      - TOMCAT02_IP={{ tomcat02_ip }}
+      - NEO4J_IP={{ neo4j_ip }}
+      - SLACK_URL={{ slack_url }}
+    restart: always
+
+secrets:
+  jenkinsAdmin:
+    file: /local/secret/jenkinsAdmin
+  vdonkor:
+    file: /local/secret/vdonkor
+  bearer:
+    file: /local/secret/bearer
+  neo4j:
+    file: /local/secret/neo4j
+  sshkey:
+    file: /local/secret/sshkey
+
+

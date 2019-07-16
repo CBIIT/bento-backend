@@ -1,0 +1,107 @@
+jenkins:
+  systemMessage: "This jenkins instance is for icdc program"
+  agentProtocols:
+    - "JNLP4-connect"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: jenkinsAdmin
+          password: ${jenkinsAdmin}
+  authorizationStrategy:
+    globalMatrix:
+      grantedPermissions:
+        - "Overall/Read:authenticated"
+        - "Job/Read:authenticated"
+        - "View/Read:authenticated"
+        - "Overall/Administer:authenticated"
+  crumbIssuer: "standard"
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "tcp://${DOCKER_AGENT_IP}:2375"
+        templates:
+          - labelString: "icdc_maven"
+            dockerTemplateBase:
+              image: "vdonkor/cicd-maven"
+              environmentsString: |
+                TOMCAT01_IP=${TOMCAT01_IP}
+                TOMCAT02_IP=${TOMCAT02_IP}
+                SLACK_URL=${SLACK_URL}
+                NEO4J_IP=${NEO4J_IP}
+            remoteFs: "/home/jenkins"
+            connector:
+              attach:
+                user: "root"
+            instanceCapStr: "10"
+jobs:
+  - script: >
+      folder('icdc')
+  - url: https://raw.githubusercontent.com/vdonkor/ctn/master/jobs/icdc/pipeline.groovy
+tool:
+  git:
+    installations:
+      - name: Default
+        home: git
+  jdk:
+    installations:
+      - name: jdk11
+        home: /usr/lib/jvm/jre-11-openjdk
+  maven:
+    installations:
+      - name: maven-3.6.1
+        home: /usr/local/maven
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: authorization_bearer
+              secret: "${bearer}"
+              description: neo4j authorization bearer
+          - usernamePassword:
+              scope: GLOBAL
+              id: c9c-deployer
+              username: "icdcTomcat"
+              password: ${jenkinsAdmin}
+              description: user for deploying c9c
+          - usernamePassword:
+              scope: GLOBAL
+              id: vdonkor
+              username: vdonkor
+              password: ${vdonkor}
+              description: github checkout
+          - usernamePassword:
+              scope: GLOBAL
+              id: neo4j_user
+              username: neo4j
+              password: ${neo4j}
+              description: neo4j db user and password
+          - basicSSHUserPrivateKey:
+              scope: GLOBAL
+              id: deployer_ssh_key
+              username: jenkins
+              description: "ssh key for deploying application"
+              privateKeySource:
+                directEntry:
+                  privateKey: ${sshkey}
+
+unclassified:
+  slackNotifier:
+    teamDomain: ${SLACK_TEAM} # i.e. your-company (just the workspace name not the full url)
+    tokenCredentialId: icdc-jenkin-slack
+  
+  globalLibraries:
+    libraries:
+      - defaultVersion: "master"
+        name: "shared-library"
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: "https://github.com/vdonkor/shared-library"
+                traits:
+                  - "branchDiscoveryTrait"

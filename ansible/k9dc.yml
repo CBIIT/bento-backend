@@ -1,0 +1,11 @@
+---
+- name: setup k9dc server
+  hosts: k9dc
+  connection: local
+  become: yes
+  gather_facts: no
+
+  roles:
+    - docker
+    - k9dc
+    - sumologic

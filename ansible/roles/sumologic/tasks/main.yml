@@ -1,0 +1,36 @@
+---
+# tasks file for sumologic
+
+- name: check if sumologic is installed
+  yum:
+    list: 'SumoCollector'
+  register: sumo_installed
+
+- name: download sumologic rpm
+  get_url:
+    url: https://collectors.sumologic.com/rest/download/rpm/64
+    dest: /tmp/sumologic.rpm
+  when: sumo_installed.results == []
+
+- name: Install SumoCollector
+  yum:
+    name: '/tmp/sumologic.rpm'
+    state: installed
+  when: sumo_installed.results == []
+
+- name: copy user.properties and source configuration
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    group: sumologic_collector
+  with_items:
+    - {src: 'sources.json.j2',dest: '{{config}}/sources.json'}
+    - {src: 'user.properties.j2',dest: '{{config}}/user.properties'}
+  notify: restart collector
+    
+
+- name: Start service
+  service:
+    name: collector
+    state: started
+    enabled: yes

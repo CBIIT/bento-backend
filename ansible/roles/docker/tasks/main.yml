@@ -1,0 +1,67 @@
+---
+- name: Remove other Docker versions
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+      - docker-compose
+    state: absent
+# tasks file for docker
+- name: install systems packages needed for docker
+  yum:
+    name: 
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - python-setuptools
+      - firewalld
+      - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: latest
+
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+# - name: enable extra repos when running on red hat
+#   command: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
+#   when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install pip and docker-compose
+  command: "{{ item }}"
+  with_items:
+    - "easy_install pip"
+    - "pip install --upgrade --force-reinstall pip==9.0.3"
+    - "pip install docker-compose"
+
+- name: add docker repo 
+  command: >
+    yum-config-manager --add-repo 
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: install docker
+  yum:
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    state: latest
+    
+- name: enable and start docker
+  service:
+    name: docker
+    enabled: yes
+    state: restarted
+
+- name: reload systemctl daemon
+  command: systemctl daemon-reload
+
+
+ 
+
+
+

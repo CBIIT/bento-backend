@@ -1,0 +1,1 @@
+{"Modules":[{"Source":"../../modules/s3_logs","Key":"1.dev_alb_s3_bucket;../../modules/s3_logs","Version":"","Dir":".terraform/modules/eb9a7cb71195687891a2fbc9153d3877","Root":""},{"Source":"../../modules/alb","Key":"1.dev_alb;../../modules/alb","Version":"","Dir":".terraform/modules/f9b504f91717d4f3403bc759054b87a1","Root":""}]}

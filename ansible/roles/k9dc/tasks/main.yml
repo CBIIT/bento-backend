@@ -1,0 +1,68 @@
+---
+# tasks file for k9dc
+- name: open http and https services
+  firewalld:
+    service: "{{item}}"
+    zone: public
+    immediate: yes
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+    
+- name: create tomcat group
+  group:
+    name: tomcat
+    gid: 46
+    state: present
+
+- name: create tomcat user
+  user:
+    name: tomcat
+    uid: 46
+    group: tomcat
+
+- name: create k9dc volume/directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+  loop:
+    - "{{ k9dc_home }}"
+    - "{{ docker_home }}"
+    - "{{ k9dc_home }}/logs"
+    - "{{ deployments }}"
+
+- name: create k9dc deployments directory
+  file:
+    path: "{{ deployments }}"
+    state: directory
+    owner: jenkins
+    group: jenkins
+
+
+- name: copy docker files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: tomcat
+    group: tomcat
+  with_items:
+    - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
+
+- name: start the k9dc
+  docker_compose:
+    project_src: "{{ docker_home }}"
+    state: present
+
+- name: download initial master application
+  aws_s3:
+    bucket: "{{bucket_name}}"
+    object: "{{war_file}}"
+    dest: /tmp/{{war_file}}
+    mode: get
+
+- name: deploy master application
+  command: docker cp /tmp/{{war_file}} {{container_name}}:/usr/local/tomcat/webapps

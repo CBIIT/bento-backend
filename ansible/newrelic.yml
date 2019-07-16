@@ -1,0 +1,10 @@
+---
+- name: setup newrelic infrastructure
+  hosts: newrelic
+  connection: local
+  become: yes
+  gather_facts: no
+
+  roles:
+    - newrelic
+  

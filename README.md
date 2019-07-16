@@ -1,4 +1,4 @@
-# ctn project
+# ICDC/CTN DevOps Files
 # Layout of this repository
 
 #ansible - playbooks for application and database instances provisioning including instance specific agents and log collectors.

@@ -1,0 +1,9 @@
+FROM vdonkor/jenkins-agent
+
+MAINTAINER vincent donkor
+
+USER root
+RUN yum install -y epel-release python-setuptools
+RUN easy_install pip && pip install ansible
+  
+  

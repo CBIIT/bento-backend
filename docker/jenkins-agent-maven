@@ -1,0 +1,20 @@
+FROM vdonkor/jenkins-agent
+
+MAINTAINER vincent donkor
+
+ENV JAVA_HOME /usr/lib/jvm/jre-11-openjdk
+ENV MAVEN_HOME /usr/local/maven
+ENV PATH $MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH
+
+ARG MAVEN_VERSION=3.6.1
+USER root
+RUN yum -y install java-11-openjdk-devel wget which \
+  && wget https://www-us.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz -P /tmp \
+  && tar xf /tmp/apache-maven-$MAVEN_VERSION-bin.tar.gz -C /usr/local \
+  && ln -s /usr/local/apache-maven-$MAVEN_VERSION /usr/local/maven \
+  
+  
+
+
+
+

@@ -1,0 +1,10 @@
+---
+- name: setup neo4j server
+  hosts: neo4j
+  connection: local
+  become: yes
+  gather_facts: no
+
+  roles:
+    - cloudone-neo4j
+    # - sumologic

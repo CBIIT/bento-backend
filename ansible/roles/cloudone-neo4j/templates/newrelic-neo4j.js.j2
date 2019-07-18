@@ -1,0 +1,13 @@
+module.exports = {
+    pid: '/var/run/newrelic-neo4j.pid',
+    log: '/var/log/newrelic-neo4j.log',
+
+    license: "{{newrelic_key}}",
+    name: "neo4j",
+    url: "http://localhost:7474",
+    auth: {
+        user: "neo4j",
+        pass: "{{neo4j_password}}"
+    },
+    interval: 60
+};   

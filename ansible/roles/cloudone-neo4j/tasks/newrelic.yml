@@ -1,0 +1,47 @@
+- name: download nodejs rpm script
+  get_url:
+    url: https://rpm.nodesource.com/setup_{{node_version}}.x 
+    dest: /tmp/nodejs.sh
+    mode: 0755
+
+- name: run the nodejs.sh script
+  shell: /tmp/nodejs.sh
+
+- name: cleanup nodejs.sh file
+  file:
+    path: /tmp/nodejs.sh
+    state: absent
+
+- name: install nodes and npm
+  yum:
+    name: nodejs
+    state: installed
+
+- name: install newrelic neo4j plugin
+  npm:
+    name: newrelic-neo4j
+    global: yes
+    unsafe_perm: yes
+
+- name: configure newrelic-neo4j
+  template:
+    src: newrelic-neo4j.js.j2
+    dest: /etc/newrelic/newrelic-neo4j.js
+
+- name: configure newrelic-neo4j service
+  template:
+    src: newrelic-neo4j.service.j2
+    dest: /etc/systemd/system/newrelic-neo4j.service
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: enable and start newrelic-neo4j
+  systemd:
+    name: newrelic-neo4j
+    state: started
+    enabled: yes
+    
+# - name: run newrelic-neo4j
+#   command: newrelic-neo4j >/dev/null 2>&1 &

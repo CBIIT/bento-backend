@@ -1,0 +1,174 @@
+---
+# tasks file for neo4j
+
+- name: install systems packages
+  yum:
+    name: 
+      - firewalld
+      - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: latest
+
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: import neo4j gpg key
+  rpm_key:
+    state: present
+    key: https://debian.neo4j.org/neotechnology.gpg.key
+
+- name: add neo4j repository
+  yum_repository:
+    name: neo4j
+    description: neo4j repository
+    file: neo4j
+    baseurl: https://yum.neo4j.org/stable
+    gpgcheck: yes
+    enabled: yes
+    
+- name: install wget
+  yum:
+    name:
+     - wget
+
+- name: install neo4j enterprise
+  shell: NEO4J_ACCEPT_LICENSE_AGREEMENT=yes yum -y install neo4j-enterprise
+
+- name: start and enable neo4j service
+  service:
+    name: neo4j
+    state: started
+    enabled: yes
+
+- name: configure file decriptors for neo4j
+  pam_limits:
+    domain: neo4j
+    limit_type: "{{item.ltype}}"
+    limit_item: "{{item.litem}}"
+    value:      "{{item.lvalue}}"
+  with_items:    
+    - { ltype: 'soft', litem: 'nofile', lvalue: 40000 }
+    - { ltype: 'hard', litem: 'nofile', lvalue: 40000 }    
+
+- name: reload sysctl
+  command: sysctl --system
+    
+- name: open neo4j data ports
+  firewalld:
+    port: "{{item}}/tcp"
+    zone: public
+    immediate: yes
+    permanent: yes
+    state: enabled
+  loop:
+    - 7474
+    - 7473
+    - 7687
+
+- name: download neo4j-graphql plugins
+  get_url:
+    url: https://github.com/neo4j-graphql/neo4j-graphql/releases/download/{{graphql_version}}/neo4j-graphql-{{graphql_version}}.jar
+    dest: "{{neo4j_home}}/plugins"
+    owner: neo4j
+    group: neo4j
+
+- name: create directories for ssl create
+  file:
+    path: "{{neo4j_home}}/certificates/{{item}}"
+    state: directory
+    owner: neo4j
+    group: neo4j
+  loop:
+    - bak
+    - trusted
+    - revoked 
+
+- name: Copy self cert to bak
+  copy: 
+    remote_src: True 
+    src: "{{ item }}"
+    dest: "{{neo4j_home}}/certificates/bak"
+    owner: neo4j
+    group: neo4j
+  with_fileglob:
+    - "{{neo4j_home}}/certificates/neo4j*"
+
+- name: removed the old certs
+  file: 
+    path: "{{ item }}"
+    state: absent
+  with_fileglob: 
+    - "{{neo4j_home}}/certificates/neo4j*"
+
+# - name: copy neo4j cert and key
+#   template:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     owner: neo4j
+#     group: neo4j
+#   with_items:
+#     - {src: 'neo4j.cert.j2',dest: '{{neo4j_home}}/certificates/neo4j.cert'}
+#     - {src: 'neo4j.key.j2',dest: '{{neo4j_home}}/certificates/neo4j.key'}
+
+# - name: create symlink to  for cert to trusted
+#   file:
+#     src: "{{neo4j_home}}/certificates/neo4j.cert"
+#     dest: "{{neo4j_home}}/certificates/trusted/neo4j.cert"
+#     owner: neo4j
+#     group: neo4j
+#     state: link
+
+- name: change neo4j parameters
+  lineinfile:
+    path: /etc/neo4j/neo4j.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^#dbms.connectors.default_listen_address=0.0.0.0', line: 'dbms.connectors.default_listen_address=0.0.0.0' }
+    # - { regexp: '^#dbms.connector.bolt.listen_address=:7687', line: 'dbms.connector.bolt.listen_address=0.0.0.0:7687' }
+    - { regexp: '^#bolt.ssl_policy=legacy', line: 'bolt.ssl_policy=default' }
+    - { regexp: '^#dbms.ssl.policy.default.base_directory=certificates/default', line: 'dbms.ssl.policy.default.base_directory=/var/lib/neo4j/certificates' }
+    - { regexp: '#dbms.ssl.policy.default.allow_key_generation=false', line: 'dbms.ssl.policy.default.allow_key_generation=false' }
+    - { regexp: '^#dbms.ssl.policy.default.private_key=', line: 'dbms.ssl.policy.default.private_key=/var/lib/neo4j/certificates/neo4j.key' }
+    - { regexp: '^#dbms.ssl.policy.default.public_certificate=', line: 'dbms.ssl.policy.default.public_certificate=/var/lib/neo4j/certificates/neo4j.cert' }
+    - { regexp: '^#dbms.ssl.policy.default.client_auth=require', line: 'dbms.ssl.policy.default.client_auth=NONE' }
+    - { regexp: '^#dbms.ssl.policy.default.revoked_dir=', line: 'dbms.ssl.policy.default.revoked_dir=/var/lib/neo4j/certificates/revoked' }
+    - { regexp: '^#dbms.ssl.policy.default.trusted_dir=', line: 'dbms.ssl.policy.default.trusted_dir=/var/lib/neo4j/certificates/trusted' }
+    - { regexp: '^#dbms.backup.enabled=true', line: 'dbms.backup.enabled=true' }
+    - { regexp: '^#dbms.logs.query.page_logging_enabled=true', line: 'dbms.logs.query.page_logging_enabled=true' }
+    - { regexp: '^#dbms.logs.security.level=INFO', line: 'dbms.logs.security.level=INFO' }
+    - { regexp: '^#dbms.allow_upgrade=true', line: 'dbms.allow_upgrade=true' }
+    - { regexp: '^#dbms.logs.query.enabled=true', line: 'dbms.logs.query.enabled=true' }
+    - { regexp: '^#dbms.logs.query.time_logging_enabled=true', line: 'dbms.logs.query.time_logging_enabled=true' }
+    - { regexp: '^#dbms.logs.query.parameter_logging_enabled=true', line: 'dbms.logs.query.parameter_logging_enabled=true' }
+
+
+- name: Ensure the default Apache port is 8080
+  lineinfile:
+    path: /etc/neo4j/neo4j.conf
+    insertafter: 'EOF'
+    line: '{{ item }}'
+  loop:
+    - metrics.enabled=true
+    - metrics.neo4j.enabled=true
+    - metrics.neo4j.tx.enabled=true
+    - metrics.neo4j.pagecache.enabled=true
+    - metrics.neo4j.counts.enabled=true
+    - metrics.neo4j.network.enabled=true
+
+- name: add graphql configuration
+  lineinfile:
+    path: /etc/neo4j/neo4j.conf
+    line: 'dbms.unmanaged_extension_classes=org.neo4j.graphql=/graphql'
+    regex: 'dbms.directories.data=/var/lib/neo4j/data'
+    insertbefore: 'BOF'
+  notify: restart neo4j
+
+# - name: change admin password
+#   command: "curl -H \"Content-Type: application/json\" -XPOST -d '{\"password\":\"{{neo4j_password}}\"}' -u neo4j:neo4j http://localhost:7474/user/neo4j/password"
+
+- name: newrelic task
+  include_tasks: newrelic.yml
+  when: newrelic is defined

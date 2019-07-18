@@ -1,0 +1,35 @@
+FROM centos:latest
+
+MAINTAINER icdc devops
+
+ENV JAVA_HOME /usr/lib/jvm/jre-11-openjdk
+ENV CATALINA_HOME /usr/local/tomcat
+ENV PATH $CATALINA_HOME/bin:$JAVA_HOME/bin:$PATH
+ENV TOMCAT_MAJOR 9
+ENV	JAVA_OPTS $JAVA_OPTS -javaagent:/usr/local/tomcat/newrelic/newrelic.jar
+ENV NEW_RELIC_LOG /usr/local/tomcat/newrelic/logs
+ENV TOMCAT_VERSION 9.0.20
+ENV	TOMCAT_USER tomcat
+ENV TOMCAT_GROUP tomcat
+ENV TOMCAT_URL http://apache.mirror.gtcomm.net/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+
+WORKDIR $CATALINA_HOME
+
+RUN yum -y install java-11-openjdk wget which unzip \
+   && groupadd  -g 3001 tomcat \
+   && useradd -u 3001 -g 3001 ${TOMCAT_USER} \
+   && curl -O "http://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" \
+   && unzip newrelic-java.zip \
+   && mkdir newrelic/logs \
+   && rm -rf newrelic-java.zip \
+   && mkdir -p "$CATALINA_HOME" \
+   && wget -O tomcat.tar.gz $TOMCAT_URL \
+   && tar -xf tomcat.tar.gz --strip-components=1 -C $CATALINA_HOME \
+   && rm -rf tomcat.tar.gz \
+   && chown -R ${TOMCAT_USER}:${TOMCAT_GROUP} ${CATALINA_HOME} \
+   && chmod +x ${CATALINA_HOME}/bin/*.sh 
+   
+USER ${TOMCAT_USER} 
+
+EXPOSE 8080
+CMD ["catalina.sh","run"]

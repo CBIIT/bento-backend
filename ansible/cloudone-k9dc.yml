@@ -8,4 +8,5 @@
   roles:
     
     - cloudone-k9dc
-    # - sumologic
+    - sumologic
+    - newrelic

@@ -1,0 +1,4 @@
+---
+# vars file for roles/newrelic
+newrelic_license_key: "{{ newrelic_license_key }}"
+hostname: "{{ hostname }}"

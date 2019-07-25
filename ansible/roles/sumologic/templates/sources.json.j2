@@ -32,6 +32,36 @@
       "sourceType": "LocalFile"
     },
     {
+      "name": "Linux messages",
+      "description": "Kernel messages",
+      "category": "{{env}}/OS/Linux",
+      "automaticDateParsing": false,
+      "multilineProcessingEnabled": true,
+      "useAutolineMatching": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "filters": [],
+      "encoding": "UTF-8",
+      "pathExpression": "/var/log/messages*",
+      "blacklist": [],
+      "sourceType": "LocalFile"
+    },
+    {
+      "name": "Linux Secure",
+      "description": "Kernel messages",
+      "category": "{{env}}/OS/Linux",
+      "automaticDateParsing": false,
+      "multilineProcessingEnabled": true,
+      "useAutolineMatching": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "filters": [],
+      "encoding": "UTF-8",
+      "pathExpression": "/var/log/secure*",
+      "blacklist": [],
+      "sourceType": "LocalFile"
+    },
+    {
       "name": "Linux dmesg",
       "description": "Kernel messages",
       "category": "{{env}}/OS/Linux",

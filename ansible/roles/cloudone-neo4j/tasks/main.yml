@@ -19,6 +19,7 @@
     state: present
     key: https://debian.neo4j.org/neotechnology.gpg.key
 
+
 - name: add neo4j repository
   yum_repository:
     name: neo4j
@@ -27,7 +28,7 @@
     baseurl: https://yum.neo4j.org/stable
     gpgcheck: yes
     enabled: yes
-    
+
 - name: install wget
   yum:
     name:

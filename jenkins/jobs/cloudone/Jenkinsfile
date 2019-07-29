@@ -1,0 +1,111 @@
+//load shared library for slack notification
+//@Library('shared-library')_
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "ICDC Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "icdc devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+
+  agent {
+    node {
+      label 'icdc_maven'
+    }
+  }
+  parameters {
+    listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+  }
+   triggers { 
+     pollSCM('H/15 * * * 1-5') 
+     cron('5 * * * 1-5')
+    }
+  options {
+    timestamps()
+  }
+  tools { 
+    maven 'maven-3.6.1' 
+    jdk 'jdk11' 
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/icdc-codebase']]])
+      }
+    }
+    stage('Build') {
+      environment {
+        TOMCAT01_IP = "${TOMCAT01_IP}"
+        TOMCAT02_IP = "${TOMCAT02_IP}"
+        SLACK_URL = "${SLACK_URL}"
+        NEO4J_IP  = "${NEO4J_IP}"
+        //NEO4J_IP = "neo4j.essential-dev.com"
+      }
+      steps {
+        withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
+          sh "cd ${WORKSPACE}/src/main/resources/ && mv application_example.properties application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/localhost/${NEO4J_IP}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/Basic 123456/${BEARER}/' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/password=${NEO4J_IP}/password=${NEO4J_PASSWORD}/' application.properties"
+          sh "mvn package -DskipTests"
+          sh "mv target/ICDC-0.0.1.war target/ICDC.war"
+        }
+      }
+    }
+    stage('Deploy') {
+      when {
+        expression {
+          currentBuild.result == null || currentBuild.result == 'SUCCESS' 
+        }
+      }
+      steps {
+        ansiColor('xterm') {
+          withCredentials([sshUserPrivateKey(credentialsId: 'deployer_ssh_key', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'jenkins')]) {
+sh label: '', script: '''
+
+for server in $TOMCAT02_IP $TOMCAT01_IP;
+do
+pushd target
+scp -i $deployer_key -o StrictHostKeyChecking=no ICDC.war donkorvn@${server}:/tmp
+popd
+ssh -i $deployer_key -T -o StrictHostKeyChecking=no donkorvn@${server} << EOF
+sudo su - commonsdocker
+docker cp /tmp/ICDC.war k9dc:/usr/local/tomcat/webapps
+EOF
+done'''
+          }
+        }
+      }
+    }
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+    }
+  }
+}

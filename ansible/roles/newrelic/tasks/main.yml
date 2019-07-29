@@ -1,8 +1,8 @@
 ---
 # tasks file for roles/newrelic
-- name: set hostname
-  hostname:
-    name: "{{ hostname }}"
+# - name: set hostname
+#   hostname:
+#     name: "{{ hostname }}"
 
 - name: add newrelic-infra gpg key
   rpm_key:

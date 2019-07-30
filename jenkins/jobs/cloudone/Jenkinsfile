@@ -72,7 +72,7 @@ pipeline {
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/Basic 123456/${BEARER}/' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/password=${NEO4J_IP}/password=${NEO4J_PASSWORD}/' application.properties"
           sh "mvn package -DskipTests"
-          sh "mv target/ICDC-0.0.1.war target/ICDC.war"
+          sh "mv target/ICDC-0.0.1.war target/ROOT.war"
         }
       }
     }

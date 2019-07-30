@@ -48,8 +48,8 @@ pipeline {
     timestamps()
   }
   tools { 
-    maven 'maven-3.6.1' 
-    jdk 'jdk11' 
+    maven 'Default' 
+    jdk 'Default' 
   }
   stages {
     stage('Checkout') {

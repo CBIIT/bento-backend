@@ -1,6 +1,5 @@
 ---
 # tasks file for sumologic
-
 - name: check if sumologic is installed
   yum:
     list: 'SumoCollector'

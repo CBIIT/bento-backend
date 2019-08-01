@@ -1,0 +1,12 @@
+[Unit]
+Description=Send Journalctl to Sumo
+ 
+[Service]
+TimeoutStartSec=0
+ExecStart=/bin/sh -c '/usr/bin/journalctl -f | /usr/bin/ncat --udp localhost 514'
+
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

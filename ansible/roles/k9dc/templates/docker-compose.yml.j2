@@ -9,6 +9,6 @@ services:
       - {{k9dc_home}}/logs:/usr/local/tomcat/logs
     restart: always
     environment:
-      - NEW_RELIC_LICENSE_KEY={{ new_relic_license_key }}
+      - NEW_RELIC_LICENSE_KEY={{ newrelic_license_key }}
       - NEW_RELIC_APP_NAME={{ app_name }}
 

@@ -1,0 +1,36 @@
+---
+# tasks file for sumo-journalctl
+
+- name: run docker role
+  include_role:
+    name: docker
+
+- name: install nc package
+  yum: 
+    name:
+      - nc
+    state: installed
+  
+- name: start sumologic docker collector
+  docker_container:
+    name: sumo-logic-collector
+    image: sumologic/collector:latest-syslog
+    state: started
+    restart: always
+    ports:
+     - "514:514/udp"
+    env:
+      SUMO_ACCESS_ID: "{{ access_id }}"
+      SUMO_ACCESS_KEY: "{{ access_key }}"
+
+- name: configure systemd for sumo-journalctl
+  template:
+    src: journal_syslog.service.j2
+    dest: /etc/systemd/system/journal_syslog.service
+  
+- name: enable, start journal_syslog.service
+  systemd:
+    state: started
+    daemon_reload: yes
+    name: journal_syslog.service
+    enabled: yes

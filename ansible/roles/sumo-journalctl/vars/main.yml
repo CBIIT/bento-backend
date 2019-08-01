@@ -1,0 +1,4 @@
+---
+# vars file for sumo-journalctl
+access_id: "{{access_id}}"
+access_key: "{{access_key}}"

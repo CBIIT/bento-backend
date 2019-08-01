@@ -1,47 +1,78 @@
-- name: download nodejs rpm script
-  get_url:
-    url: https://rpm.nodesource.com/setup_{{node_version}}.x 
-    dest: /tmp/nodejs.sh
-    mode: 0755
+# - name: download nodejs rpm script
+#   get_url:
+#     url: https://rpm.nodesource.com/setup_{{node_version}}.x 
+#     dest: /tmp/nodejs.sh
+#     mode: 0755
 
-- name: run the nodejs.sh script
-  shell: /tmp/nodejs.sh
+# - name: run the nodejs.sh script
+#   shell: /tmp/nodejs.sh
 
-- name: cleanup nodejs.sh file
-  file:
-    path: /tmp/nodejs.sh
-    state: absent
+# - name: cleanup nodejs.sh file
+#   file:
+#     path: /tmp/nodejs.sh
+#     state: absent
 
-- name: install nodes and npm
-  yum:
-    name: nodejs
-    state: installed
+# - name: install nodes and npm
+#   yum:
+#     name: nodejs
+#     state: installed
 
-- name: install newrelic neo4j plugin
-  npm:
-    name: newrelic-neo4j
-    global: yes
-    unsafe_perm: yes
+# - name: install newrelic neo4j plugin
+#   npm:
+#     name: newrelic-neo4j
+#     global: yes
+#     unsafe_perm: yes
 
-- name: configure newrelic-neo4j
-  template:
-    src: newrelic-neo4j.js.j2
-    dest: /etc/newrelic/newrelic-neo4j.js
+# - name: configure newrelic-neo4j
+#   template:
+#     src: newrelic-neo4j.js.j2
+#     dest: /etc/newrelic/newrelic-neo4j.js
 
-- name: configure newrelic-neo4j service
-  template:
-    src: newrelic-neo4j.service.j2
-    dest: /etc/systemd/system/newrelic-neo4j.service
+# - name: configure newrelic-neo4j service
+#   template:
+#     src: newrelic-neo4j.service.j2
+#     dest: /etc/systemd/system/newrelic-neo4j.service
 
-- name: reload systemd
-  systemd:
-    daemon_reload: yes
+# - name: reload systemd
+#   systemd:
+#     daemon_reload: yes
 
-- name: enable and start newrelic-neo4j
-  systemd:
-    name: newrelic-neo4j
-    state: started
-    enabled: yes
+# - name: enable and start newrelic-neo4j
+#   systemd:
+#     name: newrelic-neo4j
+#     state: started
+#     enabled: yes
     
 # - name: run newrelic-neo4j
 #   command: newrelic-neo4j >/dev/null 2>&1 &
+
+- name: download newrelic apm agent
+  get_url:
+    url: http://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip
+    dest: /var/lib/neo4j
+
+- name: unzip newrelic-java.zip
+  command: unzip newrelic-java.zip
+  args:
+    chdir: /var/lib/neo4j
+    warn: no
+
+- name: remove newrelic-java.zip
+  file:
+    path: /var/lib/neo4j/newrelic-java.zip
+    state: absent
+  
+- name: update newrelic.yml file
+  lineinfile:
+    path: /var/lib/neo4j/newrelic/newrelic.yml
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^license_key:', line: 'license_key: {{newrelic_license_key}}' }
+    - { regexp: '^app_name:', line: 'app_name: {{env}}-neo4j' }
+
+- name: change neo4j parameters
+  lineinfile:
+    path: /etc/neo4j/neo4j.conf
+    line: dbms.jvm.additional=-javaagent:/var/lib/neo4j/newrelic/newrelic.jar
+  notify: restart neo4j

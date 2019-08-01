@@ -1,4 +1,0 @@
----
-# vars file for neo4j
-neo4j_home: /var/lib/neo4j
-graphql_version: 3.5.0.4

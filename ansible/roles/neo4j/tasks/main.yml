@@ -5,7 +5,7 @@
   yum:
     name: 
       - firewalld
-      - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      - epel-release
     state: latest
 
 - name: enable and start firewalld
@@ -42,19 +42,6 @@
     state: started
     enabled: yes
 
-- name: configure file decriptors for neo4j
-  pam_limits:
-    domain: neo4j
-    limit_type: "{{item.ltype}}"
-    limit_item: "{{item.litem}}"
-    value:      "{{item.lvalue}}"
-  with_items:    
-    - { ltype: 'soft', litem: 'nofile', lvalue: 40000 }
-    - { ltype: 'hard', litem: 'nofile', lvalue: 40000 }    
-
-- name: reload sysctl
-  command: sysctl --system
-    
 - name: open neo4j data ports
   firewalld:
     port: "{{item}}/tcp"
@@ -128,14 +115,14 @@
   with_items:
     - { regexp: '^#dbms.connectors.default_listen_address=0.0.0.0', line: 'dbms.connectors.default_listen_address=0.0.0.0' }
     # - { regexp: '^#dbms.connector.bolt.listen_address=:7687', line: 'dbms.connector.bolt.listen_address=0.0.0.0:7687' }
-    - { regexp: '^#bolt.ssl_policy=legacy', line: 'bolt.ssl_policy=default' }
-    - { regexp: '^#dbms.ssl.policy.default.base_directory=certificates/default', line: 'dbms.ssl.policy.default.base_directory=/var/lib/neo4j/certificates' }
-    - { regexp: '#dbms.ssl.policy.default.allow_key_generation=false', line: 'dbms.ssl.policy.default.allow_key_generation=false' }
-    - { regexp: '^#dbms.ssl.policy.default.private_key=', line: 'dbms.ssl.policy.default.private_key=/var/lib/neo4j/certificates/neo4j.key' }
-    - { regexp: '^#dbms.ssl.policy.default.public_certificate=', line: 'dbms.ssl.policy.default.public_certificate=/var/lib/neo4j/certificates/neo4j.cert' }
-    - { regexp: '^#dbms.ssl.policy.default.client_auth=require', line: 'dbms.ssl.policy.default.client_auth=NONE' }
-    - { regexp: '^#dbms.ssl.policy.default.revoked_dir=', line: 'dbms.ssl.policy.default.revoked_dir=/var/lib/neo4j/certificates/revoked' }
-    - { regexp: '^#dbms.ssl.policy.default.trusted_dir=', line: 'dbms.ssl.policy.default.trusted_dir=/var/lib/neo4j/certificates/trusted' }
+    # - { regexp: '^#bolt.ssl_policy=legacy', line: 'bolt.ssl_policy=default' }
+    # - { regexp: '^#dbms.ssl.policy.default.base_directory=certificates/default', line: 'dbms.ssl.policy.default.base_directory=/var/lib/neo4j/certificates' }
+    # - { regexp: '#dbms.ssl.policy.default.allow_key_generation=false', line: 'dbms.ssl.policy.default.allow_key_generation=false' }
+    # - { regexp: '^#dbms.ssl.policy.default.private_key=', line: 'dbms.ssl.policy.default.private_key=/var/lib/neo4j/certificates/neo4j.key' }
+    # - { regexp: '^#dbms.ssl.policy.default.public_certificate=', line: 'dbms.ssl.policy.default.public_certificate=/var/lib/neo4j/certificates/neo4j.cert' }
+    # - { regexp: '^#dbms.ssl.policy.default.client_auth=require', line: 'dbms.ssl.policy.default.client_auth=NONE' }
+    # - { regexp: '^#dbms.ssl.policy.default.revoked_dir=', line: 'dbms.ssl.policy.default.revoked_dir=/var/lib/neo4j/certificates/revoked' }
+    # - { regexp: '^#dbms.ssl.policy.default.trusted_dir=', line: 'dbms.ssl.policy.default.trusted_dir=/var/lib/neo4j/certificates/trusted' }
     - { regexp: '^#dbms.backup.enabled=true', line: 'dbms.backup.enabled=true' }
     - { regexp: '^#dbms.logs.query.page_logging_enabled=true', line: 'dbms.logs.query.page_logging_enabled=true' }
     - { regexp: '^#dbms.logs.security.level=INFO', line: 'dbms.logs.security.level=INFO' }
@@ -144,8 +131,7 @@
     - { regexp: '^#dbms.logs.query.time_logging_enabled=true', line: 'dbms.logs.query.time_logging_enabled=true' }
     - { regexp: '^#dbms.logs.query.parameter_logging_enabled=true', line: 'dbms.logs.query.parameter_logging_enabled=true' }
 
-
-- name: Ensure the default Apache port is 8080
+- name: Enable neo4j metrics
   lineinfile:
     path: /etc/neo4j/neo4j.conf
     insertafter: 'EOF'
@@ -165,9 +151,6 @@
     regex: 'dbms.directories.data=/var/lib/neo4j/data'
     insertbefore: 'BOF'
   notify: restart neo4j
-
-# - name: change admin password
-#   command: "curl -H \"Content-Type: application/json\" -XPOST -d '{\"password\":\"{{neo4j_password}}\"}' -u neo4j:neo4j http://localhost:7474/user/neo4j/password"
 
 - name: newrelic task
   include_tasks: newrelic.yml

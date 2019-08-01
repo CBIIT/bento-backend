@@ -17,11 +17,12 @@
   yum:
     name: 
       - yum-utils
+      - epel-release
       - device-mapper-persistent-data
       - lvm2
       - python-setuptools
       - firewalld
-      - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    #   - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: latest
 
 - name: enable and start firewalld

@@ -1,61 +1,97 @@
 ---
 # tasks file for k9dc
-- name: open http and https services
-  firewalld:
-    service: "{{item}}"
-    zone: public
-    immediate: yes
-    permanent: yes
-    state: enabled
-  loop:
-    - http
-    - https
-    
+# - name: open http and https services
+#   firewalld:
+#     service: "{{item}}"
+#     zone: public
+#     immediate: yes
+#     permanent: yes
+#     state: enabled
+#   loop:
+#     - http
+#     - https
+#   tags:
+#     - sandbox
+
 - name: create tomcat group
   group:
     name: tomcat
-    gid: 46
+    gid: 3001
     state: present
 
 - name: create tomcat user
   user:
     name: tomcat
-    uid: 46
+    uid: 3001
     group: tomcat
 
 - name: create k9dc volume/directory
   file:
-    path: "{{ item }}"
+    path:  "{{ k9dc_home }}/logs"
     state: directory
     owner: tomcat
     group: tomcat
-  loop:
-    - "{{ k9dc_home }}"
-    - "{{ docker_home }}"
-    - "{{ k9dc_home }}/logs"
-    - "{{ deployments }}"
 
 - name: create k9dc deployments directory
   file:
-    path: "{{ deployments }}"
+    path: "{{ item }}"
+    state: directory
+    owner: commonsdocker
+    group: commonsdocker
+  loop:
+    - "{{ deployments }}"
+    - "{{ docker_home }}"
+  tags:
+    - cloudone
+
+- name: create k9dc deployments directory
+  file:
+    path: "{{ item }}"
     state: directory
     owner: jenkins
     group: jenkins
-
+  loop:
+    - "{{ deployments }}"
+    - "{{ docker_home }}"
+  tags:
+    - sandbox
 
 - name: copy docker files
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: tomcat
-    group: tomcat
+    owner: commonsdocker
+    group: commonsdocker
   with_items:
     - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
+  tags:
+    - cloudone
+
+- name: copy docker files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: jenkins
+    group: jenkins
+  with_items:
+    - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
+  tags:
+    - sandbox
+
+- name: start k9dc
+  command: docker-compose up -d
+  args:
+    chdir: "{{ docker_home }}"
+    warn: no
+  tags:
+    - cloudone
 
 - name: start the k9dc
   docker_compose:
     project_src: "{{ docker_home }}"
     state: present
+  tags:
+    - sandbox
 
 - name: download initial master application
   aws_s3:
@@ -63,6 +99,11 @@
     object: "{{war_file}}"
     dest: /tmp/{{war_file}}
     mode: get
+  tags:
+    - sandbox
 
 - name: deploy master application
   command: docker cp /tmp/{{war_file}} {{container_name}}:/usr/local/tomcat/webapps
+  tags:
+    - sandbox
+   

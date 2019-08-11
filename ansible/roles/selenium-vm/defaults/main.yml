@@ -1,3 +1,4 @@
 ---
 # defaults file for selenium-vm
 driver_version: 76.0.3809.68
+maven_version: 3.6.1

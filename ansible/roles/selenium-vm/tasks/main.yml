@@ -30,20 +30,43 @@
 #       - libgconf-2-4
 #     state: latest
 
-- name: download chromedriver
+- name: download  chromedriver and maven
   get_url:
-    url: https://chromedriver.storage.googleapis.com/{{driver_version}}/chromedriver_linux64.zip
+    url: "{{item}}"
     dest: /tmp
+  loop:
+    - https://chromedriver.storage.googleapis.com/{{driver_version}}/chromedriver_linux64.zip
+    - https://www-us.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-{{maven_version}}-bin.tar.gz
+
 - name: unzip chromedriver
   unarchive:
     src: /tmp/chromedriver_linux64.zip
     dest: /usr/local/bin
     remote_src: yes
 
-- name: remove /tmp/chromedriver_linux64.zip
+- name: untar maven
+  unarchive:
+    src: /tmp/apache-maven-{{maven_version}}-bin.tar.gz
+    dest: /usr/local
+    remote_src: yes
+
+- name: remove the downloaded files
   file:
-    path: /tmp/chromedriver_linux64.zip
+    path: "{{item}}"
     state: absent
+  loop:
+    - /tmp/chromedriver_linux64.zip
+    - /tmp/apache-maven-{{maven_version}}-bin.tar.gz
+
+- name: create maven symlink
+  file:
+    src: /usr/local/apache-maven-{{maven_version}}
+    dest: /usr/local/maven
+    state: link
+
+- name: update system path
+  environment:
+    PATH: $PATH:/usr/local/maven/bin
 
 - name: "enable gui on bootup"
   file: 

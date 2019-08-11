@@ -64,10 +64,11 @@
     dest: /usr/local/maven
     state: link
 
-- name: update system path
-  shell:
-  environment:
-    PATH: $PATH:/usr/local/maven/bin
+- name: update system path 
+  lineinfile:
+    dest: /etc/profile.d
+    state:  present
+    line: PATH=$PATH:/usr/local/maven/bin
 
 - name: "enable gui on bootup"
   file: 

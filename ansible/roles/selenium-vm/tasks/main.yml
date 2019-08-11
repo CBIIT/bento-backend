@@ -18,8 +18,6 @@
       - tigervnc-server
       - xrdp
       - which
-      - libxi6 
-      - libgconf-2-4
       - unzip
       - google-chrome-stable
     state: latest
@@ -30,7 +28,7 @@
       - libxi6
       - libgconf-2-4
     state: latest
-    
+
 - name: download chromedriver
   get_url:
     url: https://chromedriver.storage.googleapis.com/{{driver_version}}/chromedriver_linux64.zip

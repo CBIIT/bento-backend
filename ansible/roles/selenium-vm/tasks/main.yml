@@ -66,7 +66,7 @@
 
 - name: update system path 
   lineinfile:
-    dest: /etc/profile.d
+    dest: /etc/profile.d/maven
     state:  present
     line: PATH=$PATH:/usr/local/maven/bin
 

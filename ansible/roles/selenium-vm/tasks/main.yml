@@ -4,7 +4,7 @@
   yum_repository:
     name: chrome-stable
     description: google chrome-stable
-    baseurl: baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
+    baseurl: http://dl.google.com/linux/chrome/rpm/stable/x86_64
     gpgcheck: yes
     enabled: yes
     gpgkey: https://dl.google.com/linux/linux_signing_key.pub

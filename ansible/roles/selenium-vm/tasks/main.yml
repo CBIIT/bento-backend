@@ -12,6 +12,7 @@
 - name: "install gui utilities and xrdp"
   yum: 
     name: 
+      - epel
       - "@General Purpose Desktop"
       - "@Development Tools"
       - tigervnc-server

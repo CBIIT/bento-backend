@@ -17,7 +17,7 @@
       - tigervnc-server
       - xrdp
       - which
-      - ibxi6 
+      - libxi6 
       - libgconf-2-4
       - unzip
       - google-chrome-stable
@@ -37,7 +37,7 @@
   file:
     path: /tmp/chromedriver_linux64.zip
     state: absent
-    
+
 - name: "enable gui on bootup"
   file: 
     dest: /etc/systemd/system/default.target

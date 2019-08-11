@@ -1,0 +1,8 @@
+---
+- name: setup selenium server
+  hosts: selenium
+  become: yes
+  gather_facts: no
+
+  roles:
+    - selenim-vm

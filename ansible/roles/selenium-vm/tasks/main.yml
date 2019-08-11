@@ -36,7 +36,7 @@
     dest: /tmp
   loop:
     - https://chromedriver.storage.googleapis.com/{{driver_version}}/chromedriver_linux64.zip
-    - https://www-us.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-{{maven_version}}-bin.tar.gz
+    - https://www-us.apache.org/dist/maven/maven-3/{{maven_version}}/binaries/apache-maven-{{maven_version}}-bin.tar.gz
 
 - name: unzip chromedriver
   unarchive:

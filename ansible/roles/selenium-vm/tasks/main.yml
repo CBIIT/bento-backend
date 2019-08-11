@@ -21,6 +21,7 @@
       - unzip
       - google-chrome-stable
       - java-11-openjdk
+      - xorg-x11-server-Xvfb
     state: latest
 
 # - name: install libxi6 and libgconf-2-4
@@ -42,7 +43,7 @@
   unarchive:
     src: /tmp/chromedriver_linux64.zip
     dest: /usr/local/bin
-    mode: u+x
+    mode: '0755'
     remote_src: yes
 
 - name: untar maven

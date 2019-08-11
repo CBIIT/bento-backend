@@ -64,6 +64,12 @@
     dest: /usr/local/maven
     state: link
 
+- name: create maven profile
+  file:
+    path: /etc/profile.d/maven
+    state: present
+ 
+
 - name: update system path 
   lineinfile:
     dest: /etc/profile.d/maven

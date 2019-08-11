@@ -24,6 +24,13 @@
       - google-chrome-stable
     state: latest
 
+- name: install libxi6 and libgconf-2-4
+  yum:
+    name:
+      - libxi6
+      - libgconf-2-4
+    state: latest
+    
 - name: download chromedriver
   get_url:
     url: https://chromedriver.storage.googleapis.com/{{driver_version}}/chromedriver_linux64.zip

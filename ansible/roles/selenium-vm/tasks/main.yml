@@ -42,6 +42,7 @@
   unarchive:
     src: /tmp/chromedriver_linux64.zip
     dest: /usr/local/bin
+    mode: u+x
     remote_src: yes
 
 - name: untar maven

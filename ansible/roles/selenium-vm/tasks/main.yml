@@ -67,9 +67,8 @@
 - name: create maven profile
   file:
     path: /etc/profile.d/maven
-    state: present
+    state: touch
  
-
 - name: update system path 
   lineinfile:
     dest: /etc/profile.d/maven

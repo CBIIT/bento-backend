@@ -1,0 +1,67 @@
+---
+# tasks file for selenium-vm
+- name: add chrome-stable repo
+  yum_repository:
+    name: chrome-stable
+    description: google chrome-stable
+    baseurl: baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
+    gpgcheck: yes
+    enabled: yes
+    gpgkey: https://dl.google.com/linux/linux_signing_key.pub
+
+- name: "install gui utilities and xrdp"
+  yum: 
+    name: 
+      - "@General Purpose Desktop"
+      - "@Development Tools"
+      - tigervnc-server
+      - xrdp
+      - which
+      - ibxi6 
+      - libgconf-2-4
+      - unzip
+      - google-chrome-stable
+    state: latest
+
+- name: download chromedriver
+  get_url:
+    url: https://chromedriver.storage.googleapis.com/{{driver_version}}/chromedriver_linux64.zip
+    dest: /tmp
+- name: unzip chromedriver
+  unarchive:
+    src: /tmp/chromedriver_linux64.zip
+    dest: /usr/local/bin
+    remote_src: yes
+
+- name: remove /tmp/chromedriver_linux64.zip
+  file:
+    path: /tmp/chromedriver_linux64.zip
+    state: absent
+    
+- name: "enable gui on bootup"
+  file: 
+    dest: /etc/systemd/system/default.target
+    src: /lib/systemd/system/runlevel5.target
+    state: link
+  
+- name: "open rdp port 3389"
+  firewalld: 
+    immediate: true
+    permanent: true
+    port: 3389/tcp
+    state: enabled
+
+- name: apply selinux
+  command: "{{ item }}"
+  loop:
+    - chcon --type=bin_t /usr/sbin/xrdp
+    - chcon --type=bin_t /usr/sbin/xrdp-sesman
+    
+- name: "start and enable xrdp"
+  service: 
+    enabled: true
+    name: xrdp
+    state: started
+
+- name: reboot
+  reboot: 

@@ -1,0 +1,72 @@
+//load shared library for slack notification
+//@Library('shared-library')_
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "ICDC Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "icdc devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+
+  agent {
+    node {
+      label 'selenium'
+    }
+  }
+  options {
+    timestamps()
+  }
+  tools { 
+    maven 'maven-3.6.1' 
+    jdk 'jdk11' 
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'master',
+            url: 'https://github.com/CBIIT/icdc_uitest'
+            credentialsId: 'vdonkor'
+      }
+    }
+    stage('Build') {
+      steps {
+        sh """
+        #!/bin/bash
+        mvn test
+        """
+      }
+    }
+    
+  }
+  }
+  // post {
+  //   always {
+      
+  //     sendSlackMessage()
+  //   }
+  // }
+}

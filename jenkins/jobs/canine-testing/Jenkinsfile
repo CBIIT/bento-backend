@@ -68,7 +68,7 @@ pipeline {
   post {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
-      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: 'Testing', to: 'donkorvn@nih.gov'
+      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: 'Testing', to: 'vincent.donkor@gmail.com'
     }
   }
 }

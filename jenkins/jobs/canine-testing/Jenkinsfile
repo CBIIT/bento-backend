@@ -35,6 +35,11 @@ pipeline {
   agent {
     node {
       label 'selenium'
+      wrappers {
+        xvfb('default') {
+            screen('1920x1080x24')
+      }
+    }
     }
   }
   options {

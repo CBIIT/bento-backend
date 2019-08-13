@@ -1,6 +1,6 @@
 pipelineJob('icdc/canine-pipeline') {
 
-  def repo = 'https://github.com/CBIIT/icdc_devops.git' 
+  def repo = 'https://github.com/CBIIT/icdc-devops.git' 
   description("canine testing pipeline Job") 
 
   definition  {

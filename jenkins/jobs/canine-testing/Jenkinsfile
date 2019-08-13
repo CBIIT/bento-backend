@@ -56,7 +56,9 @@ pipeline {
       steps {
         wrap([$class: 'Xvfb']) {
           sh """
-              mvn test
+              mvn clean install
+              cd target/site/cucumber-reports
+              zip -r cucumber-html-reports.zip cucumber-html-reports
              """
         }
       }
@@ -66,7 +68,7 @@ pipeline {
   post {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
-      cucumberSlackSend channel: '${SLACK_URL}', json: 'target/cucumber.json'
+      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: 'Testing', to: 'donkorvn@nih.gov'
     }
   }
 }

@@ -55,7 +55,6 @@ pipeline {
     stage('Build') {
       steps {
         sh """
-        #!/bin/bash
         mvn test
         """
       }

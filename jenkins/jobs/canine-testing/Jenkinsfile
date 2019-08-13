@@ -48,7 +48,7 @@ pipeline {
     stage('Checkout') {
       steps {
         git branch: 'master',
-            url: 'https://github.com/CBIIT/icdc_uitest'
+            url: 'https://github.com/CBIIT/icdc_uitest',
             credentialsId: 'vdonkor'
       }
     }

@@ -1,11 +1,11 @@
 ---
 - name: setup k9dc server
-  hosts: k9dc
+  hosts: "{{host}}"
   become: yes
-
+  
 
   roles:
-    - { role: docker, when: platform == 'sandbox'}
+    # - { role: docker, when: platform == 'sandbox'}
     - k9dc
     - sumologic
     - newrelic

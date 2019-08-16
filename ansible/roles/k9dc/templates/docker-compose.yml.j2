@@ -4,7 +4,7 @@ services:
     container_name: k9dc
     image: vdonkor/tomcat9
     ports:
-      - 80:8080
+      - 8080:8080
     volumes:
       - {{k9dc_home}}/logs:/usr/local/tomcat/logs
     restart: always

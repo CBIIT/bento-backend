@@ -11,17 +11,20 @@
       - nc
     state: installed
   
+# - name: start sumologic docker collector
+#   docker_container:
+#     name: "{{env}}-neo4j-log"
+#     image: sumologic/collector:latest-syslog
+#     state: started
+#     restart: yes
+#     ports:
+#      - "514:514/udp"
+#     env:
+#       SUMO_ACCESS_ID: "{{ access_id }}"
+#       SUMO_ACCESS_KEY: "{{ access_key }}"
+
 - name: start sumologic docker collector
-  docker_container:
-    name: sumo-logic-collector
-    image: sumologic/collector:latest-syslog
-    state: started
-    restart: always
-    ports:
-     - "514:514/udp"
-    env:
-      SUMO_ACCESS_ID: "{{ access_id }}"
-      SUMO_ACCESS_KEY: "{{ access_key }}"
+  command: docker run --restart always -d -p 514:514/udp --name={{env}}-neo4j.log sumologic/collector:latest-syslog {{ access_id }} {{ access_key }}
 
 - name: configure systemd for sumo-journalctl
   template:

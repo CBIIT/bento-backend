@@ -6,7 +6,9 @@
     name: 
       - firewalld
       - epel-release
+      - unzip
     state: latest
+    disable_gpg_check: yes
 
 - name: enable and start firewalld
   service:

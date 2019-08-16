@@ -1,11 +1,11 @@
 ---
 - name: setup k9dc server
   hosts: k9dc
-  connection: local
   become: yes
-  gather_facts: no
+  remote_user: commonsdocker
 
   roles:
-    - docker
+    - { role: docker, when: platform == 'sandbox'}
     - k9dc
     - sumologic
+    - newrelic

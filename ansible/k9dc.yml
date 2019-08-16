@@ -2,7 +2,7 @@
 - name: setup k9dc server
   hosts: k9dc
   become: yes
-  remote_user: commonsdocker
+
 
   roles:
     - { role: docker, when: platform == 'sandbox'}

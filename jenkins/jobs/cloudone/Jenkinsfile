@@ -34,7 +34,7 @@ pipeline {
 
   agent {
     node {
-      label 'commons-docker'
+      label 'docker-maven'
     }
   }
   parameters {

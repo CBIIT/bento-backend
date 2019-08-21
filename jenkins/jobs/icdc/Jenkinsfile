@@ -34,7 +34,7 @@ pipeline {
 
   agent {
     node {
-      label 'selenium'
+      label 'icdc_maven'
     }
   }
   parameters {

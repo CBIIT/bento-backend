@@ -126,15 +126,15 @@ pipeline {
       }
       steps {
         ansiColor('xterm') {
-          withCredentials([sshUserPrivateKey(credentialsId: 'deployer_ssh_key', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'jenkins')]) {
+          withCredentials([sshUserPrivateKey(credentialsId: 'deployer_ssh_key', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'centos')]) {
 sh label: '', script: '''
 
 for server in $TOMCAT02_IP $TOMCAT01_IP;
 do
 pushd target
-scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war centos@${server}:/local/content/canine-data
+scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $centos@${server}:/local/content/canine-data
 popd
-ssh -i $deployer_key -T -o StrictHostKeyChecking=no centos@${server} << EOF
+ssh -i $deployer_key -T -o StrictHostKeyChecking=no $centos@${server} << EOF
 cd /local/content/canine-data
 sudo docker cp ROOT.war k9dc:/usr/local/tomcat/webapps
 EOF
@@ -144,10 +144,10 @@ done'''
       }
     }
   }
-  post {
-    always {
+  // post {
+  //   always {
       
-      sendSlackMessage()
-    }
-  }
+  //     sendSlackMessage()
+  //   }
+  // }
 }

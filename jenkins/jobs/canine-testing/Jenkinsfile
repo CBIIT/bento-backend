@@ -34,7 +34,7 @@ pipeline {
 
   agent {
     node {
-      label 'selenium'
+      label 'cicd-selenium'
     }
   }
   options {

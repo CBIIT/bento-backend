@@ -143,10 +143,10 @@ done'''
       }
     }
   }
-  // post {
-  //   always {
+  post {
+    always {
       
-  //     sendSlackMessage()
-  //   }
-  // }
+      sendSlackMessage()
+    }
+  }
 }

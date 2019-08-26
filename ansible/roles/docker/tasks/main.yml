@@ -30,6 +30,19 @@
     name: firewalld
     state: started
     enabled: yes
+  
+- name: open tcp port 2375 and 2376
+  firewalld:
+    state: enabled
+    permanent: yes
+    port: "{{item}}/tcp"
+    immediate: yes
+    zone: public
+  loop:
+    - 2375
+    - 2376
+  tags:
+    - master
 
 # - name: enable extra repos when running on red hat
 #   command: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
@@ -58,8 +71,25 @@
     enabled: yes
     state: restarted
 
+- name: create docker systemd options directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  tags:
+    - master
+    
+- name: configure docker startup options
+  template:
+    src: startup-options.conf.j2
+    dest: /etc/systemd/system/docker.service.d/startup_options.conf
+  notify:
+    - restart docker
+  tags:
+    - master
+
 - name: reload systemctl daemon
-  command: systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
 
 
  

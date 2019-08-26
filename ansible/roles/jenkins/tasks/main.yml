@@ -1,0 +1,153 @@
+---
+# tasks file for jenkins
+- name: open http and https services
+  firewalld:
+    service: "{{item}}"
+    zone: public
+    immediate: yes
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+
+# - name: list current users
+#   shell: getent group | awk -F":" '{print $1}'
+#   register: current_users
+
+# - name: change centos uid if exist
+#   user:
+#     name: centos
+#     uid: 1001
+#   when: '"centos" in current_users.stdout'
+
+
+# - name: change centos gid if exist
+#   group:
+#     name: centos
+#     gid: 1001
+#   when: '"centos" in current_users.stdout'
+
+
+# - name: create jenkins group
+#   group:
+#     name: jenkins
+#     gid: 1001
+#     state: present
+
+# - name: create jenkins user
+#   user:
+#     name: jenkins
+#     uid: 1001
+#     group: jenkins
+
+- name: install openjdk11 for local slave
+  yum:
+    name: java-11-openjdk
+    state: latest
+
+- name: create file structure for the jenkins
+  file:
+    path: "{{ item }}"
+    state: directory
+    # group: jenkins
+    # owner: jenkins
+    group: centos
+    owner: centos
+  loop:
+    - "{{ jenkins_home }}/jk_secrets"
+    - "{{ docker_home }}"
+
+- name: copy docker files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    # group: jenkins
+    # owner: jenkins
+    group: centos
+    owner: centos
+  loop:
+    - {src: 'docker-compose.yml.j2',dest: '{{ docker_home }}/docker-compose.yml'}
+    - {src: 'dockerfile_jenkins.j2',dest: '{{docker_home}}/dockerfile_jenkins'}
+    - {src: 'plugins.txt.j2',dest: '{{docker_home}}/plugins.txt'}
+    - {src: 'jenkins.env.j2',dest: '{{docker_home}}/jenkins.env'}
+
+
+- name: copy conf files
+  copy:
+    src: "{{jenkins_yaml}}"
+    dest: "{{jenkins_home}}/jenkins.yaml"
+    owner: centos
+    group: centos
+
+- name: copy server_sshkey files
+  copy:
+    src: "{{server_sshkey_file}}"
+    dest: "{{jenkins_home}}/jk_secrets/server_sshkey"
+    owner: centos
+    group: centos
+
+- name: add secret files
+  copy:
+    content: "{{docker_agent_ip}}"
+    dest: "{{jenkins_home}}/docker_agent_ip"
+
+- name: add secrets files
+  copy:
+    content: "{{ item.src }}"
+    dest: "{{jenkins_home}}/jk_secrets/{{ item.dest }}"
+    # group: jenkins
+    # owner: jenkins
+    group: centos
+    owner: centos
+  loop:
+    - {src: "{{docker_agent_ip}}",dest: "docker_agent_ip"}
+    - {src: "{{tomcat01_ip}}",dest: "tomcat01_ip"}
+    - {src: "{{tomcat02_ip}}",dest: "tomcat02_ip"}
+    - {src: "{{slack_url}}",dest: "slack_url"}
+    - {src: "{{jenkinsadmin_ps}}",dest: "jenkinsadmin_ps"}
+    - {src: "{{bearer_ps}}",dest: "bearer_ps"}
+    - {src: "{{vdonkor_ps}}",dest: "vdonkor_ps"}
+    - {src: "{{neo4j_ps}}",dest: "neo4j_ps"}
+    - {src: "{{sshkey}}" ,dest: "sshkey"}
+
+- name: clean sshkey file
+  shell: cat sshkey | awk '{$1=$1;print}' > tempssh && mv tempssh sshkey && chown centos:centos sshkey
+  args:
+    chdir: "{{jenkins_home}}/jk_secrets"
+    
+- name: build the docker image
+  docker_image:
+    path: "{{ docker_home }}"
+    name: k9dc/jenkins
+    dockerfile: "{{ dockerfile }}"
+    state: present
+
+
+- name: start the jenkins
+  docker_compose:
+    project_src: "{{ docker_home }}"
+    state: present
+
+# - name: Init a new swarm with default parameters
+#   docker_swarm:
+#     state: present
+
+# - name: check if secret is already created
+#   shell: docker secret ls -f name=jenkinsAdmin | wc -l
+#   register: output_secret
+
+# - debug:
+#     msg: "{{ output_secret.stdout }}"
+
+# - name: set docker secret user
+#   shell: echo {{ jenkinsAdmin }} | docker secret create jenkinsAdmin -
+#   when: output_secret.stdout == "1"
+#   register: output
+
+# - name: deploy jenkins
+#   command:  docker stack deploy --compose-file {{ docker_compose_file }} jenkins
+#   register: output
+
+# - debug:
+#     msg: "{{output.stdout }}"

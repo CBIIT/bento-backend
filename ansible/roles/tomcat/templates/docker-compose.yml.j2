@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+  match:
+    container_name: k9dc
+    image: vdonkor/tomcat9
+    ports:
+      - 8080:8080
+    volumes:
+      - {{ k9dc_home }}/logs:/usr/local/tomcat/logs
+    restart: always
+    environment:
+      - NEW_RELIC_LICENSE_KEY={{ newrelic_license_key }}
+      - NEW_RELIC_APP_NAME={{ app_name }}
+

@@ -91,6 +91,13 @@
   with_fileglob: 
     - "{{neo4j_home}}/certificates/neo4j*"
 
+# - name: copy neo4j.conf to /etc/neo4j/neo4j.conf
+#   template:
+#     src: neo4j.conf.j2
+#     dest: /etc/neo4j/neo4j.conf
+#     owner: neo4j
+#     group: neo4j
+
 # - name: copy neo4j cert and key
 #   template:
 #     src: "{{ item.src }}"
@@ -114,6 +121,7 @@
     path: /etc/neo4j/neo4j.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
+    state: present
   with_items:
     - { regexp: '^#dbms.connectors.default_listen_address=0.0.0.0', line: 'dbms.connectors.default_listen_address=0.0.0.0' }
     # - { regexp: '^#dbms.connector.bolt.listen_address=:7687', line: 'dbms.connector.bolt.listen_address=0.0.0.0:7687' }
@@ -135,6 +143,7 @@
 
 - name: Enable neo4j metrics
   lineinfile:
+    state: present
     path: /etc/neo4j/neo4j.conf
     insertafter: 'EOF'
     line: '{{ item }}'
@@ -152,6 +161,7 @@
     line: 'dbms.unmanaged_extension_classes=org.neo4j.graphql=/graphql'
     regex: 'dbms.directories.data=/var/lib/neo4j/data'
     insertbefore: 'BOF'
+    state: present
   notify: restart neo4j
 
 - name: newrelic task

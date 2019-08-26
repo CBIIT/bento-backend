@@ -51,12 +51,6 @@
     url: http://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip
     dest: /var/lib/neo4j
 
-# - name: unzip newrelic-java.zip
-#   command: unzip newrelic-java.zip
-#   args:
-#     chdir: /var/lib/neo4j
-#     warn: no
-
 - name: unzip newrelic-java.zip    
   unarchive:
     src: /var/lib/neo4j/newrelic-java.zip
@@ -75,6 +69,7 @@
     path: /var/lib/neo4j/newrelic/newrelic.yml
     regexp: '^  license_key'
     line: '  license_key: {{newrelic_license_key}}'
+    state: present
 
 - name: update newrelic.yml with app_name
   lineinfile:
@@ -88,4 +83,5 @@
   lineinfile:
     path: /etc/neo4j/neo4j.conf
     line: dbms.jvm.additional=-javaagent:/var/lib/neo4j/newrelic/newrelic.jar
+    state: present
   notify: restart neo4j

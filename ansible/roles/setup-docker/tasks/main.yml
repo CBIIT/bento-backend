@@ -1,0 +1,69 @@
+# - name: install systems packages needed for docker
+- name: install yum-utils
+  yum:
+    name: 
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - python-setuptools
+      - firewalld
+      - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: latest
+
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  
+- name: enable extra repos when running on red hat
+  command: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
+  when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install pip and docker-compose
+  command: "{{ item }}"
+  with_items:
+    - "easy_install pip"
+    - "pip install --upgrade --force-reinstall pip==9.0.3"
+    - "pip install docker-compose"
+
+- name: add docker repo 
+  command: >
+    yum-config-manager --add-repo 
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: install docker
+  yum:
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    state: latest
+ 
+- name: enable and start docker
+  service:
+    name: docker
+    enabled: yes
+    state: restarted
+
+- name: enable remote api execution
+  lineinfile:
+    path: /usr/lib/systemd/system/docker.service
+    regexp: '^ExecStart='
+    line: 'ExecStart=/usr/bin/dockerd -H unix:// -H tcp://0.0.0.0:2375'
+  notify:
+    - restart docker
+  tags:
+    - master
+
+- name: reload systemctl daemon
+  command: systemctl daemon-reload
+
+- name: open docker remote api port
+  firewalld:
+    port: 2375/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+    zone: public
+  tags: master
+
+
+

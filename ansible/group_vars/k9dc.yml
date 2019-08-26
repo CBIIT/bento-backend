@@ -1,7 +1,0 @@
-collector_name: "{{ env }}-k9dc"
-additional_logs:
-  - name: "{{ env }} k9dc Logs" 
-    description: "{{ env }} k9dc logs"
-    category: "{{env }}/app/k9dc"
-    path: "/local/k9dc/logs/*.log"
-    filters: "" 

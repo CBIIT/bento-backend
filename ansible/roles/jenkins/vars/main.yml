@@ -1,0 +1,9 @@
+---
+# vars file for jenkins
+collector_name: "{{env}}-jenkins"
+docker_home: "/local/content/docker"
+jenkins_home: "/local/content/jenkins"
+jenkins_yaml: "./config/icdc-jenkins.yaml"
+server_sshkey_file: "./config/icdc-devops.pem"
+dockerfile: "{{ docker_home }}/dockerfile_jenkins"
+docker_compose_file: "{{ docker_home }}/docker-compose.yml"

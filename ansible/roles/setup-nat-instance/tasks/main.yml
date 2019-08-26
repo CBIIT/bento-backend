@@ -1,0 +1,30 @@
+- name: install firewalld package
+  yum:
+    name: firewalld
+    state: latest
+
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: configure ip masquerade
+  command: "{{ item}}"
+  loop:
+    - "firewall-offline-cmd --direct --add-rule ipv4 nat POSTROUTING 0 -o eth0 -j MASQUERADE"
+    - "firewall-offline-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eth0 -j ACCEPT"
+
+- name: restart firewalld service
+  service:
+    name: firewalld
+    state: restarted
+
+
+- name:  Set ip forwarding on sysctl file and reload if necessary
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes

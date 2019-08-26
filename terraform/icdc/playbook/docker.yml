@@ -1,8 +1,0 @@
----
-- name: setup jenkins server
-  hosts: all
-  become: yes
-
-
-  roles:
-    - setup-docker

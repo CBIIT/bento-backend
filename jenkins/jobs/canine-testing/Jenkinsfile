@@ -4,6 +4,42 @@
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
+
+  def reportFile = "target/site/cucumber-reports/cucumber-html-reports/overview-features.html"
+  def doc = org.jsoup.Jsoup.parse(new File(reportFile), "utf-8"); 
+  def step_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(1).text()
+  def step_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(2).text()
+  def step_skipped = doc.select("tbody").get(1).select("tr").get(1).select("td").get(3).text()
+  def step_pending = doc.select("tbody").get(1).select("tr").get(1).select("td").get(4).text()
+  def step_undefined = doc.select("tbody").get(1).select("tr").get(1).select("td").get(5).text()
+  def s_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(7).text()
+  def s_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(8).text()
+  def f_duration = doc.select("tbody").get(1).select("tr").get(1).select("td").get(9).text()
+  def f_status = doc.select("tbody").get(1).select("tr").get(1).select("td").get(10).text()
+
+  def table = JsonOutput.toJson(
+     [[
+          title: "Steps",
+          Passed: step_passed,
+          Failed: step_failed,
+          Skipped: step_skipped,
+          Pending: step_pending,
+          Undefined: step_undefined,
+      ],
+      [
+          title: "Scenarios",
+          Passed: s_passed,
+          Failed: s_failed,
+                    
+      ],
+      [
+          title: "Features",
+          Duration: f_duration,
+          Status: f_status,
+                    
+      ]]
+  )
+
   jenkins_image = ":jenkins:"
   beer_image = ":beer:"
   long epoch = System.currentTimeMillis()/1000
@@ -14,10 +50,10 @@ def sendSlackMessage() {
             icon_emoji: jenkins_image,
             attachments: [[
               title: "Jenkins Job Alert - ${currentBuild.currentResult}",
-              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console \n ```${table}```",
               fallback: "ICDC Jenkins Build",
               color: "${BUILD_COLORS[currentBuild.currentResult]}",
-              footer: "icdc devops",
+              footer: "icdc QA testing",
               ts: epoch,
               mrkdwn_in: ["footer", "title"],
            ]]
@@ -68,7 +104,7 @@ pipeline {
   post {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
-      // emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@gmail.com'
+      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@gmail.com'
     }
   }
 }

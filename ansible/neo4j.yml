@@ -8,7 +8,8 @@
     
   roles:
     - common
-    - docker
+    - { role: docker,tags: ['sandbox'] }
+    - tomcat
     - neo4j
     - sumologic
     - newrelic

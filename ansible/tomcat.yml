@@ -1,0 +1,14 @@
+---
+- name: setup k9dc server
+  hosts: tomcat
+  become: yes
+
+  vars_files:
+    - config/icdc-env-vars.yaml
+    
+  roles:
+    - common
+    - { role: docker,tags: sandbox }
+    - tomcat
+    - sumologic
+    - newrelic

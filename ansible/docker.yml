@@ -1,8 +1,18 @@
 ---
 - name: setup jenkins server
-  hosts: all
+  hosts: docker
   become: yes
 
+  vars:
+    - collector_name: "{{env}}-agent"
+  vars_files:
+    - config/icdc-env-vars.yaml
 
   roles:
-    - setup-docker
+    - common
+    - docker
+    - selenium
+    - sumologic
+    - newrelic
+   
+

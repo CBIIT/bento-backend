@@ -1,9 +1,9 @@
 ---
 # tasks file for sumo-journalctl
 
-- name: run docker role
-  include_role:
-    name: docker
+# - name: run docker role
+#   include_role:
+#     name: docker
 
 - name: install nc package
   yum: 
@@ -11,20 +11,20 @@
       - nc
     state: installed
   
-# - name: start sumologic docker collector
-#   docker_container:
-#     name: "{{env}}-neo4j-log"
-#     image: sumologic/collector:latest-syslog
-#     state: started
-#     restart: yes
-#     ports:
-#      - "514:514/udp"
-#     env:
-#       SUMO_ACCESS_ID: "{{ access_id }}"
-#       SUMO_ACCESS_KEY: "{{ access_key }}"
-
 - name: start sumologic docker collector
-  command: docker run --restart always -d -p 514:514/udp --name={{env}}-neo4j.log sumologic/collector:latest-syslog {{ access_id }} {{ access_key }}
+  docker_container:
+    name: "{{env}}-neo4j-log"
+    image: sumologic/collector:latest-syslog
+    state: started
+    restart: yes
+    ports:
+     - "514:514/udp"
+    env:
+      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
+      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
+
+# - name: start sumologic docker collector
+#   command: docker run --restart always -d -p 514:514/udp --name={{env}}-neo4j.log sumologic/collector:latest-syslog {{ access_id }} {{ access_key }}
 
 - name: configure systemd for sumo-journalctl
   template:

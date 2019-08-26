@@ -2,10 +2,15 @@
 - name: setup neo4j server
   hosts: neo4j
   become: yes
-  remote_user: commonsdocker
-
+  
+  vars_files:
+    - config/icdc-env-vars.yaml
+    
   roles:
+    - common
+    - docker
     - neo4j
     - sumologic
-    # - sumologic-journalctl
     - newrelic
+    - sumologic-journalctl
+

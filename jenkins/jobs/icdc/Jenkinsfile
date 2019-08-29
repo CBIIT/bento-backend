@@ -86,6 +86,7 @@ pipeline {
               case "sandbox":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
                 sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${SANDBOX_URL}/,g' application_example.properties"
+                sh " cat ${WORKSPACE}/src/main/resources/application_example.properties "
               break
               case "dev":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
@@ -162,8 +163,8 @@ done'''
   }
   post {
     always {
-      
-      sendSlackMessage()
+      sh "echo 'done' "
+      //sendSlackMessage()
     }
   }
 }

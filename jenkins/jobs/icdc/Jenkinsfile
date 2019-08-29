@@ -40,14 +40,22 @@ pipeline {
   parameters {
     //listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
     //gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
-    gitParameter(branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'Tag', type: 'PT_BRANCH_TAG')
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'master', 
+            name: 'Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'NONE', 
+            tagFilter: '.*', 
+            branchFilter: '.*',
+            useRepository: 'https://github.com/CBIIT/icdc-codebase')
     extendedChoice( 
             name: 'Environment', 
             defaultValue: 'sandbox', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
-            value: 'sandbox,dev,QA,stage,prod' 
-    )
+            value: 'sandbox,dev,QA,stage,prod' )
 
   }
    triggers { 

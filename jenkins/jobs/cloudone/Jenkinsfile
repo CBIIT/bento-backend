@@ -38,8 +38,23 @@ pipeline {
     }
   }
   parameters {
-    // listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
-    gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    //listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    // gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'master', 
+            name: 'Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'NONE', 
+            tagFilter: '*', 
+            useRepository: 'https://github.com/CBIIT/icdc-codebase')
+    extendedChoice( 
+            name: 'Environment', 
+            defaultValue: 'sandbox', 
+            description: 'Choose the environment to build', 
+            type: 'PT_SINGLE_SELECT',
+            value: 'sandbox,dev,QA,stage,prod' )
   }
   //  triggers { 
   //    pollSCM('H/15 * * * 1-5') 
@@ -56,6 +71,44 @@ pipeline {
       steps {
         checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/icdc-codebase']]])
       }
+    }
+    stage('Set Environment'){
+        environment {
+          SANDBOX_URL = "k9dc.essential-dev.com"
+          DEV_URL = "caninecommons-dev.cancer.gov"
+          QA_URL = "caninecommons-qa.cancer.gov"
+          STAGE_URL = "caninecommons-stage.cancer.gov"
+          PROD_URL = "caninecommons.cancer.gov" 
+        }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "sandbox":
+                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${SANDBOX_URL}/,g' application_example.properties"
+              break
+              case "dev":
+                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${DEV_URL}/,g' application_example.properties"
+              break
+              case "qa":
+                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ QA_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${QA_URL}/,g' application_example.properties"
+              break
+              case "stage":
+                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ STAGE_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${STAGE_URL}/,g' application_example.properties"
+              break
+              case "prod":
+                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${PROD_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${PROD_URL}/,g' application_example.properties"
+              break
+              default:
+                println "Select valid option"
+              break
+            }
+          }
+        }
     }
     stage('Build') {
       environment {

@@ -80,7 +80,7 @@ pipeline {
             switch("${params.Environment}") {
               case "sandbox":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
-                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${SANSANDBOX_URL}/,g' application.properties"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${SANDBOX_URL}/,g' application.properties"
               break
               case "dev":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"

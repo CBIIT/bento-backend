@@ -48,7 +48,6 @@ pipeline {
             selectedValue: 'DEFAULT', 
             sortMode: 'NONE', 
             tagFilter: '.*', 
-            branchFilter: '.*',
             useRepository: 'https://github.com/CBIIT/icdc-codebase')
     extendedChoice( 
             name: 'Environment', 

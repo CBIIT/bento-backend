@@ -163,8 +163,8 @@ done'''
   }
   post {
     always {
-      sh "echo 'done' "
-      //sendSlackMessage()
+      
+      sendSlackMessage()
     }
   }
 }

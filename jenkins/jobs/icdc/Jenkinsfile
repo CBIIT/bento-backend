@@ -40,7 +40,7 @@ pipeline {
   parameters {
     //listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
     //gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
-    gitParameter(branchFilter: 'origin/(.*)', 
+    gitParameter(branchFilter: '.*', 
             defaultValue: 'master', 
             name: 'Tag', 
             type: 'PT_BRANCH_TAG',

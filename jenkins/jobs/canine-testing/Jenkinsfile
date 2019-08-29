@@ -58,9 +58,9 @@ def sendSlackMessage() {
         ]
     )
     try {
-        // sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
-        response = ["curl", "-X", "POST", "-H", "Content-type: application/json", "--data", "${slack}","${SLACK_URL}"]
-        response.execute().text
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+        // response = ["curl", "-X", "POST", "-H", "Content-type: application/json", "--data", "${slack}","${SLACK_URL}"]
+        // response.execute().text
     } catch (err) {
         echo "${err} Slack notify failed"
     }

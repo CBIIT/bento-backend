@@ -39,7 +39,7 @@ pipeline {
   }
   parameters {
     //listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
-    gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
     extendedChoice( 
             name: 'Environment', 
             defaultValue: 'sandbox', 
@@ -79,18 +79,23 @@ pipeline {
             switch("${params.Environment}") {
               case "sandbox":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${SANSANDBOX_URL}/,g' application.properties"
               break
               case "dev":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${DEV_URL}/,g' application.properties"
               break
               case "qa":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ QA_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${QA_URL}/,g' application.properties"
               break
               case "stage":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ STAGE_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${STAGE_URL}/,g' application.properties"
               break
               case "prod":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${PROD_URL}/g' .env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.url=https://localhost/,fence.url=https://${PROD_URL}/,g' application.properties"
               break
               default:
                 println "Select valid option"
@@ -108,13 +113,18 @@ pipeline {
         // NEO4J_IP = "neo4j.essential-dev.com"
       }
       steps {
-        withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
+        withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
+          usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
+          string(credentialsId: 'fence-id', variable: 'FENCE_ID')]) {
           sh "cd ${WORKSPACE}/src/main/resources/ && mv application_example.properties application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/localhost/${NEO4J_IP}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/Basic 123456/${BEARER}/' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/password=${NEO4J_IP}/password=${NEO4J_PASSWORD}/' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/neo4j_username/${NEO4J_USER}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/clientID/${FENCE_ID}/g' application.properties"
+          
           sh "mvn package -DskipTests"
-          //sh "mv target/ICDC-0.0.1.war target/ICDC.war"
+    
           sh "mv target/ICDC-0.0.1.war target/ROOT.war"
         }
       }

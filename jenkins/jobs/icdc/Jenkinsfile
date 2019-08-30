@@ -122,13 +122,15 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
           usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
-          string(credentialsId: 'fence-id', variable: 'FENCE_ID')]) {
+          string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+          string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
           sh "cd ${WORKSPACE}/src/main/resources/ && mv application_example.properties application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/localhost/${NEO4J_IP}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/Basic 123456/${BEARER}/' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/password=${NEO4J_IP}/password=${NEO4J_PASSWORD}/' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/neo4j_username/${NEO4J_USER}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/clientID/${FENCE_ID}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/credential/${FENCE_CREDENTIAL}/g' application.properties"
           
           sh "mvn package -DskipTests"
     

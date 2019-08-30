@@ -130,7 +130,7 @@ pipeline {
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/password=${NEO4J_IP}/password=${NEO4J_PASSWORD}/' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/neo4j_username/${NEO4J_USER}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/clientID/${FENCE_ID}/g' application.properties"
-          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/credential/${FENCE_CREDENTIAL}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/cred/${FENCE_CREDENTIAL}/g' application.properties"
           
           sh "mvn package -DskipTests"
     

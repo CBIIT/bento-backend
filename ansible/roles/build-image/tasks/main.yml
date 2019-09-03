@@ -1,0 +1,34 @@
+---
+# tasks file for build-image
+- name: list all in docker directory
+  find: 
+    path: ../docker
+    file_type: file
+  register: list_file
+
+- name: set name of files
+  set_fact:
+    dockerfiles: "{{ list_file.files | json_query('[*].path')}}"
+
+# - name: show files
+#   debug:
+#     msg: "{{item | basename}}"
+#   loop:
+#     "{{dockerfiles}}"
+
+- name: Log into DockerHub
+  docker_login:
+    username: vdonkor
+    password: rancom2001
+
+- name: build all the docker images
+  docker_image:
+    build:
+      path: ../docker
+      dockerfile: "{{ item | basename}}"
+    name: cbiitssrepo/{{item | basename}}
+    tag: latest
+    push: yes
+    source: build
+  loop:
+    "{{dockerfiles}}"

@@ -54,7 +54,7 @@ pipeline {
             defaultValue: 'sandbox', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
-            value: 'sandbox,dev,QA,stage,prod' )
+            value: 'sandbox,dev,qa,stage,prod' )
   }
   //  triggers { 
   //    pollSCM('H/15 * * * 1-5') 

@@ -12,12 +12,13 @@
       - docker-engine
       - docker-compose
     state: absent
+
 # tasks file for docker
 - name: install systems packages needed for docker
   yum:
     name: 
       - yum-utils
-      - epel-release
+      # - epel-release
       - device-mapper-persistent-data
       - lvm2
       - python-setuptools

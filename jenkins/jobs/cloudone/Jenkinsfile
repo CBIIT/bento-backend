@@ -112,35 +112,36 @@ pipeline {
     }
     stage('Build') {
       environment {
-        script {
-          switch("${params.Environment}"){
-            case "sandbox":
-              TOMCAT01_IP = "${TOMCAT01_IP}"
-              TOMCAT02_IP = "${TOMCAT02_IP}"
-              NEO4J_IP    = "${NEO4J_IP}"
-            break
-            case "dev":
-              TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-              TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
-              NEO4J_IP    = "${NEO4J_DEV_IP}"
-            break
-            case "qa":
-              TOMCAT01_IP = "${TOMCAT01_QA_IP}"
-              TOMCAT02_IP = "${TOMCAT02_QA_IP}"
-              NEO4J_IP    = "${NEO4J_QA_IP}"
-            case "stage":
-              TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
-              TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
-              NEO4J_IP    = "${NEO4J_STAGE_IP}"
-            case "prod":
-              TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
-              TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
-              NEO4J_IP    = "${NEO4J_PROD_IP}"
-          }
-        }
-        // TOMCAT01_IP = "${TOMCAT01_IP}"
-        // TOMCAT02_IP = "${TOMCAT02_IP}"
-        // NEO4J_IP  = "${NEO4J_IP}"
+        // script {
+        //   switch("${params.Environment}"){
+        //     case "sandbox":
+        //       TOMCAT01_IP = "${TOMCAT01_IP}"
+        //       TOMCAT02_IP = "${TOMCAT02_IP}"
+        //       NEO4J_IP    = "${NEO4J_IP}"
+        //     break
+        //     case "dev":
+        //       TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
+        //       TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
+        //       NEO4J_IP    = "${NEO4J_DEV_IP}"
+        //     break
+        //     case "qa":
+        //       TOMCAT01_IP = "${TOMCAT01_QA_IP}"
+        //       TOMCAT02_IP = "${TOMCAT02_QA_IP}"
+        //       NEO4J_IP    = "${NEO4J_QA_IP}"
+        //     case "stage":
+        //       TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
+        //       TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
+        //       NEO4J_IP    = "${NEO4J_STAGE_IP}"
+        //     case "prod":
+        //       TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
+        //       TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
+        //       NEO4J_IP    = "${NEO4J_PROD_IP}"
+
+        //   }
+        // }
+        TOMCAT01_IP = "${TOMCAT01_IP}"
+        TOMCAT02_IP = "${TOMCAT02_IP}"
+        NEO4J_IP  = "${NEO4J_IP}"
         SLACK_URL = "${SLACK_URL}"
         
         //NEO4J_IP = "neo4j.essential-dev.com"

@@ -6,7 +6,7 @@ ENV JAVA_HOME /usr/lib/jvm/jre-11-openjdk
 ENV MAVEN_HOME /usr/local/maven
 ENV PATH $MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH
 
-ARG MAVEN_VERSION=3.6.1
+ARG MAVEN_VERSION=3.6.2
 USER root
 RUN yum -y install java-11-openjdk-devel wget which \
   && wget https://www-us.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz -P /tmp \

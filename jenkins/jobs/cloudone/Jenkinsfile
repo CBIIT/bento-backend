@@ -156,16 +156,15 @@ pipeline {
       }
       steps {
         ansiColor('xterm') {
-          withCredentials([sshUserPrivateKey(credentialsId: 'deployer_ssh_key', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'jenkins')]) {
+          withCredentials([sshUserPrivateKey(credentialsId: 'commonsdocker_ssh_credential', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
 sh label: '', script: '''
 
 for server in $TOMCAT02_IP $TOMCAT01_IP;
 do
 pushd target
-scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war donkorvn@${server}:/tmp
+scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:/tmp
 popd
-ssh -i $deployer_key -T -o StrictHostKeyChecking=no donkorvn@${server} << EOF
-sudo su - commonsdocker
+ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
 docker cp /tmp/ROOT.war k9dc:/usr/local/tomcat/webapps
 EOF
 done'''

@@ -17,7 +17,7 @@ WORKDIR $CATALINA_HOME
 
 RUN yum -y install java-11-openjdk wget which unzip \
    && groupadd  -g 3001 tomcat \
-   && useradd -u 46 -3001 3001 ${TOMCAT_USER} \
+   && useradd -u 3001 -g 3001 ${TOMCAT_USER} \
    && curl -O "http://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" \
    && unzip newrelic-java.zip \
    && mkdir newrelic/logs \

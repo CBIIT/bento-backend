@@ -4,7 +4,7 @@ import groovy.json.JsonOutput
 def sendSlackMessage(htmlFile) {
 
   // def reportFile = "target/site/cucumber-reports/cucumber-html-reports/overview-features.html"
-  def doc = org.jsoup.Jsoup.parse(String htmlFile, "utf-8"); 
+  def doc = org.jsoup.Jsoup.parse(htmlFile); 
   def step_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(1).text()
   def step_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(2).text()
   def step_skipped = doc.select("tbody").get(1).select("tr").get(1).select("td").get(3).text()

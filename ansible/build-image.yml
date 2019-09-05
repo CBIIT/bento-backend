@@ -3,5 +3,8 @@
   hosts: localhost
   # become: yes
 
+  vars_files:
+    config/icdc-env-vars.yaml
+
   roles:
     - build-image

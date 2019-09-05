@@ -18,17 +18,19 @@
 
 - name: Log into DockerHub
   docker_login:
-    username: vdonkor
-    password: rancom2001
+    username: "{{ docker_username }}"
+    password: "{{ docker_password }}"
 
 - name: build all the docker images
   docker_image:
     build:
       path: ../docker
       dockerfile: "{{ item | basename}}"
+      nocache: yes
     name: cbiitssrepo/{{item | basename}}
     tag: latest
     push: yes
     source: build
+
   loop:
     "{{dockerfiles}}"

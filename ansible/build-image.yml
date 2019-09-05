@@ -1,6 +1,7 @@
 ---
 - name: build docker images
   hosts: localhost
+  connection: local
   # become: yes
 
   vars_files:

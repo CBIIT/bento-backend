@@ -34,3 +34,10 @@
 
   loop:
     "{{dockerfiles}}"
+
+- name: clean up the build image
+  docker_image:
+    state: absent
+    name: name: cbiitssrepo/{{item | basename}}
+  loop:
+    "{{dockerfiles}}"

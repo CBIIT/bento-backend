@@ -166,6 +166,7 @@ scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
 popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
 docker cp ~/ROOT.war k9dc:/usr/local/tomcat/webapps
+rm -rf ~/ROOT.war
 EOF
 done'''
           }

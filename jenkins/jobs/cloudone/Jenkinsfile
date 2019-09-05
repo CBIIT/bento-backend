@@ -165,6 +165,7 @@ pushd target
 scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:/tmp
 popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
+sudo su - commonsdocker
 docker cp /tmp/ROOT.war k9dc:/usr/local/tomcat/webapps
 EOF
 done'''

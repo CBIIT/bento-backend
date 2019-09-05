@@ -40,14 +40,6 @@
   loop:
     - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
 
-- name: k9dc down
-  command: docker-compose  down
-  args:
-    chdir: "{{ docker_home }}"
-    warn: no
-  tags:
-    - cloudone
-
 - name: start k9dc
   command: docker-compose up -d
   args:

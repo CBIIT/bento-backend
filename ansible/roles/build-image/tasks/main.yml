@@ -35,9 +35,9 @@
   loop:
     "{{dockerfiles}}"
 
-- name: clean up the build image
+- name: clean up the built image
   docker_image:
     state: absent
-    name: name: cbiitssrepo/{{item | basename}}
+    name: cbiitssrepo/{{item | basename}}
   loop:
     "{{dockerfiles}}"

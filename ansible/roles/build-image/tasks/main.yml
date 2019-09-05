@@ -27,6 +27,7 @@
       path: ../docker
       dockerfile: "{{ item | basename}}"
       nocache: yes
+      force: yes
     name: cbiitssrepo/{{item | basename}}
     tag: latest
     push: yes
@@ -38,6 +39,7 @@
 - name: clean up the built image
   docker_image:
     state: absent
+    force: yes
     name: cbiitssrepo/{{item | basename}}
   loop:
     "{{dockerfiles}}"

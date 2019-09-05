@@ -156,7 +156,7 @@ pipeline {
       }
       steps {
         ansiColor('xterm') {
-          withCredentials([sshUserPrivateKey(credentialsId: 'deployer_ssh_key', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
+          withCredentials([sshUserPrivateKey(credentialsId: 'opsdeployer', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
 sh label: '', script: '''
 
 for server in $TOMCAT02_IP $TOMCAT01_IP;

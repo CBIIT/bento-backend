@@ -162,11 +162,12 @@ sh label: '', script: '''
 for server in $TOMCAT02_IP $TOMCAT01_IP;
 do
 pushd target
-scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
+scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:/tmp
 popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
-docker cp ~/ROOT.war k9dc:/usr/local/tomcat/webapps
-rm -rf ~/ROOT.war
+sudo su - commonsdocker
+docker cp /tmp/ROOT.war k9dc:/usr/local/tomcat/webapps
+#rm -rf ~/ROOT.war
 EOF
 done'''
           }

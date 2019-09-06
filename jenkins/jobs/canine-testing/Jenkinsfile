@@ -95,7 +95,7 @@ pipeline {
               zip -r cucumber-html-reports.zip cucumber-html-reports
              """
           script {
-            env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
+            env.REPORT_FILE = readFile('${env.WORKSPACE}/target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
           }
           
         }

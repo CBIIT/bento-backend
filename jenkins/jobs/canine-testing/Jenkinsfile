@@ -84,7 +84,8 @@ pipeline {
           script {
             env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
           }
-          sh '''
+          whithEnv([]){
+            sh '''
             lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
              set STEP_PASSED=`cat slack-report.txt | grep Footer | awk '{ print $3}'`
              set STEP_FAILED=`cat slack-report.txt | grep Footer | awk '{ print $4}'`
@@ -96,6 +97,8 @@ pipeline {
              set F_DURATION=`cat slack-report.txt | grep Footer | awk '{ print $12 " "$13 "$14"}'`
              set F_STATUS=`cat slack-report.txt | grep Footer | awk '{ print $15}'`
           '''
+          }
+          
           sh """
               cd target/site/cucumber-reports
               zip -r cucumber-html-reports.zip cucumber-html-reports

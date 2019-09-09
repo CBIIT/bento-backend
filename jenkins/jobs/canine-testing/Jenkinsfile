@@ -119,7 +119,7 @@ pipeline {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
       // emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@nih.gov'
-      sendSlackMessage(env.STEP_PASSED,env.STEP_FAILED,env.STEP_SKIPPED,env.STEP_PENDING,env.STEP_UNDEFINED,env.S_PASSED,env.S_FAILED,env.F_DURATION,env.F_STATUS)
+      sendSlackMessage()
     }
   }
 }

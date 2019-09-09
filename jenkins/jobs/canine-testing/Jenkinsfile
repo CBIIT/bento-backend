@@ -1,17 +1,17 @@
 
 import groovy.json.JsonOutput
 
-def sendSlackMessage(htmlFile) {
-  def doc = org.jsoup.Jsoup.parse(htmlFile); 
-  def step_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(1).text()
-  def step_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(2).text()
-  def step_skipped = doc.select("tbody").get(1).select("tr").get(1).select("td").get(3).text()
-  def step_pending = doc.select("tbody").get(1).select("tr").get(1).select("td").get(4).text()
-  def step_undefined = doc.select("tbody").get(1).select("tr").get(1).select("td").get(5).text()
-  def s_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(7).text()
-  def s_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(8).text()
-  def f_duration = doc.select("tbody").get(1).select("tr").get(1).select("td").get(9).text()
-  def f_status = doc.select("tbody").get(1).select("tr").get(1).select("td").get(10).text()
+def sendSlackMessage(step_passed,step_failed,step_skipped,step_pending,step_undefined,s_passed,s_failed,f_duration,f_status) {
+  // def doc = org.jsoup.Jsoup.parse(htmlFile); 
+  // def step_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(1).text()
+  // def step_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(2).text()
+  // def step_skipped = doc.select("tbody").get(1).select("tr").get(1).select("td").get(3).text()
+  // def step_pending = doc.select("tbody").get(1).select("tr").get(1).select("td").get(4).text()
+  // def step_undefined = doc.select("tbody").get(1).select("tr").get(1).select("td").get(5).text()
+  // def s_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(7).text()
+  // def s_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(8).text()
+  // def f_duration = doc.select("tbody").get(1).select("tr").get(1).select("td").get(9).text()
+  // def f_status = doc.select("tbody").get(1).select("tr").get(1).select("td").get(10).text()
 
   def table = JsonOutput.toJson(
      [[
@@ -57,8 +57,6 @@ def sendSlackMessage(htmlFile) {
     )
     try {
         sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
-        // response = ["curl", "-X", "POST", "-H", "Content-type: application/json", "--data", "${slack}","${SLACK_URL}"]
-        // response.execute().text
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -97,6 +95,18 @@ pipeline {
             env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
           }
           sh """
+            html2text  -utf8 -nobs target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
+            export STEP_PASSED=$(cat slack-report.txt | grep Footer | awk '{ print $2}')
+            export STEP_FAILED=$(cat slack-report.txt | grep Footer | awk '{ print $3}')
+            export STEP_SKIPPED=$(cat slack-report.txt | grep Footer | awk '{ print $4}')
+            export STEP_UNDEFINED=$(cat slack-report.txt | grep Footer | awk '{ print $6}')
+            export STEP_PENDING=$(cat slack-report.txt | grep Footer | awk '{ print $5}')
+            export S_PASSED=$(cat slack-report.txt | grep Footer | awk '{ print $8}')
+            export S_FAILED=$(cat slack-report.txt | grep Footer | awk '{ print $9}')
+            export F_DURATION=$(cat slack-report.txt | grep Footer | awk '{ print $11$12}')
+            export F_STATUS=$(cat slack-report.txt | grep Footer | awk '{ print $13}')
+          """
+          sh """
               cd target/site/cucumber-reports
               zip -r cucumber-html-reports.zip cucumber-html-reports
             """
@@ -109,7 +119,7 @@ pipeline {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
       // emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@nih.gov'
-      sendSlackMessage(env.REPORT_FILE)
+      sendSlackMessage(env.STEP_PASSED,env.STEP_FAILED,env.STEP_SKIPPED,env.STEP_PENDING,env.STEP_UNDEFINED,env.S_PASSED,env.S_FAILED,env.F_DURATION,env.F_STATUS)
     }
   }
 }

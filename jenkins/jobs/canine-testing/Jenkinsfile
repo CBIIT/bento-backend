@@ -96,15 +96,15 @@ pipeline {
           }
           sh """
             html2text  -utf8 -nobs target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
-            export STEP_PASSED=$(cat slack-report.txt | grep Footer | awk '{ print $2}')
-            export STEP_FAILED=$(cat slack-report.txt | grep Footer | awk '{ print $3}')
-            export STEP_SKIPPED=$(cat slack-report.txt | grep Footer | awk '{ print $4}')
-            export STEP_UNDEFINED=$(cat slack-report.txt | grep Footer | awk '{ print $6}')
-            export STEP_PENDING=$(cat slack-report.txt | grep Footer | awk '{ print $5}')
-            export S_PASSED=$(cat slack-report.txt | grep Footer | awk '{ print $8}')
-            export S_FAILED=$(cat slack-report.txt | grep Footer | awk '{ print $9}')
-            export F_DURATION=$(cat slack-report.txt | grep Footer | awk '{ print $11$12}')
-            export F_STATUS=$(cat slack-report.txt | grep Footer | awk '{ print $13}')
+            export STEP_PASSED=\$(cat slack-report.txt | grep Footer | awk '{ print \$2}')
+            export STEP_FAILED=\$(cat slack-report.txt | grep Footer | awk '{ print \$3}')
+            export STEP_SKIPPED=\$(cat slack-report.txt | grep Footer | awk '{ print \$4}')
+            export STEP_UNDEFINED=\$(cat slack-report.txt | grep Footer | awk '{ print \$6}')
+            export STEP_PENDING=\$(cat slack-report.txt | grep Footer | awk '{ print \$5}')
+            export S_PASSED=\$(cat slack-report.txt | grep Footer | awk '{ print \$8}')
+            export S_FAILED=\$(cat slack-report.txt | grep Footer | awk '{ print \$9}')
+            export F_DURATION=\$(cat slack-report.txt | grep Footer | awk '{ print \$11 " "\$12}')
+            export F_STATUS=\$(cat slack-report.txt | grep Footer | awk '{ print \$13}')
           """
           sh """
               cd target/site/cucumber-reports

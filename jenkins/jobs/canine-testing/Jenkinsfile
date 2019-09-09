@@ -1,7 +1,7 @@
 
 import groovy.json.JsonOutput
 
-def sendSlackMessage(step_passed,step_failed,step_skipped,step_pending,step_undefined,s_passed,s_failed,f_duration,f_status) {
+def sendSlackMessage() {
   // def doc = org.jsoup.Jsoup.parse(htmlFile); 
   // def step_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(1).text()
   // def step_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(2).text()
@@ -16,22 +16,22 @@ def sendSlackMessage(step_passed,step_failed,step_skipped,step_pending,step_unde
   def table = JsonOutput.toJson(
      [[
           title: "Steps",
-          Passed: step_passed,
-          Failed: step_failed,
-          Skipped: step_skipped,
-          Pending: step_pending,
-          Undefined: step_undefined,
+          Passed: env.STEP_PASSED,
+          Failed: env.STEP_FAILED,
+          Skipped: env.STEP_SKIPPED,
+          Pending: env.STEP_PENDING,
+          Undefined: env.STEP_UNDEFINED,
       ],
       [
           title: "Scenarios",
-          Passed: s_passed,
-          Failed: s_failed,
+          Passed: env.S_PASSED,
+          Failed: env.S_FAILED,
                     
       ],
       [
           title: "Features",
-          Duration: f_duration,
-          Status: f_status,
+          Duration: env.F_DURATION,
+          Status: env.F_STATUS,
                     
       ]]
   )

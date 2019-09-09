@@ -87,15 +87,15 @@ pipeline {
           withEnv([]){
             sh """
             lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
-             env.STEP_PASSED=`cat slack-report.txt | grep Footer | awk '{ print \$3}'`
-             env.STEP_FAILED=`cat slack-report.txt | grep Footer | awk '{ print \$4}'`
-             env.STEP_SKIPPED=`cat slack-report.txt | grep Footer | awk '{ print \$5}'`
-             env.STEP_UNDEFINED=`cat slack-report.txt | grep Footer | awk '{ print \$6}'`
-             env.STEP_PENDING=`cat slack-report.txt | grep Footer | awk '{ print \$7}'`
-             env.S_PASSED=`cat slack-report.txt | grep Footer | awk '{ print \$8}'`
-             env.S_FAILED=`cat slack-report.txt | grep Footer | awk '{ print \$9}'`
-             env.F_DURATION=`cat slack-report.txt | grep Footer | awk '{ print \$12 " "\$13 " "\$14}'`
-             env.F_STATUS=`cat slack-report.txt | grep Footer | awk '{ print \$15}'`
+             export STEP_PASSED=`cat slack-report.txt | grep Footer | awk '{ print \$3}'`
+             export STEP_FAILED=`cat slack-report.txt | grep Footer | awk '{ print \$4}'`
+             export STEP_SKIPPED=`cat slack-report.txt | grep Footer | awk '{ print \$5}'`
+             export STEP_UNDEFINED=`cat slack-report.txt | grep Footer | awk '{ print \$6}'`
+             export STEP_PENDING=`cat slack-report.txt | grep Footer | awk '{ print \$7}'`
+             export S_PASSED=`cat slack-report.txt | grep Footer | awk '{ print \$8}'`
+             export S_FAILED=`cat slack-report.txt | grep Footer | awk '{ print \$9}'`
+             export F_DURATION=`cat slack-report.txt | grep Footer | awk '{ print \$12 " "\$13 " "\$14}'`
+             export F_STATUS=`cat slack-report.txt | grep Footer | awk '{ print \$15}'`
           """
           }
           

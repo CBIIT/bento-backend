@@ -84,7 +84,7 @@ pipeline {
           script {
             env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
           }
-          whithEnv([]){
+          withEnv([]){
             sh '''
             lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
              set STEP_PASSED=`cat slack-report.txt | grep Footer | awk '{ print $3}'`

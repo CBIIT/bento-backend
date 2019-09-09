@@ -2,16 +2,6 @@
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
-  // def doc = org.jsoup.Jsoup.parse(htmlFile); 
-  // def step_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(1).text()
-  // def step_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(2).text()
-  // def step_skipped = doc.select("tbody").get(1).select("tr").get(1).select("td").get(3).text()
-  // def step_pending = doc.select("tbody").get(1).select("tr").get(1).select("td").get(4).text()
-  // def step_undefined = doc.select("tbody").get(1).select("tr").get(1).select("td").get(5).text()
-  // def s_passed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(7).text()
-  // def s_failed = doc.select("tbody").get(1).select("tr").get(1).select("td").get(8).text()
-  // def f_duration = doc.select("tbody").get(1).select("tr").get(1).select("td").get(9).text()
-  // def f_status = doc.select("tbody").get(1).select("tr").get(1).select("td").get(10).text()
 
   def table = JsonOutput.toJson(
      [[
@@ -96,6 +86,7 @@ pipeline {
           }
           sh """
             html2text  -utf8 -nobs target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
+            cat slack-report.txt
             export STEP_PASSED=\$(cat slack-report.txt | grep Footer | awk '{ print \$2}')
             export STEP_FAILED=\$(cat slack-report.txt | grep Footer | awk '{ print \$3}')
             export STEP_SKIPPED=\$(cat slack-report.txt | grep Footer | awk '{ print \$4}')
@@ -118,8 +109,8 @@ pipeline {
   post {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
-      // emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@nih.gov'
-      sendSlackMessage()
+      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@nih.gov'
+      //sendSlackMessage()
     }
   }
 }

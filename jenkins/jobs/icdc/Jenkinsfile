@@ -81,10 +81,12 @@ pipeline {
           PROD_URL = "caninecommons.cancer.gov" 
         }
         steps {
-          script {
+          withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+            script {
             switch("${params.Environment}") {
               case "sandbox":
-                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
+                sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                // sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
                 sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
                 
               break
@@ -107,6 +109,7 @@ pipeline {
               default:
                 println "Select valid option"
               break
+              }
             }
           }
         }

@@ -121,7 +121,7 @@ pipeline {
             env.STEP_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$3}'"
             env.STEP_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$3}'"
             env.STEP_FAILED=sh "cat slack-report.txt | grep Footer | awk '{ print \$4}'"
-            env.STEP_SKIPPED=sh "cat slack-report.txt | grep Footer | awk '{ print \$5}'"}
+            env.STEP_SKIPPED=sh "cat slack-report.txt | grep Footer | awk '{ print \$5}'"
             env.STEP_UNDEFINED=sh "cat slack-report.txt | grep Footer | awk '{ print \$6}'"
             env.STEP_PENDING=sh "cat slack-report.txt | grep Footer | awk '{ print \$7}'"
             env.S_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$8}'"

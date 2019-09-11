@@ -84,18 +84,25 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "sandbox":
-                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
-                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
-                env.TOMCAT01_IP = "${TOMCAT01_IP}"
-                env.TOMCAT02_IP = "${TOMCAT02_IP}"
-                env.NEO4J_IP    = "${NEO4J_IP}"
+                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_IP}"
+                  env.NEO4J_IP    = "${NEO4J_IP}"
+                }
               break
               case "dev":
-                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
-                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
-                env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
-                env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cat ${WORKSPACE}/src/main/frontend/.env"
+                  //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                }
               break
               case "qa":
                 sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ QA_URL}/g' .env"

@@ -59,6 +59,14 @@ pipeline {
       label 'cicd-selenium'
     }
   }
+  parameters {
+    extendedChoice( 
+            name: 'Environment', 
+            defaultValue: 'qa', 
+            description: 'Choose the environment to build', 
+            type: 'PT_SINGLE_SELECT',
+            value: 'dev,qa,stage' )
+  }
   options {
     timestamps()
   }
@@ -74,6 +82,32 @@ pipeline {
             credentialsId: 'vdonkor'
       }
     }
+    stage('Set Environment'){
+      environment {
+        DEV_URL = "caninecommons-dev.cancer.gov"
+        QA_URL = "caninecommons-qa.cancer.gov"
+        STAGE_URL = "caninecommons-stage.cancer.gov"
+      }
+      steps {
+        script {
+          switch("${params.Environment}") {
+            case "dev"
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ DEV_URL}/g' config.properties"
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && cat config.properties"
+            break
+            case "qa":
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && cat config.properties"
+            break
+            case "stage"
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ STAGE_URL}/g' config.properties"
+            break
+            default:
+              println "Select valid option"
+            break
+          }
+        }
+      }
+    }
     stage('Build') {
       steps {
         wrap([$class: 'Xvfb']) {
@@ -81,23 +115,19 @@ pipeline {
               mvn clean install
              """
            
-          // script {
-          //   env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
-          // }
-          // withEnv([]){
-          //   sh """
-          //   lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt
-          //    export STEP_PASSED=`cat slack-report.txt | grep Footer | awk '{ print \$3}'`
-          //    export STEP_FAILED=`cat slack-report.txt | grep Footer | awk '{ print \$4}'`
-          //    export STEP_SKIPPED=`cat slack-report.txt | grep Footer | awk '{ print \$5}'`
-          //    export STEP_UNDEFINED=`cat slack-report.txt | grep Footer | awk '{ print \$6}'`
-          //    export STEP_PENDING=`cat slack-report.txt | grep Footer | awk '{ print \$7}'`
-          //    export S_PASSED=`cat slack-report.txt | grep Footer | awk '{ print \$8}'`
-          //    export S_FAILED=`cat slack-report.txt | grep Footer | awk '{ print \$9}'`
-          //    export F_DURATION=`cat slack-report.txt | grep Footer | awk '{ print \$12 " "\$13 " "\$14}'`
-          //    export F_STATUS=`cat slack-report.txt | grep Footer | awk '{ print \$15}'`
-          // """
-          // }
+          script {
+            //env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
+            sh "lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt"
+            env.STEP_PASSED=${sh "cat slack-report.txt | grep Footer | awk '{ print \$3}'"}
+            env.STEP_PASSED=${sh "cat slack-report.txt | grep Footer | awk '{ print \$3}'"}
+            env.STEP_FAILED=${sh "cat slack-report.txt | grep Footer | awk '{ print \$4}'"}
+            env.STEP_SKIPPED=${sh "cat slack-report.txt | grep Footer | awk '{ print \$5}'"}
+            env.STEP_UNDEFINED=${ sh "cat slack-report.txt | grep Footer | awk '{ print \$6}'"}
+            env.STEP_PENDING=${ sh "cat slack-report.txt | grep Footer | awk '{ print \$7}'"}
+            env.S_PASSED=${sh "cat slack-report.txt | grep Footer | awk '{ print \$8}'"}
+            env.S_FAILED=${sh "cat slack-report.txt | grep Footer | awk '{ print \$9}'"}
+            env.F_DURATION=${ "sh cat slack-report.txt | grep Footer | awk '{ print \$12 " "\$13 " "\$14}'"}
+          }
           
           sh """
               cd target/site/cucumber-reports
@@ -111,9 +141,9 @@ pipeline {
   post {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
-      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'vincent.donkor@nih.gov'
+      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'Test', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'afag.ibrahimova@nih.gov';'laxmi.lolla@nih.gov';'amit.mukherjee@nih.gov','vincent.donkor@nih.gov'
       //sendSlackMessage()
-      // println(env.STEP_PASSED)
+      println(env.STEP_PASSED)
     }
   }
 }

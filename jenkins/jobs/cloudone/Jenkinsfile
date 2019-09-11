@@ -94,7 +94,7 @@ pipeline {
                 }
               break
               case "dev":
-                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
                   sh "cat ${WORKSPACE}/src/main/frontend/.env"
                   //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"

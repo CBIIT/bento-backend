@@ -114,19 +114,19 @@ pipeline {
               mvn clean install
              """
            
-          script {
-            //env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
-            // sh "lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt"
-            // env.STEP_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$3}'"
-            // env.STEP_FAILED=sh "cat slack-report.txt | grep Footer | awk '{ print \$4}'"
-            // env.STEP_SKIPPED=sh "cat slack-report.txt | grep Footer | awk '{ print \$5}'"
-            // env.STEP_UNDEFINED=sh "cat slack-report.txt | grep Footer | awk '{ print \$6}'"
-            // env.STEP_PENDING=sh "cat slack-report.txt | grep Footer | awk '{ print \$7}'"
-            // env.S_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$8}'"
-            // env.S_FAILED=sh "cat slack-report.txt | grep Footer | awk '{ print \$9}'"
-            // env.F_STATUS=sh "cat slack-report.txt | grep Footer | awk '{ print \$11}'"
-            // env.F_DURATION=sh ''' cat slack-report.txt | grep Footer | awk '{ print \$12 " "\$13 " "\$14}' '''
-          }
+          // script {
+          //   //env.REPORT_FILE = readFile('target/site/cucumber-reports/cucumber-html-reports/overview-features.html')
+          //   // sh "lynx --dump  target/site/cucumber-reports/cucumber-html-reports/overview-features.html > slack-report.txt"
+          //   // env.STEP_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$3}'"
+          //   // env.STEP_FAILED=sh "cat slack-report.txt | grep Footer | awk '{ print \$4}'"
+          //   // env.STEP_SKIPPED=sh "cat slack-report.txt | grep Footer | awk '{ print \$5}'"
+          //   // env.STEP_UNDEFINED=sh "cat slack-report.txt | grep Footer | awk '{ print \$6}'"
+          //   // env.STEP_PENDING=sh "cat slack-report.txt | grep Footer | awk '{ print \$7}'"
+          //   // env.S_PASSED=sh "cat slack-report.txt | grep Footer | awk '{ print \$8}'"
+          //   // env.S_FAILED=sh "cat slack-report.txt | grep Footer | awk '{ print \$9}'"
+          //   // env.F_STATUS=sh "cat slack-report.txt | grep Footer | awk '{ print \$11}'"
+          //   // env.F_DURATION=sh ''' cat slack-report.txt | grep Footer | awk '{ print \$12 " "\$13 " "\$14}' '''
+          // }
           
           sh """
               cd target/site/cucumber-reports

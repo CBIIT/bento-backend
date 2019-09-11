@@ -91,14 +91,14 @@ pipeline {
       steps {
         script {
           switch("${params.Environment}") {
-            case "dev"
+            case "dev":
               sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ DEV_URL}/g' config.properties"
               sh "cd ${WORKSPACE}/src/test/resources/test_data/ && cat config.properties"
             break
             case "qa":
               sh "cd ${WORKSPACE}/src/test/resources/test_data/ && cat config.properties"
             break
-            case "stage"
+            case "stage":
               sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ STAGE_URL}/g' config.properties"
             break
             default:

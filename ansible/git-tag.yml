@@ -1,0 +1,10 @@
+- name: Tag github repository daily
+  
+  hosts: localhost
+  connection: local
+
+  vars_files:
+    - config/icdc-env-vars.yaml
+
+  roles:
+    - git-tag

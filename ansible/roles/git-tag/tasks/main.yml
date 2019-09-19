@@ -1,0 +1,53 @@
+---
+- name: checkout icdc-codebase
+  git:
+    repo: "{{git_url}}"
+    dest: "{{ git_home }}"
+    update: yes
+    version: master
+
+- name: count the current tags
+  shell: git tag 
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+  register: tag_count
+
+- name: list of git tags
+  set_fact:
+    tags: "{{tag_count.stdout_lines}}"
+    tags_length: "{{ tag_count.stdout_lines | length }}"
+
+- name: tag to be deleted
+  set_fact:
+    tag_remove: "{{ tags | first }}"
+  when: tags_length |int > 0
+
+- name: delete excess tag remote
+  command: git push --delete origin {{ tag_remove }}
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+  when: tags_length |int > retention
+
+- name: delete excess tag local
+  command: git tag --delete {{ tag_remove }}
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+  when: tags_length |int > retention
+
+- name: tag the repo
+  command: git tag "{{git_tag}}"
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+
+- name: push the new tag
+  command: git push --tags
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+
+
+    

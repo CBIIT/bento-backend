@@ -1,0 +1,7 @@
+---
+# vars file for roles/git-tag
+git_tag: "daily_tag.{{ lookup('pipe','date +%Y%m%d%H%M') }}"
+git_url: https://{{git_username}}:{{git_password}}@github.com/vdonkor/projects
+retention: 31
+current_date: "{{ lookup('pipe','date +%Y%m%d%H%M') }}"
+git_home: "{{ ansible_env.HOME }}/git-tag"

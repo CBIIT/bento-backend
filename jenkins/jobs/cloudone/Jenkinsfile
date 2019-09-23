@@ -79,6 +79,7 @@ pipeline {
           QA_URL = "caninecommons-qa.cancer.gov"
           STAGE_URL = "caninecommons-stage.cancer.gov"
           PROD_URL = "caninecommons.cancer.gov" 
+          VERSION = "${params.Tag}"
         }
         steps {
           script {
@@ -86,7 +87,7 @@ pipeline {
               case "sandbox":
                 withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${SANDBOX_URL}/g' .env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_IP}"
                   env.TOMCAT02_IP = "${TOMCAT02_IP}"

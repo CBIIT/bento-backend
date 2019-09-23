@@ -97,8 +97,7 @@ pipeline {
               case "dev":
                 withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cat ${WORKSPACE}/src/main/frontend/.env"
-                  //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
                   env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
@@ -108,7 +107,7 @@ pipeline {
               case "qa":
                 withCredentials([file(credentialsId: 'qa_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ QA_URL}/g' .env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${QA_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_QA_IP}"
                   env.TOMCAT02_IP = "${TOMCAT02_QA_IP}"
@@ -116,24 +115,29 @@ pipeline {
                 }
               break
               case "stage":
-                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ STAGE_URL}/g' .env"
-                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${STAGE_URL}/,g' application_example.properties"
-                env.TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
-                env.TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
-                env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+                withCredentials([file(credentialsId: 'stage_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${STAGE_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
+                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+                }
               break
               case "prod":
-                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${PROD_URL}/g' .env"
-                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${PROD_URL}/,g' application_example.properties"
-                env.TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
-                env.TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
-                env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                withCredentials([file(credentialsId: 'prod_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${PROD_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
+                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                }
               break
               default:
                 withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cat ${WORKSPACE}/src/main/frontend/.env"
-                  //sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's/caninecommons-dev.cancer.gov/${ DEV_URL}/g' .env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
                   env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"

@@ -25,7 +25,7 @@
     name:
       - libcap
       - newrelic-infra
-    state: latest
+    state: installed
   environment:
     NRIA_MODE: PRIVILEGED
 

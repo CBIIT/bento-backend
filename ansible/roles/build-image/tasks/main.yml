@@ -20,6 +20,7 @@
   docker_login:
     username: "{{ docker_username }}"
     password: "{{ docker_password }}"
+    registry: https://docker.io
 
 - name: build all the docker images
   docker_image:

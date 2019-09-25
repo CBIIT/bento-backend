@@ -2,56 +2,59 @@
 # tasks file for build-image
 
 
-# - name: list all in docker directory
-#   find: 
-#     path: ../docker
-#     file_type: file
-#   register: list_file
+- name: list all in docker directory
+  find: 
+    path: ../docker
+    file_type: file
+  register: list_file
 
-# - name: set name of files
-#   set_fact:
-#     dockerfiles: "{{ list_file.files | json_query('[*].path')}}"
-
-# # - name: show files
-# #   debug:
-# #     msg: "{{item | basename}}"
-# #   loop:
-# #     "{{dockerfiles}}"
+- name: set name of dockerfiles
+  set_fact:
+    dockerfiles: "{{ list_file.files | json_query('[*].path')}}"
 
 - name: Log into DockerHub
   docker_login:
-    username: "{{ docker_username }}"
-    password: "{{ docker_password }}"
-    registry: https://docker.io
+    username: "{{ item.value.username }}"
+    password: "{{ item.value.password }}"
+    registry: "{{item.value.registry }}"
     tls: yes
     ca_cert: /local/home/commonsdocker/.docker/ca.pem
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
-    docker_host: tcp://ncias-p2236-v.nci.nih.gov:2376
+    docker_host: "{{docker_host}}"
+  loop: "{{ lookup('dict', image_location) }}"
 
 
-# - name: log into DockerHub
-#   command: docker login https://docker.io --username=vdonkor --password=rancom2001
 
-# - name: build all the docker images
-#   docker_image:
-#     build:
-#       path: ../docker
-#       dockerfile: "{{ item | basename}}"
-#       nocache: yes
-#       force: yes
-#     name: cbiitssrepo/{{item | basename}}
-#     tag: latest
-#     push: yes
-#     source: build
+- name: build all the docker images
+  docker_image:
+    build:
+      path: ../docker
+      dockerfile: "{{ item.1 | basename}}"
+      nocache: yes
+      force: yes
+    name: "{{ item.0.value.path }}/{{ item.1 | basename }}"
+    tag: latest
+    push: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    docker_host: "{{docker_host}}"
+    repository: "{{ item.0.value.registry }}"
+  with_nested:
+    - "{{ lookup('dict', image_location) }}"
+    - "{{ dockerfiles }}"
 
 #   loop:
 #     "{{dockerfiles}}"
 
-# - name: clean up the built image
-#   docker_image:
-#     state: absent
-#     force: yes
-#     name: cbiitssrepo/{{item | basename}}
-#   loop:
-#     "{{dockerfiles}}"
+- name: clean up the built image
+  docker_image:
+    state: absent
+    force: yes
+    name: "{{ item.0.value.path }}/{{item.1 | basename}}"
+  with_nested:
+    - "{{ lookup('dict', image_location) }}"
+    - "{{ dockerfiles }}"

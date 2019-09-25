@@ -22,7 +22,7 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     docker_host: "{{docker_host}}"
-  loop: "{{ lookup('dict', image_location) }}"
+  loop: "{{ image_location|dict2items }}"
 
 
 
@@ -44,7 +44,7 @@
     docker_host: "{{docker_host}}"
     repository: "{{ item.0.value.registry }}"
   with_nested:
-    - "{{ lookup('dict', image_location) }}"
+    - "{{ image_location|dict2items }}"
     - "{{ dockerfiles }}"
 
 #   loop:
@@ -56,5 +56,5 @@
     force: yes
     name: "{{ item.0.value.path }}/{{item.1 | basename}}"
   with_nested:
-    - "{{ lookup('dict', image_location) }}"
+    - "{{ image_location|dict2items }}"
     - "{{ dockerfiles }}"

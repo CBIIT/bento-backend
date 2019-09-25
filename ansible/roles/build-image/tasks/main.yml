@@ -16,11 +16,14 @@
 #   loop:
 #     "{{dockerfiles}}"
 
-- name: Log into DockerHub
-  docker_login:
-    username: "{{ docker_username }}"
-    password: "{{ docker_password }}"
-    registry: https://docker.io
+# - name: Log into DockerHub
+#   docker_login:
+#     username: "{{ docker_username }}"
+#     password: "{{ docker_password }}"
+#     registry: https://docker.io
+
+- name: log into DockerHub
+  command: docker login https://docker.io --username={{ docker_username }} --password={{ docker_password }}
 
 - name: build all the docker images
   docker_image:

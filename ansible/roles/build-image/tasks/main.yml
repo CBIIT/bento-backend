@@ -59,8 +59,7 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     docker_host: "{{docker_host}}"
-    repository: "{{ item.0.value.registry }}"
-    name: "{{ item.0.value.path }}/{{item.1 | basename}}"
+    name: "{{ item.0.value.registry }}/{{ item.0.value.path }}/{{ item.1 | basename }}"
   with_nested:
     - "{{ image_location|dict2items }}"
     - "{{ dockerfiles }}"

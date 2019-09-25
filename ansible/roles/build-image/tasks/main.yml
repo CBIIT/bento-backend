@@ -23,7 +23,7 @@
 #     registry: https://docker.io
 
 - name: log into DockerHub
-  command: docker login https://docker.io --username={{ docker_username }} --password={{ docker_password }}
+  command: docker login https://docker.io --username=vdonkor --password=rancom2001
 
 - name: build all the docker images
   docker_image:

@@ -71,7 +71,7 @@
       --tlsverify --tlscacert=/local/home/commonsdocker/.docker/ca.pem
       --tlscert=/local/home/commonsdocker/.docker/jenkinscert.pem
       --tlskey=/local/home/commonsdocker/.docker/jenkinskey.pem 
-      -H={{ docker_host }} images
+      -H={{ docker_host }} rmi 65f 402 c1a 8c2 60e -f
   register: docker_img
 
 - name: show docker images

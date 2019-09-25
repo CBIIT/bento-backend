@@ -2,7 +2,7 @@
 - name: build docker images
   hosts: localhost
   connection: local
-  # become: yes
+  become_user: commonsdocker
 
   vars_files:
     config/icdc-env-vars.yaml

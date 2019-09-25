@@ -1,49 +1,52 @@
 ---
 # tasks file for build-image
-- name: list all in docker directory
-  find: 
-    path: ../docker
-    file_type: file
-  register: list_file
 
-- name: set name of files
-  set_fact:
-    dockerfiles: "{{ list_file.files | json_query('[*].path')}}"
+- name: run docker ps
+  shell: docker ps
+# - name: list all in docker directory
+#   find: 
+#     path: ../docker
+#     file_type: file
+#   register: list_file
 
-# - name: show files
-#   debug:
-#     msg: "{{item | basename}}"
+# - name: set name of files
+#   set_fact:
+#     dockerfiles: "{{ list_file.files | json_query('[*].path')}}"
+
+# # - name: show files
+# #   debug:
+# #     msg: "{{item | basename}}"
+# #   loop:
+# #     "{{dockerfiles}}"
+
+# # - name: Log into DockerHub
+# #   docker_login:
+# #     username: "{{ docker_username }}"
+# #     password: "{{ docker_password }}"
+# #     registry: https://docker.io
+
+# - name: log into DockerHub
+#   command: docker login https://docker.io --username=vdonkor --password=rancom2001
+
+# - name: build all the docker images
+#   docker_image:
+#     build:
+#       path: ../docker
+#       dockerfile: "{{ item | basename}}"
+#       nocache: yes
+#       force: yes
+#     name: cbiitssrepo/{{item | basename}}
+#     tag: latest
+#     push: yes
+#     source: build
+
 #   loop:
 #     "{{dockerfiles}}"
 
-# - name: Log into DockerHub
-#   docker_login:
-#     username: "{{ docker_username }}"
-#     password: "{{ docker_password }}"
-#     registry: https://docker.io
-
-- name: log into DockerHub
-  command: docker login https://docker.io --username=vdonkor --password=rancom2001
-
-- name: build all the docker images
-  docker_image:
-    build:
-      path: ../docker
-      dockerfile: "{{ item | basename}}"
-      nocache: yes
-      force: yes
-    name: cbiitssrepo/{{item | basename}}
-    tag: latest
-    push: yes
-    source: build
-
-  loop:
-    "{{dockerfiles}}"
-
-- name: clean up the built image
-  docker_image:
-    state: absent
-    force: yes
-    name: cbiitssrepo/{{item | basename}}
-  loop:
-    "{{dockerfiles}}"
+# - name: clean up the built image
+#   docker_image:
+#     state: absent
+#     force: yes
+#     name: cbiitssrepo/{{item | basename}}
+#   loop:
+#     "{{dockerfiles}}"

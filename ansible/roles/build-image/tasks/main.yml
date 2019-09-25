@@ -1,8 +1,7 @@
 ---
 # tasks file for build-image
 
-- name: run docker ps
-  shell: docker ps
+
 # - name: list all in docker directory
 #   find: 
 #     path: ../docker
@@ -19,11 +18,17 @@
 # #   loop:
 # #     "{{dockerfiles}}"
 
-# # - name: Log into DockerHub
-# #   docker_login:
-# #     username: "{{ docker_username }}"
-# #     password: "{{ docker_password }}"
-# #     registry: https://docker.io
+- name: Log into DockerHub
+  docker_login:
+    username: "{{ docker_username }}"
+    password: "{{ docker_password }}"
+    registry: https://docker.io
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    docker_host: tcp://ncias-p2236-v.nci.nih.gov:2376
+
 
 # - name: log into DockerHub
 #   command: docker login https://docker.io --username=vdonkor --password=rancom2001

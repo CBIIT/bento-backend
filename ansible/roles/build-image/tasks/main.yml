@@ -9,7 +9,7 @@
       -H={{ docker_host }} system prune -a --volumes 
 
 
-- name: list all in docker directory
+- name: list all dockerfiles in docker directory
   find: 
     path: ../docker
     file_type: file
@@ -73,7 +73,7 @@
 #     - "{{ image_location|dict2items }}"
 #     - "{{ dockerfiles }}"
 
-- name: show docker images
+- name: list docker images
   command: >
     docker 
       --tlsverify --tlscacert=/local/home/commonsdocker/.docker/ca.pem
@@ -82,7 +82,7 @@
       -H={{ docker_host }} images -q 
   register: docker_img
 
-- name: show docker images
+- name: remove all docker images
   command: >
     docker 
       --tlsverify --tlscacert=/local/home/commonsdocker/.docker/ca.pem

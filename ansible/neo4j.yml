@@ -9,7 +9,7 @@
   roles:
     - common
     # - { role: docker,tags: ['sandbox'] }
-    - docker
+    #- docker
     - neo4j
     - sumologic
     - newrelic

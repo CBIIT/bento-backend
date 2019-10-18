@@ -1,0 +1,14 @@
+---
+- name: setup ctn server
+  hosts: ctn
+  become: yes
+
+  vars_files:
+    - config/ctn-env-vars.yaml
+    
+  roles:
+    - common
+    # - { role: docker,tags: ['sandbox'] }
+    - ctn
+    - sumologic
+    - newrelic

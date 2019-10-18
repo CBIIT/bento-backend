@@ -1,0 +1,56 @@
+---
+- name: open port 8080
+  firewalld:
+    port: 8080/tcp
+    zone: public
+    immediate: yes
+    permanent: yes
+    state: enabled
+
+- name: create tomcat group
+  group:
+    name: tomcat
+    gid: 3001
+    state: present
+
+- name: create tomcat user
+  user:
+    name: tomcat
+    uid: 3001
+    groups: tomcat,docker
+    append: yes
+
+- name: create ctn deployments directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+  loop:
+    - "{{ deployments }}"
+    - "{{ docker_home }}"
+    - "{{ ctn_home }}/logs"
+ 
+- name: copy docker files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: tomcat
+    group: tomcat
+  loop:
+    - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
+
+- name: start ctn
+  command: docker-compose up -d
+  args:
+    chdir: "{{ docker_home }}"
+    warn: no
+  tags:
+    - cloudone
+
+- name: start the ctn
+  docker_compose:
+    project_src: "{{ docker_home }}"
+    state: present
+  tags:
+    - sandbox

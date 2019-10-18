@@ -1,0 +1,15 @@
+---
+# vars file for ctn
+docker_home: /local/content/docker
+ctn_home: /local/content/ctn
+deployments: /local/content/canine-data
+container_name: ctn
+app_name: "{{env}}-ctn"
+collector_name: "{{ env }}-ctn"
+newrelic_license_key: "{{ newrelic_key }}"
+additional_logs:
+  - name: "{{ env }} ctn Logs" 
+    description: "{{ env }} ctn logs"
+    category: "{{env }}/app/ctn"
+    path: "/local/content/ctn/logs/*.log"
+    filters: "" 

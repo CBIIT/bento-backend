@@ -166,6 +166,16 @@ done'''
         }
       }
     }
+  stage('schema'){
+    environment {
+      NEO4J_IP = "${NEO4J_IP}"
+    }
+    steps {
+      withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER')]){
+        sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H ‘Accept: application/json’ -H ‘Authorization: ${BEARER}’ -d @src/main/resources/graphql/icdc.graphql"
+      }
+    }
+  }
   }
   post {
     always {

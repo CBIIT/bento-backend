@@ -2,7 +2,7 @@
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
-  jenkins_image = ":jenkins-ci:"
+  jenkins_image = ":jenkins_ci:"
   beer_image = ":beer:"
   long epoch = System.currentTimeMillis()/1000
   def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']

@@ -2,30 +2,6 @@
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
-
-  def table = JsonOutput.toJson(
-     [[
-          title: "Steps",
-          Passed: env.STEP_PASSED,
-          Failed: env.STEP_FAILED,
-          Skipped: env.STEP_SKIPPED,
-          Pending: env.STEP_PENDING,
-          Undefined: env.STEP_UNDEFINED,
-      ],
-      [
-          title: "Scenarios",
-          Passed: env.S_PASSED,
-          Failed: env.S_FAILED,
-                    
-      ],
-      [
-          title: "Features",
-          Duration: env.F_DURATION,
-          Status: env.F_STATUS,
-                    
-      ]]
-  )
-
   jenkins_image = ":jenkins-ci:"
   beer_image = ":beer:"
   long epoch = System.currentTimeMillis()/1000
@@ -36,10 +12,10 @@ def sendSlackMessage() {
             icon_emoji: jenkins_image,
             attachments: [[
               title: "Jenkins Job Alert - ${currentBuild.currentResult}",
-              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} ${jenkins_image}\n Analysis of Results: \n ```${table}``` \nDetails at: ${env.BUILD_URL}console",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${jenkins_image}\n Details at: ${env.BUILD_URL}console",
               fallback: "ICDC Jenkins Build",
               color: "${BUILD_COLORS[currentBuild.currentResult]}",
-              footer: "icdc QA testing",
+              footer: "icdc devops",
               ts: epoch,
               mrkdwn_in: ["footer", "title"],
            ]]

@@ -9,7 +9,7 @@ def sendSlackMessage() {
   
   def slack = JsonOutput.toJson(
       [
-            icon_emoji: jenkins_image,
+            icon_emoji: coffee_image,
             attachments: [[
               title: "Jenkins Job Alert - ${currentBuild.currentResult}",
               text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${coffee_image}\n Details at: ${env.BUILD_URL}console",

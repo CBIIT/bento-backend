@@ -3,16 +3,17 @@ import groovy.json.JsonOutput
 
 def sendSlackMessage() {
   coffee_image = ":hot-coffee:"
+  jenkins_image = ":jenkins:"
   beer_image = ":beer:"
   long epoch = System.currentTimeMillis()/1000
   def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
   
   def slack = JsonOutput.toJson(
       [
-            icon_emoji: coffee_image,
+            icon_emoji: jenkins_image,
             attachments: [[
               title: "Jenkins Job Alert - ${currentBuild.currentResult}",
-              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${coffee_image}\n Details at: ${env.BUILD_URL}console",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} ${coffee_image}\n Details at: ${env.BUILD_URL}console",
               fallback: "ICDC Jenkins Build",
               color: "${BUILD_COLORS[currentBuild.currentResult]}",
               footer: "Selenium Automated Testing",

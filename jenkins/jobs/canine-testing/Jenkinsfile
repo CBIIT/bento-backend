@@ -26,7 +26,7 @@ def sendSlackMessage() {
       ]]
   )
 
-  jenkins_image = ":jenkins:"
+  jenkins_image = ":jenkins-ci:"
   beer_image = ":beer:"
   long epoch = System.currentTimeMillis()/1000
   def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
@@ -36,7 +36,7 @@ def sendSlackMessage() {
             icon_emoji: jenkins_image,
             attachments: [[
               title: "Jenkins Job Alert - ${currentBuild.currentResult}",
-              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} ${beer_image}\n Analysis of Results: \n ```${table}``` \nDetails at: ${env.BUILD_URL}console",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} ${jenkins_image}\n Analysis of Results: \n ```${table}``` \nDetails at: ${env.BUILD_URL}console",
               fallback: "ICDC Jenkins Build",
               color: "${BUILD_COLORS[currentBuild.currentResult]}",
               footer: "icdc QA testing",
@@ -141,7 +141,7 @@ pipeline {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
       emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'See attached results from recent integration Job run.', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'afag.ibrahimova@nih.gov;laxmi.lolla@nih.gov; amit.mukherjee@nih.gov;vincent.donkor@nih.gov'
-      //sendSlackMessage()
+      sendSlackMessage()
       // println "${env.STEP_PASSED}"
     }
   }

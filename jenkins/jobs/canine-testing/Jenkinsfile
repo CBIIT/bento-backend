@@ -33,7 +33,7 @@ pipeline {
 
   agent {
     node {
-      label 'selenium-testing'
+      label 'cicd-selenium'
     }
   }
   parameters {
@@ -90,7 +90,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        wrap([$class: 'Xvfb']) {
+        wrap([$class: 'wh']) {
           sh """
               mvn clean install
              """

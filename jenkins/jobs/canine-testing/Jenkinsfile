@@ -90,7 +90,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        wrap([$class: 'wh']) {
+        wrap([$class: 'Xvfb']) {
           sh """
               mvn clean install
              """

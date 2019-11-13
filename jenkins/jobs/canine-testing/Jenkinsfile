@@ -33,7 +33,7 @@ pipeline {
 
   agent {
     node {
-      label 'cicd-selenium'
+      label 'Selenium-testing'
     }
   }
   parameters {
@@ -42,7 +42,7 @@ pipeline {
             defaultValue: 'qa', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
-            value: 'dev,qa,stage' )
+            value: 'sandbox,dev,qa,stage' )
   }
   options {
     timestamps()
@@ -61,6 +61,7 @@ pipeline {
     }
     stage('Set Environment'){
       environment {
+        SANDBOX_URL = "k9dc.essential-dev.com"
         DEV_URL = "caninecommons-dev.cancer.gov"
         QA_URL = "caninecommons-qa.cancer.gov"
         STAGE_URL = "caninecommons-stage.cancer.gov"
@@ -68,6 +69,9 @@ pipeline {
       steps {
         script {
           switch("${params.Environment}") {
+            case "sandbox":
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ SANDBOX_URL}/g' config.properties"
+            break
             case "dev":
               sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ DEV_URL}/g' config.properties"
             break

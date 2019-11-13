@@ -33,7 +33,7 @@ pipeline {
 
   agent {
     node {
-      label 'Selenium-testing'
+      label 'selenium-testing'
     }
   }
   parameters {

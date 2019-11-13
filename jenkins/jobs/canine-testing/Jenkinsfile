@@ -117,8 +117,8 @@ pipeline {
   post {
     always {
       cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
-      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'See attached results from recent integration Job run.', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'afag.ibrahimova@nih.gov;laxmi.lolla@nih.gov; amit.mukherjee@nih.gov;vincent.donkor@nih.gov'
-      sendSlackMessage()
+      //emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'See attached results from recent integration Job run.', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'afag.ibrahimova@nih.gov;laxmi.lolla@nih.gov; amit.mukherjee@nih.gov;vincent.donkor@nih.gov'
+      //sendSlackMessage()
       // println "${env.STEP_PASSED}"
     }
   }

@@ -55,7 +55,7 @@ pipeline {
     stage('Fireup Selenium') {
       steps {
         //sh "sudo docker rm -vf selenium"
-        sh 'sudo docker run -d -p 4444:4444 --shm-size=2g --name selenium selenium/standalone-chrome'
+        sh 'sudo docker run -d -p 4444:4444 --shm-size=2g --name selenium -e START_XVFB=false selenium/standalone-chrome'
       }
     }
     stage('Checkout') {

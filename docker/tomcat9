@@ -15,6 +15,7 @@ ENV TOMCAT_URL http://apache.mirror.gtcomm.net/tomcat/tomcat-${TOMCAT_MAJOR}/v${
 
 WORKDIR $CATALINA_HOME
 
+RUN yum -y update
 RUN yum -y install java-11-openjdk wget which unzip \
    && groupadd  -g 3001 tomcat \
    && useradd -u 3001 -g 3001 ${TOMCAT_USER} \
@@ -27,7 +28,8 @@ RUN yum -y install java-11-openjdk wget which unzip \
    && tar -xf tomcat.tar.gz --strip-components=1 -C $CATALINA_HOME \
    && rm -rf tomcat.tar.gz \
    && chown -R ${TOMCAT_USER}:${TOMCAT_GROUP} ${CATALINA_HOME} \
-   && chmod +x ${CATALINA_HOME}/bin/*.sh 
+   && chmod +x ${CATALINA_HOME}/bin/*.sh \
+   && yum -y clean all
    
 USER ${TOMCAT_USER} 
 

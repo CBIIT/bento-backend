@@ -52,12 +52,12 @@ pipeline {
     jdk 'jdk11' 
   }
   stages {
-    stage('Fireup Selenium') {
-      steps {
-        //sh "sudo docker rm -vf selenium"
-        sh 'sudo docker run -d -p 4444:4444 --shm-size=2g --name selenium selenium/standalone-chrome'
-      }
-    }
+    // stage('Fireup Selenium') {
+    //   steps {
+    //     //sh "sudo docker rm -vf selenium"
+    //     sh 'sudo docker run -d -p 4444:4444 --shm-size=2g --name selenium selenium/standalone-chrome'
+    //   }
+    // }
     stage('Checkout') {
       steps {
         git branch: 'master',
@@ -116,7 +116,7 @@ pipeline {
       //emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'See attached results from recent integration Job run.', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'afag.ibrahimova@nih.gov;laxmi.lolla@nih.gov; amit.mukherjee@nih.gov;vincent.donkor@nih.gov'
       //sendSlackMessage()
       // println "${env.STEP_PASSED}"
-      sh "sudo docker rm -vf ${selenium}"
+      //sh "sudo docker rm -vf ${selenium}"
     }
   }
 }

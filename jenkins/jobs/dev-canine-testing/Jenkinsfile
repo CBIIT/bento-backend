@@ -55,7 +55,7 @@ pipeline {
     stage('Fireup Selenium') {
       steps {
         //sh "sudo docker rm -vf selenium"
-        sh 'sudo docker run -d -p 4444:4444 --shm-size=2g --name selenium -e START_XVFB=false selenium/standalone-chrome'
+        sh 'sudo docker run -d -p 4444:4444 --shm-size=2g --name selenium selenium/standalone-chrome'
       }
     }
     stage('Checkout') {
@@ -96,6 +96,7 @@ pipeline {
     }
     stage('Build') {
       steps {
+          wrap([$class: 'Xvfb']) {
           sh """
               mvn clean install
              """
@@ -104,6 +105,7 @@ pipeline {
               cd target/site/cucumber-reports
               zip -r cucumber-html-reports.zip cucumber-html-reports
             """
+          }
       }
     }
     

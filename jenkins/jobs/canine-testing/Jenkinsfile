@@ -90,7 +90,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        //wrap([$class: 'Xvfb']) {
+        wrap([$class: 'Xvfb']) {
           sh """
               mvn clean install
              """
@@ -113,7 +113,7 @@ pipeline {
               cd target/site/cucumber-reports
               zip -r cucumber-html-reports.zip cucumber-html-reports
             """
-        //}
+        }
       }
     }
     

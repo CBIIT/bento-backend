@@ -188,6 +188,11 @@ pushd target
 scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
 popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
+sudo docker rm -f k9dc
+cd /local/content/docker
+sudo docker-compose up -d &
+wait %1
+sleep 20
 docker cp ~/ROOT.war k9dc:/usr/local/tomcat/webapps
 rm -rf ~/ROOT.war
 EOF

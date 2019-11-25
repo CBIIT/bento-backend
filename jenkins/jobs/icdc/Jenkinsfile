@@ -161,6 +161,7 @@ popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $centos@${server} << EOF
 sudo docker rm -f k9dc
 cd /local/content/docker
+sudo docker pull cbiitssrepo/tomcat9
 sudo docker-compose up -d &
 wait %1
 sleep 20

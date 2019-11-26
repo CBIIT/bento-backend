@@ -80,7 +80,7 @@ pipeline {
           STAGE_URL = "caninecommons-stage.cancer.gov"
           PROD_URL = "caninecommons.cancer.gov" 
           VERSION = "${params.Tag}"
-          NODE_OPTIONS = "--max-old-space-size=8000"
+
         }
         steps {
           script {
@@ -122,6 +122,7 @@ pipeline {
         TOMCAT02_IP = "${TOMCAT02_IP}"
         SLACK_URL = "${SLACK_URL}"
         NEO4J_IP  = "${NEO4J_IP}"
+        NODE_OPTIONS = "--max-old-space-size=8000"
         
       }
       steps {

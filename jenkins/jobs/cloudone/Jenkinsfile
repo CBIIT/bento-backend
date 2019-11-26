@@ -158,7 +158,7 @@ pipeline {
           string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
           string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
           sh '''export NODE_OPTIONS=--max-old-space-size=8000'''
-          sh '''export MAVEN_OPTS=-Xmx256m -XX:MaxPermSize=512m'''
+          sh '''export MAVEN_OPTS="-Xmx256m -XX:MaxPermSize=512m"'''
           sh "cd ${WORKSPACE}/src/main/resources/ && mv application_example.properties application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/localhost/${NEO4J_IP}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/Basic 123456/${BEARER}/' application.properties"

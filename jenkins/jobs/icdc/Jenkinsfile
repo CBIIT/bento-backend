@@ -80,6 +80,7 @@ pipeline {
           STAGE_URL = "caninecommons-stage.cancer.gov"
           PROD_URL = "caninecommons.cancer.gov" 
           VERSION = "${params.Tag}"
+          NODE_OPTIONS = "--max-old-space-size=8000"
         }
         steps {
           script {

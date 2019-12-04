@@ -6,8 +6,8 @@ USER root
 
 RUN cd /tmp \
   && echo -e "[google-chrome]\nname=google-chrome\nbaseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64\nenabled=1\ngpgcheck=1\ngpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub" | tee /etc/yum.repos.d/chrome.repo \
-  && yum -y install unzip google-chrome-stable which xorg-x11-server-Xvfb unzip whic libxi6 libgconf-2-4 libXfont \
-  && yum -y groupinstall "General Purpose Desktop" "Development Tools" \
+  && yum -y install unzip google-chrome-stable which xorg-x11-server-Xvfb unzip which zip libxi6 libgconf-2-4 libXfont \
+  && yum -y groupinstall "Gnome Desktop" \
   && wget -N "https://chromedriver.storage.googleapis.com/76.0.3809.68/chromedriver_linux64.zip" -P /tmp/ \
   && unzip /tmp/chromedriver_linux64.zip -d /usr/local/bin/ \
   && rm /tmp/chromedriver_linux64.zip \

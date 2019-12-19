@@ -1,0 +1,135 @@
+{
+  "mydashboard": {
+    "metadata": { "version": 1 },
+    "title": "API Widget Sample",
+    "icon":"none|archive|bar-chart|line-chart|bullseye|user|usd|money|thumbs-up|thumbs-down|cloud|bell|bullhorn|comments-o|envelope|globe|shopping-cart|sitemap|clock-o|crosshairs|rocket|users|mobile|tablet|adjust|dashboard|flag|flask|road|bolt|cog|leaf|magic|puzzle-piece|bug|fire|legal|trophy|pie-chart|sliders|paper-plane|life-ring|heart",
+    "visibility": "owner|all",
+    "editable": "read_only|editable_by_owner|editable_by_all",
+    "filter": {
+      "event_types": [
+        "Transaction"
+      ],
+      "attributes": [
+        "appName"
+      ]
+    },
+    "widgets": [
+      {
+        "visualization": "billboard|gauge|billboard_comparison",
+        "account_id": 2292606,
+        "data": [
+          {
+            "nrql": "SELECT count(*) from Transaction since 5 minutes ago"
+          }
+        ],
+        "presentation": {
+          "title": "Threshold Event Chart",
+          "notes": null,
+          "threshold": {
+            "red": 18000000,
+            "yellow": 8000000
+          }
+        },
+        "layout": {
+          "width": 1,
+          "height": 1,
+          "row": 1,
+          "column": 1
+        }
+      },
+      {
+        "visualization": "facet_bar_chart|faceted_line_chart|facet_pie_chart|facet_table|faceted_area_chart|heatmap",
+        "account_id": 2292606,
+        "data": [
+          {
+            "nrql": "SELECT count(*) from Transaction since 5 minutes ago facet appName"
+          }
+        ],
+        "presentation": {
+          "title": "Facet Chart",
+          "notes": null,
+          "drilldown_dashboard_id": 64
+        },
+        "layout": {
+          "width": 1,
+          "height": 1,
+          "row": 1,
+          "column": 2
+        }
+      },
+      {
+        "visualization": "attribute_sheet|single_event|histogram|funnel|raw_json|event_feed|event_table|uniques_list|line_chart|comparison_line_chart",
+        "account_id": 2292606,
+        "data": [
+          {
+            "nrql": "SELECT latest(appName), latest(duration) from Transaction since 5 minutes ago"
+          }
+        ],
+        "presentation": {
+          "title": "Simple Event Chart",
+          "notes": null
+        },
+        "layout": {
+          "width": 1,
+          "height": 1,
+          "row": 1,
+          "column": 3
+        }
+      },
+      {
+        "visualization": "markdown",
+        "account_id": 2292606,
+        "data": [
+          {
+            "source": "# Dashboard Note\n\n[link goes here](https://www.newrelic.com)"
+          }
+        ],
+        "presentation": {
+          "title": "",
+          "notes": null
+        },
+        "layout": {
+          "width": 1,
+          "height": 1,
+          "row": 2,
+          "column": 1
+        }
+      },
+      {
+        "visualization": "metric_line_chart",
+        "account_id": 2292606,
+        "data": [
+          {
+            "duration": 1800000,
+            "end_time": null,
+            "entity_ids": [
+              238575
+            ],
+            "metrics": [
+              {
+                "name": "Apdex",
+                "units": null,
+                "scope": "",
+                "values": [
+                  "score"
+                ]
+              }
+            ],
+            "order_by": "score",
+            "limit": 10
+          }
+        ],
+        "presentation": {
+          "title": "Metric Line Chart",
+          "notes": null
+        },
+        "layout": {
+          "width": 1,
+          "height": 1,
+          "row": 2,
+          "column": 2
+        }
+      },
+    ]
+  }
+}

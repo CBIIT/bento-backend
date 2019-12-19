@@ -15,9 +15,9 @@ def sendSlackMessage() {
             attachments: [[
               title: "Jenkins Job Alert - ${currentBuild.currentResult}",
               text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
-              fallback: "ICDC Jenkins Build",
+              fallback: "CTDC Jenkins Build",
               color: "${BUILD_COLORS[currentBuild.currentResult]}",
-              footer: "icdc devops",
+              footer: "ctdc devops",
               ts: epoch,
               mrkdwn_in: ["footer", "title"],
            ]]
@@ -46,9 +46,9 @@ pipeline {
             type: 'PT_BRANCH_TAG',
             quickFilterEnabled: false, 
             selectedValue: 'DEFAULT', 
-            sortMode: 'NONE', 
+            sortMode: 'ASCENDING_SMART', 
             tagFilter: '*', 
-            useRepository: 'https://github.com/CBIIT/icdc-codebase')
+            useRepository: 'https://github.com/CBIIT/ctdc-codebase')
     extendedChoice( 
             name: 'Environment', 
             defaultValue: 'dev', 
@@ -75,10 +75,10 @@ pipeline {
     stage('Set Environment'){
         environment {
           SANDBOX_URL = "k9dc.essential-dev.com"
-          DEV_URL = "caninecommons-dev.cancer.gov"
-          QA_URL = "caninecommons-qa.cancer.gov"
-          STAGE_URL = "caninecommons-stage.cancer.gov"
-          PROD_URL = "caninecommons.cancer.gov" 
+          DEV_URL = "trialcommons-dev.cancer.gov"
+          QA_URL = "trialcommons-qa.cancer.gov"
+          STAGE_URL = "trialcommons-stage.cancer.gov"
+          PROD_URL = "trialcommons.cancer.gov" 
           VERSION = "${params.Tag}"
         }
         steps {

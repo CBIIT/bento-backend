@@ -69,7 +69,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/icdc-codebase']]])
+        checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/microservices']]])
       }
     }
     stage('Set Environment'){

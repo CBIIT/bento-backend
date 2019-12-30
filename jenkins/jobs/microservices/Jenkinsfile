@@ -51,7 +51,7 @@ pipeline {
             useRepository: 'https://github.com/CBIIT/microservices')
     extendedChoice( 
             name: 'Environment', 
-            defaultValue: 'dev', 
+            defaultValue: 'sandbox', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
             value: 'sandbox,dev,qa,stage,prod' )

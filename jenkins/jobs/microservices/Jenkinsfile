@@ -165,8 +165,10 @@ pipeline {
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accessid/${FENCE_ID}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accesskey/${FENCE_CREDENTIAL}/g' application.properties"
           
-          sh "mvn deploy -DskipTests"
+          // sh "mvn deploy -DskipTests"
           // sh "mvn package -DskipTests"
+          sh "docker ps"
+          sh "docker images"
     
           // sh "mv target/ICDC-0.0.1.war target/ROOT.war"
         }

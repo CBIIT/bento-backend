@@ -1,0 +1,216 @@
+//load shared library for slack notification
+//@Library('shared-library')_
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "CTDC Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "ctdc devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+
+  agent {
+    node {
+      label 'ctn-docker-maven'
+    }
+  }
+  parameters {
+    //listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    // gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'master', 
+            name: 'Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'ASCENDING_SMART', 
+            tagFilter: '*', 
+            useRepository: 'https://github.com/CBIIT/ctdc-codebase')
+    extendedChoice( 
+            name: 'Environment', 
+            defaultValue: 'dev', 
+            description: 'Choose the environment to build', 
+            type: 'PT_SINGLE_SELECT',
+            value: 'sandbox,dev,qa,stage,prod' )
+  }
+  //  triggers { 
+  //    pollSCM('H/15 * * * 1-5') 
+  //   }
+  options {
+    timestamps()
+  }
+  tools { 
+    maven 'Default' 
+    jdk 'Default' 
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/icdc-codebase']]])
+      }
+    }
+    stage('Set Environment'){
+        environment {
+          SANDBOX_URL = "k9dc.essential-dev.com"
+          DEV_URL = "trialcommons-dev.cancer.gov"
+          QA_URL = "trialcommons-qa.cancer.gov"
+          STAGE_URL = "trialcommons-stage.cancer.gov"
+          PROD_URL = "trialcommons.cancer.gov" 
+          VERSION = "${params.Tag}"
+        }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "sandbox":
+                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_IP}"
+                  env.NEO4J_IP    = "${NEO4J_IP}"
+                }
+              break
+              case "dev":
+                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                }
+              break
+              case "qa":
+                withCredentials([file(credentialsId: 'qa_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${QA_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_QA_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_QA_IP}"
+                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
+                }
+              break
+              case "stage":
+                withCredentials([file(credentialsId: 'stage_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${STAGE_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
+                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+                }
+              break
+              case "prod":
+                withCredentials([file(credentialsId: 'prod_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${PROD_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
+                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                }
+              break
+              default:
+                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                }
+              break
+            }
+          }
+        }
+    }
+    stage('Build') {
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+      }
+      steps {
+        withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
+          usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
+          string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+          string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
+          sh "cd ${WORKSPACE}/src/main/resources/ && mv application_example.properties application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/localhost/${NEO4J_IP}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/Basic 123456/${BEARER}/' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/password=${NEO4J_IP}/password=${NEO4J_PASSWORD}/' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/neo4j_username/${NEO4J_USER}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accessid/${FENCE_ID}/g' application.properties"
+          sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accesskey/${FENCE_CREDENTIAL}/g' application.properties"
+          
+          sh "mvn package -DskipTests"
+    
+          sh "mv target/ICDC-0.0.1.war target/ROOT.war"
+        }
+      }
+    }
+    stage('Deploy') {
+      when {
+        expression {
+          currentBuild.result == null || currentBuild.result == 'SUCCESS' 
+        }
+      }
+      steps {
+        ansiColor('xterm') {
+          withCredentials([sshUserPrivateKey(credentialsId: 'commonsdocker', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
+sh label: '', script: '''
+
+for server in $TOMCAT02_IP $TOMCAT01_IP;
+do
+pushd target
+scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
+popd
+ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
+docker cp ~/ROOT.war ctn:/usr/local/tomcat/webapps
+rm -rf ~/ROOT.war
+EOF
+done'''
+          }
+        }
+      }
+    }
+    stage('schema'){
+    environment {
+      NEO4J_IP = "${NEO4J_IP}"
+    }
+    steps {
+      withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER')]){
+        sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: ${BEARER}' -d @src/main/resources/graphql/icdc.graphql"
+      }
+    }
+   }
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+    }
+  }
+}

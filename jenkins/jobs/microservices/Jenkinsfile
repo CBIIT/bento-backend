@@ -156,6 +156,7 @@ pipeline {
         withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
           usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
           string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+          usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
           string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
           sh "cd ${WORKSPACE}/src/main/resources/ && mv application_example.properties application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/localhost/${NEO4J_IP}/g' application.properties"
@@ -165,9 +166,15 @@ pipeline {
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accessid/${FENCE_ID}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accesskey/${FENCE_CREDENTIAL}/g' application.properties"
           
-          sh "mvn deploy -DskipTests"
-          // sh "mvn package -DskipTests"
-         
+          //run maven
+          sh """
+          mvn package -DskipTests
+          docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
+          docker build -t cbiitssrepo/api -f ${WORKSPACE}/dockerfiles/springboot-dockerfile .
+          docker push cbiitssrepo/api
+          """
+
+          //build image from
     
           // sh "mv target/ICDC-0.0.1.war target/ROOT.war"
         }

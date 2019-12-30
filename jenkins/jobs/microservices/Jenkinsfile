@@ -34,7 +34,7 @@ pipeline {
 
   agent {
     node {
-      label 'ctn-docker-maven'
+      label 'cicd_microservice'
     }
   }
   parameters {
@@ -48,7 +48,7 @@ pipeline {
             selectedValue: 'DEFAULT', 
             sortMode: 'ASCENDING_SMART', 
             tagFilter: '*', 
-            useRepository: 'https://github.com/CBIIT/ctdc-codebase')
+            useRepository: 'https://github.com/CBIIT/microservices')
     extendedChoice( 
             name: 'Environment', 
             defaultValue: 'dev', 

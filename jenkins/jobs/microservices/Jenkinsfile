@@ -169,6 +169,7 @@ pipeline {
           //run maven
           sh """
           mvn package -DskipTests
+          mv target/ICDC-0.0.1.war target/ROOT.war
           docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
           docker build -t cbiitssrepo/api -f ${WORKSPACE}/dockerfiles/springboot-dockerfile .
           docker push cbiitssrepo/api

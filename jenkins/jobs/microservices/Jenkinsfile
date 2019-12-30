@@ -165,52 +165,53 @@ pipeline {
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accessid/${FENCE_ID}/g' application.properties"
           sh "cd ${WORKSPACE}/src/main/resources && sed -i 's/accesskey/${FENCE_CREDENTIAL}/g' application.properties"
           
-          sh "mvn package -DskipTests"
+          sh "mvn deploy"
+          // sh "mvn package -DskipTests"
     
-          sh "mv target/ICDC-0.0.1.war target/ROOT.war"
+          // sh "mv target/ICDC-0.0.1.war target/ROOT.war"
         }
       }
     }
-    stage('Deploy') {
-      when {
-        expression {
-          currentBuild.result == null || currentBuild.result == 'SUCCESS' 
-        }
-      }
-      steps {
-        ansiColor('xterm') {
-          withCredentials([sshUserPrivateKey(credentialsId: 'commonsdocker', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
-sh label: '', script: '''
+//     stage('Deploy') {
+//       when {
+//         expression {
+//           currentBuild.result == null || currentBuild.result == 'SUCCESS' 
+//         }
+//       }
+//       steps {
+//         ansiColor('xterm') {
+//           withCredentials([sshUserPrivateKey(credentialsId: 'commonsdocker', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
+// sh label: '', script: '''
 
-for server in $TOMCAT02_IP $TOMCAT01_IP;
-do
-pushd target
-scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
-popd
-ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
-docker cp ~/ROOT.war ctn:/usr/local/tomcat/webapps
-rm -rf ~/ROOT.war
-EOF
-done'''
-          }
-        }
-      }
-    }
-    stage('schema'){
-    environment {
-      NEO4J_IP = "${NEO4J_IP}"
-    }
-    steps {
-      withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER')]){
-        sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: ${BEARER}' -d @src/main/resources/graphql/icdc.graphql"
-      }
-    }
-   }
+// for server in $TOMCAT02_IP $TOMCAT01_IP;
+// do
+// pushd target
+// scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
+// popd
+// ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
+// docker cp ~/ROOT.war ctn:/usr/local/tomcat/webapps
+// rm -rf ~/ROOT.war
+// EOF
+// done'''
+//           }
+//         }
+//       }
+//     }
+   //  stage('schema'){
+   //  environment {
+   //    NEO4J_IP = "${NEO4J_IP}"
+   //  }
+   //  steps {
+   //    withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER')]){
+   //      sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: ${BEARER}' -d @src/main/resources/graphql/icdc.graphql"
+   //    }
+   //  }
+   // }
   }
   post {
     always {
-      
-      sendSlackMessage()
+      sh "echo Testing"
+      //sendSlackMessage()
     }
   }
 }

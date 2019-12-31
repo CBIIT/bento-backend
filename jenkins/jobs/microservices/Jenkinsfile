@@ -171,8 +171,14 @@ pipeline {
           mvn package -DskipTests
           mv target/ICDC-0.0.1.war target/ROOT.war
           docker login --username ${DOCKER_USER} --password ${DOCKER_PASSWORD}
-          docker build -t cbiitssrepo/api -f ${WORKSPACE}/dockerfiles/springboot-dockerfile .
+          docker build -t cbiitssrepo/api -f ${WORKSPACE}/dockerfiles/backend-dockerfile .
           docker push cbiitssrepo/api
+          cd ${WORKSPACE}/src/main/frontend/
+          rm package-lock.json
+          yarn install
+          yarn build
+          docker build -t cbiitssrepo/app -f ${WORKSPACE}/dockerfiles/frontend-dockerfile .
+          docker push cbiitssrepo/app
           """
 
           //build image from

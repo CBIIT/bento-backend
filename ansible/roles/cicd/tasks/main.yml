@@ -1,0 +1,26 @@
+---
+# tasks file for cicd
+- name: copy application_example.properties to application.properties
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/src/main/resources/application_example.properties"
+    dest: "{{workspace}}/src/main/resources/application.properties"
+- name: remove the application_example.properties file 
+  file:
+    path: "{{workspace}}/src/main/resources/application_example.properties"
+    state: absent
+
+- name: edit application.properties
+  replace:
+    regex: "{{item.key}}"
+    replace: "{{item.value}}"
+    path: "{{workspace}}/src/main/resources/application_example.properties"
+  with_dict: { '^localhost$': '{{neo4j_ip}}'}
+
+- name: cat application.properties
+  command: cat "{{workspace}}/src/main/resources/application_example.properties"
+  register: properties_file
+
+- name: show properties file
+  debug:
+    msg: "{{properties_file.stdout}}"

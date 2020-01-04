@@ -12,7 +12,7 @@
 
 - name: edit application.properties
   replace:
-    regex: "{{item.key}}"
+    regexp: "{{item.key}}"
     replace: "{{item.value}}"
     path: "{{workspace}}/src/main/resources/application.properties"
   with_dict: { '^localhost$': '{{neo4j_ip}}'}

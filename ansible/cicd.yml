@@ -1,0 +1,7 @@
+---
+- name: build stage of cicd pipeline
+  hosts: cicd
+  connection: local
+    
+  roles:
+    - cicd

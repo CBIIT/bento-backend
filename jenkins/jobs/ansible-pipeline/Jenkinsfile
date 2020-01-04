@@ -1,0 +1,51 @@
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+			ansiColor('xterm') {
+  
+			}
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/microservices')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'sandbox', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,qa,stage,prod' )
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/microservices']]])
+  		}
+  		steps {
+  			dir('icdc-devops')
+  			git branch: 'master',
+    			url: 'https://github.com/CBIIT/icdc-devops.git'
+  		}
+  		steps{
+  			sh 'ls -l'
+  		}
+  	}
+  }
+}

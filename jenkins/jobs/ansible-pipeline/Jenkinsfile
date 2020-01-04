@@ -43,7 +43,7 @@ pipeline {
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
   			
-  			sh 'ls -l'
+  			sh 'ls -l icdc-devops'
   		}
  
   	}

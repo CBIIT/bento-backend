@@ -176,7 +176,7 @@ pipeline {
           cd ${WORKSPACE}/src/main/frontend/
           #rm package-lock.json
           npm install 
-          npm build
+          npm run-script build
           ls -l .
           #docker build -t cbiitssrepo/app -f ${WORKSPACE}/dockerfiles/frontend-dockerfile .
           #docker push cbiitssrepo/app

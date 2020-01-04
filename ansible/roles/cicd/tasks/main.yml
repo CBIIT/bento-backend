@@ -14,11 +14,11 @@
   replace:
     regex: "{{item.key}}"
     replace: "{{item.value}}"
-    path: "{{workspace}}/src/main/resources/application_example.properties"
+    path: "{{workspace}}/src/main/resources/application.properties"
   with_dict: { '^localhost$': '{{neo4j_ip}}'}
 
 - name: cat application.properties
-  command: cat "{{workspace}}/src/main/resources/application_example.properties"
+  command: cat "{{workspace}}/src/main/resources/application.properties"
   register: properties_file
 
 - name: show properties file

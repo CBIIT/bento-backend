@@ -18,7 +18,8 @@
 
 - name: build springboot code
   command: mvn package -DskipTests
-
+  args:
+    chdir: "{{workspace}}"
 - name: copy ICDC-0.0.1.war to ROOT.war
   copy:
     remote_src: yes

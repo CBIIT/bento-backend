@@ -176,6 +176,7 @@ pipeline {
           cd ${WORKSPACE}/src/main/frontend/
           #rm package-lock.json
           npm install 
+          npm install mui-custom-datatables --save
           npm run-script build
           ls -l .
           #docker build -t cbiitssrepo/app -f ${WORKSPACE}/dockerfiles/frontend-dockerfile .

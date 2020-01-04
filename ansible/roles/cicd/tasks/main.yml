@@ -15,11 +15,40 @@
   template:
     src: application.properties.j2
     dest: "{{workspace}}/src/main/resources/application.properties"
-    
-- name: cat application.properties
-  command: cat "{{workspace}}/src/main/resources/application.properties"
-  register: properties_file
 
-- name: show properties file
-  debug:
-    msg: "{{properties_file.stdout}}"
+- name: build springboot code
+  command: mvn package -DskipTests
+
+- name: copy ICDC-0.0.1.war to ROOT.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/ICDC-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+- name: remove ICDC-0.0.1.war file 
+  file:
+    path: "{{workspace}}/target/ICDC-0.0.1.war"
+    state: absent
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: build cbiitssrepo/api repo
+  docker_image:
+    build:
+      path: "{{workspace}}/target"
+      dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
+    name: cbiitssrepo/api
+    tag: "{{build_number}}"
+    push: yes
+    source: build
+
+# - name: 
+#           cd ${WORKSPACE}/src/main/frontend/
+#           rm package-lock.json
+#           yarn install --network-timeout 1000000
+#           yarn build
+#           docker build -t cbiitssrepo/app -f ${WORKSPACE}/dockerfiles/frontend-dockerfile .
+#           docker push cbiitssrepo/app

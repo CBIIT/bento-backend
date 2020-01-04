@@ -47,6 +47,27 @@
     push: yes
     source: build
 
+- name: run npm install in ${workspace}/src/main/frontend/
+  command: "{{item}}"
+  args:
+    chdir: ${workspace}/src/main/frontend/
+  loop:
+    - npm install 
+    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+
+- name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/src/main/frontend/node_modules/mui-custom-datatables"
+  loop:
+    - npm install
+    - npm run build
+    
+- name: run npm build in frontend
+  command: npm run-script build
+  args:
+    chdir: "{{workspace}}/src/main/frontend"
+          
 # - name: 
 #           cd ${WORKSPACE}/src/main/frontend/
 #           rm package-lock.json

@@ -179,7 +179,7 @@ pipeline {
           npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
           cd ${WORKSPACE}/src/main/frontend/node_modules/mui-custom-datatables
           npm install
-          run build
+          npm run build
           cd -
           npm run-script build
           ls -l .

@@ -36,7 +36,7 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/api repo
+- name: build cbiitssrepo/api image
   docker_image:
     build:
       path: "{{workspace}}"
@@ -47,10 +47,10 @@
     push: yes
     source: build
 
-- name: run npm install in ${workspace}/src/main/frontend/
+- name: run npm install in {{workspace}}/src/main/frontend/
   command: "{{item}}"
   args:
-    chdir: ${workspace}/src/main/frontend/
+    chdir: "{{workspace}}/src/main/frontend"
   loop:
     - npm install 
     - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
@@ -68,10 +68,16 @@
   args:
     chdir: "{{workspace}}/src/main/frontend"
           
-# - name: 
-#           cd ${WORKSPACE}/src/main/frontend/
-#           rm package-lock.json
-#           yarn install --network-timeout 1000000
-#           yarn build
+- name: build cbiitssrepo/app image
+  docker_image:
+    build:
+      path: "{{workspace}}/src/main/frontend"
+      dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
+      pull: yes
+    name: cbiitssrepo/app
+    tag: "{{build_number}}"
+    push: yes
+    source: build
+    
 #           docker build -t cbiitssrepo/app -f ${WORKSPACE}/dockerfiles/frontend-dockerfile .
 #           docker push cbiitssrepo/app

@@ -2,9 +2,6 @@ pipeline {
 	agent {
 		node {
 			label 'cicd_microservice'
-			ansiColor('xterm') {
-  
-			}
 		}
 	}
 	parameters {
@@ -24,6 +21,9 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,qa,stage,prod' )
   }
+  options {
+  	ansiColor('xterm')
+  }
   tools {
   	maven 'Default' 
     jdk 'Default' 
@@ -37,15 +37,15 @@ pipeline {
   				false, extensions: [], submoduleCfg: [], 
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/microservices']]])
-  		}
-  		steps {
-  			dir('icdc-devops')
-  			git branch: 'master',
-    			url: 'https://github.com/CBIIT/icdc-devops.git'
-  		}
-  		steps{
+
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+  			
   			sh 'ls -l'
   		}
+ 
   	}
   }
 }

@@ -31,28 +31,21 @@
     path: "{{workspace}}/target/ICDC-0.0.1.war"
     state: absent
 
-- name: check target
-  command: ls -l {{workspace}}/target
-  register: target
-
-- debug:
-    msg: "{{target.stdout }}"
-    
 - name: log into DockerHub
   docker_login:
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-# - name: build cbiitssrepo/api repo
-#   docker_image:
-#     build:
-#       path: "{{workspace}}/target"
-#       dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
-#       pull: yes
-#     name: cbiitssrepo/api
-#     tag: "{{build_number}}"
-#     push: yes
-#     source: build
+- name: build cbiitssrepo/api repo
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
+      pull: yes
+    name: cbiitssrepo/api
+    tag: "{{build_number}}"
+    push: yes
+    source: build
 
 # - name: 
 #           cd ${WORKSPACE}/src/main/frontend/

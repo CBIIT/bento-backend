@@ -24,7 +24,7 @@
         traefik.http.middlewares.app-prefix.stripprefix.prefixes: "/app"
     - name: app
       essential: true
-      image: cbiitssrepo/app
+      image: cbiitssrepo/app:17
       memory: 1024
       dockerLabels:
         traefik.docker.network: "traefik"
@@ -37,7 +37,7 @@
         traefik.http.routers.app.middlewares: "app-prefix"
     - name: api
       essential: true
-      image: cbiitssrepo/api
+      image: cbiitssrepo/api:17
       memory: 1024
       dockerLabels:
         traefik.docker.network: "traefik"

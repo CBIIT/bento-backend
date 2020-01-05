@@ -1,11 +1,11 @@
 ---
-- name: build stage of cicd pipeline
+- name: deploy stage of cicd pipeline
   hosts: cicd
   connection: local
   gather_facts: no
     
   tasks:
-    - name: This is a build stage
+    - name: deploy stage
       include_role:
         name: cicd
-        tasks_from: build
+        tasks_from: deploy

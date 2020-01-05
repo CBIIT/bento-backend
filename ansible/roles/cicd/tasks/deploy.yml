@@ -52,7 +52,7 @@
     - name: dockersocket
       host:
         sourcePath: "/var/run/docker.sock"
-    network_mode: awsvpc
+    network_mode: bridge
     family: ctdc
     state: present
     region: us-east-1

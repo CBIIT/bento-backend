@@ -55,6 +55,7 @@
     network_mode: awsvpc
     family: ctdc
     state: present
+    region: us-east-1
   register: task_output
 
 - name: show task_output

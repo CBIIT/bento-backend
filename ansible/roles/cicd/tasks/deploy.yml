@@ -76,6 +76,7 @@
   set_fact:
     revision: "{{task_output.revision}}"
     task_name: "{{task_output.family}}"
+    lb_target_arn: "{{service_info.services.loadbalancers.targetGroupArn}}"
 
 # - name: update ecs service
 #   ecs_service:
@@ -84,9 +85,13 @@
 #     cluster: ctdc-ecs
 #     task_definition: "{{task_name}}:{{revision}}"
 #     desired_count: 1
+      # load_balancers:
+      #   - targetGroupArn: "arn:aws:elasticloadbalancing:us-west-2:XXXXXX:targetgroup/maint-test/XXXXX"
+      #     containerName: "maintenance"
+      #     containerPort: "{{ container_port }}"
 #     region: "{{region}}"
 #   register: service_output
 
 - name: show service service
   debug:
-    msg: "{{service_info.services}}"
+    msg: "{{lb_target_arn}}"

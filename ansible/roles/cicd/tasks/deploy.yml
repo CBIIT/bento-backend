@@ -69,6 +69,7 @@
     cluster: ctdc-ecs
     service: ctdc_ecs_service
     details: true
+    region: "{{region}}"
   register: service_info
 
 - name: set facts

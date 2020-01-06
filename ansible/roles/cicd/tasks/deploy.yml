@@ -64,6 +64,22 @@
     region: "{{region}}" 
   register: task_output
 
-- name: show task definition revision
+- name: set facts
+  set_fact:
+    revision: "{{task_output.revision}}"
+    task_name: "{{task_output.family}}"
+
+
+- name: update ecs service
+  ecs_service:
+    state: present
+    name: ctdc_ecs_service
+    cluster: ctdc_ecs
+    task_definition: "{{task_name}}:{{revision}}"
+    desired_count: 1
+    region: "{{region}}"
+  register: service_output
+
+- name: show service service
   debug:
-    msg: "{{task_output.revision}}"
+    msg: "{{service_output}}"

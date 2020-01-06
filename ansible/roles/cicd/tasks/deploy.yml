@@ -76,7 +76,9 @@
   set_fact:
     revision: "{{task_output.revision}}"
     task_name: "{{task_output.family}}"
-    lb_target_arn: "{{service_info.services[0].loadBalancers[0]}}"
+    lb_target_arn: "{{service_info.services[0].loadBalancers[0].targetGroupArn}}"
+    lb_container_port: "{{service_info.services[0].loadBalancers[0].containerPort}}"
+    lb_container_name: "{{service_info.services[0].loadBalancers[0].containerName}}"
 
 # - name: update ecs service
 #   ecs_service:
@@ -94,4 +96,4 @@
 
 - name: show service service
   debug:
-    msg: "{{lb_target_arn}}"
+    msg: "{{lb_target_arn}}-{{lb_container_name}}-{{lb_container_port}}"

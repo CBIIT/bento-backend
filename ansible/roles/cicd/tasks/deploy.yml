@@ -76,7 +76,7 @@
   set_fact:
     revision: "{{task_output.revision}}"
     task_name: "{{task_output.family}}"
-    lb_target_arn: "{{service_info.services[0].loadbalancers}}"
+    lb_target_arn: "{{service_info.services[0]}}"
 
 # - name: update ecs service
 #   ecs_service:

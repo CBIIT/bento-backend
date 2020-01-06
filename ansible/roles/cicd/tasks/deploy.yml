@@ -79,6 +79,7 @@
     lb_target_arn: "{{service_info.services[0].loadBalancers[0].targetGroupArn}}"
     lb_container_port: "{{service_info.services[0].loadBalancers[0].containerPort}}"
     lb_container_name: "{{service_info.services[0].loadBalancers[0].containerName}}"
+    role_arn: "{{service_info.services[0].roleArn}}"
 
 - name: update ecs service
   ecs_service:
@@ -86,6 +87,7 @@
     name: ctdc_ecs_service
     cluster: ctdc-ecs
     task_definition: "{{task_name}}:{{revision}}"
+    role: "{{role_arn}}"
     desired_count: 1
     load_balancers:
       - targetGroupArn: "{{lb_target_arn}}"

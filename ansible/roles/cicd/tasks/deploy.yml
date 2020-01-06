@@ -80,20 +80,20 @@
     lb_container_port: "{{service_info.services[0].loadBalancers[0].containerPort}}"
     lb_container_name: "{{service_info.services[0].loadBalancers[0].containerName}}"
 
-# - name: update ecs service
-#   ecs_service:
-#     state: present
-#     name: ctdc_ecs_service
-#     cluster: ctdc-ecs
-#     task_definition: "{{task_name}}:{{revision}}"
-#     desired_count: 1
-      # load_balancers:
-      #   - targetGroupArn: "arn:aws:elasticloadbalancing:us-west-2:XXXXXX:targetgroup/maint-test/XXXXX"
-      #     containerName: "maintenance"
-      #     containerPort: "{{ container_port }}"
-#     region: "{{region}}"
-#   register: service_output
+- name: update ecs service
+  ecs_service:
+    state: present
+    name: ctdc_ecs_service
+    cluster: ctdc-ecs
+    task_definition: "{{task_name}}:{{revision}}"
+    desired_count: 1
+    load_balancers:
+      - targetGroupArn: "{{lb_target_arn}}"
+        containerName: "{{lb_container_name}}"
+        containerPort: "{{ lb_container_port }}"
+    region: "{{region}}"
+  register: service_output
 
 - name: show service service
   debug:
-    msg: "{{lb_target_arn}}-{{lb_container_name}}-{{lb_container_port}}"
+    msg: "{{service_output}}"

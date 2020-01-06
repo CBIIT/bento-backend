@@ -1,63 +1,68 @@
 ---
-- name: create task definition 
-  ecs_taskdefinition:
-    containers:
-    - name: traefik
-      essential: true
-      image: "traefik:v2.1"
-      memory: 512
-      mountPoints:
-      - containerPath: /var/run/docker.sock
-        sourceVolume: dockersocket
-      portMappings:
-      - containerPort: "80"
-        hostPort: "80"
-      - containerPort: "8080"
-        hostPort: "8080"
-      command:
-        - >
-          --providers.docker=true --api.insecure=true --providers.docker.network=traefik
-          --accesslog.filepath=/var/log/traefik_access.log --log=true --log.filepath=/var/log/traefik.log
-          --log.level=DEBUG --entrypoints.web.address=:80
-      dockerLabels:
-        traefik.http.middlewares.api-prefix.stripprefix.prefixes: "/api"
-        traefik.http.middlewares.app-prefix.stripprefix.prefixes: "/app"
-    - name: app
-      essential: true
-      image: cbiitssrepo/app:17
-      memory: 1024
-      dockerLabels:
-        traefik.docker.network: "traefik"
-        traefik.http.routers.app.service: "app"
-        traefik.enable: "true"
-        traefik.http.routers.app.entrypoints: "web"
-        traefik.http.services.app.loadbalancer.server.port: "8081"
-        traefik.http.routers.app.rule: "PathPrefix(`/app`)"
-        traefik.http.services.app.loadbalancer.passhostheader: "true"
-        traefik.http.routers.app.middlewares: "app-prefix"
-    - name: api
-      essential: true
-      image: cbiitssrepo/api:17
-      memory: 1024
-      dockerLabels:
-        traefik.docker.network: "traefik"
-        traefik.http.routers.api.entrypoints: "web"
-        traefik.enable: "true"
-        traefik.http.routers.api.rule: "PathPrefix(`/`)"
-        traefik.http.routers.api.service: "api"
-        traefik.http.services.api.loadbalancer.server.port: "8080"
-        traefik.http.services.api.loadbalancer.passhostheader: "true"
+# - name: create task definition 
+#   ecs_taskdefinition:
+#     containers:
+#     - name: traefik
+#       essential: true
+#       image: "traefik:v2.1"
+#       memory: 512
+#       mountPoints:
+#       - containerPath: /var/run/docker.sock
+#         sourceVolume: dockersocket
+#       portMappings:
+#       - containerPort: "80"
+#         hostPort: "80"
+#       - containerPort: "8080"
+#         hostPort: "8080"
+#       command:
+#         - >
+#           --providers.docker=true --api.insecure=true --providers.docker.network=traefik
+#           --accesslog.filepath=/var/log/traefik_access.log --log=true --log.filepath=/var/log/traefik.log
+#           --log.level=DEBUG --entrypoints.web.address=:80
+#       dockerLabels:
+#         traefik.http.middlewares.api-prefix.stripprefix.prefixes: "/api"
+#         traefik.http.middlewares.app-prefix.stripprefix.prefixes: "/app"
+#     - name: app
+#       essential: true
+#       image: cbiitssrepo/app:17
+#       memory: 1024
+#       dockerLabels:
+#         traefik.docker.network: "traefik"
+#         traefik.http.routers.app.service: "app"
+#         traefik.enable: "true"
+#         traefik.http.routers.app.entrypoints: "web"
+#         traefik.http.services.app.loadbalancer.server.port: "8081"
+#         traefik.http.routers.app.rule: "PathPrefix(`/app`)"
+#         traefik.http.services.app.loadbalancer.passhostheader: "true"
+#         traefik.http.routers.app.middlewares: "app-prefix"
+#     - name: api
+#       essential: true
+#       image: cbiitssrepo/api:17
+#       memory: 1024
+#       dockerLabels:
+#         traefik.docker.network: "traefik"
+#         traefik.http.routers.api.entrypoints: "web"
+#         traefik.enable: "true"
+#         traefik.http.routers.api.rule: "PathPrefix(`/`)"
+#         traefik.http.routers.api.service: "api"
+#         traefik.http.services.api.loadbalancer.server.port: "8080"
+#         traefik.http.services.api.loadbalancer.passhostheader: "true"
 
-    volumes:
-    - name: dockersocket
-      host:
-        sourcePath: "/var/run/docker.sock"
-    network_mode: bridge
-    family: ctdc
-    state: present
-    region: us-east-1
+#     volumes:
+#     - name: dockersocket
+#       host:
+#         sourcePath: "/var/run/docker.sock"
+#     network_mode: bridge
+#     family: ctdc
+#     state: present
+#     region: us-east-1
+#   register: task_output
+
+- name: query task definition
+  ecs_taskdefinition_info:
+    task_definition: ctdc 
   register: task_output
 
-- name: show task_output
+- name: show task definition revision
   debug:
-    msg: "{{task_output}}"
+    msg: "{{task_output.container_definitions.revision}}"

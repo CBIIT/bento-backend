@@ -30,6 +30,7 @@
       image: cbiitssrepo/app:17
       memory: 1024
       dockerLabels:
+        traefik.docker.network: "traefik"
         traefik.http.routers.app.service: "app"
         traefik.enable: "true"
         traefik.http.routers.app.entrypoints: "web"
@@ -42,6 +43,7 @@
       image: cbiitssrepo/api:17
       memory: 1024
       dockerLabels:
+        traefik.docker.network: "traefik"
         traefik.http.routers.api.entrypoints: "web"
         traefik.enable: "true"
         traefik.http.routers.api.rule: "PathPrefix(`/`)"

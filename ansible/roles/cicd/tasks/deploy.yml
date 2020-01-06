@@ -69,12 +69,11 @@
     revision: "{{task_output.revision}}"
     task_name: "{{task_output.family}}"
 
-
 - name: update ecs service
   ecs_service:
     state: present
     name: ctdc_ecs_service
-    cluster: ctdc_ecs
+    cluster: ctdc-ecs
     task_definition: "{{task_name}}:{{revision}}"
     desired_count: 1
     region: "{{region}}"

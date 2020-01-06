@@ -55,12 +55,13 @@
 #     network_mode: bridge
 #     family: ctdc
 #     state: present
-#     region: us-east-1
+#     region: "{{region}}"
 #   register: task_output
 
 - name: query task definition
   ecs_taskdefinition_info:
-    task_definition: ctdc 
+    task_definition: ctdc
+    region: "{{region}}" 
   register: task_output
 
 - name: show task definition revision

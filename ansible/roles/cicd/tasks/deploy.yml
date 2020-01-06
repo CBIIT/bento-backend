@@ -66,4 +66,4 @@
 
 - name: show task definition revision
   debug:
-    msg: "{{task_output.container_definitions}}"
+    msg: "{{task_output.revision}}"

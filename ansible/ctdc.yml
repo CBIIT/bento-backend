@@ -1,6 +1,6 @@
 ---
 - name: setup ctn server
-  hosts: ctn
+  hosts: ctdc
   become: yes
 
   vars_files:

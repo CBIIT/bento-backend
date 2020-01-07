@@ -34,7 +34,7 @@ pipeline {
 
   agent {
     node {
-      label 'ctn-docker-maven'
+      label 'ctdc-docker-maven'
     }
   }
   parameters {

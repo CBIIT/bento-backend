@@ -9,6 +9,6 @@
   roles:
     - common
     # - { role: docker,tags: ['sandbox'] }
-    - ctn
+    - ctdc
     - sumologic
     - newrelic

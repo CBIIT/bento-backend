@@ -20,7 +20,7 @@
     groups: tomcat,docker
     append: yes
 
-- name: create ctn deployments directory
+- name: create ctdc deployments directory
   file:
     path: "{{ item }}"
     state: directory
@@ -29,7 +29,7 @@
   loop:
     - "{{ deployments }}"
     - "{{ docker_home }}"
-    - "{{ ctn_home }}/logs"
+    - "{{ ctdc_home }}/logs"
  
 - name: copy docker files
   template:
@@ -40,7 +40,7 @@
   loop:
     - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
 
-- name: start ctn
+- name: start ctdc
   command: docker-compose up -d
   args:
     chdir: "{{ docker_home }}"
@@ -48,7 +48,7 @@
   tags:
     - cloudone
 
-- name: start the ctn
+- name: start the ctdc
   docker_compose:
     project_src: "{{ docker_home }}"
     state: present

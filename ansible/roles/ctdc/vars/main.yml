@@ -1,0 +1,15 @@
+---
+# vars file for ctdc
+docker_home: /local/content/docker
+ctdc_home: /local/content/ctdc
+deployments: /local/content/canine-data
+container_name: ctdc
+app_name: "{{env}}-ctdc"
+collector_name: "{{ env }}-ctdc"
+newrelic_license_key: "{{ newrelic_key }}"
+additional_logs:
+  - name: "{{ env }} ctdc Logs" 
+    description: "{{ env }} ctdc logs"
+    category: "{{env }}/app/ctdc"
+    path: "/local/content/ctdc/logs/*.log"
+    filters: "" 

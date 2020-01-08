@@ -6,7 +6,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - {{ ctn_home }}/logs:/usr/local/tomcat/logs
+      - {{ ctdc_home }}/logs:/usr/local/tomcat/logs
     restart: always
     environment:
       - NEW_RELIC_LICENSE_KEY={{ newrelic_license_key }}

@@ -1,0 +1,10 @@
+- name: put dist content to s3
+  s3_sync:
+    bucket: "{{s3_bucket}}"
+    file_root: "{{workspace}}/src/main/frontend"
+    file_change_strategy: force
+    permission: public-read
+    cache_control: "public, max-age=31536000"
+    include: "*"
+    region: "{{region}}"
+    

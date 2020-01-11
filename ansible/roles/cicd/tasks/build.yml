@@ -36,7 +36,7 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/api image
+- name: build cbiitssrepo/backend image
   docker_image:
     build:
       path: "{{workspace}}"
@@ -68,16 +68,14 @@
   args:
     chdir: "{{workspace}}/src/main/frontend"
           
-- name: build cbiitssrepo/app image
-  docker_image:
-    build:
-      path: "{{workspace}}/src/main/frontend"
-      dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
-      pull: yes
-    name: cbiitssrepo/app
-    tag: "{{build_number}}"
-    push: yes
-    source: build
+# - name: build cbiitssrepo/app image
+#   docker_image:
+#     build:
+#       path: "{{workspace}}/src/main/frontend"
+#       dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
+#       pull: yes
+#     name: cbiitssrepo/app
+#     tag: "{{build_number}}"
+#     push: yes
+#     source: build
     
-#           docker build -t cbiitssrepo/app -f ${WORKSPACE}/dockerfiles/frontend-dockerfile .
-#           docker push cbiitssrepo/app

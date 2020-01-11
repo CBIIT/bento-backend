@@ -65,7 +65,7 @@ pipeline {
  			}
  		}
   	}
-    stage('deploy'){
+    stage('deploy-frontend'){
       steps{
         wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 

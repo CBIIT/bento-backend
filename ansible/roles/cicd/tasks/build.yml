@@ -42,7 +42,7 @@
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
       pull: yes
-    name: cbiitssrepo/api
+    name: cbiitssrepo/backend
     tag: "{{build_number}}"
     push: yes
     source: build

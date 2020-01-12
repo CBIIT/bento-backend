@@ -75,15 +75,15 @@ pipeline {
         }
       }
     }
-  	// stage('deploy'){
-  	// 	steps{
-  	// 		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  	// 			ansiblePlaybook( 
-   //          		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy.yml', 
-   //          		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-   //          		colorized: true)
-  	// 		}
-  	// 	}
-  	// }
+  	stage('deploy'){
+  		steps{
+  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-backend.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		colorized: true)
+  			}
+  		}
+  	}
   }
 }

@@ -11,4 +11,4 @@ docker_user: "{{ lookup('env','DOCKER_USER') }}"
 docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 region: us-east-1
-s3_bucket: "essential-dev.com"
+s3_bucket: "bento.essential-dev.com"

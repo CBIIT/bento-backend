@@ -8,4 +8,4 @@
     - name: deploy stage
       include_role:
         name: cicd
-        tasks_from: deploy
+        tasks_from: deploy-backend

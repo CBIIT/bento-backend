@@ -47,18 +47,18 @@
     push: yes
     source: build
 
-- name: run npm install in {{workspace}}/src/main/frontend/
+- name: run npm install in {{workspace}}/bento-frontend/
   command: "{{item}}"
   args:
-    chdir: "{{workspace}}/src/main/frontend"
+    chdir: "{{workspace}}/bento-frontend"
   loop:
     - npm install 
     - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
 
-- name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables
+- name: run npm install and build in {{workspace}}/bento-frontend/node_modules/mui-custom-datatables
   command: "{{item}}"
   args:
-    chdir: "{{workspace}}/src/main/frontend/node_modules/mui-custom-datatables"
+    chdir: "{{workspace}}/bento-frontend/node_modules/mui-custom-datatables"
   loop:
     - npm install
     - npm run build
@@ -66,7 +66,7 @@
 - name: run npm build in frontend
   command: npm run-script build
   args:
-    chdir: "{{workspace}}/src/main/frontend"
+    chdir: "{{workspace}}/bento-frontend"
           
 # - name: build cbiitssrepo/app image
 #   docker_image:

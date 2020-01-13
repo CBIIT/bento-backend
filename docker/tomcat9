@@ -6,7 +6,7 @@ ENV JAVA_HOME /usr/lib/jvm/jre-11-openjdk
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$JAVA_HOME/bin:$PATH
 ENV TOMCAT_MAJOR 9
-ENV JAVA_OPTS $JAVA_OPTS -javaagent:/usr/local/tomcat/newrelic/newrelic.jar -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70
+ENV JAVA_OPTS $JAVA_OPTS -javaagent:/usr/local/tomcat/newrelic/newrelic.jar -XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=70
 ENV NEW_RELIC_LOG /usr/local/tomcat/newrelic/logs
 ENV TOMCAT_VERSION 9.0.30
 ENV TOMCAT_USER tomcat

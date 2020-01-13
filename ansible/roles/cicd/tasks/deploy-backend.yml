@@ -46,6 +46,9 @@
     task_definition: "{{task_name}}:{{revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
     desired_count: 1
     load_balancers:
       - targetGroupArn: "{{lb_target_arn}}"

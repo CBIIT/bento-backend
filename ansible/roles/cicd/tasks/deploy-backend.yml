@@ -45,6 +45,7 @@
     cluster: ctdc-ecs
     task_definition: "{{task_name}}:{{revision}}"
     role: "{{role_arn}}"
+    force_new_deployment: yes
     desired_count: 1
     load_balancers:
       - targetGroupArn: "{{lb_target_arn}}"

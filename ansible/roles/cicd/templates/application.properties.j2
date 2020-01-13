@@ -5,7 +5,7 @@ neo4j.jdbc.server=jdbc:neo4j:bolt://{{neo4j_ip}}
 graphql.schema=graphql/person.graphqls, graphql/icdc.graphqls
 neo4j.graphql.endpoint=http://{{neo4j_ip}}:7474/graphql/
 neo4j.java.driver.server=bolt://{{neo4j_ip}}:7687
-neo4j.authorization={bearer}
+neo4j.authorization={{bearer}}
 spring.mvc.view.prefix=/WEB-INF/
 spring.mvc.view.suffix=.jsp
 error.redirect_url=http://localhost/error.html
@@ -14,8 +14,6 @@ session.timeout=30
 data.model.version = 1
 allow_grapqh_query = true
 allow_graphql_mutation =false
-
-
 fence.client_id={{fence_id}}
 fence.client_credential={{fence_credential}}
 fence.redirect_url=https://localhost/

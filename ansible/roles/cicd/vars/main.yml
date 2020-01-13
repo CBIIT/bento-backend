@@ -12,3 +12,4 @@ docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 region: us-east-1
 s3_bucket: "bento.essential-dev.com"
+fence_url: "{{ lookup('env','FENCE_URL') }}"

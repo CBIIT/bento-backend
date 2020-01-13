@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="LogToConsole" target="SYSTEM_OUT" >
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<RollingRandomAccessFile
+			name="LogToInfoFile" fileName="logs/info.log"
+			filePattern="logs/$${date:yyyy-MM}/info-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="1 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingRandomAccessFile>
+		
+		<RollingRandomAccessFile
+			name="LogToErrorFile" fileName="logs/error.log"
+			filePattern="logs/$${date:yyyy-MM}/error-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="1 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingRandomAccessFile>
+		
+		 <Async name="AsyncErr">
+			<!-- reference to other appenders -->
+            <AppenderRef ref="LogToErrorFile"/>
+        </Async>
+         <Async name="AsyncInfo">
+			<!-- reference to other appenders -->
+            <AppenderRef ref="LogToInfoFile"/>
+        </Async>
+	</Appenders>
+	<Loggers>
+		<Logger name="gov.nih.nci.icdc" level="info" additivity="false">
+			<AppenderRef ref="AsyncInfo" />
+			<AppenderRef ref="LogToConsole" />
+		</Logger>
+		<Logger name="icdc" level="error" additivity="false">
+			<AppenderRef ref="AsyncErr" />
+			<AppenderRef ref="LogToConsole" />
+		</Logger>
+		<Logger name="org.springframework.boot" level="error"
+			additivity="false">
+			<AppenderRef ref="LogToConsole" />
+			<AppenderRef ref="AsyncErr" />
+		</Logger>
+		<Logger name="org.springframework.boot" level="info"
+			additivity="false">
+			<AppenderRef ref="LogToConsole" />
+			<AppenderRef ref="AsyncInfo" />
+		</Logger>
+		<Root level="error">
+			<AppenderRef ref="AsyncErr" />
+			<AppenderRef ref="LogToConsole" />
+		</Root>
+
+	</Loggers>
+</Configuration>

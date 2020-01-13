@@ -1,2 +1,1 @@
-# bento-backend
-This is a repository for bento backend
+More info to come soon

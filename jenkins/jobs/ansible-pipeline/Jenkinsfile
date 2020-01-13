@@ -16,10 +16,10 @@ pipeline {
         useRepository: 'https://github.com/CBIIT/microservices')
     extendedChoice( 
         name: 'Environment', 
-        defaultValue: 'sandbox', 
+        defaultValue: 'test', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,qa,stage,prod' )
+        value: 'sandbox,dev,test,qa,stage,prod' )
   }
   options {
   	ansiColor('xterm')
@@ -45,6 +45,44 @@ pipeline {
   		}
  
   	}
+    stage('Set Environment'){
+        environment {
+          SANDBOX_URL = "k9dc.essential-dev.com"
+          TEST_URL = "bento.essential-dev.com"
+          DEV_URL = "caninecommons-dev.cancer.gov"
+          QA_URL = "caninecommons-qa.cancer.gov"
+          STAGE_URL = "caninecommons-stage.cancer.gov"
+          PROD_URL = "caninecommons.cancer.gov" 
+          VERSION = "${params.Tag}"
+        }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "sandbox":
+                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+                sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                sh "cat ${WORKSPACE}/src/main/frontend/.env"
+                sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
+                }
+              break
+              case "test":
+                withCredentials([file(credentialsId: 'test_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
+                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${TEST_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_IP}"
+                  env.TOMCAT02_IP = "${TOMCAT02_IP}"
+                  env.NEO4J_IP    = "${NEO4J_IP}"
+                }
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
   	stage('build'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"

@@ -74,6 +74,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'test_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/bento-frontend/.env"
                   sh "cd ${WORKSPACE}/bento-frontend && sed -i 's,tag_version,${VERSION},g' .env"
+                  sh "cat ${WORKSPACE}/bento-frontend/.env"
                   env.TOMCAT01_IP = "${TOMCAT01_IP}"
                   env.TOMCAT02_IP = "${TOMCAT02_IP}"
                   env.NEO4J_IP    = "${NEO4J_IP}"

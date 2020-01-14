@@ -13,7 +13,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/microservices')
+        useRepository: 'https://github.com/CBIIT/bento-backend')
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'test', 

@@ -5,6 +5,7 @@
       {{ data_bucket }}
       {{ neo4j_ip }}
       {{ s3_folder }}
+      {{ workspace}}
 # - name: list the content  of {{ data_bucket }}
 #   aws_s3: 
 #     bucket: "{{data_bucket}}"

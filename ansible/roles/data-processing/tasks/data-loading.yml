@@ -1,4 +1,4 @@
-- name: list the content  of {{data_bucket}}
+- name: list the content  of {{ data_bucket }}
   s3: 
     bucket: "{{data_bucket}}"
     prefix: "{{s3_folder}}" 
@@ -20,16 +20,16 @@
     src: "{{workspace}}/config.sample.ini"
     dest: "{{workspace}}/config.ini"
 
-- name: execute dataloader script
-  shell:
-    cmd: >
-      /usr/bin/python3
-      loader.py -i bolt://{{ neo4j_ip }}:7687 
-      -p {{ neo4j_password }}
-      -s test/data/icdc-model.yml
-      -s test/data/icdc-model-props.ym
-      -c -b {{ data_bucket }}
-      -f {{ s3_folder }} tmp
-    chdir: "{{workspace}}"
+# - name: execute dataloader script
+#   shell:
+#     cmd: >
+#       /usr/bin/python3
+#       loader.py -i bolt://{{ neo4j_ip }}:7687 
+#       -p {{ neo4j_password }}
+#       -s test/data/icdc-model.yml
+#       -s test/data/icdc-model-props.ym
+#       -c -b {{ data_bucket }}
+#       -f {{ s3_folder }} tmp
+#     chdir: "{{workspace}}"
 
       

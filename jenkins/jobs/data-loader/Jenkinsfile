@@ -20,6 +20,7 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
+    string(defaultValue: "", description: 'S3 Folder to load data from', name: 'S3_Folder')
   }
   // options {
   // 	ansiColor('xterm')
@@ -45,6 +46,33 @@ pipeline {
   		}
  
   	}
+    stage('set-environment'){
+      environment{
+        S3_FOLDER   = "${params.S3_Folder}"
+        TIER        = "${params.Environment}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+              break
+              case "qa":
+                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
+              break
+              case "stage":
+                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+              break
+              case "prod":
+                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
   	stage('loader-data'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"

@@ -3,7 +3,7 @@
 neo4j_password: "{{ lookup('env','NEO4J_PASSWORD') }}"
 neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
 data_bucket: nci-cbiit-caninedatacommons-{{tier}}
-tier: "{{ lookup('env','Tier') }}"
+tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
-s3_folder: "{{ lookup('env','s3_folder') }}"
+s3_folder: "{{ lookup('env','S3_FOLDER') }}"

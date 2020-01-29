@@ -20,7 +20,9 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
-    string(defaultValue: "", description: 'S3 Folder to load data from', name: 'S3_Folder')
+    string(defaultValue: "", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
   }
   // options {
   // 	ansiColor('xterm')
@@ -52,7 +54,7 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
-                  env.S3_FOLDER   = "${params.S3_Folder}"
+                  env.S3_FOLDER   = "${params.S3Folder}"
                   env.TIER        = "${params.Environment}"
               break
               case "qa":

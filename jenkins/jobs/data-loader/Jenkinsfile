@@ -1,0 +1,65 @@
+pipeline {
+	agent {
+		node {
+			label 'slave-ncias-d2320-c'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,stage,prod' )
+  }
+  // options {
+  // 	ansiColor('xterm')
+  // }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+  		}
+ 
+  	}
+  	stage('loader-data'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
+
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/data-loader.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
+ 		}
+  }
+ }
+}

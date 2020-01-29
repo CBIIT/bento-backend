@@ -2,7 +2,7 @@
 - name: load data to neo4j db
   hosts: loader
   connection: local
-  gather_facts: no
+  gather_facts: yes
     
   tasks:
     - name: perform data loading

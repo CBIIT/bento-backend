@@ -1,5 +1,5 @@
 - name: list the content  of {{ data_bucket }}
-  s3: 
+  aws_s3: 
     bucket: "{{data_bucket}}"
     prefix: "{{s3_folder}}" 
     mode: list
@@ -7,7 +7,7 @@
   register: s3_content
 
 - name: download all the files from {{s3_folder}}
-  s3:
+  aws_s3:
     bucket: "{{data_bucket}}"
     object: "{{ item }}" 
     dest: "{{ workspace }}/{{ item | basename }}"

@@ -47,15 +47,13 @@ pipeline {
  
   	}
     stage('set-environment'){
-      environment{
-        S3_FOLDER   = "${params.S3_Folder}"
-        TIER        = "${params.Environment}"
-      }
         steps {
           script {
             switch("${params.Environment}") {
               case "dev":
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.S3_FOLDER   = "${params.S3_Folder}"
+                  env.TIER        = "${params.Environment}"
               break
               case "qa":
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"

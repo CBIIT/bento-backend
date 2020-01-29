@@ -6,4 +6,4 @@ data_bucket: nci-cbiit-caninedatacommons-{{tier}}
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
-s3_folder: "{{ lookup('env','S3FOLDER') }}"
+s3_folder: "{{ lookup('env','S3_FOLDER') }}"

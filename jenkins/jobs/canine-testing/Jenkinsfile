@@ -93,7 +93,8 @@ pipeline {
       steps {
         wrap([$class: 'Xvfb']) {
           sh """
-              mvn test
+              mvn clean
+              mvn install
              """
            
           // script {

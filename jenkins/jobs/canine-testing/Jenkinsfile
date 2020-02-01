@@ -33,8 +33,8 @@ pipeline {
 
   agent {
     node {
-      label 'cicd-selenium'
-      //label 'selenium-testing'
+      //label 'cicd-selenium'
+      label 'selenium-testing'
     }
   }
   parameters {

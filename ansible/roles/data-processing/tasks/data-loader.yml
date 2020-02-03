@@ -29,7 +29,7 @@
       loader.py -i bolt://{{ neo4j_ip }}:7687 
       -p {{ neo4j_password }}
       -s test/data/icdc-model.yml
-      -s test/data/icdc-model-props.ym
+      -s test/data/icdc-model-props.yml
       -c -b {{ data_bucket }}
       -f {{ s3_folder }} tmp
     chdir: "{{workspace}}"

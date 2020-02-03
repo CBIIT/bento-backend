@@ -2,7 +2,7 @@
 # vars file for data-processing
 neo4j_password: "{{ lookup('env','NEO4J_PASSWORD') }}"
 neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
-data_bucket: nci-cbiit-caninedatacommons-{{tier}}
+data_bucket: nci-cbiit-ctdc-{{tier}}
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"

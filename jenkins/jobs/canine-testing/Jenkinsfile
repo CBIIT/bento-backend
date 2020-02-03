@@ -35,7 +35,7 @@ pipeline {
     node {
       //label 'cicd-selenium'
       //label 'selenium-testing'
-      label 'commons-docker-ncias-p2236-v'
+      label 'slave-ncias-d2320-c'
     }
   }
   parameters {

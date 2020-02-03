@@ -47,6 +47,6 @@
 
 - name: show dataloader output
   debug:
-    msg: "{{dataloader.stdout}}"
+    msg: "{{data_loader.stdout}}"
 
       

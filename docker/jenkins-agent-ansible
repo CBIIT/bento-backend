@@ -3,7 +3,7 @@ FROM vdonkor/jenkins-agent
 MAINTAINER vincent donkor
 
 USER root
-RUN yum install -y epel-release python-setuptools
-RUN easy_install pip && pip install ansible
+RUN dnf -y install python3 python3-pip && pip3 install ansible
+USER jenkins
   
   

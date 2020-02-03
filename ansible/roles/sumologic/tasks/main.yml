@@ -27,7 +27,6 @@
     - {src: 'user.properties.j2',dest: '{{config}}/user.properties'}
   notify: restart collector
     
-
 - name: Start service
   service:
     name: collector

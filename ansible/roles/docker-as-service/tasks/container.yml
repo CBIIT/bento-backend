@@ -1,0 +1,11 @@
+
+- name: copy docker service to systemd directory
+  copy:
+    src: docker-container@app.service
+    dest: /etc/systemd/system/docker-container@{{app_name}}.service
+
+- name: enable and start docker-container@ecs-agent.service
+  service:
+    name: docker-container@{{app_name}}.service
+    state: started
+    enabled: yes

@@ -1,14 +1,14 @@
 ---
-- name: setup ctn server
+- name: setup icdc_demo server
   hosts: ctdc
   become: yes
 
   vars_files:
-    - config/ctn-env-vars.yaml
+    - config/icdc_demo-env-vars.yaml
     
   roles:
     - common
-    # - { role: docker,tags: ['sandbox'] }
-    - icdc-demo
+    - icdc_demo
+    - docker-as-service
     - sumologic
     - newrelic

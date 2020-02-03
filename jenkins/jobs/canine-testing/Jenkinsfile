@@ -100,7 +100,7 @@ pipeline {
     }
     stage ('Cucumber Reports'){
       steps {
-        cucumberSlackSend channel:'devops', json:'target/cucumber.json'
+        cucumberSlackSend channel:'automated-testing', json:'target/cucumber.json'
       }
     }
     

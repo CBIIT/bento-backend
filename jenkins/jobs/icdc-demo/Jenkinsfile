@@ -188,7 +188,7 @@ pushd target
 scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
 popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
-sudo docker rm -f icdc-demo
+sudo docker rm -f icdc_demo
 cd /local/content/docker
 sudo docker pull cbiitssrepo/tomcat9
 sudo docker-compose up -d &

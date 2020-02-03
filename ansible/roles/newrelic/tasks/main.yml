@@ -1,9 +1,4 @@
 ---
-# tasks file for roles/newrelic
-# - name: set hostname
-#   hostname:
-#     name: "{{ hostname }}"
-
 - name: add newrelic-infra gpg key
   rpm_key:
     state: present
@@ -14,11 +9,6 @@
     name: newrelic-infra
     description: Newrelic infrastruture repository
     baseurl: https://download.newrelic.com/infrastructure_agent/linux/yum/el/7/x86_64/
-
-# - name: update yum cache
-#   command: yum makecache
-#   args:
-#     warn: no
 
 - name: install newrelic-infra
   package:

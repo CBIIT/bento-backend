@@ -1,0 +1,15 @@
+---
+# vars file for icdc_demo
+docker_home: /local/content/docker
+icdc_demo_home: /local/content/icdc_demo
+deployments: /local/content/canine-data
+container_name: icdc_demo
+app_name: "{{env}}-icdc_demo"
+collector_name: "{{ env }}-icdc_demo"
+newrelic_license_key: "{{ newrelic_key }}"
+additional_logs:
+  - name: "{{ env }} icdc_demo Logs" 
+    description: "{{ env }} icdc_demo logs"
+    category: "{{env }}/app/icdc_demo"
+    path: "/local/content/icdc_demo/logs/*.log"
+    filters: "" 

@@ -1,9 +1,9 @@
 ---
 # tasks file for docker-as-service
 - name: Create /etc/docker/compose directory
-    file:
-      name: /etc/docker/compose
-      state: directory
+  file:
+    name: /etc/docker/compose
+    state: directory
 
 - name: Install docker-compose@.service
   copy:

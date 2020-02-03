@@ -34,8 +34,8 @@ pipeline {
   agent {
     node {
       //label 'cicd-selenium'
-      //label 'selenium-testing'
-      label 'commons-docker-ncias-p2236-v'
+      label 'selenium-testing'
+      //label 'slave-ncias-d2320-c'
     }
   }
   parameters {
@@ -50,8 +50,8 @@ pipeline {
     timestamps()
   }
   tools { 
-    maven 'maven-3.6.1' 
-    jdk 'jdk11' 
+    maven 'Default' 
+    jdk 'Default' 
   }
   stages {
     stage('Checkout') {

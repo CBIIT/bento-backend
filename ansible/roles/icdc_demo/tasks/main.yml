@@ -20,7 +20,7 @@
     groups: tomcat,docker
     append: yes
 
-- name: create icdc-demo deployments directory
+- name: create icdc_demo deployments directory
   file:
     path: "{{ item }}"
     state: directory
@@ -29,7 +29,7 @@
   loop:
     - "{{ deployments }}"
     - "{{ docker_home }}"
-    - "{{ icdc-demo_home }}/logs"
+    - "{{ icdc_demo_home }}/logs"
  
 - name: copy docker files
   template:
@@ -40,7 +40,7 @@
   loop:
     - {src: 'docker-compose.yml.j2',dest: '{{docker_home}}/docker-compose.yml'}
 
-- name: start icdc-demo
+- name: start icdc_demo
   command: docker-compose up -d
   args:
     chdir: "{{ docker_home }}"
@@ -48,7 +48,7 @@
   tags:
     - cloudone
 
-- name: start the icdc-demo
+- name: start the icdc_demo
   docker_compose:
     project_src: "{{ docker_home }}"
     state: present

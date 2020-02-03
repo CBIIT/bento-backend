@@ -1,0 +1,5 @@
+---
+# handlers file for docker-as-service
+- name: systemctl daemon-reload
+  systemd:
+    daemon_reload: true

@@ -4,8 +4,8 @@
   timezone:
     name: America/New_York
 
-- name: set hostname
-  hostname:
-      name: "{{ hostvars[inventory_hostname].group_names[0] }}-{{ env }}"
-  tags:
-    - sandbox
+# - name: set hostname
+#   hostname:
+#       name: "{{ hostvars[inventory_hostname].group_names[0] }}-{{ env }}"
+#   tags:
+#     - sandbox

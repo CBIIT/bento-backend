@@ -50,6 +50,6 @@
 
 - name: Start and enable the {{app_name}} service
   service:
-    name: docker-compose@{{app.app_name}}
+    name: docker-compose@{{app_name}}
     state: started
     enabled: true

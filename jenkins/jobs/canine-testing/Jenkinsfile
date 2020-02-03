@@ -34,8 +34,8 @@ pipeline {
   agent {
     node {
       //label 'cicd-selenium'
-      //label 'selenium-testing'
-      label 'slave-ncias-d2320-c'
+      label 'selenium-testing'
+      //label 'slave-ncias-d2320-c'
     }
   }
   parameters {

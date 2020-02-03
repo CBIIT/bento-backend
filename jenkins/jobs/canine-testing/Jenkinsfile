@@ -34,7 +34,8 @@ pipeline {
   agent {
     node {
       //label 'cicd-selenium'
-      label 'selenium-testing'
+      //label 'selenium-testing'
+      label 'commons-docker-ncias-p2236-v'
     }
   }
   parameters {

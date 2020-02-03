@@ -7,33 +7,36 @@
     marker: "{{s3_folder}}"
   register: s3_content
 
-- debug: 
-    msg: "{{s3_content.s3_keys}}"
-    
-# - name: download all the files from {{s3_folder}}
-#   aws_s3:
-#     bucket: "{{data_bucket}}"
-#     object: "{{ item }}" 
-#     dest: "{{ workspace }}/{{ item | basename }}"
-#     mode: get
-#   loop: "{{ s3_content.s3_keys }}"
 
-# - name: copy config.sample.ini config.ini
-#   copy:
-#     remote_src: yes
-#     src: "{{workspace}}/config.sample.ini"
-#     dest: "{{workspace}}/config.ini"
+- name: download all the files from {{s3_folder}}
+  aws_s3:
+    bucket: "{{data_bucket}}"
+    object: "{{ item }}" 
+    dest: "{{ workspace }}/{{ item | basename }}"
+    mode: get
+  loop: "{{ s3_content.s3_keys }}"
 
-# - name: execute dataloader script
-#   shell:
-#     cmd: >
-#       /usr/bin/python3
-#       loader.py -i bolt://{{ neo4j_ip }}:7687 
-#       -p {{ neo4j_password }}
-#       -s test/data/icdc-model.yml
-#       -s test/data/icdc-model-props.ym
-#       -c -b {{ data_bucket }}
-#       -f {{ s3_folder }} tmp
-#     chdir: "{{workspace}}"
+- name: copy config.sample.ini config.ini
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/config.sample.ini"
+    dest: "{{workspace}}/config.ini"
+
+- name: execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py -i bolt://{{ neo4j_ip }}:7687 
+      -p {{ neo4j_password }}
+      -s test/data/icdc-model.yml
+      -s test/data/icdc-model-props.ym
+      -c -b {{ data_bucket }}
+      -f {{ s3_folder }} tmp
+    chdir: "{{workspace}}"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{dataloader.stdout}}"
 
       

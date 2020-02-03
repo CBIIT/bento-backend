@@ -1,4 +1,15 @@
 
+- name: Check if tmp directory exist
+  stat:
+    path: "{{workspace}}/tmp"
+  register: stat_result
+
+- name: remove the tmp if exists
+  file:
+    path: "{{workspace}}/tmp"
+    state: absent
+  when: stat_result.stat.exists == True
+
 - name: list the content  of {{ data_bucket }}
   aws_s3: 
     bucket: "{{data_bucket}}"
@@ -6,7 +17,6 @@
     mode: list
     marker: "{{s3_folder}}"
   register: s3_content
-
 
 - name: download all the files from {{s3_folder}}
   aws_s3:

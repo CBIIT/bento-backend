@@ -1,6 +1,6 @@
 ---
 - name: setup icdc_demo server
-  hosts: deno
+  hosts: demo
   become: yes
 
   vars_files:

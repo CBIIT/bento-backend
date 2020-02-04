@@ -23,6 +23,11 @@ pipeline {
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
+    extendedChoice( 
+        name: 'WipeDB', 
+        description: 'Choose the environment to build', 
+        type: 'PT_CHECKBOX',
+        value: false )
   }
   // options {
   // 	ansiColor('xterm')

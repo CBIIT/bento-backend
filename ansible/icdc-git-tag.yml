@@ -17,8 +17,5 @@
       include_role:
         name: git-tag
       vars:
-        git_url: "{{item}}"
-      loop:
-        - https://{{git_username}}:{{git_password}}@github.com/CBIIT/icdc-codebase
-        - https://{{git_username}}:{{git_password}}@github.com/CBIIT/ctdc-codebase
+        git_url: https://{{git_username}}:{{git_password}}@github.com/CBIIT/icdc-codebase
 

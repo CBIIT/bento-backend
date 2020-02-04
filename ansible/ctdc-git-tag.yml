@@ -1,0 +1,21 @@
+- name: Tag ctdc repository daily
+  
+  hosts: localhost
+  connection: local
+
+  vars:
+    retention: 31
+    current_date: "{{ lookup('pipe','date +%Y_%m_%d_%H_%M') }}"
+    git_tag: "{{current_date}}"
+    git_home: "{{ ansible_env.HOME }}/git-tag"
+
+  vars_files:
+    - config/icdc-env-vars.yaml
+
+  tasks:
+    - name: tag repository
+      include_role:
+        name: git-tag
+      vars:
+        git_url: https://{{git_username}}:{{git_password}}@github.com/CBIIT/ctdc-codebase
+

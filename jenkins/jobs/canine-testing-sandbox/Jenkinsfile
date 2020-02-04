@@ -1,0 +1,121 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  coffee_image = ":hot-coffee:"
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} ${coffee_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "ICDC Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "Selenium Automated Testing",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+
+  agent {
+    node {
+      //label 'cicd-selenium'
+      label 'selenium-testing'
+      //label 'slave-ncias-d2320-c'
+      //label 'commons-docker-ncias-p2236-v'
+    }
+  }
+  parameters {
+    extendedChoice( 
+            name: 'Environment', 
+            defaultValue: 'qa', 
+            description: 'Choose the environment to build', 
+            type: 'PT_SINGLE_SELECT',
+            value: 'sandbox,dev,qa,stage' )
+  }
+  options {
+    timestamps()
+  }
+  tools { 
+    maven 'Default' 
+    jdk 'Default' 
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'master',
+            url: 'https://github.com/CBIIT/icdc_uitest',
+            credentialsId: 'vdonkor'
+      }
+    }
+    stage('Set Environment'){
+      environment {
+        SANDBOX_URL = "k9dc.essential-dev.com"
+        DEV_URL = "caninecommons-dev.cancer.gov"
+        QA_URL = "caninecommons-qa.cancer.gov"
+        STAGE_URL = "caninecommons-stage.cancer.gov"
+      }
+      steps {
+        script {
+          switch("${params.Environment}") {
+            case "sandbox":
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ SANDBOX_URL}/g' config.properties"
+            break
+            case "dev":
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ DEV_URL}/g' config.properties"
+            break
+            case "qa":
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && cat config.properties"
+            break
+            case "stage":
+              sh "cd ${WORKSPACE}/src/test/resources/test_data/ && sed -i 's/caninecommons-qa.cancer.gov/${ STAGE_URL}/g' config.properties"
+            break
+            default:
+              println "Select valid option"
+            break
+          }
+        }
+      }
+    }
+    stage('Build') {
+      steps {
+        sh """
+          mvn clean install
+          cd target/site/cucumber-reports
+          zip -r cucumber-html-reports.zip cucumber-html-reports
+        """
+      }
+    }
+    stage ('Cucumber Reports'){
+      steps {
+        cucumberSlackSend channel:'automated-testing', json:'target/cucumber.json'
+      }
+    }
+    
+  }
+  post {
+    always {
+      cucumber failedFeaturesNumber: -1, failedScenariosNumber: -1, failedStepsNumber: -1, fileIncludePattern: '**/*.json', jsonReportDirectory: 'target', pendingStepsNumber: -1, skippedStepsNumber: -1, sortingMethod: 'ALPHABETICAL', undefinedStepsNumber: -1
+      emailext attachmentsPattern: 'target/site/cucumber-reports/cucumber-html-reports.zip', body: 'See attached results from recent integration Job run.', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'afag.ibrahimova@nih.gov;vincent.donkor@nih.gov'
+      //sendSlackMessage()
+      // println "${env.STEP_PASSED}"
+      //laxmi.lolla@nih.gov; amit.mukherjee@nih.gov;
+    }
+  }
+}
+  
+  

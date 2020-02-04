@@ -1,10 +1,24 @@
-- name: Tag github repository daily
+- name: Tag icdc repository daily
   
   hosts: localhost
   connection: local
 
+  vars:
+    retention: 31
+    current_date: "{{ lookup('pipe','date +%Y_%m_%d_%H_%M') }}"
+    git_tag: "{{current_date}}"
+    git_home: "{{ ansible_env.HOME }}/git-tag"
+
   vars_files:
     - config/icdc-env-vars.yaml
 
-  roles:
-    - git-tag
+  tasks:
+    - name: tag repository
+      include_role:
+        name: git-tag
+      vars:
+        git_url: "{{item}}"
+      loop:
+        - https://{{git_username}}:{{git_password}}@github.com/CBIIT/icdc-codebase
+        - https://{{git_username}}:{{git_password}}@github.com/CBIIT/ctdc-codebase
+

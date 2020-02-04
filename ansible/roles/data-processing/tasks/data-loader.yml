@@ -56,6 +56,7 @@
       -s test/data/icdc-model-props.yml
       -c -b {{ data_bucket }}
       -f {{ s3_folder }} tmp
+      --wipe-db
     chdir: "{{workspace}}"
   register: data_loader
   when: wipe_db == 'false'

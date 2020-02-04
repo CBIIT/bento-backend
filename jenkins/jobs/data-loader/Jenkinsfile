@@ -26,8 +26,7 @@ pipeline {
     extendedChoice( 
         name: 'WipeDB', 
         description: 'Choose the environment to build', 
-        type: 'PT_CHECKBOX',
-        value: false )
+        type: 'PT_CHECKBOX')
   }
   // options {
   // 	ansiColor('xterm')
@@ -61,19 +60,23 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.S3_FOLDER   = "${params.S3Folder}"
                   env.TIER        = "${params.Environment}"
+                  env.WIPE_DB     = "${params.WipeDB}"
               break
               case "qa":
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.S3_FOLDER   = "${params.S3Folder}"
                   env.TIER        = "${params.Environment}"
+                  env.WIPE_DB     = "${params.WipeDB}"
               break
               case "stage":
                   env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
                   env.S3_FOLDER   = "${params.S3Folder}"
                   env.TIER        = "${params.Environment}"
+                  env.WIPE_DB     = "${params.WipeDB}"
               break
               case "prod":
                   env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                  env.WIPE_DB     = "${params.WipeDB}"
               break
               default:
                 println "Select valid option"

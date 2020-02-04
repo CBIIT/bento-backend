@@ -45,6 +45,21 @@
     chdir: "{{workspace}}"
   register: data_loader
 
+
+- name: execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py -i bolt://{{ neo4j_ip }}:7687 
+      -p {{ neo4j_password }}
+      -s test/data/icdc-model.yml
+      -s test/data/icdc-model-props.yml
+      -c -b {{ data_bucket }}
+      -f {{ s3_folder }} tmp
+    chdir: "{{workspace}}"
+  register: data_loader
+  when: wipe_db == 'false'
+
 - name: show dataloader output
   debug:
     msg: "{{data_loader.stdout}}"

@@ -25,7 +25,8 @@ pipeline {
         name: 'S3Folder')
     extendedChoice( 
         name: 'WipeDB', 
-        description: 'Choose the environment to build', 
+        description: 'Choose to wipe DB',
+        quoteValue: false, 
         type: 'PT_CHECKBOX')
   }
   // options {

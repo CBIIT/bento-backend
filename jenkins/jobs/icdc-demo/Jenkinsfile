@@ -17,14 +17,14 @@ def sendSlackMessage() {
               text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
               fallback: "CTDC Jenkins Build",
               color: "${BUILD_COLORS[currentBuild.currentResult]}",
-              footer: "ctdc devops",
+              footer: "icdc-demo devops",
               ts: epoch,
               mrkdwn_in: ["footer", "title"],
            ]]
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${CTDC_SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -34,7 +34,7 @@ pipeline {
 
   agent {
     node {
-      label 'ctdc-docker-maven'
+      label 'icdc-demo-docker-maven'
     }
   }
   parameters {
@@ -90,7 +90,7 @@ pipeline {
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_IP}"
+      
                   env.NEO4J_IP    = "${NEO4J_IP}"
                 }
               break

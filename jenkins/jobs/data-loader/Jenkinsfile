@@ -27,10 +27,9 @@ pipeline {
         name: 'WipeDB', 
         description: 'Choose to wipe DB',
         quoteValue: false,
-        value: '' ,
+        value: 'false' ,
         visibleItemCount: 1,
-        type: 'PT_CHECKBOX')
-        
+        type: 'PT_RADIO')   
   }
   // options {
   // 	ansiColor('xterm')

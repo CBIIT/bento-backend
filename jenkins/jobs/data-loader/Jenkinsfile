@@ -26,8 +26,11 @@ pipeline {
     extendedChoice( 
         name: 'WipeDB', 
         description: 'Choose to wipe DB',
-        quoteValue: false, 
+        quoteValue: false,
+        value: 'WipeDB' ,
+        visibleItemCount: 1,
         type: 'PT_CHECKBOX')
+        
   }
   // options {
   // 	ansiColor('xterm')

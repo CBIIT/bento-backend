@@ -90,7 +90,6 @@ pipeline {
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_IP}"
-      
                   env.NEO4J_IP    = "${NEO4J_IP}"
                 }
               break
@@ -100,38 +99,7 @@ pipeline {
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
-                }
-              break
-              case "qa":
-                withCredentials([file(credentialsId: 'qa_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${QA_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_QA_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_QA_IP}"
-                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
-                }
-              break
-              case "stage":
-                withCredentials([file(credentialsId: 'stage_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${STAGE_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
-                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
-                }
-              break
-              case "prod":
-                withCredentials([file(credentialsId: 'prod_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${PROD_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
-                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
                 }
               break
               default:
@@ -140,7 +108,6 @@ pipeline {
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
                   sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
                   env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                 }
               break
@@ -215,9 +182,7 @@ done'''
   }
   post {
     always {
-      
-      sh "echo done"
-      // sendSlackMessage()
+      sendSlackMessage()
     }
   }
 }

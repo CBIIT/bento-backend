@@ -69,16 +69,12 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/ctdc-codebase']]])
+        checkout([$class: 'GitSCM', branches: [[name: "${params.Tag}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/CBIIT/icdc-codebase']]])
       }
     }
     stage('Set Environment'){
         environment {
-          SANDBOX_URL = "k9dc.essential-dev.com"
-          DEV_URL = "trialcommons-dev.cancer.gov"
-          QA_URL = "trialcommons-qa.cancer.gov"
-          STAGE_URL = "trialcommons-stage.cancer.gov"
-          PROD_URL = "trialcommons.cancer.gov" 
+          DEV_URL = "caninecommons-demo.cancer.gov"
           VERSION = "${params.Tag}"
         }
         steps {

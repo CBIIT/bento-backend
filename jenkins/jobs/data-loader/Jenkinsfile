@@ -27,7 +27,7 @@ pipeline {
         name: 'WipeDB', 
         description: 'Choose to wipe DB',
         quoteValue: false,
-        value: 'WipeDB' ,
+        value: '' ,
         visibleItemCount: 1,
         type: 'PT_CHECKBOX')
         

@@ -27,8 +27,8 @@ pipeline {
         name: 'WipeDB', 
         description: 'Choose to wipe DB',
         quoteValue: false,
-        value: 'false' ,
-        visibleItemCount: 1,
+        multiSelectDelimiter: ',',
+        value: 'yes,no'
         type: 'PT_RADIO')   
   }
   // options {

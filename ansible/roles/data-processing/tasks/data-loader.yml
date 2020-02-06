@@ -46,7 +46,11 @@
   register: data_loader
   when: wipe_db == "no"
 
-- name: execute dataloader script
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"
+    
+- name: wipe out database then execute dataloader script
   shell:
     cmd: >
       /usr/bin/python3
@@ -63,6 +67,5 @@
 
 - name: show dataloader output
   debug:
-    msg: "{{data_loader.stdout}}"
+    msg: "{{data_loader}}"
 
-      

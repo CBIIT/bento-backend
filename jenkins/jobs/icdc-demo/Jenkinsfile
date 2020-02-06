@@ -130,7 +130,7 @@ pipeline {
           
           sh "mvn package -DskipTests"
     
-          sh "mv target/CTDC-0.0.1.war target/ROOT.war"
+          sh "mv target/ICDC-0.0.1.war target/ROOT.war"
         }
       }
     }

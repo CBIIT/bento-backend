@@ -45,11 +45,11 @@ pipeline {
   			checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
-  				false, extensions: [], submoduleCfg: [], 
+  				false, extensions: [], 
+          submoduleCfg: [], 
           recursiveSubmodules: true,
-  				userRemoteConfigs: 
+  				userRemoteConfigs: scm.userRemoteConfigs
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
-
   			dir('icdc-devops'){
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'

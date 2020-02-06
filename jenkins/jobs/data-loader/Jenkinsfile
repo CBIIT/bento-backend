@@ -44,18 +44,12 @@ pipeline {
   		steps {
   			checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Tag}"]], 
-  				doGenerateSubmoduleConfigurations: false, 
-          extensions: [
-        [
-        $class: 'SubmoduleOption', 
-        disableSubmodules: false, 
-        parentCredentials: true, 
-        recursiveSubmodules: true, 
-        reference: '', 
-        trackingSubmodules: false
-        ]], 
-          submoduleCfg: []
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+          recursiveSubmodules: true,
+  				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+          sh 'git submodule update --init'
   			dir('icdc-devops'){
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'

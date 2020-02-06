@@ -19,7 +19,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,qa,stage,prod' )
+        value: 'demo,dev,qa,stage,prod' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -46,6 +46,7 @@ pipeline {
   				branches: [[name: "${params.Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
+          recursiveSubmodules: true,
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
 
@@ -60,6 +61,12 @@ pipeline {
         steps {
           script {
             switch("${params.Environment}") {
+              case "demo":
+                  env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
+                  env.S3_FOLDER   = "${params.S3Folder}"
+                  env.TIER        = "${params.Environment}"
+                  env.WIPE_DB     = "${params.WipeDB}"
+              break
               case "dev":
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.S3_FOLDER   = "${params.S3Folder}"

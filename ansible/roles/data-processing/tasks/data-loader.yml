@@ -26,11 +26,11 @@
 #     mode: get
 #   loop: "{{ s3_content.s3_keys }}"
 
-- name: copy config.sample.ini config.ini
-  copy:
-    remote_src: yes
-    src: "{{workspace}}/config.sample.ini"
-    dest: "{{workspace}}/config.ini"
+# - name: copy config.sample.ini config.ini
+#   copy:
+#     remote_src: yes
+#     src: "{{workspace}}/config.sample.ini"
+#     dest: "{{workspace}}/config.ini"
 
 - name: execute dataloader script
   shell:

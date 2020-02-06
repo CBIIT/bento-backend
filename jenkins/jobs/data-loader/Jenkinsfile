@@ -54,7 +54,7 @@ pipeline {
         reference: '', 
         trackingSubmodules: false
         ]], 
-          submoduleCfg: [], 
+          submoduleCfg: []
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
   			dir('icdc-devops'){
   				git branch: 'master',

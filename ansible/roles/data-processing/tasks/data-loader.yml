@@ -49,7 +49,7 @@
 - name: show dataloader output
   debug:
     msg: "{{data_loader}}"
-    
+
 - name: wipe out database then execute dataloader script
   shell:
     cmd: >
@@ -61,6 +61,7 @@
       -c -b {{ data_bucket }}
       -f {{ s3_folder }} tmp
       --wipe-db
+      --yes
     chdir: "{{workspace}}"
   register: data_loader
   when: wipe_db == "yes"

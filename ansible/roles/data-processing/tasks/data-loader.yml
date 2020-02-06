@@ -37,6 +37,8 @@
     cmd: >
       /usr/bin/python3
       loader.py -i bolt://{{ neo4j_ip }}:7687 
+      --config-file config/config.ini
+      --prop-file config/props-icdc.yml
       -p {{ neo4j_password }}
       -s test/data/icdc-model.yml
       -s test/data/icdc-model-props.yml
@@ -55,6 +57,8 @@
     cmd: >
       /usr/bin/python3
       loader.py -i bolt://{{ neo4j_ip }}:7687 
+      --config-file config/config.ini
+      --prop-file config/props-icdc.yml
       -p {{ neo4j_password }}
       -s test/data/icdc-model.yml
       -s test/data/icdc-model-props.yml

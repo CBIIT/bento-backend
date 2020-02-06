@@ -24,11 +24,12 @@ pipeline {
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
     extendedChoice( 
+        defaultValue: 'no', 
         name: 'WipeDB', 
         description: 'Choose to wipe DB',
         quoteValue: false,
         multiSelectDelimiter: ',',
-        value: 'yes,no',
+        value: 'no,yes',
         type: 'PT_RADIO')   
   }
   // options {

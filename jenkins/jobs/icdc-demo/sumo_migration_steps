@@ -1,0 +1,7 @@
+systemctl stop collector
+modify user.properties
+remove creds directory
+systemctl start collector
+suErEZJ2nz4NoD
+twkLYfsrGWHrD2TLcmuSZBVnM0RvCzalDPoJKwSFtdJaZ1xQC3Lo3f6zOjaI74uO
+https://help.sumologic.com/07Sumo-Logic-Apps/10Containers_and_Orchestration/Docker_Apps/Docker/01-Collect-Logs-and-Metrics-from-Docker#Step_4:_Add_a_Docker_stats_source 

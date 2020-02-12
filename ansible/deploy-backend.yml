@@ -9,3 +9,5 @@
       include_role:
         name: cicd
         tasks_from: deploy-backend
+      vars:
+        data_bucket: nci-cbiit-ctdc-{{tier}}

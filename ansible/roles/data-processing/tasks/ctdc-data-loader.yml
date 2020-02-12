@@ -1,0 +1,79 @@
+
+- name: Check if tmp directory exist
+  stat:
+    path: "{{workspace}}/tmp"
+  register: stat_result
+
+- name: remove the tmp if exists
+  file:
+    path: "{{workspace}}/tmp"
+    state: absent
+  when: stat_result.stat.exists == True
+
+- name: list the content  of {{ data_bucket }}
+  aws_s3: 
+    bucket: "{{data_bucket}}"
+    prefix: "{{s3_folder}}" 
+    mode: list
+    marker: "{{s3_folder}}"
+  register: s3_content
+
+- name: show s3 content
+  debug: 
+    msg: "{{ s3_content.s3_keys }}"
+
+# - name: download all the files from {{s3_folder}}
+#   aws_s3:
+#     bucket: "{{data_bucket}}"
+#     object: "{{ item }}" 
+#     dest: "{{ workspace }}/{{ item | basename }}"
+#     mode: get
+#   loop: "{{ s3_content.s3_keys }}"
+
+- name: copy config.sample.ini config.ini
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/config/config.example.ini"
+    dest: "{{workspace}}/config/config.ini"
+
+- name: execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py -i bolt://{{ neo4j_ip }}:7687 
+      --config-file config/config.ini
+      --prop-file config/props-ctdc.yml
+      -p {{ neo4j_password }}
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
+      -c -b {{ data_bucket }}
+      -f {{ s3_folder }} tmp
+    chdir: "{{workspace}}"
+  register: data_loader
+  when: wipe_db == "no"
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"
+
+- name: wipe out database then execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py -i bolt://{{ neo4j_ip }}:7687 
+      --config-file config/config.ini
+      --prop-file config/props-ctdc.yml
+      -p {{ neo4j_password }}
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
+      -c -b {{ data_bucket }}
+      -f {{ s3_folder }} tmp
+      --wipe-db
+      --yes
+    chdir: "{{workspace}}"
+  register: data_loader
+  when: wipe_db == "yes"
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

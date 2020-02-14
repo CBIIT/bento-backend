@@ -24,10 +24,13 @@
   loop:
     "{{match_vars|dict2items}}"
 
+- name: show file content
+  command: cat {{workspace}}/config/config.json)}}
+  register: content
 
 - name: show config.json content
   debug:
-    msg: "{{lookup('file',{{workspace}}/config/config.json)}}"
+    msg: "{{content.stdout}}"
 
 # - name: execute file loader script
 #   shell:

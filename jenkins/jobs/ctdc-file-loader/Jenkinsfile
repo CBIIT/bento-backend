@@ -13,7 +13,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+        useRepository: 'https://github.com/CBIIT/ctdc-data-processing')
     string(defaultValue: "EAY131-XXX", 
         description: 'Enter ArmID Here:', 
         name: 'ArmID')
@@ -48,16 +48,12 @@ pipeline {
   				false, extensions: [], submoduleCfg: [], 
           recursiveSubmodules: true,
   				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+  				[[url: 'https://github.com/CBIIT/ctdc-data-processing']]])
           sh 'git submodule update --init'
   			dir('icdc-devops'){
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
-        dir('ctdc-model'){
-          git branch: 'master',
-          url: 'https://github.com/CBIIT/ctdc-model'
-        }
   		}
     }
     stage('set-environment'){

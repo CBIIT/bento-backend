@@ -12,10 +12,13 @@ match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
 s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
 arm_Id: "{{ lookup('env','ARM_ID') }}"
 phs_Id: "{{ lookup('env','PHS_ID') }}"
+api_key: "{{ lookup('env','API_KEY') }}"
+secret_name: "{{ lookup('env','OKTA_SCRET') }}"
 
 match_vars:
   armId: "{{arm_Id}}"
   phsId: "{{phs_Id}}"
   bucketName: "{{s3_bucket}}"
   matchBaseUrl: "{{match_base_url}}"
+  secretName: "{{secret_name}}"
  

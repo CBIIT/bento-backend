@@ -10,17 +10,14 @@
     state: absent
   when: stat_result.stat.exists == True
 
-- name: list the content  of {{ data_bucket }}
-  aws_s3: 
-    bucket: "{{data_bucket}}"
-    prefix: "{{s3_folder}}" 
-    mode: list
-    marker: "{{s3_folder}}"
-  register: s3_content
+# - name: list the content  of {{ data_bucket }}
+#   aws_s3: 
+#     bucket: "{{data_bucket}}"
+#     prefix: "{{s3_folder}}" 
+#     mode: list
+#     marker: "{{s3_folder}}"
+#   register: s3_content
 
-- name: show s3 content
-  debug: 
-    msg: "{{ s3_content.s3_keys }}"
 
 # - name: download all the files from {{s3_folder}}
 #   aws_s3:

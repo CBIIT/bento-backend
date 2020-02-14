@@ -1,0 +1,84 @@
+pipeline {
+	agent {
+		node {
+			label 'slave-ncias-d2320-c'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    string(defaultValue: "EAY131-XXX", 
+        description: 'Enter ArmID Here:', 
+        name: 'ArmID')
+    string(defaultValue: "phs00xxxx", 
+        description: 'Enter PhsID Here:', 
+        name: 'PhsID')
+    string(defaultValue: "", 
+        description: 'S3 Bucket to load file from', 
+        name: 'S3Bucket')
+    extendedChoice( 
+        defaultValue: 'uat', 
+        name: 'MatchEnv', 
+        description: 'Choose environment to file to',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'uat,prod',
+        type: 'PT_RADIO')   
+  }
+  // options {
+  // 	ansiColor('xterm')
+  // }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+          recursiveSubmodules: true,
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+          sh 'git submodule update --init'
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+        dir('ctdc-model'){
+          git branch: 'master',
+          url: 'https://github.com/CBIIT/ctdc-model'
+        }
+  		}
+ 
+  	}
+  	stage('loader-data'){
+ 		environment {
+ 			SLACK_URL   =   "${SLACK_URL}"
+      S3_BUCKET   =   "${params.S3Bucket}"
+      ARM_ID      =   "${params.ArmID}"
+      PHS_ID      =   "${params.PhsID}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
+
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-file-loader.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
+ 		}
+  }
+ }
+}

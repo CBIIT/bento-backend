@@ -60,16 +60,21 @@ pipeline {
         }
   		}
     stage('set-environment'){
+      withCredentials([string(credentialsId: 'okta_key', variable: 'oktaSecret')]){
         steps {
           script {
             switch("${params.MatchEnv}") {
               case "uat":
                   env.MATCH_BASE_URL  = "https://api.match-uat.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "false"
+                  env.OKTA_KEY  =   "${oktaSecret}"
+                  env.SECRET_NAME = "Okta-Match-UAT-Secrets"
               break
               case "prod":
                   env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "true"
+                  env.OKTA_KEY  =   "${oktaSecret}"
+                  env.SECRET_NAME = "Okta-Match-Secrets"
               break
               default:
                 println "Select valid MatchEnv"
@@ -77,6 +82,7 @@ pipeline {
               }
           }
         }
+      }
     }
   	}
   	stage('loader-data'){
@@ -88,13 +94,10 @@ pipeline {
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
-
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-file-loader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             			colorized: true) 
- 				}
  			}
  		}
   }

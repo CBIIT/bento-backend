@@ -13,7 +13,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/ctdc-data-processing')
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
     string(defaultValue: "EAY131-XXX", 
         description: 'Enter ArmID Here:', 
         name: 'ArmID')
@@ -48,14 +48,36 @@ pipeline {
   				false, extensions: [], submoduleCfg: [], 
           recursiveSubmodules: true,
   				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/ctdc-data-processing']]])
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
           sh 'git submodule update --init'
   			dir('icdc-devops'){
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
+        dir('ctdc-model'){
+          git branch: 'master',
+          url: 'https://github.com/CBIIT/ctdc-model'
+        }
   		}
- 
+    stage('set-environment'){
+        steps {
+          script {
+            switch("${params.MatchEnv}") {
+              case "uat":
+                  env.MATCH_BASE_URL  = "https://api.match-uat.nci.nih.gov/api/v1"
+                  env.USE_PROD    =   "false"
+              break
+              case "prod":
+                  env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
+                  env.USE_PROD    =   "true"
+              break
+              default:
+                println "Select valid MatchEnv"
+              break
+              }
+          }
+        }
+    }
   	}
   	stage('loader-data'){
  		environment {

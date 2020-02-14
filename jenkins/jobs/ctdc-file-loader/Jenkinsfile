@@ -59,6 +59,7 @@ pipeline {
           url: 'https://github.com/CBIIT/ctdc-model'
         }
   		}
+    }
     stage('set-environment'){
       withCredentials([string(credentialsId: 'okta_key', variable: 'oktaSecret')]){
         steps {
@@ -84,7 +85,6 @@ pipeline {
         }
       }
     }
-  	}
   	stage('loader-data'){
  		environment {
  			SLACK_URL   =   "${SLACK_URL}"

@@ -25,7 +25,7 @@
     "{{match_vars|dict2items}}"
 
 - name: show file content
-  command: cat {{workspace}}/config/config.json)}}
+  command: cat {{workspace}}/config/config.json
   register: content
 
 - name: show config.json content

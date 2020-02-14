@@ -18,7 +18,7 @@
 
 - name: change dummy armId,phsID,bucket name and env
   replace:
-    path: /Users/mdtutorials2/Documents/Ansible/intext.txt
+    path: "{{workspace}}/config/config.json"
     regexp: "{{item.key}}"
     replace: "{{item.key}}:{{item.value}}"
   loop:

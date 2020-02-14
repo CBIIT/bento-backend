@@ -20,9 +20,9 @@
   replace:
     path: /Users/mdtutorials2/Documents/Ansible/intext.txt
     regexp: "{{item.key}}"
-    replace: "{{item.key}}"
+    replace: "{{item.key}}:{{item.value}}"
   loop:
-    "{{match_vars}}"
+    "{{match_vars|dict2items}}"
 
 
 - name: show config.json content

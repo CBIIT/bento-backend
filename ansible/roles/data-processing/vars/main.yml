@@ -8,7 +8,7 @@ neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 s3_folder: "{{ lookup('env','S3_FOLDER') }}"
 wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 #vars for match files
-match_url: "{{ lookup('env','MATCH_BASE_URL') }}"
+match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
 okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
 bucket_name: "{{ lookup('env','S3_BUCKET') }}"
 arm_Id: "{{ lookup('env','ARM_ID') }}"

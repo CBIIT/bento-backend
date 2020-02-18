@@ -20,9 +20,14 @@
     src: "{{workspace}}/config/config.json.j2"
     dest: "{{workspace}}/config/config.json"
 
-- name: show file content
-  debug: 
-    msg: "{{lookup('file',{{workspace}}/config/config.json)}}"
+- name: get file content
+  include_vars:
+    file: "{{workspace}}/config/config.json"
+    name: json_file
+
+- name: show file
+  debug:
+    msg: "{{ json_file }}"
 
 # - name: execute file loader script
 #   shell:

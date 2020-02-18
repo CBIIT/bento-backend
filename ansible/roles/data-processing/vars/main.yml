@@ -13,7 +13,7 @@ okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
 bucket_name: "{{ lookup('env','S3_BUCKET') }}"
 arm_Id: "{{ lookup('env','ARM_ID') }}"
 phs_Id: "{{ lookup('env','PHS_ID') }}"
-okta_secret: "{{ lookup('env','OKTA_KEY') }}"
+okta_key: "{{ lookup('env','OKTA_KEY') }}"
 secret_name: "{{ lookup('env','SECRET_NAME') }}"
 meta_data_path: "{{ lookup('env','META_DATA_PATH') }}"
 #meta_data_bucket: "{{ lookup('env','META_DATA_BUCKET') }}"

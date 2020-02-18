@@ -8,19 +8,13 @@ neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 s3_folder: "{{ lookup('env','S3_FOLDER') }}"
 wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 #vars for match files
-match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
+match_url: "{{ lookup('env','MATCH_BASE_URL') }}"
 okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
-s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
+bucket_name: "{{ lookup('env','S3_BUCKET') }}"
 arm_Id: "{{ lookup('env','ARM_ID') }}"
 phs_Id: "{{ lookup('env','PHS_ID') }}"
-okta_key: "{{ lookup('env','OKTA_KEY') }}"
+okta_secret: "{{ lookup('env','OKTA_KEY') }}"
 secret_name: "{{ lookup('env','SECRET_NAME') }}"
-
-match_vars:
-  armId: "{{arm_Id}}"
-  phsId: "{{phs_Id}}"
-  bucketName: "{{s3_bucket}}"
-  matchBaseUrl: "{{match_base_url}}"
-  secretName: "{{secret_name}}"
-  oktaAuthUrl: "{{okta_url}}"
- 
+meta_data_path: "{{ lookup('env','META_DATA_PATH') }}"
+meta_data_bucket: "{{ lookup('env','META_DATA_BUCKET') }}"
+use_prod: "{{ lookup('env','USE_PROD') }}"

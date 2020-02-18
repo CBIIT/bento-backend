@@ -12,7 +12,7 @@
 
 - name: create dict from arms_id and phps_id
   set_fact:
-    match_Ids: "{{ dict(arm_Id.split(',') | zip(phs_Id.split(','))) }}"
+    match_Ids: "{{ dict(arm_Id.split(',')|trim|replace(' ','') | zip(phs_Id.split(',')|trim|replace(' ',''))) }}"
 
 - name: copy config.json.j2 config.json
   template:
@@ -37,9 +37,9 @@
 #       {{workspace}}/config/config.json
 #     chdir: "{{workspace}}"
 #   register: file_loader
-#   when: wipe_db == "no"
 
-# - name: show dataloader output
+
+# - name: show file_loader output
 #   debug:
-#     msg: "{{data_loader}}"
+#     msg: "{{file_loader}}"
 

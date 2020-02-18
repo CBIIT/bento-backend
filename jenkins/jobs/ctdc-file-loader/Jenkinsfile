@@ -30,7 +30,15 @@ pipeline {
         quoteValue: false,
         multiSelectDelimiter: ',',
         value: 'uat,prod',
-        type: 'PT_RADIO')   
+        type: 'PT_RADIO')
+    extendedChoice( 
+        defaultValue: '3', 
+        name: 'CipheyKey', 
+        description: 'Select C',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: '0,1,2,3,4,5,6,7,8,9',
+        type: 'PT_SINGLE_SELECT')      
   }
   // options {
   // 	ansiColor('xterm')
@@ -68,6 +76,7 @@ pipeline {
                   env.SECRET_NAME = "Okta-Match-UAT-Secrets"
                   env.META_DATA_PATH = "UAT"
                   env.META_DATA_BUCKET = ""
+                  env.CIPHER_KEY = "${{params.CipheyKey}}"
                 }
               break
               case "prod":
@@ -78,6 +87,7 @@ pipeline {
                   env.SECRET_NAME = "Okta-Match-Secrets"
                   env.META_DATA_PATH = ""
                   env.META_DATA_BUCKET = ""
+                  env.CIPHER_KEY = "${{params.CipheyKey}}"
                 }
               break
               default:

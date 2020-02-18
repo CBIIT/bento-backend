@@ -67,6 +67,7 @@ pipeline {
                   env.OKTA_KEY  =   "${oktaSecret}"
                   env.SECRET_NAME = "Okta-Match-UAT-Secrets"
                   env.META_DATA_PATH = "UAT"
+                  env.META_DATA_BUCKET = ""
                 }
               break
               case "prod":
@@ -76,6 +77,7 @@ pipeline {
                   env.OKTA_KEY  =   "${oktaSecret}"
                   env.SECRET_NAME = "Okta-Match-Secrets"
                   env.META_DATA_PATH = ""
+                  env.META_DATA_BUCKET = ""
                 }
               break
               default:

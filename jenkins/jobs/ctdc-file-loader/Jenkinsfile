@@ -13,7 +13,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+        useRepository: 'https://github.com/CBIIT/ctdc-data-processing')
     string(defaultValue: "EAY131-XXX", 
         description: 'Enter ArmID Here:', 
         name: 'ArmID')
@@ -48,28 +48,33 @@ pipeline {
   				false, extensions: [], submoduleCfg: [], 
           recursiveSubmodules: true,
   				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+  				[[url: 'https://github.com/CBIIT/ctdc-data-processing']]])
           sh 'git submodule update --init'
   			dir('icdc-devops'){
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
-        dir('ctdc-model'){
-          git branch: 'master',
-          url: 'https://github.com/CBIIT/ctdc-model'
-        }
   		}
+    }
     stage('set-environment'){
         steps {
           script {
             switch("${params.MatchEnv}") {
               case "uat":
+                withCredentials([string(credentialsId: 'okta_key', variable: 'oktaSecret')]){
                   env.MATCH_BASE_URL  = "https://api.match-uat.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "false"
+                  env.OKTA_KEY  =   "${oktaSecret}"
+                  env.SECRET_NAME = "Okta-Match-UAT-Secrets"
+                }
               break
               case "prod":
+                withCredentials([string(credentialsId: 'okta_key', variable: 'oktaSecret')]){
                   env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "true"
+                  env.OKTA_KEY  =   "${oktaSecret}"
+                  env.SECRET_NAME = "Okta-Match-Secrets"
+                }
               break
               default:
                 println "Select valid MatchEnv"
@@ -78,7 +83,6 @@ pipeline {
           }
         }
     }
-  	}
   	stage('loader-data'){
  		environment {
  			SLACK_URL   =   "${SLACK_URL}"
@@ -88,13 +92,10 @@ pipeline {
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
-
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-file-loader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             			colorized: true) 
- 				}
  			}
  		}
   }

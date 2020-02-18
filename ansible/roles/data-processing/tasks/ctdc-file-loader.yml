@@ -17,17 +17,20 @@
     dest: "{{workspace}}/config/config.json"
 
 - name: change dummy armId,phsID,bucket name and env
-  replace:
-    path: "{{workspace}}/config/config.json"
-    regexp: "{{item.key}}"
-    replace: "{{item.key}}:{{item.value}}"
+  lineinfile:
+    dest: "{{workspace}}/config/config.json"
+    regexp: "^{{item.key}}"
+    line: "{{item.key}}:{{item.value}}"
   loop:
     "{{match_vars|dict2items}}"
 
+- name: show file content
+  command: cat {{workspace}}/config/config.json
+  register: content
 
 - name: show config.json content
   debug:
-    msg: "{{lookup('file',{{workspace}}/config/config.json)}}"
+    msg: "{{ content.stdout}}"
 
 # - name: execute file loader script
 #   shell:

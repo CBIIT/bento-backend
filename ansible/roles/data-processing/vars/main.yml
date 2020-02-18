@@ -9,11 +9,12 @@ s3_folder: "{{ lookup('env','S3_FOLDER') }}"
 wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 #vars for match files
 match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
+okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
 s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
 arm_Id: "{{ lookup('env','ARM_ID') }}"
 phs_Id: "{{ lookup('env','PHS_ID') }}"
-api_key: "{{ lookup('env','API_KEY') }}"
-secret_name: "{{ lookup('env','OKTA_SCRET') }}"
+okta_key: "{{ lookup('env','OKTA_KEY') }}"
+secret_name: "{{ lookup('env','SECRET_NAME') }}"
 
 match_vars:
   armId: "{{arm_Id}}"
@@ -21,4 +22,5 @@ match_vars:
   bucketName: "{{s3_bucket}}"
   matchBaseUrl: "{{match_base_url}}"
   secretName: "{{secret_name}}"
+  oktaAuthUrl: "{{okta_url}}"
  

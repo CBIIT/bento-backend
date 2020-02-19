@@ -1,0 +1,11 @@
+---
+- name: migrate sumologic to fed
+  hosts: sumologic
+  become: yes
+  
+  vars_files:
+    - config/migrations.yml
+    
+  roles:
+    - migrations
+

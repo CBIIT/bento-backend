@@ -1,0 +1,5 @@
+---
+# vars file for sumologic
+config: /opt/SumoCollector/config
+collector_name: "{{collector_name }}"
+

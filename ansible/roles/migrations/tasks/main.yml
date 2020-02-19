@@ -7,7 +7,7 @@
 
 - name: remove cred directory
   file:
-    path: "{{config}}/cred"
+    path: "{{config}}/creds"
     state: absent
     
 - name: copy user.properties and source configuration

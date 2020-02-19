@@ -1,0 +1,19 @@
+---
+# tasks file for sumologic
+- name: Stop collector service
+  service:
+    name: collector
+    state: stopped
+
+- name: remove cred directory
+  file:
+    path: "{{config}}/cred"
+    state: absent
+    
+- name: copy user.properties and source configuration
+  template:
+    src: user.properties.j2
+    dest: "{{config}}/user.properties"
+    group: sumologic_collector
+  notify: restart collector
+    

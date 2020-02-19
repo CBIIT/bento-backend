@@ -12,8 +12,11 @@
     
 - name: copy user.properties and source configuration
   template:
-    src: user.properties.j2
-    dest: "{{config}}/user.properties"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     group: sumologic_collector
+  with_items:
+    - {src: 'sources.json.j2',dest: '{{config}}/sources.json'}
+    - {src: 'user.properties.j2',dest: '{{config}}/user.properties'}
   notify: restart collector
     

@@ -27,9 +27,9 @@
 #     file: "{{workspace}}/config/config.json"
 #     name: json_file
 
-- name: show file
-  debug:
-    msg: "{{ json_file }}"
+# - name: show file
+#   debug:
+#     msg: "{{ json_file }}"
 
 # - name: execute file loader script
 #   shell:

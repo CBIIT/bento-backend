@@ -75,7 +75,7 @@ pipeline {
                   env.OKTA_KEY  =   "${oktaSecret}"
                   env.SECRET_NAME = "Okta-Match-UAT-Secrets"
                   env.META_DATA_PATH = "UAT"
-                  env.META_DATA_BUCKET = ""
+                  env.META_DATA_BUCKET = "nci-cbiit-ctdc-dev"
                   env.CIPHER_KEY = "${params.CipheyKey}"
                 }
               break
@@ -84,9 +84,9 @@ pipeline {
                   env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "true"
                   env.OKTA_KEY  =   "${oktaSecret}"
-                  env.SECRET_NAME = "Okta-Match-Secrets"
-                  env.META_DATA_PATH = ""
-                  env.META_DATA_BUCKET = ""
+                  env.SECRET_NAME = "Okta-Match-Prod-Secrets"
+                  env.META_DATA_PATH = "PROD"
+                  env.META_DATA_BUCKET = "nci-cbiit-ctdc-prod"
                   env.CIPHER_KEY = "${params.CipheyKey}"
                 }
               break
@@ -100,9 +100,9 @@ pipeline {
   	stage('loader-data'){
  		environment {
  			SLACK_URL   =   "${SLACK_URL}"
-      S3_BUCKET   =   "${params.S3Bucket}"
-      ARM_ID      =   "${params.ArmID}"
-      PHS_ID      =   "${params.PhsID}"
+      S3_BUCKET   =   "${params.S3Bucket.trim()}"
+      ARM_ID      =   "${params.ArmID.trim()}"
+      PHS_ID      =   "${params.PhsID.trim()}"
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

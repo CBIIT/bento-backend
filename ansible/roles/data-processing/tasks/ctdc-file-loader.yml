@@ -12,7 +12,7 @@
 
 - name: create dict from arms_id and phps_id
   set_fact:
-    match_Ids: "{{ dict(arm_Id.split(',') | zip(phs_Id.split(','))) }}"
+    match_Ids: "{{ dict(arm_Id.split(',') | zip(phs_Id.split(','))|zip(bucket_name.split(','))) }}"
 
 - name: copy config.json.j2 config.json
   template:

@@ -10,7 +10,14 @@
     state: absent
   when: stat_result.stat.exists == True
 
-- debug:
+- name: set facts
+  set_fact:
+    arm_id: "{{ arm_Id.split(',') }}"
+    phs_id: "{{phs_Id.split(',')}}"
+    bucket_name: "{{bucket_name.split(',')}}"
+
+- name: show 
+  debug:
     msg: "{{arm_id|length}}"
 
 # - name: create dict from arms_id and phps_id
@@ -28,9 +35,9 @@
 #     file: "{{workspace}}/config/config.json"
 #     name: json_file
 
-- name: show file
-  debug:
-    msg: "{{ json_file }}"
+# - name: show file
+#   debug:
+#     msg: "{{ json_file }}"
 
 # - name: execute file loader script
 #   shell:

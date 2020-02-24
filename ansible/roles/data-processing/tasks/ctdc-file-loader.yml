@@ -16,28 +16,25 @@
     phs_id: "{{phs_Id.split(',')}}"
     bucket_name: "{{bucket_Name.split(',')}}"
 
-- name: show 
-  debug:
-    msg: "{{arm_id|length}}"
 
 # - name: create dict from arms_id and phps_id
 #   set_fact:
 #     match_Ids: "{{ dict(arm_Id.split(',') | zip(phs_Id.split(','))|zip(bucket_name.split(','))) }}"
 
-# - name: copy config.json.j2 config.json
-#   template:
-#     remote_src: yes
-#     src: "{{workspace}}/config/config.json.j2"
-#     dest: "{{workspace}}/config/config.json"
+- name: copy config.json.j2 config.json
+  template:
+    remote_src: yes
+    src: "{{workspace}}/config/config.json.j2"
+    dest: "{{workspace}}/config/config.json"
 
-# - name: get file content
-#   include_vars:
-#     file: "{{workspace}}/config/config.json"
-#     name: json_file
+- name: get file content
+  include_vars:
+    file: "{{workspace}}/config/config.json"
+    name: json_file
 
-# - name: show file
-#   debug:
-#     msg: "{{ json_file }}"
+- name: show file
+  debug:
+    msg: "{{ json_file }}"
 
 # - name: execute file loader script
 #   shell:

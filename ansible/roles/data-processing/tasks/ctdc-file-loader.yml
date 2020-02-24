@@ -14,7 +14,7 @@
   set_fact:
     arm_id: "{{ arm_Id.split(',') }}"
     phs_id: "{{phs_Id.split(',')}}"
-    bucket_name: "{{bucket_name.split(',')}}"
+    bucket_name: "{{bucket_Name.split(',')}}"
 
 - name: show 
   debug:

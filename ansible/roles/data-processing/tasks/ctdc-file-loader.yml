@@ -29,17 +29,17 @@
   debug:
     msg: "{{ json_file }}"
 
-- name: execute file loader script
-  shell:
-    cmd: >
-      /usr/bin/python3
-      matchMain.py
-      {{workspace}}/config/config.json
-    chdir: "{{workspace}}"
-  register: file_loader
+# - name: execute file loader script
+#   shell:
+#     cmd: >
+#       /usr/bin/python3
+#       matchMain.py
+#       {{workspace}}/config/config.json
+#     chdir: "{{workspace}}"
+#   register: file_loader
 
 
-- name: show file_loader output
-  debug:
-    msg: "{{file_loader}}"
+# - name: show file_loader output
+#   debug:
+#     msg: "{{file_loader}}"
 

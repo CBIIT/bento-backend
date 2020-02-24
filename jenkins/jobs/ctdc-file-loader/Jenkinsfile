@@ -70,7 +70,7 @@ pipeline {
           script {
             switch("${params.MatchEnv}") {
               case "uat":
-                withCredentials([string(credentialsId: 'okta_key', variable: 'oktaSecret')]){
+                withCredentials([string(credentialsId: 'okta_key_uat', variable: 'oktaSecret')]){
                   env.MATCH_BASE_URL  = "https://api.match-uat.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "false"
                   env.OKTA_KEY  =   "${oktaSecret}"
@@ -81,7 +81,7 @@ pipeline {
                 }
               break
               case "prod":
-                withCredentials([string(credentialsId: 'okta_key', variable: 'oktaSecret')]){
+                withCredentials([string(credentialsId: 'okta_key_prod', variable: 'oktaSecret')]){
                   env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
                   env.USE_PROD    =   "true"
                   env.OKTA_KEY  =   "${oktaSecret}"

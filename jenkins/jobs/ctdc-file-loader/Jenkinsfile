@@ -58,6 +58,7 @@ pipeline {
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/ctdc-data-processing']]])
           sh 'git submodule update --init'
+          sh 'git lfs pull'
   			dir('icdc-devops'){
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'

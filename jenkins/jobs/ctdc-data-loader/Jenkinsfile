@@ -81,6 +81,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.S3_FOLDER   = "${params.S3Folder}"
                   env.TIER        = "${params.Environment}"
+                  env.TIER        = "dev"
                   env.WIPE_DB     = "${params.WipeDB}"
               break
               case "stage":

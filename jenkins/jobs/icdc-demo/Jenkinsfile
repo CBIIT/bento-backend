@@ -54,7 +54,7 @@ pipeline {
             defaultValue: 'dev', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
-            value: 'sandbox,dev,qa,stage,prod' )
+            value: 'demo,dev,qa,stage,prod' )
   }
   //  triggers { 
   //    pollSCM('H/15 * * * 1-5') 
@@ -74,37 +74,28 @@ pipeline {
     }
     stage('Set Environment'){
         environment {
-          DEV_URL = "caninecommons-demo.cancer.gov"
+          DEMO_URL = "caninecommons-demo.cancer.gov"
           VERSION = "${params.Tag}"
         }
         steps {
           script {
             switch("${params.Environment}") {
-              case "sandbox":
-                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+              case "demo":
+                withCredentials([file(credentialsId: 'demo_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_IP}"
-                  env.NEO4J_IP    = "${NEO4J_IP}"
-                }
-              break
-              case "dev":
-                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEMO_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEMO_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                 }
               break
               default:
-                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
+                withCredentials([file(credentialsId: 'demo_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEMO_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEMO_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                 }
               break
             }

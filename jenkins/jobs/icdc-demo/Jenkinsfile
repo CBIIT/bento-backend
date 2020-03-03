@@ -51,7 +51,7 @@ pipeline {
             useRepository: 'https://github.com/CBIIT/icdc-codebase')
     extendedChoice( 
             name: 'Environment', 
-            defaultValue: 'dev', 
+            defaultValue: 'demo', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
             value: 'demo,dev,qa,stage,prod' )

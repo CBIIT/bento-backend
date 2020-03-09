@@ -2,4 +2,10 @@
 # vars file for sumologic
 config: /opt/SumoCollector/config
 collector_name: "{{collector_name }}"
+additional_logs:
+  - name: "{{ env }} {{app_name}} Logs" 
+    description: "{{ env }} {{app_name}} logs"
+    category: "{{env }}/{{app_type}}/{{app_name}}"
+    path: "{{log_path}}/*"
+    filters: ""    
 

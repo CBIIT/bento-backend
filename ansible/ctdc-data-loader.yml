@@ -10,4 +10,5 @@
         name: data-processing
         tasks_from: ctdc-data-loader
       vars:
-        data_bucket: nci-cbiit-ctdc-{{tier}}
+        # data_bucket: nci-cbiit-ctdc-{{tier}}
+        data_bucket: nci-cbiit-ctdc-dev

@@ -66,33 +66,41 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "demo":
-                  env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
-                  env.S3_FOLDER   = "${params.S3Folder}"
-                  env.TIER        = "${params.Environment}"
-                  env.WIPE_DB     = "${params.WipeDB}"
+                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = credentials('neo4j_ctdc_demo_cred')
               break
               case "dev":
-                  env.NEO4J_IP    = "${NEO4J_CTDC_DEV_IP}"
-                  env.S3_FOLDER   = "${params.S3Folder}"
-                  env.TIER        = "${params.Environment}"
-                  env.WIPE_DB     = "${params.WipeDB}"
+                  env.NEO4J_IP        = "${NEO4J_CTDC_DEV_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = credentials('neo4j_ctdc_dev_cred')
               break
               case "qa":
-                  env.NEO4J_IP    = "${NEO4J_CTDC_QA_IP}"
-                  env.S3_FOLDER   = "${params.S3Folder}"
-                  env.TIER        = "${params.Environment}"
-                  env.TIER        = "dev"
-                  env.WIPE_DB     = "${params.WipeDB}"
+                  env.NEO4J_IP        = "${NEO4J_CTDC_QA_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.TIER            = "dev"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = credentials('neo4j_ctdc_qa_cred')
               break
               case "stage":
-                  env.NEO4J_IP    = "${NEO4J_CTDC_STAGE_IP}"
-                  env.S3_FOLDER   = "${params.S3Folder}"
-                  env.TIER        = "${params.Environment}"
-                  env.WIPE_DB     = "${params.WipeDB}"
+                  env.NEO4J_IP        = "${NEO4J_CTDC_STAGE_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = credentials('neo4j_ctdc_stage_cred')
               break
               case "prod":
-                  env.NEO4J_IP    = "${NEO4J_CTDC_PROD_IP}"
-                  env.WIPE_DB     = "${params.WipeDB}"
+                  env.NEO4J_IP        = "${NEO4J_CTDC_PROD_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = credentials('neo4j_ctdc_prod_cred')
+
               break
               default:
                 println "Select valid option"

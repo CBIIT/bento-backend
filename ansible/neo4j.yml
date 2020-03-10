@@ -13,5 +13,5 @@
     - neo4j
     - sumologic
     - newrelic
-    - sumologic-journalctl
+    # - sumologic-journalctl
 

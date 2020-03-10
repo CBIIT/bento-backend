@@ -27,54 +27,52 @@
 #     mode: get
 #   loop: "{{ s3_content.s3_keys }}"
 
-# - name: copy config.sample.ini config.ini
-#   copy:
-#     remote_src: yes
-#     src: "{{workspace}}/config/config.example.ini"
-#     dest: "{{workspace}}/config/config.ini"
+- name: copy config.sample.ini config.ini
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/config/config.example.ini"
+    dest: "{{workspace}}/config/config.ini"
 
-# - name: execute dataloader script
-#   shell:
-#     cmd: >
-#       /usr/bin/python3
-#       loader.py -i bolt://{{ neo4j_ip }}:7687 
-#       --config-file config/config.ini
-#       --prop-file config/props-ctdc.yml
-#       -p {{ neo4j_password }}
-#       -s {{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml
-#       -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
-#       -c -b {{ data_bucket }}
-#       -f {{ s3_folder }} tmp
-#     chdir: "{{workspace}}"
-#   register: data_loader
-#   when: wipe_db == "no"
+- name: execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py -i bolt://{{ neo4j_ip }}:7687 
+      --config-file config/config.ini
+      --prop-file config/props-ctdc.yml
+      -p {{ neo4j_password }}
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
+      -c -b {{ data_bucket }}
+      -f {{ s3_folder }} tmp
+    chdir: "{{workspace}}"
+  register: data_loader
+  when: wipe_db == "no"
 
-# - name: show dataloader output
-#   debug:
-#     msg: "{{data_loader}}"
-
-# - name: wipe out database then execute dataloader script
-#   shell:
-#     cmd: >
-#       /usr/bin/python3
-#       loader.py -i bolt://{{ neo4j_ip }}:7687 
-#       --config-file config/config.ini
-#       --prop-file config/props-ctdc.yml
-#       -p {{ neo4j_password }}
-#       -s {{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml
-#       -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
-#       -c -b {{ data_bucket }}
-#       -f {{ s3_folder }} tmp
-#       --wipe-db
-#       --yes
-#     chdir: "{{workspace}}"
-#   register: data_loader
-#   when: wipe_db == "yes"
-
-# - name: show dataloader output
-#   debug:
-#     msg: "{{data_loader}}"
-
-- name: verify credential
+- name: show dataloader output
   debug:
-    msg: "{{neo4j_password}}"
+    msg: "{{data_loader}}"
+
+- name: wipe out database then execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py -i bolt://{{ neo4j_ip }}:7687 
+      --config-file config/config.ini
+      --prop-file config/props-ctdc.yml
+      -p {{ neo4j_password }}
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml
+      -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
+      -c -b {{ data_bucket }}
+      -f {{ s3_folder }} tmp
+      --wipe-db
+      --yes
+    chdir: "{{workspace}}"
+  register: data_loader
+  when: wipe_db == "yes"
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"
+
+

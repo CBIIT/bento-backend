@@ -45,6 +45,7 @@
       -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
       -c -b {{ data_bucket }}
       -f {{ s3_folder }} tmp
+      --no-backup
     chdir: "{{workspace}}"
   register: data_loader
   when: wipe_db == "no"
@@ -65,6 +66,7 @@
       -s {{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml
       -c -b {{ data_bucket }}
       -f {{ s3_folder }} tmp
+      --no-backup
       --wipe-db
       --yes
     chdir: "{{workspace}}"

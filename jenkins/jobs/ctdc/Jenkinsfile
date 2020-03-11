@@ -208,8 +208,7 @@ done'''
     }
     steps {
       withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER')]){
-        //sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: ${BEARER}' -d @src/main/resources/graphql/ctdc.graphql"
-        sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: Basic bmVvNGo6UjNNdFltSjNXNW5IcTFX' -d @src/main/resources/graphql/ctdc.graphql"
+        sh "curl -X POST http://${NEO4J_IP}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: ${BEARER}' -d @src/main/resources/graphql/ctdc.graphql"
       }
     }
    }

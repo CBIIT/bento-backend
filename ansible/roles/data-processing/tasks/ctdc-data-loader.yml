@@ -27,6 +27,10 @@
 #     mode: get
 #   loop: "{{ s3_content.s3_keys }}"
 
+- name: show neo4j_password
+  debug:
+    msg: "{{neo4j_password}}"
+
 - name: copy config.sample.ini config.ini
   copy:
     remote_src: yes

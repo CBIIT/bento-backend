@@ -14,10 +14,8 @@ slack_url = args.slackURL
 def post_message_to_slack(message_text):
     return requests.post(slack_url, data=message_text, headers=slackHeaders)
 
-#example args ['ncias-d2224-c','ncias-d2267-c']:
 for i in args.servers:
     graphURL = 'http://' + i + '.nci.nih.gov:7475/graphql/'
-    print graphURL
 
     try:
         request = requests.get(graphURL)
@@ -25,7 +23,6 @@ for i in args.servers:
         print('The graph QL endpoint on ' + i + ' is NOT responding - please verify that this application is working')
         slack_message = 'The graph QL endpoint on {} is NOT responding - please verify that this application is working'.format(i)
         payload = '{"text":"' + slack_message + '"}'
-        print payload
         post_message_to_slack(payload)
 
     else:

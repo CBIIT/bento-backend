@@ -150,7 +150,7 @@ pipeline {
     }
     stage('Build') {
       environment {
-        SLACK_URL = "${SLACK_URL}"
+        CTDC_SLACK_URL = "${CTDC_SLACK_URL}"
       }
       steps {
         withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 

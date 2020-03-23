@@ -15,7 +15,7 @@ def post_message_to_slack(message_text):
     return requests.post(slack_url, data=message_text, headers=slackHeaders)
 
 for i in args.servers:
-    graphURL = 'http://' + i + '.nci.nih.gov:7475/graphql/'
+    graphURL = 'http://' + i + '.nci.nih.gov:7474/graphql/'
 
     try:
         request = requests.get(graphURL)

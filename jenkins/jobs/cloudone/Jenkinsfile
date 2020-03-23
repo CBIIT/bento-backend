@@ -24,7 +24,7 @@ def sendSlackMessage() {
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -56,9 +56,9 @@ pipeline {
             type: 'PT_SINGLE_SELECT',
             value: 'sandbox,dev,qa,stage,prod' )
   }
-  //  triggers { 
-  //    pollSCM('H/15 * * * 1-5') 
-  //   }
+   triggers { 
+     pollSCM('H/15 * * * 1-5') 
+    }
   options {
     timestamps()
   }
@@ -150,7 +150,7 @@ pipeline {
     }
     stage('Build') {
       environment {
-        SLACK_URL = "${SLACK_URL}"
+        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
       }
       steps {
         withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 

@@ -1,7 +1,7 @@
 ---
 # vars file for sumologic
 config: /opt/SumoCollector/config
-collector_name: "{{ collector_name }}-{{ inventory_hostname_short }}"
+collector_name: "{{ collector_prefix }}-{{ inventory_hostname_short }}"
 tomcat_logs:
   - name: "{{ env }} {{ app_name }} Access Logs"
     description: "{{ env }} {{ app_name}} Logs"

@@ -1,11 +1,32 @@
 ---
 # vars file for sumologic
 config: /opt/SumoCollector/config
-collector_name: "{{collector_name }}"
-additional_logs:
-  - name: "{{ env }} {{app_name}} Logs" 
-    description: "{{ env }} {{app_name}} logs"
-    category: "{{env }}/{{app_type}}/{{app_name}}"
-    path: "{{log_path}}/*"
-    filters: ""    
-
+collector_name: "{{ collector_name }}-{{ inventory_hostname_short }}"
+tomcat_logs:
+  - name: "{{ env }} {{ app_name }} Access Logs"
+    desription: "{{ env }} {{ app_name}} Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}/Access"
+    path: "{{ log_path }}/localhost_access_log.*"
+    filters: ""
+  - name: "{{ env }} {{ app_name }} Catalina Logs"
+    description: "{{ env }} {{ app_name }} Catalina Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}/Catalina"
+    path: "{{ log_path }}/catalina.*"
+    filters: ""
+  - name: "{{ env }} {{ app_name }} Localhost Logs"
+    description: "{{ env }} {{ app_name }} Localhost Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}/Localhost"
+    path: "{{ log_path }}/localhost.*"
+    filters: ""
+  - name: "{{ env }} {{ inventory_hostname_short }} Docker Logs"
+    description: "{{ env }} {{ inventory_hostname_short }} Docker Logs"
+    category: "{{ env }}/{{ app_type }}/Docker"
+    path: "/var/lib/docker/containers/*/*.log"
+    filters: ""
+neo4j_logs:
+  - name: "{{ env }} {{ app_name }} Logs"
+    desription: "{{ env }} {{ app_name}} Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}"
+    path: "{{ log_path }}/*"
+    filters: ""
+additional_logs: "{{ tomcat_logs if app_name == 'Tomcat' else neo4j_logs }}"

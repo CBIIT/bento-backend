@@ -75,7 +75,7 @@ pipeline {
                 }
               break
               case "dev":
-                withCredentials([string(credentialsId: 'neo4j_ctdc_dev_cred', variable: 'neo4j_password')]) {
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_dev_cred', variable: 'neo4j_password')]) {
                   env.NEO4J_IP        = "${NEO4J_CTDC_DEV_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
@@ -84,7 +84,7 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'neo4j_ctdc_qa_cred', variable: 'neo4j_password')]) {
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_qa_cred', variable: 'neo4j_password')]) {
                   env.NEO4J_IP        = "${NEO4J_CTDC_QA_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
@@ -94,7 +94,7 @@ pipeline {
                 }
               break
               case "stage":
-                withCredentials([string(credentialsId: 'neo4j_ctdc_stage_cred', variable: 'neo4j_password')]) {
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_stage_cred', variable: 'neo4j_password')]) {
                   env.NEO4J_IP        = "${NEO4J_CTDC_STAGE_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
@@ -103,7 +103,7 @@ pipeline {
                 }
               break
               case "prod":
-                withCredentials([string(credentialsId: 'neo4j_ctdc_prod_cred', variable: 'neo4j_password')]) {
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_prod_cred', variable: 'neo4j_password')]) {
                   env.NEO4J_IP        = "${NEO4J_CTDC_PROD_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"

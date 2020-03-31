@@ -4,7 +4,7 @@ config: /opt/SumoCollector/config
 collector_name: "{{ collector_name }}-{{ inventory_hostname_short }}"
 tomcat_logs:
   - name: "{{ env }} {{ app_name }} Access Logs"
-    desription: "{{ env }} {{ app_name}} Logs"
+    description: "{{ env }} {{ app_name}} Logs"
     category: "{{ env }}/{{ app_type }}/{{ app_name }}/Access"
     path: "{{ log_path }}/localhost_access_log.*"
     filters: ""
@@ -25,7 +25,7 @@ tomcat_logs:
     filters: ""
 neo4j_logs:
   - name: "{{ env }} {{ app_name }} Logs"
-    desription: "{{ env }} {{ app_name}} Logs"
+    description: "{{ env }} {{ app_name}} Logs"
     category: "{{ env }}/{{ app_type }}/{{ app_name }}"
     path: "{{ log_path }}/*"
     filters: ""

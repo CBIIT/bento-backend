@@ -64,5 +64,29 @@
       "sourceType": "LocalFile"
     }
 {% endfor %}
+{% for log in additional_logs_docker %}
+    ,
+    {
+      "name": "{{ log.name }}",
+      "description": "{{ log.description }}",
+      "category": "{{ log.category }}",
+      "uri": "unix:///var/run/docker.sock",
+      "specifiedContainers": [],
+      "allContainers": true,
+      "multilineProcessingEnabled": false,
+{% if log.category = "{{ env }}/Docker/Logs" %}
+	  "collectevents": true,
+	  "sourceType": "DockerLogs"
+{% endif %}
+{% if log.category = "{{ env }}/Docker/Stats" %}
+      "certPath": "",
+      "sourceType": "DockerStats",
+      "pollInterval": 60000
+	   "automaticDateParsing": true,
+      "forceTimeZone": false,
+      "cutoffTimestamp": 0
+{% endif %}
+    }
+{% endfor %}
   ]
 }

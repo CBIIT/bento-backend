@@ -75,8 +75,8 @@
       "allContainers": true,
       "multilineProcessingEnabled": false,
 {% if "Logs" in log.category %}
-      "collectevents": true,
-      "sourceType": "DockerLogs"
+      "collectEvents": true,
+      "sourceType": "DockerLog"
 {% elif "Stats" in log.category %}
       "certPath": "",
       "sourceType": "DockerStats",

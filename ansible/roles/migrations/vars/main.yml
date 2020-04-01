@@ -18,11 +18,13 @@ tomcat_logs:
     category: "{{ env }}/{{ app_type }}/{{ app_name }}/Localhost"
     path: "{{ log_path }}/localhost.*"
     filters: ""
+docker_logs:
   - name: "{{ env }} Docker Logs"
     description: "{{ env }} Docker Logs"
-    category: "{{ env }}/{{ app_type }}/Docker"
-    path: "/var/lib/docker/containers/*/*.log"
-    filters: ""
+    category: "{{ env }}/Docker/Logs"
+  - name: "{{ env }} Docker Stats"
+    description: "{{ env }} Docker Stats"
+    category: "{{ env }}/Docker/Stats"
 neo4j_logs:
   - name: "{{ env }} {{ app_name }} Logs"
     description: "{{ env }} {{ app_name}} Logs"
@@ -30,3 +32,4 @@ neo4j_logs:
     path: "{{ log_path }}/*"
     filters: ""
 additional_logs: "{{ tomcat_logs if app_name == 'Tomcat' else neo4j_logs }}"
+additional_logs_docker: "{{ docker_logs if app_name == 'Tomcat' else '' }}"

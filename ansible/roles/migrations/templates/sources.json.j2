@@ -74,15 +74,14 @@
       "specifiedContainers": [],
       "allContainers": true,
       "multilineProcessingEnabled": false,
-{% if log.category = "{{ env }}/Docker/Logs" %}
-	  "collectevents": true,
-	  "sourceType": "DockerLogs"
-{% endif %}
-{% if log.category = "{{ env }}/Docker/Stats" %}
+{% if "Logs" in log.category %}
+      "collectevents": true,
+      "sourceType": "DockerLogs"
+{% elif "Stats" in log.category %}
       "certPath": "",
       "sourceType": "DockerStats",
       "pollInterval": 60000
-	   "automaticDateParsing": true,
+      "automaticDateParsing": true,
       "forceTimeZone": false,
       "cutoffTimestamp": 0
 {% endif %}

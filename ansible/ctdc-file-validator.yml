@@ -1,0 +1,12 @@
+---
+- name: validate metadata for data file
+  hosts: loader
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: perform data validation
+      include_role:
+        name: data-processing
+        tasks_from: ctdc-file-validator
+      

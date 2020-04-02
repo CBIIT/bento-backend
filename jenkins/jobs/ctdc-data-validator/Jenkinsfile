@@ -1,0 +1,79 @@
+pipeline {
+    agent {
+        node {
+            label 'slave-ncias-d2320-c'
+            }
+        }
+    parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/ctdc-data-processing')
+    string(defaultValue: "EAY131-XXX", 
+        description: 'Enter Arm IDs Here (comma separated):', 
+        name: 'ArmID')
+    //string(defaultValue: "", 
+    //    description: 'S3 Bucket to load manifest file from', 
+    //    name: 'S3Bucket')
+        }
+    // options {
+    // 	ansiColor('xterm')
+    // }
+    tools {
+        maven 'Default' 
+        jdk 'Default' 
+        }
+    stages{
+        stage('checkout'){
+            steps {
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: "${params.Tag}"]], 
+                    doGenerateSubmoduleConfigurations: 
+                    false, extensions: [], submoduleCfg: [], 
+                    recursiveSubmodules: true,
+                    userRemoteConfigs: 
+                    [[url: 'https://github.com/CBIIT/ctdc-data-processing']]])
+                sh 'git submodule update --init'
+                sh 'git lfs pull'
+                dir('icdc-devops'){
+                    git branch: 'master',
+                    url: 'https://github.com/CBIIT/icdc-devops.git'
+                    }
+                }
+            }
+        stage('set-environment'){
+            steps {
+                withCredentials([string(credentialsId: 'okta_key_prod', variable: 'oktaSecret')]){
+                    env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
+                    env.USE_PROD    =   "true"
+                    env.OKTA_KEY  =   "${oktaSecret}"
+                    env.SECRET_NAME = "Okta-Match-Prod-Secrets"
+                    env.META_DATA_PATH = "PROD"
+                    env.META_DATA_BUCKET = "nci-cbiit-ctdc-prod"
+                    env.CIPHER_KEY = "3"
+                    }
+                }
+            }
+        stage('validate-metadata'){
+            environment {
+                SLACK_URL   =   "${SLACK_URL}"
+                ARM_ID      =   "${params.ArmID}"
+                S3_BUCKET   =   ""
+                PHS_ID      =   ""
+                }
+            steps {
+                wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+                    ansiblePlaybook(
+                        playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-file-validator.yml',
+                        inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                        colorized: true)
+                    }
+                }
+            }
+        }
+    }

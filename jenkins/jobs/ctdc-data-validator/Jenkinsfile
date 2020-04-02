@@ -13,7 +13,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/ctdc-data-processing')
+        useRepository: 'https://github.com/CBIIT/icdc_helper_scripts')
     string(defaultValue: "EAY131-XXX", 
         description: 'Enter Arm IDs Here (comma separated):', 
         name: 'ArmID')
@@ -37,7 +37,7 @@ pipeline {
                     false, extensions: [], submoduleCfg: [], 
                     recursiveSubmodules: true,
                     userRemoteConfigs: 
-                    [[url: 'https://github.com/CBIIT/ctdc-data-processing']]])
+                    [[url: 'https://github.com/CBIIT/icdc_helper_scripts']]])
                 sh 'git submodule update --init'
                 sh 'git lfs pull'
                 dir('icdc-devops'){

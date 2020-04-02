@@ -48,14 +48,16 @@ pipeline {
             }
         stage('set-environment'){
             steps {
-                withCredentials([string(credentialsId: 'okta_key_prod', variable: 'oktaSecret')]){
-                    env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
-                    env.USE_PROD    =   "true"
-                    env.OKTA_KEY  =   "${oktaSecret}"
-                    env.SECRET_NAME = "Okta-Match-Prod-Secrets"
-                    env.META_DATA_PATH = "PROD"
-                    env.META_DATA_BUCKET = "nci-cbiit-ctdc-prod"
-                    env.CIPHER_KEY = "3"
+			    script {
+                    withCredentials([string(credentialsId: 'okta_key_prod', variable: 'oktaSecret')]){
+                        env.MATCH_BASE_URL  = "https://api.match.nci.nih.gov/api/v1"
+                        env.USE_PROD    =   "true"
+                        env.OKTA_KEY  =   "${oktaSecret}"
+                        env.SECRET_NAME = "Okta-Match-Prod-Secrets"
+                        env.META_DATA_PATH = "PROD"
+                        env.META_DATA_BUCKET = "nci-cbiit-ctdc-prod"
+                        env.CIPHER_KEY = "3"
+                        }
                     }
                 }
             }

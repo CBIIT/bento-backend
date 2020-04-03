@@ -51,7 +51,7 @@
 
 - name: get manifest file content
   include_vars:
-    file: "{{workspace}}/data/manifest.tsv"
+    file: "{{workspace}}/manifest.tsv"
     name: tsv_file
 
 - name: show manifest file

@@ -24,3 +24,4 @@ cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
 
 #vars for data validation
 ctdc_base_url: "https://trialcommons-dev.cancer.gov"
+manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"

@@ -17,6 +17,9 @@ pipeline {
     string(defaultValue: "EAY131-XXX", 
         description: 'Enter Arm IDs Here (comma separated):', 
         name: 'ArmID')
+    string(defaultValue: "", 
+        description: 'Enter Manifest File Name Here:', 
+        name: 'ManifestFile')
     //string(defaultValue: "", 
     //    description: 'S3 Bucket to load manifest file from', 
     //    name: 'S3Bucket')
@@ -63,10 +66,11 @@ pipeline {
             }
         stage('validate-metadata'){
             environment {
-                SLACK_URL   =   "${SLACK_URL}"
-                ARM_ID      =   "${params.ArmID}"
-                S3_BUCKET   =   ""
-                PHS_ID      =   ""
+                SLACK_URL      =   "${SLACK_URL}"
+                ARM_ID         =   "${params.ArmID}"
+                MANIFEST_FILE  =   "${params.ManifestFile}"
+                S3_BUCKET      =   ""
+                PHS_ID         =   ""
                 }
             steps {
                 wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

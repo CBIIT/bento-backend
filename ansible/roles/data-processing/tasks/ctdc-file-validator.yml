@@ -52,29 +52,20 @@
 - name: get manifest file from S3
   aws_s3:
     bucket: nci-cbiit-ctdc-dev
-    object: "/Manifests/Manifest2020_02_25_17_56_10.tsv"
+    object: "/Manifests/{{manifest_file}}"
     dest: "{{workspace}}/manifest.tsv"
     mode: get
 
-- name: get manifest file content
-  include_vars:
-    file: "{{workspace}}/manifest.tsv"
-    name: tsv_file
+- name: execute manifest validator script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      match_manifest_validator.py
+      --config-file {{workspace}}/config/config.json
+      {{workspace}}/manifest.tsv
+    chdir: "{{workspace}}"
+  register: manifest_validator_out
 
-- name: show manifest file
+- name: show manifest validator output
   debug:
-    msg: "{{ tsv_file }}"
-
-#- name: execute manifest validator script
-#  shell:
-#    cmd: >
-#      /usr/bin/python3
-#      match_manifest_validator.py
-#      --config-file {{workspace}}/config/config.json
-#      {{workspace}}/data/manifest.tsv
-#    chdir: "{{workspace}}"
-#  register: manifest_validator_out
-
-#- name: show manifest validator output
-#  debug:
-#    msg: "{{manifest_validator_out}}"
+    msg: "{{manifest_validator_out}}"

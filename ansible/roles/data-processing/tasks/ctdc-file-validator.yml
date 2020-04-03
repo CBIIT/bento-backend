@@ -49,14 +49,21 @@
   debug:
     msg: "{{metadata_validator_out}}"
 
-#- name: get manifest file content
-#  include_vars:
-#    file: "{{workspace}}/manifest.tsv"
-#    name: tsv_file
+- name: get manifest file from S3
+  aws_s3:
+    bucket: nci-cbiit-ctdc-dev
+    object: /Manifests/Manifest2020_02_25_17_56_10.tsv
+    dest: {{workspace}}/manifests/manifest.tsv
+    mode: get
 
-#- name: show manifest file
-#  debug:
-#    msg: "{{ tsv_file }}"
+- name: get manifest file content
+  include_vars:
+    file: "{{workspace}}/manifests/manifest.tsv"
+    name: tsv_file
+
+- name: show manifest file
+  debug:
+    msg: "{{ tsv_file }}"
 
 #- name: execute manifest validator script
 #  shell:

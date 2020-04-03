@@ -54,16 +54,9 @@
 #    file: "{{workspace}}/manifest.tsv"
 #    name: tsv_file
 
-- name: test script
-  shell:
-    cmd: >
-      pwd && ls -la
-    chdir: "{{workspace}}"
-  register: tsv_file
-
-- name: show manifest file
-  debug:
-    msg: "{{ tsv_file }}"
+#- name: show manifest file
+#  debug:
+#    msg: "{{ tsv_file }}"
 
 #- name: execute manifest validator script
 #  shell:

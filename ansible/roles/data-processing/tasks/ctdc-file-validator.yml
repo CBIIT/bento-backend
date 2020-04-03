@@ -53,12 +53,12 @@
   aws_s3:
     bucket: nci-cbiit-ctdc-dev
     object: "/Manifests/Manifest2020_02_25_17_56_10.tsv"
-    dest: "{{workspace}}/manifests/manifest.tsv"
+    dest: "{{workspace}}/manifest.tsv"
     mode: get
 
 - name: get manifest file content
   include_vars:
-    file: "{{workspace}}/manifests/manifest.tsv"
+    file: "{{workspace}}/manifest.tsv"
     name: tsv_file
 
 - name: show manifest file

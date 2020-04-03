@@ -49,10 +49,17 @@
   debug:
     msg: "{{metadata_validator_out}}"
 
-- name: get manifest file content
-  include_vars:
-    file: "{{workspace}}/manifest.tsv"
-    name: tsv_file
+#- name: get manifest file content
+#  include_vars:
+#    file: "{{workspace}}/manifest.tsv"
+#    name: tsv_file
+
+- name: test script
+  shell:
+    cmd: >
+      pwd && ls -la
+    chdir: "{{workspace}}"
+  register: tsv_file
 
 - name: show manifest file
   debug:

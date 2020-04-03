@@ -27,26 +27,26 @@
     src: "{{workspace}}/config/config.json.j2"
     dest: "{{workspace}}/config/config.json"
 
-- name: get file content
-  include_vars:
-    file: "{{workspace}}/config/config.json"
-    name: json_file
+#- name: get file content
+#  include_vars:
+#    file: "{{workspace}}/config/config.json"
+#    name: json_file
 
-- name: show file
-  debug:
-    msg: "{{ json_file }}"
-
-#- name: execute metadata validator script
-#  shell:
-#    cmd: >
-#      /usr/bin/python3
-#      match_metadata_validator.py
-#      {{workspace}}/config/config.json
-#    chdir: "{{workspace}}"
-#  register: metadata_validator
-
-
-#- name: show metadata_validator output
+#- name: show file
 #  debug:
-#    msg: "{{metadata_validator}}"
+#    msg: "{{ json_file }}"
+
+- name: execute metadata validator script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      match_metadata_validator.py
+      {{workspace}}/config/config.json
+    chdir: "{{workspace}}"
+  register: metadata_validator_out
+
+
+- name: show metadata_validator output
+  debug:
+    msg: "{{metadata_validator_out}}"
 

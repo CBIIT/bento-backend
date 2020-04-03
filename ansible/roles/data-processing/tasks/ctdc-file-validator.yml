@@ -41,7 +41,7 @@
     cmd: >
       /usr/bin/python3
       match_metadata_validator.py
-      {{workspace}}/config/config.json
+      --config-file {{workspace}}/config/config.json
     chdir: "{{workspace}}"
   register: metadata_validator_out
 

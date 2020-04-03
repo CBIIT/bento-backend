@@ -56,9 +56,9 @@ pipeline {
             type: 'PT_SINGLE_SELECT',
             value: 'sandbox,dev,qa,stage,prod' )
   }
-   triggers { 
-     pollSCM('H/15 * * * 1-5') 
-    }
+   // triggers { 
+   //   pollSCM('H/15 * * * 1-5') 
+   //  }
   options {
     timestamps()
   }

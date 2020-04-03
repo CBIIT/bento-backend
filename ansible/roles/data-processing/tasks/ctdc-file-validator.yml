@@ -27,12 +27,12 @@
     src: "{{workspace}}/config/config.json.j2"
     dest: "{{workspace}}/config/config.json"
 
-#- name: get file content
+#- name: get config file content
 #  include_vars:
 #    file: "{{workspace}}/config/config.json"
 #    name: json_file
 
-#- name: show file
+#- name: show config file
 #  debug:
 #    msg: "{{ json_file }}"
 
@@ -45,8 +45,29 @@
     chdir: "{{workspace}}"
   register: metadata_validator_out
 
-
-- name: show metadata_validator output
+- name: show metadata validator output
   debug:
     msg: "{{metadata_validator_out}}"
 
+- name: get manifest file content
+  include_vars:
+    file: "{{workspace}}/data/manifest.tsv"
+    name: tsv_file
+
+- name: show manifest file
+  debug:
+    msg: "{{ tsv_file }}"
+
+#- name: execute manifest validator script
+#  shell:
+#    cmd: >
+#      /usr/bin/python3
+#      match_manifest_validator.py
+#      --config-file {{workspace}}/config/config.json
+#      {{workspace}}/data/manifest.tsv
+#    chdir: "{{workspace}}"
+#  register: manifest_validator_out
+
+#- name: show manifest validator output
+#  debug:
+#    msg: "{{manifest_validator_out}}"

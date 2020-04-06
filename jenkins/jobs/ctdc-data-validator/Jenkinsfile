@@ -21,11 +21,8 @@ pipeline {
         description: 'Enter The S3 Bucket Where The Manifest File Is Located:', 
         name: 'S3Bucket')
     string(defaultValue: "", 
-        description: 'Enter Manifest File Name Here (include the full path from the base directory of the S3 bucket):', 
+        description: 'Enter Manifest File Name Here (include the full path from the base of the S3 bucket):', 
         name: 'ManifestFile')
-    //string(defaultValue: "", 
-    //    description: 'S3 Bucket to load manifest file from', 
-    //    name: 'S3Bucket')
         }
     // options {
     // 	ansiColor('xterm')

@@ -51,7 +51,7 @@
 
 - name: get manifest file from S3
   aws_s3:
-    bucket: {{s3_bucket}}
+    bucket: "{{s3_bucket}}"
     object: "/{{manifest_file}}"
     dest: "{{workspace}}/manifest.tsv"
     mode: get

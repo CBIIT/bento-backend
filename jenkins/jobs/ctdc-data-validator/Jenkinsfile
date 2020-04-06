@@ -18,7 +18,10 @@ pipeline {
         description: 'Enter Arm IDs Here (comma separated):', 
         name: 'ArmID')
     string(defaultValue: "", 
-        description: 'Enter Manifest File Name Here:', 
+        description: 'Enter The S3 Bucket Where The Manifest File Is Located:', 
+        name: 'S3Bucket')
+    string(defaultValue: "", 
+        description: 'Enter Manifest File Name Here (include the full path from the base directory of the S3 bucket):', 
         name: 'ManifestFile')
     //string(defaultValue: "", 
     //    description: 'S3 Bucket to load manifest file from', 
@@ -69,7 +72,7 @@ pipeline {
                 SLACK_URL      =   "${SLACK_URL}"
                 ARM_ID         =   "${params.ArmID}"
                 MANIFEST_FILE  =   "${params.ManifestFile}"
-                S3_BUCKET      =   ""
+                S3_BUCKET      =   "${params.S3Bucket}"
                 PHS_ID         =   ""
                 }
             steps {

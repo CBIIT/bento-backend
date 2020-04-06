@@ -51,8 +51,8 @@
 
 - name: get manifest file from S3
   aws_s3:
-    bucket: nci-cbiit-ctdc-dev
-    object: "/Manifests/{{manifest_file}}"
+    bucket: {{s3_bucket}}
+    object: "/{{manifest_file}}"
     dest: "{{workspace}}/manifest.tsv"
     mode: get
 

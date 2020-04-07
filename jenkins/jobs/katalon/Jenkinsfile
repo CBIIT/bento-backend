@@ -46,12 +46,12 @@ pipeline {
 			steps {
 				sh label: 'inventory', script: '''#!/bin/bash
 					echo "Creating inventory file"
-					echo "[katalon]" >> ${WORKSPACE}/ansible/inventory
+					echo "[katalon]" >> ${WORKSPACE}/icdc-devops/ansible/inventory
 						if [[ $(wc -l < ${ec2instance} | cut -d \',\' -f2 ) -ge 0 ]];then
-							echo ${ec2instance} | cut -d \',\' -f1 >> ${WORKSPACE}/ansible/inventory
-							echo ${ec2instance} | cut -d \',\' -f2 >> ${WORKSPACE}/ansible/inventory
+							echo ${ec2instance} | cut -d \',\' -f1 >> ${WORKSPACE}/icdc-devops/ansible/inventory
+							echo ${ec2instance} | cut -d \',\' -f2 >> ${WORKSPACE}/icdc-devops/ansible/inventory
 						else
-							echo ${ec2instance} >> ${WORKSPACE}/ansible/inventory
+							echo ${ec2instance} >> ${WORKSPACE}/icdc-devops/ansible/inventory
 						fi'''
 				}
 			}

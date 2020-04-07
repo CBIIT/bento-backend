@@ -65,7 +65,7 @@ pipeline {
                 wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
                     ansiblePlaybook(
                         playbook: '${WORKSPACE}/icdc-devops/ansible/katalon.yml',
-                        inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                        inventory: '${WORKSPACE}/icdc-devops/ansible/inventory',
                         colorized: true)
                     }
                 }

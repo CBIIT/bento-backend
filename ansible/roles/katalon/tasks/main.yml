@@ -29,7 +29,7 @@
 
 - name: create output directory
   file:
-    path: {{ workspace }}/results
+    path: "{{ workspace }}/results"
     state: directory
 
 - name: execute katalon test script

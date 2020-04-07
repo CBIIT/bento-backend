@@ -1,0 +1,64 @@
+pipeline {
+    agent {
+        node {
+            label 'docker-ansible'
+            }
+        }
+    parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/QA_Katalon')
+    string(defaultValue: "", 
+        description: 'Enter the Katalon Project file (include the path relative to the repo root):', 
+        name: 'KatalonPrj')
+    string(defaultValue: "", 
+        description: 'Enter the Katalon Suite Path (not including the test suite file):', 
+        name: 'KatalonSuite')
+        }
+    // options {
+    // 	ansiColor('xterm')
+    // }
+    tools {
+        jdk 'Default' 
+        }
+    stages{
+        stage('checkout'){
+            steps {
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: "${params.Tag}"]], 
+                    doGenerateSubmoduleConfigurations: 
+                    false, extensions: [], submoduleCfg: [], 
+                    recursiveSubmodules: true,
+                    userRemoteConfigs: 
+                    [[url: 'https://github.com/CBIIT/QA_Katalon']]])
+                sh 'git submodule update --init'
+                sh 'git lfs pull'
+                dir('icdc-devops'){
+                    git branch: 'master',
+                    url: 'https://github.com/CBIIT/icdc-devops.git'
+                    }
+                }
+            }
+        stage('run tests'){
+            environment {
+                SLACK_URL           =   ""
+                KATALON_PRJ         =   "${params.KatalonPrj}"
+                KATALON_SUITE_PATH  =   "${params.KatalonSuite}"
+                }
+            steps {
+                wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+                    ansiblePlaybook(
+                        playbook: '${WORKSPACE}/icdc-devops/ansible/katalon.yml',
+                        inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                        colorized: true)
+                    }
+                }
+            }
+        }
+    }

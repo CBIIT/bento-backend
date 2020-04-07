@@ -1,0 +1,46 @@
+---
+# tasks file for katalon
+- name: install firefox
+  yum:
+    name:
+      - firefox
+      - java-1.8.0-openjdk
+    state: installed
+
+- name: download katalon engine
+  get_url:
+    url: "{{ item }}"
+    dest: /tmp
+  with_items:
+    - https://github.com/katalon-studio/katalon-studio/releases/download/v{{katalon_version}}/Katalon_Studio_Engine_Linux_64-{{katalon_version}}.tar.gz
+
+- name: untar katalon engine
+  unarchive:
+    src: /tmp/Katalon_Studio_Engine_Linux_64-{{katalon_version}}.tar.gz
+    dest: /usr/local
+    remote_src: yes
+
+- name: remove the downloaded files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /tmp/Katalon_Studio_Engine_Linux_64-{{katalon_version}}.tar.gz
+
+- name: create output directory
+  file:
+    path: {{ workspace }}/results
+    state: directory
+
+- name: execute katalon test script
+  shell:
+    cmd: >
+      /usr/local/Katalon_Studio_Engine_Linux_64-{{ katalon_version }}/katalonc
+      -noSplash  -runMode=console -projectPath= "{{ katalon_project }}" -retry= 0 -testSuitePath= "{{ katalon_suite_path }}" -browserType= "Firefox (headless)" 
+      -reportFolder="{{ workspace }}/results" -reportFileName="index" -apiKey={{ katalon_api_key }}
+    chdir: "{{ workspace }}"
+  register: katalon_out
+
+- name: show katalon output
+  debug:
+    msg: "{{ katalon_out }}"

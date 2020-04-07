@@ -1,0 +1,5 @@
+---
+# vars file for katalon
+workspace: "{{ lookup('env','WORKSPACE') }}"
+katalon_project: "{{ workspace }}/{{ lookup('env','KATALON_PRJ') }}"
+katalon_suite_path: "{{ lookup('env','KATALON_SUITE_PATH') }}"

@@ -1,6 +1,6 @@
 ---
 - name: execute katalon tests
-  hosts: cicd
+  hosts: katalon
   become: yes
 
   roles:

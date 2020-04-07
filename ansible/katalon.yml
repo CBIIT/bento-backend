@@ -1,6 +1,6 @@
 ---
 - name: execute katalon tests
-  hosts: katalon
+  hosts: localhost
   become: yes
 
   roles:

@@ -1,0 +1,8 @@
+---
+- name: execute katalon tests
+  hosts: katalon
+  become: yes
+
+  roles:
+    - katalon
+

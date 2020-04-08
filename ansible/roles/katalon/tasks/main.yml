@@ -40,7 +40,3 @@
       -reportFolder="{{ workspace }}/results" -reportFileName="index" -apiKey={{ katalon_api_key }}
     chdir: "{{ workspace }}"
   register: katalon_out
-
-- name: show katalon output
-  debug:
-    msg: "{{ katalon_out }}"

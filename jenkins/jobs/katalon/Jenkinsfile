@@ -72,16 +72,15 @@ pipeline {
             }
 		
         }
-    }
-	post {
-		always {
-			publishHTML([allowMissing: true,
-				alwaysLinkToLastBuild: false,
-				keepAll: false,
-				reportDir: 'results',
-				reportFiles: 'index.html',
-				reportName: 'HTML Report',
-				reportTitles: ''])
+		post {
+			always {
+				publishHTML([allowMissing: true,
+					alwaysLinkToLastBuild: false,
+					keepAll: false,
+					reportDir: 'results',
+					reportFiles: 'index.html',
+					reportName: 'HTML Report',
+					reportTitles: ''])
+				}
 			}
-		
-		}
+	}

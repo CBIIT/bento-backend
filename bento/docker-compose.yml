@@ -1,0 +1,42 @@
+version: '3.1'
+services:
+  bento-backend:
+    container_name: backend
+    image: bento/base-api
+    ports:
+      - 8084:8080
+    restart: always
+
+    # logging:
+    #   driver: sumologic
+    #   options:
+    #     sumo-url: "https://"
+    # environment:
+      # - NEW_RELIC_LICENSE_KEY={{ newrelic_license_key }}
+      # - NEW_RELIC_APP_NAME={{ app_name }}
+  bento-frontend:
+    container_name: frontend
+    image: bento/base-front
+    ports:
+      - 8085:80
+    restart: always
+
+    # logging:
+    #   driver: sumologic
+    #   options:
+    #     sumo-url: "https://"
+
+  neo4:
+    container_name: neo4
+    image: neo4j:enterprise
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    ports:
+      - 7474:7474
+      - 7687:7687
+
+
+volumes:
+  neo4j-data:
+  neo4j-logs:

@@ -73,7 +73,7 @@
     build:
       path: "{{workspace}}/bento-frontend"
       dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
-      push: yes
+      pull: yes
     name: cbiitssrepo/bento-frontend
     tag: "{{build_number}}"
     push: yes

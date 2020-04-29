@@ -2,7 +2,7 @@ version: '3.1'
 services:
   bento-backend:
     container_name: backend
-    image: bento/base-api
+    image: cbiitssrepo/bento-backend
     ports:
       - 8084:8080
     restart: always
@@ -16,7 +16,7 @@ services:
       # - NEW_RELIC_APP_NAME={{ app_name }}
   bento-frontend:
     container_name: frontend
-    image: bento/base-front
+    image: cbiitssrepo/bento-frontend
     ports:
       - 8085:80
     restart: always

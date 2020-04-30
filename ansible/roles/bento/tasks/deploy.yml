@@ -63,8 +63,13 @@
 
 - name: set facts
   set_fact:
-    frontend_revision: "{{task_frontend.revision}}"
-    backend_revision: "{{task_backend.revision}}"
+    frontend_revision: 8
+    backend_revision: 8
+
+- name: set facts
+  set_fact:
+    # frontend_revision: "{{task_frontend.revision}}"
+    # backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
     lb_backend_target_arn: "{{service_frontend.services[0].loadBalancers[0].targetGroupArn}}"
@@ -95,7 +100,7 @@
   register: service_frontend_output
 
 
-  - name: update backend service
+- name: update backend service
   ecs_service:
     state: present
     name: ctdc_ecs_backend

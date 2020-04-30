@@ -90,10 +90,10 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers:
-      - targetGroupArn: "{{lb_frontend_target_arn}}"
-        containerName: "{{lb_frontend_container_name}}"
-        containerPort: "{{ lb_frontend_container_port }}"
+    # load_balancers:
+    #   - targetGroupArn: "{{lb_frontend_target_arn}}"
+    #     containerName: "{{lb_frontend_container_name}}"
+    #     containerPort: "{{ lb_frontend_container_port }}"
     region: "{{region}}"
   register: service_frontend_output
 
@@ -110,10 +110,10 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers:
-      - targetGroupArn: "{{lb_backend_target_arn}}"
-        containerName: "{{lb_backend_container_name}}"
-        containerPort: "{{lb_backend_container_port }}"
+    # load_balancers:
+    #   - targetGroupArn: "{{lb_backend_target_arn}}"
+    #     containerName: "{{lb_backend_container_name}}"
+    #     containerPort: "{{lb_backend_container_port }}"
     region: "{{region}}"
   register: service_backend_output
 

@@ -4,7 +4,6 @@
     containers:
     - name: backend
       essential: true
-      # image: "cbiitssrepo/bento-backend:8"
       image: "cbiitssrepo/bento-backend:{{build_number}}"
       portMappings:
       - containerPort: "8080"
@@ -22,7 +21,6 @@
     containers:
     - name: frontend
       essential: true
-      # image: "cbiitssrepo/bento-frontend:8"
       image: "cbiitssrepo/bento-frontend:{{build_number}}"
       portMappings:
       - containerPort: "80"
@@ -78,7 +76,6 @@
     lb_frontend_container_name: "{{service_frontend.services[0].loadBalancers[0].containerName}}"
     # role_arn: "{{service_info.services[0].roleArn}}"
 
-- debug
 
 # - name: update frontend service
 #   ecs_service:

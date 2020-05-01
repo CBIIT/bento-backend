@@ -4,8 +4,8 @@
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/bento-backend:8"
-      # image: "cbiitssrepo/bento-backend:{{build_number}}"
+      # image: "cbiitssrepo/bento-backend:8"
+      image: "cbiitssrepo/bento-backend:{{build_number}}"
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
@@ -22,8 +22,8 @@
     containers:
     - name: frontend
       essential: true
-      image: "cbiitssrepo/bento-frontend:8"
-       # image: "cbiitssrepo/bento-frontend:{{build_number}}"
+      # image: "cbiitssrepo/bento-frontend:8"
+      image: "cbiitssrepo/bento-frontend:{{build_number}}"
       portMappings:
       - containerPort: "80"
         hostPort: "80"
@@ -78,44 +78,46 @@
     lb_frontend_container_name: "{{service_frontend.services[0].loadBalancers[0].containerName}}"
     # role_arn: "{{service_info.services[0].roleArn}}"
 
-- name: update frontend service
-  ecs_service:
-    state: present
-    name: ctdc_ecs_frontend
-    cluster: ctdc-ecs
-    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-    # role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    # load_balancers:
-    #   - targetGroupArn: "{{lb_frontend_target_arn}}"
-    #     containerName: "{{lb_frontend_container_name}}"
-    #     containerPort: "{{ lb_frontend_container_port }}"
-    region: "{{region}}"
-  register: service_frontend_output
+- debug
+
+# - name: update frontend service
+#   ecs_service:
+#     state: present
+#     name: ctdc_ecs_frontend
+#     cluster: ctdc-ecs
+#     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
+#     # role: "{{role_arn}}"
+#     force_new_deployment: yes
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     desired_count: 1
+#     # load_balancers:
+#     #   - targetGroupArn: "{{lb_frontend_target_arn}}"
+#     #     containerName: "{{lb_frontend_container_name}}"
+#     #     containerPort: "{{ lb_frontend_container_port }}"
+#     region: "{{region}}"
+#   register: service_frontend_output
 
 
-- name: update backend service
-  ecs_service:
-    state: present
-    name: ctdc_ecs_backend
-    cluster: ctdc-ecs
-    task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    # role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    load_balancers:
-      - targetGroupArn: "{{lb_backend_target_arn}}"
-        containerName: "{{lb_backend_container_name}}"
-        containerPort: "{{lb_backend_container_port }}"
-    region: "{{region}}"
-  register: service_backend_output
+# - name: update backend service
+#   ecs_service:
+#     state: present
+#     name: ctdc_ecs_backend
+#     cluster: ctdc-ecs
+#     task_definition: "{{task_backend_name}}:{{backend_revision}}"
+#     # role: "{{role_arn}}"
+#     force_new_deployment: yes
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     desired_count: 1
+#     load_balancers:
+#       - targetGroupArn: "{{lb_backend_target_arn}}"
+#         containerName: "{{lb_backend_container_name}}"
+#         containerPort: "{{lb_backend_container_port }}"
+#     region: "{{region}}"
+#   register: service_backend_output
 
 # - name: show service service
 #   debug:

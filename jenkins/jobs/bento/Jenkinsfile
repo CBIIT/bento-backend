@@ -78,20 +78,19 @@ pipeline {
  			SLACK_URL = "${SLACK_URL}"
  		}
  		steps {
- 			// wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 			// 	withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
-    //       			usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
-    //       			string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
-    //       			usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-    //       			string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
+          			usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
+          			string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+          			usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          			string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
 
- 			// 		ansiblePlaybook( 
-    //         			playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
-    //         			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-    //         			colorized: true) 
- 			// 	}
- 			// }
-      sh "echo ${SLACK_URL}"
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
  		}
   	}
   	stage('deploy'){

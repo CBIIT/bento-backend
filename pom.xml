@@ -9,11 +9,11 @@
 		<version>2.1.5.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>gov.nih.nci.icdc</groupId>
-	<artifactId>ICDC</artifactId>
+	<groupId>gov.nih.nci.bento</groupId>
+	<artifactId>Bento</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
-	<name>ICDC</name>
+	<name>Bento</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -261,6 +261,7 @@
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -271,6 +272,11 @@
 							<!-- this is relative to the pom.xml directory -->
 							<directory>${project.build.directory}/generated-docs</directory>
 							<targetPath>/static/docs/api</targetPath>
+						</resource>
+						<resource>
+							<!-- Include the react app index.html and build.js -->
+							<directory>src/main/frontend/dist/</directory>
+							<targetPath>/WEB-INF/</targetPath>
 						</resource>
 					</webResources>
 				</configuration>
@@ -285,6 +291,74 @@
 				<groupId>org.hyrts</groupId>
 				<artifactId>hyrts-maven-plugin</artifactId>
 				<version>1.0.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<configuration>
+					<workingDirectory>src/main/frontend</workingDirectory>
+					<installDirectory>target</installDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v12.16.1</nodeVersion>
+							<npmVersion>6.13.4</npmVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm install mui-custom-datatables master</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>install --save https://github.com/skiran86/mui-custom-datatables/tarball/master</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm install mui-custom-datatables modules</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>src/main/frontend/node_modules/mui-custom-datatables</workingDirectory>
+							<arguments>install </arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm install mui-custom-datatables run build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>src/main/frontend/node_modules/mui-custom-datatables</workingDirectory>
+							<arguments>run build </arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm run build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

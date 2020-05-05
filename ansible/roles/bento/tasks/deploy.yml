@@ -96,7 +96,7 @@
       minimum_healthy_percent: 50
       maximum_percent: 200
     desired_count: 1
-    loadBalancers: "{{ lb_frontend }}"
+    load_balancers: "{{ lb_frontend }}"
     # load_balancers:
     #   - targetGroupArn: "{{lb_frontend_target_arn}}"
     #     containerName: "{{lb_frontend_container_name}}"
@@ -117,7 +117,7 @@
       minimum_healthy_percent: 50
       maximum_percent: 200
     desired_count: 1
-    loadBalancers: "{{ lb_backend }}"
+    load_balancers: "{{ lb_backend }}"
     # load_balancers:
     #   - targetGroupArn: "{{lb_backend_target_arn}}"
     #     containerName: "{{lb_backend_container_name}}"

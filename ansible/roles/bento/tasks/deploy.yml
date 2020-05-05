@@ -77,6 +77,11 @@
     role_arn: "{{service_backend.services[0].roleArn}}"
 
 
+- debug:
+    msg: "{service_frontend}"
+- debug:
+    msg: "{service_backend}"
+
 - name: update frontend service
   ecs_service:
     state: present
@@ -97,24 +102,24 @@
   register: service_frontend_output
 
 
-- name: update backend service
-  ecs_service:
-    state: present
-    name: ctdc_ecs_backend
-    cluster: ctdc-ecs
-    task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 50
-      maximum_percent: 200
-    desired_count: 1
-    load_balancers:
-      - targetGroupArn: "{{lb_backend_target_arn}}"
-        containerName: "{{lb_backend_container_name}}"
-        containerPort: "{{lb_backend_container_port }}"
-    region: "{{region}}"
-  register: service_backend_output
+# - name: update backend service
+#   ecs_service:
+#     state: present
+#     name: ctdc_ecs_backend
+#     cluster: ctdc-ecs
+#     task_definition: "{{task_backend_name}}:{{backend_revision}}"
+#     role: "{{role_arn}}"
+#     force_new_deployment: yes
+#     deployment_configuration:
+#       minimum_healthy_percent: 50
+#       maximum_percent: 200
+#     desired_count: 1
+#     load_balancers:
+#       - targetGroupArn: "{{lb_backend_target_arn}}"
+#         containerName: "{{lb_backend_container_name}}"
+#         containerPort: "{{lb_backend_container_port }}"
+#     region: "{{region}}"
+#   register: service_backend_output
 
 # - name: show service service
 #   debug:

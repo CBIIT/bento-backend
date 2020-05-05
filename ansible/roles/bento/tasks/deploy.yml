@@ -78,9 +78,9 @@
 
 
 - debug:
-    msg: "{service_frontend}"
+    msg: "{{service_frontend}}"
 - debug:
-    msg: "{service_backend}"
+    msg: "{{service_backend}}"
 
 - name: update frontend service
   ecs_service:

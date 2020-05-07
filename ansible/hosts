@@ -2,6 +2,11 @@
 localhost
 [loader]
 localhost
+[bento]
+localhost
+
+[bento:vars]
+ansible_python_interpreter=/usr/bin/python3
 
 [loader:vars]
 ansible_python_interpreter=/usr/bin/python3

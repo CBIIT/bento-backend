@@ -1,0 +1,81 @@
+---
+# tasks file for cicd
+# - name: copy application_example.properties to application.properties
+#   copy:
+#     remote_src: yes
+#     src: "{{workspace}}/src/main/resources/application_example.properties"
+#     dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: remove the application_example.properties file 
+  file:
+    path: "{{workspace}}/src/main/resources/application_example.properties"
+    state: absent
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: application.properties.j2
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+- name: copy ICDC-0.0.1.war to ROOT.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/ICDC-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+# - name: remove ICDC-0.0.1.war file 
+#   file:
+#     path: "{{workspace}}/target/ICDC-0.0.1.war"
+#     state: absent
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: build cbiitssrepo/bento-backend image
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
+      pull: yes
+    name: cbiitssrepo/bento-backend
+    tag: "{{build_number}}"
+    push: yes
+    source: build
+
+- name: run npm install in {{workspace}}/bento-frontend/
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/bento-frontend"
+  loop:
+    - npm install 
+    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+
+- name: run npm install and build in {{workspace}}/bento-frontend/node_modules/mui-custom-datatables
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/bento-frontend/node_modules/mui-custom-datatables"
+  loop:
+    - npm install
+    - npm run build
+    
+- name: run npm build in frontend
+  command: npm run-script build
+  args:
+    chdir: "{{workspace}}/bento-frontend"
+          
+- name: build cbiitssrepo/bento-frontend image
+  docker_image:
+    build:
+      path: "{{workspace}}/bento-frontend"
+      dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
+      pull: yes
+    name: cbiitssrepo/bento-frontend
+    tag: "{{build_number}}"
+    push: yes
+    source: build
+    

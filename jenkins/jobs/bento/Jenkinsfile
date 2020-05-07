@@ -1,0 +1,107 @@
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-backend')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'test', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,stage,prod' )
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/bento-backend']]])
+
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+        dir('bento-frontend'){
+          git branch: 'master',
+            url: 'https://github.com/CBIIT/bento-frontend'
+        }
+  		}
+ 
+  	}
+    stage('Set Environment'){
+        environment {
+          TEST_URL = "bento.essential-dev.com"
+          VERSION = "${params.Tag}"
+        }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "test":
+                withCredentials([file(credentialsId: 'test_env_file', variable: 'secret_file')]) {
+                  sh "cp ${secret_file} ${WORKSPACE}/bento-frontend/.env"
+                  sh "cd ${WORKSPACE}/bento-frontend && sed -i 's,tag_version,${VERSION},g' .env"
+                  env.BACKEND_HOST = "backend"
+                  env.NEO4J_IP    = "${NEO4J_IP}"
+                  env.FENCE_URL   = "bento.essential-dev.com"
+                }
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+  	stage('build'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
+          			usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
+          			string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+          			usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          			string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
+
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
+ 		}
+  	}
+  	stage('deploy'){
+  		steps{
+  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		colorized: true)
+  			}
+  		}
+  	}
+  }
+}

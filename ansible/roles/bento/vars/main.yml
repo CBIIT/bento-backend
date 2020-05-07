@@ -1,0 +1,15 @@
+---
+# vars file for cicd
+workspace: "{{ lookup('env','WORKSPACE') }}"
+neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+bearer: "{{ lookup('env','BEARER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASSWORD') }}"
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+fence_id: "{{ lookup('env','FENCE_ID') }}"
+fence_credential: "{{ lookup('env','FENCE_CREDENTIAL') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+region: us-east-1
+s3_bucket: "bento.essential-dev.com"
+fence_url: "{{ lookup('env','FENCE_URL') }}"

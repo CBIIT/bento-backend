@@ -1,5 +1,5 @@
 ---
-- name: setup ecs-agent
+- name: setup ecs agent
   hosts: all
   connection: local
   become: yes

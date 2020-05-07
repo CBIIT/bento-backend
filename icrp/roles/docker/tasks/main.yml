@@ -1,0 +1,102 @@
+---
+# - name: Remove other Docker versions
+#   yum:
+#     name:
+#       - docker
+#       - docker-client
+#       - docker-client-latest
+#       - docker-common
+#       - docker-latest
+#       - docker-latest-logrotate
+#       - docker-logrotate
+#       - docker-engine
+#       - docker-compose
+#     state: absent
+
+# tasks file for docker
+- name: install epel-release
+  yum: 
+    name:
+      - epel-release
+- name: install systems packages needed for docker
+  yum:
+    name: 
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - python-setuptools
+      - firewalld
+      - python-pip
+      - docker-compose
+    state: installed
+
+- name: install docker python module
+  pip:
+    name: docker
+    
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags:
+    - master
+  
+- name: open tcp port 2375 and 2376
+  firewalld:
+    state: enabled
+    permanent: yes
+    port: "{{item}}/tcp"
+    immediate: yes
+    zone: public
+  loop:
+    - 2375
+    - 2376
+  tags:
+    - master
+
+# - name: enable extra repos when running on red hat
+#   command: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
+#   when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: add docker repo 
+  command: >
+    yum-config-manager --add-repo 
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: install docker
+  yum:
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    state: installed
+    
+- name: enable and start docker
+  service:
+    name: docker
+    enabled: yes
+    state: restarted
+
+- name: create docker systemd options directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  tags:
+    - master
+    
+- name: configure docker startup options
+  template:
+    src: startup-options.conf.j2
+    dest: /etc/systemd/system/docker.service.d/startup_options.conf
+  notify:
+    - restart docker
+  tags:
+    - master
+
+- name: reload systemctl daemon
+  systemd:
+    daemon_reload: yes
+
+
+ 
+
+
+

@@ -5,21 +5,39 @@ pipeline {
             }
         }
     parameters {
+
     gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
+        defaultValue: 'KatalonBranch', 
         name: 'Tag', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/QA_Katalon')
-    string(defaultValue: "", 
+        useRepository: 'https://github.com/CBIIT/DataCommons_Automation')
+
+    string(defaultValue: "CTDC_Automation/CTDC_Automation.prj", 
         description: 'Enter the Katalon Project file (include the path relative to the repo root):', 
         name: 'KatalonPrj')
-    string(defaultValue: "", 
+
+    string(defaultValue: "Test Suites/Canine_TestSuite", 
         description: 'Enter the Katalon Suite Path (not including the test suite file):', 
         name: 'KatalonSuite')
+
+    extendedChoice( 
+        name: 'Browser', 
+        defaultValue: 'Firefox', 
+        description: 'Choose the browser (headless) to use', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'Chrome,Firefox' )
+		
+	extendedChoice( 
+        name: 'Profile', 
+        defaultValue: 'QA_ICDC', 
+        description: 'Choose the profile to use', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'QA_ICDC' )
+
         }
     // options {
     // 	ansiColor('xterm')
@@ -30,57 +48,101 @@ pipeline {
     stages{
         stage('checkout'){
             steps {
+
                 checkout([$class: 'GitSCM', 
                     branches: [[name: "${params.Tag}"]], 
                     doGenerateSubmoduleConfigurations: false,
 					extensions: [],
 					submoduleCfg: [], 
-                    userRemoteConfigs: [[url: 'https://github.com/CBIIT/QA_Katalon']]])
+                    userRemoteConfigs: [[url: 'https://github.com/CBIIT/DataCommons_Automation']]])
+
                 dir('icdc-devops'){
                     git branch: 'master',
-                    url: 'https://github.com/CBIIT/icdc-devops.git'
-                    }
+                    url: 'https://github.com/CBIIT/icdc-devops.git'}
+
                 }
             }
-		stage('set up inventory'){
+		stage('set Profile'){
 			steps {
-				sh label: 'inventory', script: '''#!/bin/bash
-					echo "Creating inventory file"
-					echo "[katalon]" >> ${WORKSPACE}/icdc-devops/ansible/inventory
-						if [[ $(wc -l < ${ec2instance} | cut -d \',\' -f2 ) -ge 0 ]];then
-							echo "localhost" | cut -d \',\' -f1 >> ${WORKSPACE}/icdc-devops/ansible/inventory
-							echo "localhost" | cut -d \',\' -f2 >> ${WORKSPACE}/icdc-devops/ansible/inventory
-						else
-							echo "localhost" >> ${WORKSPACE}/icdc-devops/ansible/inventory
-						fi'''
+                script {
+                    switch("${params.Profile}") {
+                    case "QA_ICDC":
+                        withCredentials([file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
+                            sh "cp ${pass_file} ${WORKSPACE}/CTDC_Automation/Profiles/${params.Profile}.glbl"
+                            }
+                        break
+                    
+                       }
+                    }
 				}
 			}
-        stage('run tests'){
+        stage('set Environment'){
+            steps {
+			
+                script {
+
+                        sh "wget https://github.com/katalon-studio/katalon-studio/releases/download/v7.2.6/Katalon_Studio_Engine_Linux_64-7.2.6.tar.gz && tar -xvzf Katalon_Studio_Engine_Linux_64-7.2.6.tar.gz && mv Katalon_Studio_Engine_Linux_64-7.2.6 katalon && chown -R root:root katalon"
+
+				    }
+
+				script {
+                    switch("${params.Browser}") {
+                    case "Firefox":
+						sh "yum -y install firefox"
+						break
+                    case "Chrome":
+						sh "wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && yum -y install ./google-chrome-stable_current_*.rpm; wget https://chromedriver.storage.googleapis.com/81.0.4044.69/chromedriver_linux64.zip && mv katalon/configuration/resources/drivers/chromedriver_linux64/chromedriver katalon/configuration/resources/drivers/chromedriver_linux64/chromedriver.bak && unzip chromedriver_linux64.zip -d katalon/configuration/resources/drivers/chromedriver_linux64/"
+						break
+                       }
+                    }
+
+                }
+            }
+		stage('run tests'){
             environment {
-                SLACK_URL           =   ""
+				KATALON_BROWSER     =   "${params.Browser}"
+				KATALON_PROFILE     =   "${params.Profile}"
                 KATALON_PRJ         =   "${params.KatalonPrj}"
                 KATALON_SUITE_PATH  =   "${params.KatalonSuite}"
                 }
             steps {
-                wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-                    ansiblePlaybook(
-                        playbook: '${WORKSPACE}/icdc-devops/ansible/katalon.yml',
-                        inventory: '${WORKSPACE}/icdc-devops/ansible/inventory',
-                        colorized: true)
-                    }
+
+				script {
+
+					sh label: 'Katalon-Tests', script: '''#!/bin/bash
+
+						# Set datestamp for results file
+                        dateStamp=$(date +%Y%m%d%H%M)
+
+                        # Recreate the results directory
+                        rm -rf results && mkdir results
+
+                        # Run Katalon Tests
+			    		katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -browserType="$KATALON_BROWSER (headless)" -executionProfile="$KATALON_PROFILE" -reportFolder="$WORKSPACE/results" -reportFileName="index_$dateStamp" -apiKey=1d9d7e79-dde9-45c1-9d21-b31424a47864
+
+                        '''
+
+					}
+
                 }
             }
-		
         }
 		post {
 			always {
+
 				publishHTML([allowMissing: true,
 					alwaysLinkToLastBuild: false,
 					keepAll: false,
 					reportDir: 'results',
-					reportFiles: 'index.html',
+					reportFiles: 'inex_*.html',
 					reportName: 'HTML Report',
 					reportTitles: ''])
+
+                emailext(attachmentsPattern: 'results/index_*.html',
+                    body: 'Katalon Test Results',
+                    subject: 'Katalon Test Results',
+                    to: 'Katalon.w1imuj982tottg1c@u.box.com')
+
 				}
 			}
 	}

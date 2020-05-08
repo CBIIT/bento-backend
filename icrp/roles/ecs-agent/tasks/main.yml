@@ -18,6 +18,10 @@
     src: ecs.config.j2
     dest: /tmp/ecs.config
 
+- name: show
+  debug:
+    msg: "{{instance_name}}"
+
 # #set local routing 
 # - name: set localhost routing
 #   sysctl:

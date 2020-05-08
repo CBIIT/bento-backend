@@ -5,9 +5,8 @@ ECS_LOGFILE=/log/ecs-agent.log
 ECS_AVAILABLE_LOGGING_DRIVERS=["json-file","awslogs"]
 ECS_LOGLEVEL=info
 ECS_CLUSTER={{ecs_cluster_name}}
-{% if processor_instance == 'comets-processor' %}
-ECS_INSTANCE_ATTRIBUTES={"role": "processor"}
-{% elseif  frontend_instance == 'comets-frontend' %} 
-ECS_INSTANCE_ATTRIBUTES={"role": "app"} 
+{% if instance_name == 'comets-processor' %}
+ECS_INSTANCE_ATTRIBUTES={"role": "processor"} 
 {% else %}
+ECS_INSTANCE_ATTRIBUTES={"role": "app"} 
 {% endif %}

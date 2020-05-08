@@ -17,83 +17,92 @@
 - name: set instance name
   set_fact:
     processor_instance: "{{processor.instances[0].tags.Name}}"
+    processor_ip: "{{processor.instances[0].network_interfaces[0].private_ip_address}}"
     frontend_instance: "{{frontend.instances[0].tags.Name}}"
 
-#set local routing 
-- name: set localhost routing
-  sysctl:
-    name: net.ipv4.conf.all.route_localnet
-    value: '1'
-    sysctl_set: yes
-    state: present
-    reload: yes
+- debug:
+    msg: "{{ ansible_all_ipv4_addresses}}||{{processor_ip}}"
 
-- name: install iptables
-  yum:
-    name: 
-      - iptables-services
-    state: present
-
-- name: start iptables service
-  service:
-    name: iptables
-    state: started
-    enabled: yes
-
-- name: configure ecs-agent routing
-  iptables:
-    table: nat
-    chain: PREROUTING
-    protocol: tcp
-    destination: 169.254.170.2 
-    destination_port: '80'
-    jump: DNAT
-    to_destination: 127.0.0.1:51679
-    comment: configure nat
-
-- name: configure ecs-agent redirect 
-  iptables:
-    table: nat
-    chain: OUTPUT
-    protocol: tcp
-    match: tcp
-    destination: 169.254.170.2 
-    destination_port: '80'
-    jump: REDIRECT
-    to_ports: '51679'
-    comment: Redirect web traffic to port 51679
-
-- name: save iptables
-  command: service iptables save
-  args:
-    warn: false
-
-- name: reload iptables
-  command: service iptables reload
-  args:
-    warn: false
-
-- name: create ecs directory
-  file:
-    path: "{{item}}"
-    state: directory
-  loop:
-    - "/etc/ecs"
-    - "/var/log/ecs"
-    - "/var/lib/ecs/data"
-
-- name: copy file ecs.config to /etc/ecs/ecs.config
+- name: template 
   template:
     src: ecs.config.j2
-    dest: /etc/ecs/ecs.config
+    dest: /tmp/ecs.config
 
-- name: copy docker service to systemd directory
-  copy:
-    src: docker-container@ecs-agent.service
-    dest: /etc/systemd/system/docker-container@ecs-agent.service
+# #set local routing 
+# - name: set localhost routing
+#   sysctl:
+#     name: net.ipv4.conf.all.route_localnet
+#     value: '1'
+#     sysctl_set: yes
+#     state: present
+#     reload: yes
 
-- name: enable and start docker-container@ecs-agent.service
-  service:
-    name: docker-container@ecs-agent.service
-    state: started
-    enabled: yes
+# - name: install iptables
+#   yum:
+#     name: 
+#       - iptables-services
+#     state: present
+
+# - name: start iptables service
+#   service:
+#     name: iptables
+#     state: started
+#     enabled: yes
+
+# - name: configure ecs-agent routing
+#   iptables:
+#     table: nat
+#     chain: PREROUTING
+#     protocol: tcp
+#     destination: 169.254.170.2 
+#     destination_port: '80'
+#     jump: DNAT
+#     to_destination: 127.0.0.1:51679
+#     comment: configure nat
+
+# - name: configure ecs-agent redirect 
+#   iptables:
+#     table: nat
+#     chain: OUTPUT
+#     protocol: tcp
+#     match: tcp
+#     destination: 169.254.170.2 
+#     destination_port: '80'
+#     jump: REDIRECT
+#     to_ports: '51679'
+#     comment: Redirect web traffic to port 51679
+
+# - name: save iptables
+#   command: service iptables save
+#   args:
+#     warn: false
+
+# - name: reload iptables
+#   command: service iptables reload
+#   args:
+#     warn: false
+
+# - name: create ecs directory
+#   file:
+#     path: "{{item}}"
+#     state: directory
+#   loop:
+#     - "/etc/ecs"
+#     - "/var/log/ecs"
+#     - "/var/lib/ecs/data"
+
+# - name: copy file ecs.config to /etc/ecs/ecs.config
+#   template:
+#     src: ecs.config.j2
+#     dest: /etc/ecs/ecs.config
+
+# - name: copy docker service to systemd directory
+#   copy:
+#     src: docker-container@ecs-agent.service
+#     dest: /etc/systemd/system/docker-container@ecs-agent.service
+
+# - name: enable and start docker-container@ecs-agent.service
+#   service:
+#     name: docker-container@ecs-agent.service
+#     state: started
+#     enabled: yes

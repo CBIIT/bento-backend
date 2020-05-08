@@ -7,7 +7,7 @@ ECS_LOGLEVEL=info
 ECS_CLUSTER={{ecs_cluster_name}}
 {% if processor_instance == 'comets-processor' %}
 ECS_INSTANCE_ATTRIBUTES={"role": "processor"}
-{% endif %} 
-{% if frontend_instance == 'comets-frontend' %}
+{% elseif  frontend_instance == 'comets-frontend' %} 
 ECS_INSTANCE_ATTRIBUTES={"role": "app"} 
+{% else %}
 {% endif %}

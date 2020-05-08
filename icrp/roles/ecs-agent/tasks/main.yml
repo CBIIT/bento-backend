@@ -1,15 +1,22 @@
 ---
 # tasks file for ecs-agent
 
-- name: gather information of instance
-  ec2_instance_info:
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
     filters:
-      "tag:Project": comets
+      "tag:Name": comets-processor
   register: instance
 
-- debug:
-  msg: "{{instance}}"
+- name: set instance name
+  set_fact:
+    instance_name: "{{instance.instances[0].tags.Name}}"
+    ecs_cluster_name: "test"
 
+- name: copy template
+  template:
+    src: ecs.config.j2
+    dest: /tmp/ecs.config
 
 # #set local routing 
 # - name: set localhost routing

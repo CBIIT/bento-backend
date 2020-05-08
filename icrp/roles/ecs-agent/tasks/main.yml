@@ -7,13 +7,6 @@
       "tag:Name": comets-processor
   register: processor
 
-- name: gather instance facts
-  ec2_instance_facts:
-    region: us-east-1
-    filters:
-      "tag:Name": comets-frontend
-  register: frontend
-
 - name: set instance name
   set_fact:
     processor_instance: "{{processor.instances[0].tags.Name}}"

@@ -29,19 +29,19 @@ public class ValidationAspect {
 
 	private static final Logger logger = LogManager.getLogger(ValidationAspect.class);
 
-//	@Pointcut("execution (* gov.nih.nci.icdc.controller.RESTController.getPrograms(..))"
-//			+ "||execution (* gov.nih.nci.icdc.controller.RESTController.getProgramStudies(..))"
-//			+ "||execution (* gov.nih.nci.icdc.controller.RESTController.getStudies(..))"
-//			+ "||execution (* gov.nih.nci.icdc.controller.RESTController.getStudyCases(..))"
-//			+ "||execution (* gov.nih.nci.icdc.controller.RESTController.getCases(..))"
-//			+ "||execution (* gov.nih.nci.icdc.controller.RESTController.authorizeCallBack(..))"
+//	@Pointcut("execution (* gov.nih.nci.bento.controller.RESTController.getPrograms(..))"
+//			+ "||execution (* gov.nih.nci.bento.controller.RESTController.getProgramStudies(..))"
+//			+ "||execution (* gov.nih.nci.bento.controller.RESTController.getStudies(..))"
+//			+ "||execution (* gov.nih.nci.bento.controller.RESTController.getStudyCases(..))"
+//			+ "||execution (* gov.nih.nci.bento.controller.RESTController.getCases(..))"
+//			+ "||execution (* gov.nih.nci.bento.controller.RESTController.authorizeCallBack(..))"
 //			)
 //	public void allPublicMethods() {
 //
 //	}
 
-	@Pointcut("execution (* gov.nih.nci.icdc.controller.RESTController.TestToken(..))"
-			+ "||execution (* gov.nih.nci.icdc.controller.RESTController.authorizeCallBack(..))")
+	@Pointcut("execution (* gov.nih.nci.bento.controller.RESTController.TestToken(..))"
+			+ "||execution (* gov.nih.nci.bento.controller.RESTController.authorizeCallBack(..))")
 	public void advisedMethods() {
 		// nothing here
 	}

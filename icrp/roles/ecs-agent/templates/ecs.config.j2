@@ -5,7 +5,7 @@ ECS_LOGFILE=/log/ecs-agent.log
 ECS_AVAILABLE_LOGGING_DRIVERS=["json-file","awslogs"]
 ECS_LOGLEVEL=info
 ECS_CLUSTER={{ecs_cluster_name}}
-{% if instance_name == 'comets-processor' %}
+{% if ansible_all_ipv4_addresses == processor_ip %}
 ECS_INSTANCE_ATTRIBUTES={"role": "processor"} 
 {% else %}
 ECS_INSTANCE_ATTRIBUTES={"role": "app"} 

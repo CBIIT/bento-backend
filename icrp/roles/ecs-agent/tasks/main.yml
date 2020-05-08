@@ -5,11 +5,19 @@
     region: us-east-1
     filters:
       "tag:Name": comets-processor
-  register: instance
+  register: processor
+
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": comets-frontend
+  register: frontend
 
 - name: set instance name
   set_fact:
-    instance_name: "{{instance.instances[0].tags.Name}}"
+    processor_instance: "{{processor.instances[0].tags.Name}}"
+    frontend_instance: "{{frontend.instances[0].tags.Name}}"
 
 #set local routing 
 - name: set localhost routing

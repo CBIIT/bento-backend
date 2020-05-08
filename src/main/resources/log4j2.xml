@@ -41,11 +41,11 @@
         </Async>
 	</Appenders>
 	<Loggers>
-		<Logger name="gov.nih.nci.icdc" level="info" additivity="false">
+		<Logger name="gov.nih.nci.bento" level="info" additivity="false">
 			<AppenderRef ref="AsyncInfo" />
 			<AppenderRef ref="LogToConsole" />
 		</Logger>
-		<Logger name="icdc" level="error" additivity="false">
+		<Logger name="bento" level="error" additivity="false">
 			<AppenderRef ref="AsyncErr" />
 			<AppenderRef ref="LogToConsole" />
 		</Logger>

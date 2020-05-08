@@ -1,7 +1,0 @@
-
-
-type Person {
-    name:String!
-    born:Int!
-}
-

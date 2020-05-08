@@ -6,7 +6,7 @@
   gather_facts: yes
 
   roles:
-    # - common
-    # - docker
+    - common
+    - docker
     - ecs-agent
    

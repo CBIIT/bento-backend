@@ -45,7 +45,7 @@
 			<AppenderRef ref="AsyncInfo" />
 			<AppenderRef ref="LogToConsole" />
 		</Logger>
-		<Logger name="icdc" level="error" additivity="false">
+		<Logger name="bento" level="error" additivity="false">
 			<AppenderRef ref="AsyncErr" />
 			<AppenderRef ref="LogToConsole" />
 		</Logger>

@@ -9,7 +9,7 @@
 
 - name: set instance name
   set_fact:
-    processor_instance: "{{processor.instances[0].tags.Name}}"
+    ecs_cluster_name: "ecs"
     processor_ip: "{{processor.instances[0].network_interfaces[0].private_ip_address}}"
 
 - debug:

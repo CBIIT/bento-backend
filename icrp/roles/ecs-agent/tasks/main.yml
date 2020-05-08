@@ -11,7 +11,6 @@
   set_fact:
     processor_instance: "{{processor.instances[0].tags.Name}}"
     processor_ip: "{{processor.instances[0].network_interfaces[0].private_ip_address}}"
-    frontend_instance: "{{frontend.instances[0].tags.Name}}"
 
 - debug:
     msg: "{{ ansible_all_ipv4_addresses}}||{{processor_ip}}"

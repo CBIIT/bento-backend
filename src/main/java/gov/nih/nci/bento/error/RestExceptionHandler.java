@@ -32,7 +32,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.VersionDao;
 import lombok.extern.slf4j.Slf4j;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -44,9 +43,6 @@ public class RestExceptionHandler {
 	@Autowired
 	private ConfigurationDAO config;
 	
-	
-	@Autowired
-	private VersionDao versionConfig;
 	
 	private static final Logger logger = LogManager.getLogger(RestExceptionHandler.class);
 
@@ -158,11 +154,11 @@ public class RestExceptionHandler {
 
 	@ExceptionHandler(NoHandlerFoundException.class)
 	public Object handleNoHandlerFoundException(NoHandlerFoundException ex) {
-		if(ex.getRequestURL().contains(versionConfig.getApiVersion())) {
-			return handleAPINoHandlerFoundException(ex);
-		}else {
-			return new ModelAndView("/index");
-		}
+		ApiError apiError = new ApiError(BAD_REQUEST);
+		apiError.setMessage(
+				String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
+		apiError.setDebugMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
 	}
 
 	/**
@@ -261,8 +257,11 @@ public class RestExceptionHandler {
 	}
 	
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	protected ModelAndView noFound(Exception ex) {
-		return new ModelAndView("/index");
+	protected ResponseEntity<Object> noFound(Exception ex) {
+		ApiError apiError = new ApiError(BAD_REQUEST);
+		apiError.setMessage(ex.getMessage());
+		apiError.setDebugMessage(ex.getMessage());
+		return buildResponseEntity(apiError);
 	}
 	
 

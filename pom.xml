@@ -229,137 +229,13 @@
 
 	<build>
 		<plugins>
-			<!-- Spring REST DOC plugin -->
-			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.3</version>
-				<executions>
-					<execution>
-						<id>generate-docs</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-						<configuration>
-							<backend>html</backend>
-							<doctype>book</doctype>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.springframework.restdocs</groupId>
-						<artifactId>spring-restdocs-asciidoctor</artifactId>
-						<version>${spring-restdocs.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+		
 
-			<!-- Spring REST DOC Generate doc included in war -->
-			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.3</version>
-				<configuration>
-					<webResources>
-						<resource>
-							<!-- this is relative to the pom.xml directory -->
-							<directory>${project.build.directory}/generated-docs</directory>
-							<targetPath>/static/docs/api</targetPath>
-						</resource>
-						<resource>
-							<!-- Include the react app index.html and build.js -->
-							<directory>src/main/frontend/dist/</directory>
-							<targetPath>/WEB-INF/</targetPath>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
-			<!-- plugin for smart regression testing -->
-			<plugin>
-				<groupId>org.hyrts</groupId>
-				<artifactId>hyrts-maven-plugin</artifactId>
-				<version>1.0.1</version>
-			</plugin>
-
-			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<configuration>
-					<workingDirectory>src/main/frontend</workingDirectory>
-					<installDirectory>target</installDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>install node and npm</id>
-						<goals>
-							<goal>install-node-and-npm</goal>
-						</goals>
-						<configuration>
-							<nodeVersion>v12.16.1</nodeVersion>
-							<npmVersion>6.13.4</npmVersion>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm install</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>install</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm install mui-custom-datatables master</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>install --save https://github.com/skiran86/mui-custom-datatables/tarball/master</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm install mui-custom-datatables modules</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<workingDirectory>src/main/frontend/node_modules/mui-custom-datatables</workingDirectory>
-							<arguments>install </arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm install mui-custom-datatables run build</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<workingDirectory>src/main/frontend/node_modules/mui-custom-datatables</workingDirectory>
-							<arguments>run build </arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm run build</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run build</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 

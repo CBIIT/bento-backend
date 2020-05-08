@@ -39,7 +39,6 @@ public class Neo4JGraphQLService {
 		}
 
 		JsonNode neo4jResponse = jsonResponse.getBody();
-		// if neo4j response an error will throw that error to the front end
 		if (neo4jResponse.getObject().has("errors")) {
 			logger.error("Exception in function query() "+neo4jResponse.getObject().get("errors").toString());
 			throw new ResourceNotFoundException(neo4jResponse.getObject().get("errors").toString());

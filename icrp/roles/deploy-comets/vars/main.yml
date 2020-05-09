@@ -1,4 +1,5 @@
 ---
 # vars file for deploy-comets
-
-app_base_directory: /local/content/docker/comets/
+app_base_directory: /local/content/docker/comets
+comets_repo: https://github.com/CBIIT/nci-webtools-comets-analytics
+R_repo: https://github.com/CBIIT/R-cometsAnalytics

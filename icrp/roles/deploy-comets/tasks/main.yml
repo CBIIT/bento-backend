@@ -1,0 +1,26 @@
+---
+# tasks file for deploy-comets
+
+#create app and logs directory
+name: create app and logs directory
+file: 
+  path: "{{app_base_directory}}/{{item}}"
+  state: directory
+loop:
+  - app
+  - logs
+
+
+
+
+
+
+
+
+    # - git clone https://github.com/CBIIT/nci-webtools-comets-analytics /tmp/comets
+    # - cd /tmp/ && git clone https://github.com/CBIIT/R-cometsAnalytics
+    # - mkdir -p /local/content/docker/comets/{app,logs}
+    # - rsync -a /tmp/comets/comets/ /local/content/docker/comets/app/
+    # - cd /tmp/R-cometsAnalytics && git checkout comets_1.6.0_20191205
+    # - rsync -a /tmp/R-cometsAnalytics/ /local/content/docker/comets/app/restricted/rcode/
+    # - systemctl restart docker

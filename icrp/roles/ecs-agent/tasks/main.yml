@@ -9,8 +9,8 @@
 
 - name: set instance name
   set_fact:
-    processor_ip: "{{processor.instances[0].network_interfaces[0].private_ip_address}}"
-
+    processor_ip: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
+    
 #set local routing 
 - name: set localhost routing
   sysctl:

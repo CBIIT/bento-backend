@@ -10,6 +10,20 @@
     - app
     - logs
 
+- name: checkout comets repo
+  git:
+    repo: "{{comets_repo}}"
+    dest: /tmp/comets
+    version: master
+    force: yes
+
+- name: checkout R repo
+  git:
+    repo: "{{comets_repo}}"
+    dest: /tmp
+    version: comets_1.6.0_20191205
+    force: yes
+
 
 
 

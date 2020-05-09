@@ -2,13 +2,13 @@
 # tasks file for deploy-comets
 
 #create app and logs directory
-name: create app and logs directory
-file: 
-  path: "{{app_base_directory}}/{{item}}"
-  state: directory
-loop:
-  - app
-  - logs
+- name: create app and logs directory
+  file: 
+    path: "{{app_base_directory}}/{{item}}"
+    state: directory
+  loop:
+    - app
+    - logs
 
 
 

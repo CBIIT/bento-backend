@@ -1,0 +1,4 @@
+---
+# vars file for deploy-comets
+
+app_base_directory: /local/content/docker/comets/

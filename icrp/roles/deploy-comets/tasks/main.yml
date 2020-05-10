@@ -46,17 +46,25 @@
     version: comets_1.6.0_20191205
     force: yes
 
+- name: copy comets app 
+  synchronize:
+    dest: /local/content/docker/comets/app/
+    src: /tmp/comets/comets/
+    delete: yes
+    recursive: true
+    rsync_opts:
+      - "--exclude=.git"
 
-
-
-
-
-
-
-    # - git clone https://github.com/CBIIT/nci-webtools-comets-analytics /tmp/comets
-    # - cd /tmp/ && git clone https://github.com/CBIIT/R-cometsAnalytics
-    # - mkdir -p /local/content/docker/comets/{app,logs}
-    # - rsync -a /tmp/comets/comets/ /local/content/docker/comets/app/
-    # - cd /tmp/R-cometsAnalytics && git checkout comets_1.6.0_20191205
-    # - rsync -a /tmp/R-cometsAnalytics/ /local/content/docker/comets/app/restricted/rcode/
-    # - systemctl restart docker
+- name: copy R code
+  synchronize:
+    dest: /local/content/docker/comets/app/restricted/rcode/
+    src: /tmp/R-cometsAnalytics/
+    delete: yes
+    recursive: true
+    rsync_opts:
+      - "--exclude=.git"
+      
+- name: restart docker
+  service:
+    name: docker
+    state: restarted

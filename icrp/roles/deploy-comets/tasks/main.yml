@@ -54,6 +54,7 @@
     recursive: true
     rsync_opts:
       - "--exclude=.git"
+      - "--exclude=settings.yml"
 
 - name: copy R code
   synchronize:
@@ -63,7 +64,7 @@
     recursive: true
     rsync_opts:
       - "--exclude=.git"
-      
+
 - name: restart docker
   service:
     name: docker

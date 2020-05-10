@@ -42,7 +42,7 @@
 - name: checkout R repo
   git:
     repo: "{{R_repo}}"
-    dest: /tmp/
+    dest: /tmp/R-cometsAnalytics
     version: comets_1.6.0_20191205
     force: yes
 

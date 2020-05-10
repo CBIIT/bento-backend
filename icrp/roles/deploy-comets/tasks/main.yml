@@ -65,6 +65,11 @@
     rsync_opts:
       - "--exclude=.git"
 
+- name: update settings
+  template:
+    dest: /local/content/docker/comets/app/restricted/settings.yml
+    src: settings.yml.j2
+
 - name: restart docker
   service:
     name: docker

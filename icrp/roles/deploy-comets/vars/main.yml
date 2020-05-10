@@ -1,5 +1,13 @@
 ---
 # vars file for deploy-comets
+sender: "{{ lookup('aws_ssm', 'sender', region='us-east-1' ) }}"
+host: "{{ lookup('aws_ssm', 'host', region='us-east-1' ) }}"
+s3_password: "{{ lookup('aws_ssm', 's3_password', region='us-east-1' ) }}"
+s3_username: "{{ lookup('aws_ssm', 's3_username', region='us-east-1' ) }}"
+admin_email: "{{ lookup('aws_ssm', 'admin_email', region='us-east-1' ) }}"
+username: "{{ lookup('aws_ssm', 'username', region='us-east-1' ) }}"
+password: "{{ lookup('aws_ssm', 'password', region='us-east-1' ) }}"
+token: "{{ lookup('aws_ssm', 'token', region='us-east-1' ) }}"
 app_base_directory: /local/content/docker/comets
 comets_repo: https://github.com/CBIIT/nci-webtools-comets-analytics
 R_repo: https://github.com/CBIIT/R-cometsAnalytics

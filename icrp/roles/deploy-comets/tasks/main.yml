@@ -5,12 +5,14 @@
   ec2_instance_facts:
     region: us-east-1
     filters:
+      "tag:Environment": "{{env}}"
       "tag:Name": comets-frontend
+      "instance-state-name": running
   register: frontend
 
 - name: set instance ip
   set_fact:
-    queue_host: "{{ frontend.instances[1].network_interfaces[0].private_ip_address }}"
+    queue_host: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"
 
 # - name: Check if comets and exits 
 #   stat:

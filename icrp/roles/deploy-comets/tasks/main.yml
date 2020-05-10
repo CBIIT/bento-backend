@@ -6,82 +6,86 @@
     region: us-east-1
     filters:
       "tag:Name": comets-frontend
-  register: processor
+  register: frontend
 
 - name: set instance ip
   set_fact:
-    queue_host: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
+    queue_host: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"
 
-- name: Check if comets and exits 
-  stat:
-    path: /tmp/comets
-  register: comets_result
+- name: show
+  debug:
+    msg: "{{frontend.instances[0].network_interfaces[0]}}"
 
-- name: remove old comets repo
-  file:
-    path: /tmp/comets
-    state: absent
-  when: comets_result.stat.exists
+# - name: Check if comets and exits 
+#   stat:
+#     path: /tmp/comets
+#   register: comets_result
 
-- name: Check if R-cometsAnalytics exits 
-  stat:
-    path: /tmp/R-cometsAnalytics
-  register: r_result
+# - name: remove old comets repo
+#   file:
+#     path: /tmp/comets
+#     state: absent
+#   when: comets_result.stat.exists
 
-- name: remove old r repo
-  file:
-    path: /tmp/R-cometsAnalytics
-    state: absent
-  when: r_result.stat.exists
+# - name: Check if R-cometsAnalytics exits 
+#   stat:
+#     path: /tmp/R-cometsAnalytics
+#   register: r_result
 
-#create app and logs directory
-- name: create app and logs directory
-  file: 
-    path: "{{app_base_directory}}/{{item}}"
-    state: directory
-  loop:
-    - app
-    - logs
+# - name: remove old r repo
+#   file:
+#     path: /tmp/R-cometsAnalytics
+#     state: absent
+#   when: r_result.stat.exists
 
-- name: checkout comets repo
-  git:
-    repo: "{{comets_repo}}"
-    dest: /tmp/comets
-    version: master
-    force: yes
+# #create app and logs directory
+# - name: create app and logs directory
+#   file: 
+#     path: "{{app_base_directory}}/{{item}}"
+#     state: directory
+#   loop:
+#     - app
+#     - logs
 
-- name: checkout R repo
-  git:
-    repo: "{{R_repo}}"
-    dest: /tmp/R-cometsAnalytics
-    version: comets_1.6.0_20191205
-    force: yes
+# - name: checkout comets repo
+#   git:
+#     repo: "{{comets_repo}}"
+#     dest: /tmp/comets
+#     version: master
+#     force: yes
 
-- name: copy comets app 
-  synchronize:
-    dest: /local/content/docker/comets/app/
-    src: /tmp/comets/comets/
-    delete: yes
-    recursive: true
-    rsync_opts:
-      - "--exclude=.git"
-      - "--exclude=settings.yml"
+# - name: checkout R repo
+#   git:
+#     repo: "{{R_repo}}"
+#     dest: /tmp/R-cometsAnalytics
+#     version: comets_1.6.0_20191205
+#     force: yes
 
-- name: copy R code
-  synchronize:
-    dest: /local/content/docker/comets/app/restricted/rcode/
-    src: /tmp/R-cometsAnalytics/
-    delete: yes
-    recursive: true
-    rsync_opts:
-      - "--exclude=.git"
+# - name: copy comets app 
+#   synchronize:
+#     dest: /local/content/docker/comets/app/
+#     src: /tmp/comets/comets/
+#     delete: yes
+#     recursive: true
+#     rsync_opts:
+#       - "--exclude=.git"
+#       - "--exclude=settings.yml"
 
-- name: update settings
-  template:
-    dest: /local/content/docker/comets/app/restricted/settings.yml
-    src: settings.yml.j2
+# - name: copy R code
+#   synchronize:
+#     dest: /local/content/docker/comets/app/restricted/rcode/
+#     src: /tmp/R-cometsAnalytics/
+#     delete: yes
+#     recursive: true
+#     rsync_opts:
+#       - "--exclude=.git"
 
-- name: restart docker
-  service:
-    name: docker
-    state: restarted
+# - name: update settings
+#   template:
+#     dest: /local/content/docker/comets/app/restricted/settings.yml
+#     src: settings.yml.j2
+
+# - name: restart docker
+#   service:
+#     name: docker
+#     state: restarted

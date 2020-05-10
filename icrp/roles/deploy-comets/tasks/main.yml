@@ -1,6 +1,17 @@
 ---
 # tasks file for deploy-comets
 
+- name: gather comets-app facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": comets-frontend
+  register: processor
+
+- name: set instance ip
+  set_fact:
+    queue_host: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
+
 - name: Check if comets and exits 
   stat:
     path: /tmp/comets

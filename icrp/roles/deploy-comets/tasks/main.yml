@@ -10,7 +10,7 @@
 
 - name: set instance ip
   set_fact:
-    queue_host: "{{ frontend.instances[1].network_interfaces[0].private_ip_address }}"
+    queue_host: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"
 
 - name: Check if comets and exits 
   stat:

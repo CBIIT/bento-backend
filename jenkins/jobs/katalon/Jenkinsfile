@@ -134,7 +134,7 @@ pipeline {
 					alwaysLinkToLastBuild: false,
 					keepAll: false,
 					reportDir: 'results',
-					reportFiles: 'inex_*.html',
+					reportFiles: 'index_*.html',
 					reportName: 'HTML Report',
 					reportTitles: ''])
 

@@ -1,0 +1,12 @@
+---
+- name: setup ecs agent
+  hosts: all
+  connection: local
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - common
+    - docker
+    - ecs-agent
+   

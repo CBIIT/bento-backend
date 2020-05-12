@@ -7,7 +7,7 @@ pipeline {
     parameters {
 
     gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'KatalonBranch', 
+        defaultValue: 'master', 
         name: 'Tag', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 
@@ -16,7 +16,7 @@ pipeline {
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/DataCommons_Automation')
 
-    string(defaultValue: "CTDC_Automation/CTDC_Automation.prj", 
+    string(defaultValue: "Commons_Automation.prj", 
         description: 'Enter the Katalon Project file (include the path relative to the repo root):', 
         name: 'KatalonPrj')
 
@@ -36,7 +36,7 @@ pipeline {
         defaultValue: 'QA_ICDC', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_ICDC' )
+        value: 'QA_ICDC,QA_CTDC' )
 
         }
     // options {
@@ -58,17 +58,20 @@ pipeline {
 
                 dir('icdc-devops'){
                     git branch: 'master',
-                    url: 'https://github.com/CBIIT/icdc-devops.git'}
+                    url: 'https://github.com/michael-fleming/DevOps.git'}
 
                 }
             }
 		stage('set Profile'){
+		    environment {
+                KATALON_PRJ         =   "${params.KatalonPrj}"
+                }
 			steps {
                 script {
                     switch("${params.Profile}") {
                     case "QA_ICDC":
                         withCredentials([file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/CTDC_Automation/Profiles/${params.Profile}.glbl"
+                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
                     

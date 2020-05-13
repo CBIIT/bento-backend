@@ -1,0 +1,15 @@
+version: '3.4'
+services:
+  bento-dataloader:
+    container_name: dataloader
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        NEO4J_PASS: ${NEO4J_PASS}
+        NEO4J_IP: ${NEO4J_IP}
+        CONFIG_INI: ${CONFIG_INI}
+        MODEL_GRAPHQL: ${MODEL_GRAPHQL}
+        MODEL_YML: ${MODEL_YML}
+        PROPS_YML: ${PROPS_YML}
+        MODEL_PROPS_YML: ${MODEL_PROPS_YML}

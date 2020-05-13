@@ -1,0 +1,60 @@
+version: '3.4'
+services:
+  bento-backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: ${BACK_ENV}
+      args:
+        NEO4J_USER: ${NEO4J_USER}
+        NEO4J_PASS: ${NEO4J_PASS}
+        BACKEND_BUILD_DIR: ${BACKEND_BUILD_DIR}
+    ports:
+      - 8084:8080
+    restart: always
+
+    # logging:
+    #   driver: sumologic
+    #   options:
+    #     sumo-url: "https://"
+    # environment:
+    # - NEW_RELIC_LICENSE_KEY={{ newrelic_license_key }}
+    # - NEW_RELIC_APP_NAME={{ app_name }}
+
+  bento-frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      target: ${FRONT_ENV}
+      args:
+        LOCAL_IP: ${BACKEND_IP}
+        FRONTEND_BUILD_DIR: ${FRONTEND_BUILD_DIR}
+    ports:
+      - 8085:80
+    restart: always
+
+    # logging:
+    #   driver: sumologic
+    #   options:
+    #     sumo-url: "https://"
+
+  neo4:
+    container_name: neo4
+    build:
+      context: .
+      dockerfile: ./neo4/Dockerfile
+    environment:
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASS}
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    ports:
+      - 7474:7474
+      - 7687:7687
+
+volumes:
+  neo4j-data:
+  neo4j-logs:

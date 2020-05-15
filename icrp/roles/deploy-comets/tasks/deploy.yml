@@ -59,13 +59,13 @@
   register: task_output
 
 - name: query task definition frontend
-  ecs_taskdefinition_info:
+  ecs_taskdefinition_facts:
     task_definition: comets-{{env}}-frontend
     region: "{{region}}" 
   register: task_frontend
 
 - name: query task definition processor
-  ecs_taskdefinition_info:
+  ecs_taskdefinition_facts:
     task_definition: comets-{{env}}-processor
     region: "{{region}}" 
   register: task_processor

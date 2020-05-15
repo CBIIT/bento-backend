@@ -71,7 +71,7 @@
   register: task_processor
 
 - name: query ecs service comets
-  ecs_service_info:
+  ecs_service_facts:
     cluster: comets-{{env}}
     service: comets-{{env}}-comets
     details: true
@@ -79,7 +79,7 @@
   register: service_comets
 
 - name: query ecs service processor
-  ecs_service_info:
+  ecs_service_facts:
     cluster: comets-{{env}}
     service: comets-{{env}}-processor
     details: true

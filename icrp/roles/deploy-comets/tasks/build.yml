@@ -70,17 +70,31 @@
   register: ecr_login
 
 
-- name:  build cbiitss/comets image
+- name:  build cbiitss/comets:app image
   docker_image:
     path: "/tmp/comets"
     dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
     pull: yes
     name: "{{ecr}}/comets"
     tag: "app-{{version}}"
-    push: yes
+    # push: yes
     
 
+- name:  build cbiitss/comets:processor image
+  docker_image:
+    path: "/tmp/comets"
+    dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
+    pull: yes
+    name: "{{ecr}}/comets"
+    tag: "processor-{{version}}"
+    # push: yes
 
+- name:  build cbiitss/comets:activemq image
+  docker_image:
+    pull: yes
+    name: cbiitss/activemq
+    tag: "{{ecr}}/comets:activemq"
+    # push: yes
 
           
 # - name: build cbiitssrepo/bento-frontend image

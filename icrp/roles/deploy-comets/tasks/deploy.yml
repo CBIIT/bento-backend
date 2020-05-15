@@ -97,48 +97,47 @@
     role_arn: "{{service_comets.services[0].roleArn}}"
 
 
-- debug:
-    msg: "{{service_comets}}"
-- debug:
-    msg: "{{service_processor}}"
+# - debug:
+#     msg: "{{service_comets}}"
+# - debug:
+#     msg: "{{service_processor}}"
 
-# - name: update frontend service
-#   ecs_service:
-#     state: present
-#     name: ctdc_ecs_frontend
-#     cluster: ctdc-ecs
-#     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-#     role: "{{role_arn}}"
-#     force_new_deployment: yes
-#     deployment_configuration:
-#       minimum_healthy_percent: 50
-#       maximum_percent: 200
-#     desired_count: 1
-#     load_balancers: "{{ lb_frontend }}"
-#     region: "{{region}}"
-#   register: service_frontend_output
+- name: update comets service
+  ecs_service:
+    state: present
+    name: comets-{{env}}-comets
+    cluster: comets-{{env}}
+    task_definition: "{{task_comets_name}}:{{comets_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 50
+      maximum_percent: 200
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_comets_output
 
 
-# - name: update backend service
-#   ecs_service:
-#     state: present
-#     name: ctdc_ecs_backend
-#     cluster: ctdc-ecs
-#     task_definition: "{{task_backend_name}}:{{backend_revision}}"
-#     role: "{{role_arn}}"
-#     force_new_deployment: yes
-#     deployment_configuration:
-#       minimum_healthy_percent: 50
-#       maximum_percent: 200
-#     desired_count: 1
-#     load_balancers: "{{ lb_backend }}"
-#     region: "{{region}}"
-#   register: service_backend_output
+- name: update processor service
+  ecs_service:
+    state: present
+    name: comets-{{env}}-processor
+    cluster: comets-{{env}}
+    task_definition: "{{task_processor_name}}:{{processor_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 50
+      maximum_percent: 200
+    desired_count: 1
+    region: "{{region}}"
+  register: service_processor_output
 
-# - name: show frontend service
-#   debug:
-#     msg: "{{service_frontend_output}}"
+- name: show comets service
+  debug:
+    msg: "{{service_comets_output}}"
 
-# - name: show backend service
-#   debug:
-#     msg: "{{service_backend_output}}"
+- name: show processor service
+  debug:
+    msg: "{{service_processor_output}}"

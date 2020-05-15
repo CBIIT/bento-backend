@@ -6,8 +6,12 @@
   gather_facts: yes
 
   tasks:
-    - name: Run tasks/other.yaml instead of 'main'
+    # - name: build comets
+    #   include_role:
+    #     name: deploy-comets
+    #     tasks_from: build
+    - name: deploy comets
       include_role:
         name: deploy-comets
-        tasks_from: build
+        tasks_from: deploy
 

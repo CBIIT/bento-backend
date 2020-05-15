@@ -5,8 +5,13 @@
   become: yes
   gather_facts: yes
 
+<<<<<<< HEAD
   tasks:
     - name: Run tasks/other.yaml instead of 'main'
       include_role:
         name: deploy-comets
         tasks_from: build
+=======
+  roles:
+    - deploy-comets
+>>>>>>> b9b506ce97e3b5d8317edd028dc7d20d4467d569

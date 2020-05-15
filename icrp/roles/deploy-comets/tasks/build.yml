@@ -38,7 +38,7 @@
 
 - name: copy R code
   synchronize:
-    dest: /tm/comets/comets/restricted/rcode/
+    dest: /tmp/comets/comets/restricted/rcode/
     src: /tmp/R-cometsAnalytics/
     delete: yes
     recursive: true

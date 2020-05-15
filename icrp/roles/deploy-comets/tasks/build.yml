@@ -65,7 +65,7 @@
 
 
 - name: login into ecr
-  shell: "$(/usr/local/bin/aws ecr get-login --no-include-email --region us-east-1)"
+  shell: "$(/bin/aws ecr get-login --no-include-email --region us-east-1)"
   register: ecr_login
 
 - name: show login

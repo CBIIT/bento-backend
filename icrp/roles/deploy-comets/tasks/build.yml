@@ -51,10 +51,6 @@
     src: settings.yml.j2
 
 
-# - name: log into DockerHub
-#   docker_login:
-#     username: "{{docker_user}}"
-#     password: "{{docker_password}}"
 - name: login into ecr
   shell: "$(/usr/local/bin/aws ecr get-login --no-include-email --region us-east-1)"
   register: ecr_login

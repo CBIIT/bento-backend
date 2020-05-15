@@ -71,10 +71,9 @@
 
 - name:  build cbiitss/comets image
   docker_image:
-    build:
-      path: "/tmp/comets"
-      dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
-      pull: yes
+    path: "/tmp/comets"
+    dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
+    pull: yes
     name: 707401068807.dkr.ecr.us-east-1.amazonaws.com/comets
     tag: "comets"
     push: yes

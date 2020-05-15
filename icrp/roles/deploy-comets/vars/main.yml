@@ -14,3 +14,4 @@ R_repo: https://github.com/CBIIT/R-cometsAnalytics
 ecr: "{{ lookup('aws_ssm', 'ecr', region='us-east-1' ) }}"
 version: 1.6.0
 env: dev
+region: us-east-1

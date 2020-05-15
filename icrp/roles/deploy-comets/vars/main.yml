@@ -11,3 +11,5 @@ token: "{{ lookup('aws_ssm', 'token', region='us-east-1' ) }}"
 app_base_directory: /local/content/docker/comets
 comets_repo: https://github.com/CBIIT/nci-webtools-comets-analytics
 R_repo: https://github.com/CBIIT/R-cometsAnalytics
+ecr: "{{ lookup('aws_ssm', 'ecr', region='us-east-1' ) }}"
+version: 1.6.0

@@ -58,11 +58,11 @@
           awslogs-stream-prefix: "comets-{{env}}"  
   register: task_output
 
-- name: query task definition frontend
+- name: query task definition comets
   ecs_taskdefinition_facts:
     task_definition: comets-{{env}}-frontend
     region: "{{region}}" 
-  register: task_frontend
+  register: task_comets
 
 - name: query task definition processor
   ecs_taskdefinition_facts:
@@ -87,21 +87,20 @@
   register: service_processor
 
 
-# - name: set facts
-#   set_fact:
-#     frontend_revision: "{{task_frontend.revision}}"
-#     backend_revision: "{{task_backend.revision}}"
-#     task_backend_name: "{{task_backend.family}}"
-#     task_frontend_name: "{{task_frontend.family}}"
-#     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
-#     lb_backend: "{{service_backend.services[0].loadBalancers}}"
-#     role_arn: "{{service_backend.services[0].roleArn}}"
+- name: set facts
+  set_fact:
+    comets_revision: "{{task_comets.revision}}"
+    processor_revision: "{{task_processor.revision}}"
+    task_processor_name: "{{task_processor.family}}"
+    task_comets_name: "{{task_comets.family}}"
+    lb_frontend: "{{service_comets.services[0].loadBalancers}}"
+    role_arn: "{{service_comets.services[0].roleArn}}"
 
 
-# - debug:
-#     msg: "{{service_frontend}}"
-# - debug:
-#     msg: "{{service_backend}}"
+- debug:
+    msg: "{{service_comets}}"
+- debug:
+    msg: "{{service_processor}}"
 
 # - name: update frontend service
 #   ecs_service:

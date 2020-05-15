@@ -1,0 +1,105 @@
+---
+
+- name: gather comets-app facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Environment": "{{env}}"
+      "tag:Name": comets-frontend
+      "instance-state-name": running
+  register: frontend
+
+- name: set instance ip
+  set_fact:
+    queue_host: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"
+
+- name: Check if comets and exits 
+  stat:
+    path: /tmp/comets
+  register: comets_result
+
+- name: remove old comets repo
+  file:
+    path: /tmp/comets
+    state: absent
+  when: comets_result.stat.exists
+
+- name: Check if R-cometsAnalytics exits 
+  stat:
+    path: /tmp/R-cometsAnalytics
+  register: r_result
+
+- name: remove old r repo
+  file:
+    path: /tmp/R-cometsAnalytics
+    state: absent
+  when: r_result.stat.exists
+
+- name: checkout comets repo
+  git:
+    repo: "{{comets_repo}}"
+    dest: /tmp/comets
+    version: master
+    force: yes
+
+- name: checkout R repo
+  git:
+    repo: "{{R_repo}}"
+    dest: /tmp/R-cometsAnalytics
+    version: comets_1.6.0_20191205
+    force: yes
+
+- name: copy R code
+  synchronize:
+    dest: /tmp/comets/comets/restricted/rcode/
+    src: /tmp/R-cometsAnalytics/
+    delete: yes
+    recursive: true
+    rsync_opts:
+      - "--exclude=.git"
+
+- name: update settings
+  template:
+    dest: /tmp/comets/comets/restricted/settings.yml
+    src: settings.yml.j2
+
+
+- name: login into ecr
+  shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  ignore_errors: True
+  register: ecr_login
+
+
+- name:  build cbiitss/comets:app image
+  docker_image:
+    path: "/tmp/comets"
+    dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
+    pull: yes
+    name: "{{ecr}}/comets"
+    tag: "app-{{version}}"
+    push: yes
+    
+
+- name:  build cbiitss/comets:processor image
+  docker_image:
+    path: "/tmp/comets"
+    dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
+    pull: yes
+    name: "{{ecr}}/comets"
+    tag: "processor-{{version}}"
+    push: yes
+
+
+
+          
+# - name: build cbiitssrepo/bento-frontend image
+#   docker_image:
+#     build:
+#       path: "{{workspace}}/bento-frontend"
+#       dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
+#       pull: yes
+#     name: cbiitssrepo/bento-frontend
+#     tag: "{{build_number}}"
+#     push: yes
+#     source: build
+    

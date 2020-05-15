@@ -11,7 +11,7 @@ resource "aws_ecs_task_definition" "frontend" {
     [ 
         { 
             "name":"frontend",
-            "image":"cbiitssrepo/bento-frontend",
+            "image":"cbiitssrepo/bento-frontend:27",
             "essential":true,
             "portMappings":[ 
                 { 
@@ -33,7 +33,7 @@ resource "aws_ecs_task_definition" "backend" {
     [ 
         { 
             "name":"backend",
-            "image":"cbiitssrepo/bento-backend",
+            "image":"cbiitssrepo/bento-backend:27",
             "essential":true,
             "portMappings":[ 
                 { 

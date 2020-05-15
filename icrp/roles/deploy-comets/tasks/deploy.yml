@@ -1,0 +1,120 @@
+---
+- name: create task definition 
+  ecs_taskdefinition:
+    containers:
+    - name: backend
+      essential: true
+      image: "cbiitssrepo/bento-backend:{{build_number}}"
+      portMappings:
+      - containerPort: "8080"
+        hostPort: "8080"
+    network_mode: bridge
+    family: bento-backend
+    memory: '1024'
+    cpu: '1024'
+    state: present
+    region: "{{region}}"
+  register: task_output
+
+- name: create task definition 
+  ecs_taskdefinition:
+    containers:
+    - name: frontend
+      essential: true
+      image: "cbiitssrepo/bento-frontend:{{build_number}}"
+      portMappings:
+      - containerPort: "80"
+        hostPort: "80"
+    network_mode: bridge
+    family: bento-frontend
+    state: present
+    memory: '512'
+    cpu: '512'
+    region: "{{region}}"
+  register: task_output
+
+- name: query task definition
+  ecs_taskdefinition_info:
+    task_definition: bento-frontend
+    region: "{{region}}" 
+  register: task_frontend
+
+- name: query task definition
+  ecs_taskdefinition_info:
+    task_definition: bento-backend
+    region: "{{region}}" 
+  register: task_backend
+
+- name: query ecs service
+  ecs_service_info:
+    cluster: ctdc-ecs
+    service: ctdc_ecs_backend
+    details: true
+    region: "{{region}}"
+  register: service_backend
+
+- name: query ecs service
+  ecs_service_info:
+    cluster: ctdc-ecs
+    service: ctdc_ecs_frontend
+    details: true
+    region: "{{region}}"
+  register: service_frontend
+
+
+- name: set facts
+  set_fact:
+    frontend_revision: "{{task_frontend.revision}}"
+    backend_revision: "{{task_backend.revision}}"
+    task_backend_name: "{{task_backend.family}}"
+    task_frontend_name: "{{task_frontend.family}}"
+    lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
+    lb_backend: "{{service_backend.services[0].loadBalancers}}"
+    role_arn: "{{service_backend.services[0].roleArn}}"
+
+
+- debug:
+    msg: "{{service_frontend}}"
+- debug:
+    msg: "{{service_backend}}"
+
+- name: update frontend service
+  ecs_service:
+    state: present
+    name: ctdc_ecs_frontend
+    cluster: ctdc-ecs
+    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 50
+      maximum_percent: 200
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_frontend_output
+
+
+- name: update backend service
+  ecs_service:
+    state: present
+    name: ctdc_ecs_backend
+    cluster: ctdc-ecs
+    task_definition: "{{task_backend_name}}:{{backend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 50
+      maximum_percent: 200
+    desired_count: 1
+    load_balancers: "{{ lb_backend }}"
+    region: "{{region}}"
+  register: service_backend_output
+
+- name: show frontend service
+  debug:
+    msg: "{{service_frontend_output}}"
+
+- name: show backend service
+  debug:
+    msg: "{{service_backend_output}}"

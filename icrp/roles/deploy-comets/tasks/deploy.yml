@@ -134,10 +134,10 @@
     region: "{{region}}"
   register: service_processor_output
 
-- name: show comets service
-  debug:
-    msg: "{{service_comets_output}}"
+# - name: show comets service
+#   debug:
+#     msg: "{{service_comets_output}}"
 
-- name: show processor service
-  debug:
-    msg: "{{service_processor_output}}"
+# - name: show processor service
+#   debug:
+#     msg: "{{service_processor_output}}"

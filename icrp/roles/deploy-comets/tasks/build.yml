@@ -60,7 +60,7 @@
 
 - name: update settings
   template:
-    dest: /local/content/docker/comets/app/restricted/settings.yml
+    dest: /tmp/comets/comets/restricted/settings.yml
     src: settings.yml.j2
 
 

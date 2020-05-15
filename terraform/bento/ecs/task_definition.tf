@@ -11,7 +11,11 @@ resource "aws_ecs_task_definition" "frontend" {
     [ 
         { 
             "name":"frontend",
+<<<<<<< HEAD
             "image":"cbiitssrepo/bento-frontend:27",
+=======
+            "image":"cbiitssrepo/bento-frontend",
+>>>>>>> b9b506ce97e3b5d8317edd028dc7d20d4467d569
             "essential":true,
             "portMappings":[ 
                 { 
@@ -33,7 +37,11 @@ resource "aws_ecs_task_definition" "backend" {
     [ 
         { 
             "name":"backend",
+<<<<<<< HEAD
             "image":"cbiitssrepo/bento-backend:27",
+=======
+            "image":"cbiitssrepo/bento-backend",
+>>>>>>> b9b506ce97e3b5d8317edd028dc7d20d4467d569
             "essential":true,
             "portMappings":[ 
                 { 

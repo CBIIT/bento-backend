@@ -75,8 +75,8 @@
     path: "/tmp/comets"
     dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
     pull: yes
-    name: 707401068807.dkr.ecr.us-east-1.amazonaws.com/comets
-    tag: "comets"
+    name: "{{ecr}}/comets"
+    tag: "app-{{version}}"
     push: yes
     
 

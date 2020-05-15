@@ -109,7 +109,7 @@
     cluster: comets-{{env}}
     task_definition: "{{task_comets_name}}:{{comets_revision}}"
     role: "{{role_arn}}"
-    force_new_deployment: yes
+    # force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 50
       maximum_percent: 200
@@ -126,7 +126,7 @@
     cluster: comets-{{env}}
     task_definition: "{{task_processor_name}}:{{processor_revision}}"
     role: "{{role_arn}}"
-    force_new_deployment: yes
+    # force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 50
       maximum_percent: 200

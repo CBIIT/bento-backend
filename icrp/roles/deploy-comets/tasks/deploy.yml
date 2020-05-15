@@ -111,7 +111,7 @@
     role: "{{role_arn}}"
     # force_new_deployment: yes
     deployment_configuration:
-      minimum_healthy_percent: 50
+      minimum_healthy_percent: 0
       maximum_percent: 200
     desired_count: 1
     load_balancers: "{{ lb_frontend }}"
@@ -128,7 +128,7 @@
     role: "{{role_arn}}"
     # force_new_deployment: yes
     deployment_configuration:
-      minimum_healthy_percent: 50
+      minimum_healthy_percent: 0
       maximum_percent: 200
     desired_count: 1
     region: "{{region}}"

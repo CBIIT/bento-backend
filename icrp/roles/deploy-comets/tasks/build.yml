@@ -88,18 +88,3 @@
     name: "{{ecr}}/comets"
     tag: "processor-{{version}}"
     push: yes
-
-
-
-          
-# - name: build cbiitssrepo/bento-frontend image
-#   docker_image:
-#     build:
-#       path: "{{workspace}}/bento-frontend"
-#       dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
-#       pull: yes
-#     name: cbiitssrepo/bento-frontend
-#     tag: "{{build_number}}"
-#     push: yes
-#     source: build
-    

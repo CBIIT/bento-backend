@@ -1,120 +1,145 @@
 ---
-- name: create task definition 
+- name: create task comets definition 
   ecs_taskdefinition:
-    containers:
-    - name: backend
-      essential: true
-      image: "cbiitssrepo/bento-backend:{{build_number}}"
-      portMappings:
-      - containerPort: "8080"
-        hostPort: "8080"
     network_mode: bridge
-    family: bento-backend
+    family: comets-{{env}}-frontend
     memory: '1024'
     cpu: '1024'
     state: present
     region: "{{region}}"
-  register: task_output
-
-- name: create task definition 
-  ecs_taskdefinition:
     containers:
-    - name: frontend
+    - name: comets
       essential: true
-      image: "cbiitssrepo/bento-frontend:{{build_number}}"
+      image: "{{ecr}}/comets:app-{{version}}"
       portMappings:
-      - containerPort: "80"
-        hostPort: "80"
-    network_mode: bridge
-    family: bento-frontend
-    state: present
-    memory: '512'
-    cpu: '512'
-    region: "{{region}}"
+      - containerPort: "8000"
+        hostPort: "8000"
+        protocol: tcp
+      links:
+      - activemq
+      dependsOn:
+      - containerName: activemq
+        condition: START 
+      logConfiguration:
+        logDriver: awslogs
+        options:
+          awslogs-group: "comets-app-logs"
+          awslogs-region: "us-east-1"
+          awslogs-stream-prefix: "comets-{{env}}"
+    - name: activemq
+      image: cbiitss/activemq:latest
+      essential: true
+      portMappings:
+      - protocol: tcp
+        containerPort: 61613
+        hostPort: 61613
+      - protocol: tcp
+        containerPort: 8161
+        hostPort: 8161
   register: task_output
 
-- name: query task definition
+- name: create processor task definition 
+  ecs_taskdefinition:
+    network_mode: bridge
+    family: comets-{{env}}-processor
+    state: present
+    memory: '2048'
+    cpu: '1024'
+    region: "{{region}}"
+    containers:
+    - name: processor
+      essential: true
+      image: "{{ecr}}/comets:processor-{{version}}"
+      logConfiguration:
+        logDriver: awslogs
+        options:
+          awslogs-group: "comets-processor-logs"
+          awslogs-region: "us-east-1"
+          awslogs-stream-prefix: "comets-{{env}}"  
+  register: task_output
+
+- name: query task definition frontend
   ecs_taskdefinition_info:
-    task_definition: bento-frontend
+    task_definition: comets-{{env}}-frontend
     region: "{{region}}" 
   register: task_frontend
 
-- name: query task definition
+- name: query task definition processor
   ecs_taskdefinition_info:
-    task_definition: bento-backend
+    task_definition: comets-{{env}}-processor
     region: "{{region}}" 
-  register: task_backend
+  register: task_processor
 
-- name: query ecs service
+- name: query ecs service comets
   ecs_service_info:
-    cluster: ctdc-ecs
-    service: ctdc_ecs_backend
+    cluster: comets-{{env}}
+    service: comets-{{env}}-comets
     details: true
     region: "{{region}}"
-  register: service_backend
+  register: service_comets
 
-- name: query ecs service
+- name: query ecs service processor
   ecs_service_info:
-    cluster: ctdc-ecs
-    service: ctdc_ecs_frontend
+    cluster: comets-{{env}}
+    service: comets-{{env}}-processor
     details: true
     region: "{{region}}"
-  register: service_frontend
+  register: service_processor
 
 
-- name: set facts
-  set_fact:
-    frontend_revision: "{{task_frontend.revision}}"
-    backend_revision: "{{task_backend.revision}}"
-    task_backend_name: "{{task_backend.family}}"
-    task_frontend_name: "{{task_frontend.family}}"
-    lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
-    lb_backend: "{{service_backend.services[0].loadBalancers}}"
-    role_arn: "{{service_backend.services[0].roleArn}}"
+# - name: set facts
+#   set_fact:
+#     frontend_revision: "{{task_frontend.revision}}"
+#     backend_revision: "{{task_backend.revision}}"
+#     task_backend_name: "{{task_backend.family}}"
+#     task_frontend_name: "{{task_frontend.family}}"
+#     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
+#     lb_backend: "{{service_backend.services[0].loadBalancers}}"
+#     role_arn: "{{service_backend.services[0].roleArn}}"
 
 
-- debug:
-    msg: "{{service_frontend}}"
-- debug:
-    msg: "{{service_backend}}"
+# - debug:
+#     msg: "{{service_frontend}}"
+# - debug:
+#     msg: "{{service_backend}}"
 
-- name: update frontend service
-  ecs_service:
-    state: present
-    name: ctdc_ecs_frontend
-    cluster: ctdc-ecs
-    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-    role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 50
-      maximum_percent: 200
-    desired_count: 1
-    load_balancers: "{{ lb_frontend }}"
-    region: "{{region}}"
-  register: service_frontend_output
+# - name: update frontend service
+#   ecs_service:
+#     state: present
+#     name: ctdc_ecs_frontend
+#     cluster: ctdc-ecs
+#     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
+#     role: "{{role_arn}}"
+#     force_new_deployment: yes
+#     deployment_configuration:
+#       minimum_healthy_percent: 50
+#       maximum_percent: 200
+#     desired_count: 1
+#     load_balancers: "{{ lb_frontend }}"
+#     region: "{{region}}"
+#   register: service_frontend_output
 
 
-- name: update backend service
-  ecs_service:
-    state: present
-    name: ctdc_ecs_backend
-    cluster: ctdc-ecs
-    task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 50
-      maximum_percent: 200
-    desired_count: 1
-    load_balancers: "{{ lb_backend }}"
-    region: "{{region}}"
-  register: service_backend_output
+# - name: update backend service
+#   ecs_service:
+#     state: present
+#     name: ctdc_ecs_backend
+#     cluster: ctdc-ecs
+#     task_definition: "{{task_backend_name}}:{{backend_revision}}"
+#     role: "{{role_arn}}"
+#     force_new_deployment: yes
+#     deployment_configuration:
+#       minimum_healthy_percent: 50
+#       maximum_percent: 200
+#     desired_count: 1
+#     load_balancers: "{{ lb_backend }}"
+#     region: "{{region}}"
+#   register: service_backend_output
 
-- name: show frontend service
-  debug:
-    msg: "{{service_frontend_output}}"
+# - name: show frontend service
+#   debug:
+#     msg: "{{service_frontend_output}}"
 
-- name: show backend service
-  debug:
-    msg: "{{service_backend_output}}"
+# - name: show backend service
+#   debug:
+#     msg: "{{service_backend_output}}"

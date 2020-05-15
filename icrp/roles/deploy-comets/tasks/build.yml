@@ -57,7 +57,8 @@
 
 - name: show login
   debug:
-    msg: "{{ecr_login}}"
+    msg: "{{ ecr_login }}"
+
 
 # - name:  build cbiitss/comets image
 #   docker_image:

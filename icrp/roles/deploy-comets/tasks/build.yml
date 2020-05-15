@@ -77,7 +77,7 @@
     name: 707401068807.dkr.ecr.us-east-1.amazonaws.com/comets
     tag: "comets"
     push: yes
-    source: build
+    
 
 
 

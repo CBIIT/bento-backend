@@ -77,7 +77,7 @@
     pull: yes
     name: "{{ecr}}/comets"
     tag: "app-{{version}}"
-    # push: yes
+    push: yes
     
 
 - name:  build cbiitss/comets:processor image
@@ -87,14 +87,9 @@
     pull: yes
     name: "{{ecr}}/comets"
     tag: "processor-{{version}}"
-    # push: yes
+    push: yes
 
-- name:  build cbiitss/comets:activemq image
-  docker_image:
-    pull: yes
-    name: cbiitss/activemq
-    tag: "{{ecr}}/comets:activemq"
-    # push: yes
+
 
           
 # - name: build cbiitssrepo/bento-frontend image

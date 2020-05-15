@@ -3,16 +3,9 @@
   hosts: docker
   become: yes
 
-  vars:
-    - collector_name: "{{env}}-agent"
-  vars_files:
-    - config/icdc-env-vars.yaml
-
   roles:
     - common
     - docker
-    - selenium
-    - sumologic
-    - newrelic
+   
    
 

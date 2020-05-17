@@ -15,3 +15,9 @@ ecr: "{{ lookup('aws_ssm', 'ecr', region='us-east-1' ) }}"
 version: 1.7.0
 env: "{{env}}"
 region: us-east-1
+
+#openid
+open_id_issuer: "{{ lookup('aws_ssm', 'open_id_issuer', region='us-east-1' ) }}"
+open_client_id: "{{ lookup('aws_ssm', 'open_client_id', region='us-east-1' ) }}"
+open_client_secret: "{{ lookup('aws_ssm', 'open_client_secret', region='us-east-1' ) }}"
+open_passphrase: "{{ lookup('aws_ssm', 'open_passphrase', region='us-east-1' ) }}"

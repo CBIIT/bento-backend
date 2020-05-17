@@ -6,10 +6,10 @@
   gather_facts: yes
 
   tasks:
-    # - name: build comets
-    #   include_role:
-    #     name: deploy-comets
-    #     tasks_from: build
+    - name: build comets
+      include_role:
+        name: deploy-comets
+        tasks_from: build
     - name: deploy comets
       include_role:
         name: deploy-comets

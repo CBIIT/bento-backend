@@ -2,7 +2,7 @@
 - name: create task comets definition 
   ecs_taskdefinition:
     network_mode: bridge
-    family: comets-{{env}}-frontend
+    family: comets-{{env}}-comets
     memory: '1024'
     cpu: '1024'
     state: present
@@ -60,7 +60,7 @@
 
 - name: query task definition comets
   ecs_taskdefinition_facts:
-    task_definition: comets-{{env}}-frontend
+    task_definition: comets-{{env}}-comets
     region: "{{region}}" 
   register: task_comets
 

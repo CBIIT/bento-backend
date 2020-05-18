@@ -137,7 +137,7 @@
     task_apache_name: "{{task_apache.family}}"
     task_comets_name: "{{task_comets.family}}"
     lb_frontend: "{{service_apache.services[0].loadBalancers}}"
-    role_arn: "{{service_comets.services[0].roleArn}}"
+    role_arn: "{{service_apache.services[0].roleArn}}"
 
 
 # - debug:

@@ -557,7 +557,7 @@ LoadModule proxy_http_module modules/mod_proxy_http.so
 LoadModule rewrite_module modules/mod_rewrite.so
 
 ServerName comets-analytics-{{env}}.org
-ServerAlias comets
+
         CustomLog logs/access.log combined env=!dontlog
         ErrorLog  logs/error.log
 

@@ -67,7 +67,6 @@ pipeline {
     jdk 'Default' 
   }
   stages {
-    stages{
     stage('checkout'){
       steps {
         checkout([$class: 'GitSCM', 

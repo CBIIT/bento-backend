@@ -5,5 +5,5 @@
   gather_facts: no
     
   roles:
-    - icdc-pipeline
+    - ctdc-pipeline
         

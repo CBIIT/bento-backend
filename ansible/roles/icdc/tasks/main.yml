@@ -34,13 +34,7 @@
   command: mvn package -DskipTests
   args:
     chdir: "{{workspace}}"
-- name: show target
-  command: ls -l "{{workspace}}/target"
-  register: ls
 
-- name: show ls
-  debug:
-    msg: "{{ls}}"
 - name: copy ICDC-0.0.1.war to ROOT.war
   copy:
     remote_src: yes

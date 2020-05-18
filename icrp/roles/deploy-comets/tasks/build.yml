@@ -64,7 +64,7 @@
     src: settings.yml.j2
 
 - name: add httpd.conf Dockerfile
-  template:
+  template:  src={{item.src}} dest={{item.dest}}
   with_items:
     - { src: 'Dockerfile.j2', dest: '/tmp/comets/Dockerfile' }
     - { src: 'httpd.conf.j2', dest: '/tmp/comets/comets-httpd.conf' }

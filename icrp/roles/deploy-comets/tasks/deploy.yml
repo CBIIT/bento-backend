@@ -36,6 +36,14 @@
       - protocol: tcp
         containerPort: 8161
         hostPort: 8161
+    - name: apache
+      image: "{{ecr}}/comets:apache-{{version}}"
+      essential: true
+      portMappings:
+      - protocol: tcp
+        containerPort: 80
+        hostPort: 80
+      
   register: task_output
 
 - name: create processor task definition 

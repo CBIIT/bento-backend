@@ -556,7 +556,7 @@ LoadModule auth_openidc_module modules/mod_auth_openidc.so
 LoadModule proxy_http_module modules/mod_proxy_http.so
 LoadModule rewrite_module modules/mod_rewrite.so
 
-ServerName comets-analytics-{{env}}.org
+ServerName localhost:80
 
         CustomLog logs/access.log combined env=!dontlog
         ErrorLog  logs/error.log

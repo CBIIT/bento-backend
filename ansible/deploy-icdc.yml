@@ -4,8 +4,6 @@
   connection: local
   gather_facts: no
     
-  tasks:
-    - name: This is a build stage
-      include_role:
-        name: icdc
+  roles:
+    - icdc
         

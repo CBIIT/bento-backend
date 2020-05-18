@@ -556,9 +556,6 @@ LoadModule auth_openidc_module modules/mod_auth_openidc.so
 LoadModule proxy_http_module modules/mod_proxy_http.so
 LoadModule rewrite_module modules/mod_rewrite.so
 
-<VirtualHost *:80>
-
-
 ServerName comets-analytics-{{env}}.org
 ServerAlias comets
         CustomLog logs/access.log combined env=!dontlog
@@ -650,5 +647,4 @@ OIDCSessionInactivityTimeout 1800
  ErrorDocument 401 !
 </LocationMatch>
 
-</VirtualHost>
 

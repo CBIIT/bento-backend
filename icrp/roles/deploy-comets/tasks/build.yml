@@ -79,7 +79,7 @@
   docker_image:
     path: "/tmp/comets"
     pull: yes
-    name: "{{ecr}}/apache"
+    name: "{{ecr}}/comets"
     tag: "apache-{{version}}"
     push: yes
 

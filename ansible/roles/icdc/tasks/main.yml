@@ -1,0 +1,48 @@
+---
+- name: run npm install in {{workspace}}/src/main/frontend/
+  args:
+    chdir: "{{workspace}}"
+  loop:
+    - npm install 
+    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+
+- name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/src/main/frontend/node_modules/mui-custom-datatables"
+  loop:
+    - npm install
+    - npm run build
+    
+- name: run npm build in frontend
+  command: npm run-script build
+  args:
+    chdir: "{{workspace}}/src/main/frontend"
+          
+- name: remove the application_example.properties file 
+  file:
+    path: "{{workspace}}/src/main/resources/application_example.properties"
+    state: absent
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: application.properties.j2
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+- name: copy ICDC-0.0.1.war to ROOT.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/ICDC-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+# - name: remove ICDC-0.0.1.war file 
+#   file:
+#     path: "{{workspace}}/target/ICDC-0.0.1.war"
+#     state: absent
+
+
+

@@ -1,7 +1,8 @@
 ---
 - name: run npm install in {{workspace}}/src/main/frontend/
+  command: "{{item}}"
   args:
-    chdir: "{{workspace}}"
+    chdir: "{{workspace}}/src/main/frontend/"
   loop:
     - npm install 
     - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master

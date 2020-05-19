@@ -6,7 +6,7 @@ pipeline {
         }
 	environment { 
         katalonVer = '7.2.6'
-		chromedriverVer = '81.0.4044.138'
+		chromedriverVer = '83.0.4103.39'
 		geckodriverVer = '0.26.0'
 		}
     parameters {

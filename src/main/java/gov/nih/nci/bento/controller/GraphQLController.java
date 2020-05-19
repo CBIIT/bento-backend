@@ -4,10 +4,14 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nih.nci.bento.error.ApiError;
+import gov.nih.nci.bento.error.ApiErrorWrapper;
+import io.swagger.annotations.Api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,23 +38,19 @@ public class GraphQLController {
 	private ConfigurationDAO config;
 	@Autowired
 	private Neo4JGraphQLService neo4jService;
-
-
+	
 	public static final Gson GSON = new Gson();
 
 	@CrossOrigin
 	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.GET)
-	public void getGraphQLResponseByGET(HttpEntity<String> httpEntity, HttpServletResponse response)
-			throws IOException, UnirestException {
-
-		throw new UnirestException("Could not find the GET method for URL /Bento/v1/graphql/");
+	public String getGraphQLResponseByGET(HttpEntity<String> httpEntity, HttpServletResponse response){
+		return ApiError.JsonApiError(new ApiError(HttpStatus.BAD_REQUEST, "API does not accept GET requests"));
 	}
 
 	@CrossOrigin
 	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.POST)
 	@ResponseBody
-	public String getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response)
-			throws IOException, UnirestException, HttpRequestMethodNotSupportedException {
+	public String getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response){
 
 		logger.info("hit end point:/v1/graphql/");
 
@@ -58,27 +58,30 @@ public class GraphQLController {
 		String reqBody = httpEntity.getBody().toString();
 		Gson gson = new Gson();
 		JsonObject jsonObject = gson.fromJson(reqBody, JsonObject.class);
-		String sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
+		String operation;
+		try{
+			String sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
+			Parser parser = new Parser();
+			Document document = parser.parseDocument(sdl);
+			OperationDefinition def = (OperationDefinition) document.getDefinitions().get(0);
+			operation = def.getOperation().toString().toLowerCase();
+		}
+		catch(Exception e){
+			return ApiError.JsonApiError(HttpStatus.BAD_REQUEST, "No query in request", e.getMessage());
+		}
 
-		Parser parser = new Parser();
-		Document document = parser.parseDocument(sdl);
-		OperationDefinition def = (OperationDefinition) document.getDefinitions().get(0);
-
-		if ((def.getOperation().toString().toLowerCase().equals("query") && config.isAllowGraphQLQuery())
-				|| (def.getOperation().toString().toLowerCase().equals("mutation")
-						&& config.isAllowGraphQLMutation())) {
-
-			String responseText = "";
-			if (("").equals(sdl)) {
-				throw new HttpRequestMethodNotSupportedException("Invalid Graphql query");
-			} else {
-
+		if ((operation.equals("query") && config.isAllowGraphQLQuery())
+				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
+			try{
+				String responseText = "";
 				responseText = neo4jService.query(reqBody);
-
 				return responseText;
 			}
+			catch(ApiError e){
+				return ApiError.JsonApiError(e);
+			}
 		} else {
-			throw new UnirestException("Invalid Graphql query");
+			return ApiError.JsonApiError(HttpStatus.BAD_REQUEST, "Request type has been disabled", operation+"s have been disabled in the application configuration.");
 		}
 
 	}

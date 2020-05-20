@@ -20,10 +20,10 @@
   command: mvn package -DskipTests
   args:
     chdir: "{{workspace}}"
-- name: copy ICDC-0.0.1.war to ROOT.war
+- name: copy Bento-0.0.1.war to ROOT.war
   copy:
     remote_src: yes
-    src: "{{workspace}}/target/ICDC-0.0.1.war"
+    src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
 # - name: remove ICDC-0.0.1.war file 

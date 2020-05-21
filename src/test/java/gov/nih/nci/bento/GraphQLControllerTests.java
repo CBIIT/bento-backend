@@ -43,6 +43,6 @@ public class GraphQLControllerTests {
 		this.mockMvc
 				.perform(RestDocumentationRequestBuilders.post("/v1/graphql/").contentType(MediaType.APPLICATION_JSON)
 						.content("{\"query\":\"{e{id}}\"}"))
-				.andDo(print()).andExpect(status().is2xxSuccessful()).andDo(document("{ClassName}/{methodName}"));
+				.andDo(print()).andExpect(status().is4xxClientError()).andDo(document("{ClassName}/{methodName}"));
 	}
 }

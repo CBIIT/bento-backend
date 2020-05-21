@@ -34,14 +34,14 @@ public class Neo4JGraphQLService {
 					.body(graphQLQuery).asJson();
 		} catch (UnirestException e) {
 			logger.error("Exception in function query() "+e.toString());
-			throw new ApiError(HttpStatus.SERVICE_UNAVAILABLE, "Json Response Exception", e.getMessage());
+			throw new ApiError(HttpStatus.SERVICE_UNAVAILABLE, "Exception occurred while querying database service", e.getMessage());
 		}
 
 		JsonNode neo4jResponse = jsonResponse.getBody();
 		if (neo4jResponse.getObject().has("errors")) {
 			String errors = neo4jResponse.getObject().get("errors").toString();
 			logger.error("Exception in function query() "+errors);
-			throw new ApiError(HttpStatus.BAD_REQUEST, "Request resulted in errors", errors);
+			throw new ApiError(HttpStatus.BAD_REQUEST, "Request resulted in response containing errors", errors);
 		}
 		return neo4jResponse.toString();
 	}

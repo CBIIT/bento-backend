@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,14 +44,14 @@ public class GraphQLController {
 
 	@CrossOrigin
 	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.GET)
-	public String getGraphQLResponseByGET(HttpEntity<String> httpEntity, HttpServletResponse response){
-		return ApiError.JsonApiError(new ApiError(HttpStatus.BAD_REQUEST, "API does not accept GET requests"));
+	public ResponseEntity<String> getGraphQLResponseByGET(HttpEntity<String> httpEntity, HttpServletResponse response){
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.JsonApiError(new ApiError(HttpStatus.BAD_REQUEST, "API does not accept GET requests")));
 	}
 
 	@CrossOrigin
 	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.POST)
 	@ResponseBody
-	public String getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response){
+	public ResponseEntity<String> getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response){
 
 		logger.info("hit end point:/v1/graphql/");
 
@@ -67,7 +68,7 @@ public class GraphQLController {
 			operation = def.getOperation().toString().toLowerCase();
 		}
 		catch(Exception e){
-			return ApiError.JsonApiError(HttpStatus.BAD_REQUEST, "No query in request", e.getMessage());
+			return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.JsonApiError(HttpStatus.BAD_REQUEST, "Invalid query in request", e.getMessage()));
 		}
 
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
@@ -75,13 +76,13 @@ public class GraphQLController {
 			try{
 				String responseText = "";
 				responseText = neo4jService.query(reqBody);
-				return responseText;
+				return ResponseEntity.ok(responseText);
 			}
 			catch(ApiError e){
-				return ApiError.JsonApiError(e);
+				return ResponseEntity.status(e.getStatus()).body(ApiError.JsonApiError(e));
 			}
 		} else {
-			return ApiError.JsonApiError(HttpStatus.BAD_REQUEST, "Request type has been disabled", operation+"s have been disabled in the application configuration.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiError.JsonApiError(HttpStatus.BAD_REQUEST, "Request type has been disabled", operation+"s have been disabled in the application configuration."));
 		}
 
 	}

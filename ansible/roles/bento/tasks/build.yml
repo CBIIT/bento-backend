@@ -24,7 +24,7 @@
   copy:
     remote_src: yes
     src: "{{workspace}}/target/Bento-0.0.1.war"
-    dest: "{{workspace}}/target/api.war"
+    dest: "{{workspace}}/target/ROOT.war"
 
 # - name: remove ICDC-0.0.1.war file 
 #   file:

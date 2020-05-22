@@ -1,0 +1,135 @@
+pipeline {
+	agent {
+		node {
+			label 'slave-ncias-d2320-c'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'demo,dev,qa,stage,prod' )
+    string(defaultValue: "", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
+    extendedChoice( 
+        defaultValue: 'no', 
+        name: 'WipeDB', 
+        description: 'Choose yes to wipe DB',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'no,yes',
+        type: 'PT_RADIO')   
+  }
+  // options {
+  // 	ansiColor('xterm')
+  // }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+          recursiveSubmodules: true,
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+          sh 'git submodule update --init'
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+        dir('icdc-model'){
+          git branch: 'master',
+          url: 'https://github.com/CBIIT/icdc-model'
+        }
+  		}
+ 
+  	}
+    stage('set-environment'){
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "demo":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_dev_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                }
+              break
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_dev_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_ICDC_DEV_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                }
+              break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_qa_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_ICDC_QA_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.TIER            = "dev"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                }
+              break
+              case "stage":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_stage_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_ICDC_STAGE_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                }
+              break
+              case "prod":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_prod_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_ICDC_PROD_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                }
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+  	stage('loader-data'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-loader.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 			}
+ 		}
+  }
+ }
+}

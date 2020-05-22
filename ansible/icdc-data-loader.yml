@@ -1,0 +1,14 @@
+---
+- name: load data to neo4j db
+  hosts: loader
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: perform data loading
+      include_role:
+        name: data-processing
+        tasks_from: icdc-data-loader
+      vars:
+        data_bucket: nci-cbiit-ctdc-dev
+        # data_bucket: nci-cbiit-caninedatacommons-dev

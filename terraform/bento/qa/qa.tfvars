@@ -1,0 +1,23 @@
+tags = {
+    Project = "comets"
+    Environment = "qa"
+    ManagedBy = "terraform"
+    POC  = "KailingC"
+  }
+stack_name = "comets"
+region = "us-east-1"
+profile = "comets"
+alb_rule_priority = 101
+domain_name = "comets-analytics-test.org"
+env = "qa"
+app_name = "comets"
+max_size = 1
+min_size = 1
+app_asg_name = "test"
+desired_ec2_instance_capacity = 1
+instance_volume_size = 40
+ssh_key_name = "devops"
+app_instance_type = "t3.medium"
+devops_user = "comets"
+availability_zone = "us-east-1a"
+app_port = 80

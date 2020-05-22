@@ -33,7 +33,7 @@ clean all docker volumes:
 
 attach a shell to a running container:
 
-	docker exec -it <container name> /bin/bash   (use /bin/ash for alpine)
+	docker exec -it <container name> /bin/bash   (use /bin/ash for frontend and backend containers as they are based on alpine)
 
 
 Notes on script behavior:

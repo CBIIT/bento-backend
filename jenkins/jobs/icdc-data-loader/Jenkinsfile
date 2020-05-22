@@ -54,7 +54,7 @@ pipeline {
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
-        dir('icdc-model'){
+        dir('icdc-model-tool'){
           git branch: 'master',
           url: 'https://github.com/CBIIT/icdc-model-tool'
         }

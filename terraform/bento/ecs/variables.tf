@@ -101,7 +101,7 @@ variable "health_check_frontend" {
 variable "health_check_backend" {
   default = {
     port = 8080
-    path = "/"
+    path = "/ping"
   }
 }
 

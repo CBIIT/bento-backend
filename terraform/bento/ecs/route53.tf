@@ -1,17 +1,26 @@
-# resource "aws_route53_zone" "zone" {
-#   name = var.domain
-# }
+data "aws_route53_zone" "zone" {
+  name         = var.domain
+}
 
 
-# resource "aws_route53_record" "s3-site-records" {
-#   zone_id = aws_route53_zone.zone.zone_id
-#   name    = join(".",[var.site,var.domain])
-#   type    = "A"
+ resource "aws_route53_record" "records" {
+   name = var.stack_name
+   type = "A"
+   zone_id = data.aws_route53_zone.zone.zone_id
+   alias {
+     evaluate_target_health = false
+     name = aws_alb.alb.dns_name
+     zone_id = aws_alb.alb.zone_id
+   }
+ }
 
-#   alias  {
-#     name                   =   aws_cloudfront_distribution.site_distribution.domain_name
-#     zone_id                =   aws_cloudfront_distribution.site_distribution.hosted_zone_id
-#     evaluate_target_health = false
-#   }
-# }
-
+ resource "aws_route53_record" "api" {
+   name = "api"
+   type = "A"
+   zone_id = data.aws_route53_zone.zone.zone_id
+   alias {
+     evaluate_target_health = false
+     name = aws_alb.alb.dns_name
+     zone_id = aws_alb.alb.zone_id
+   }
+ }

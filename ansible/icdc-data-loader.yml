@@ -11,4 +11,4 @@
         tasks_from: icdc-data-loader
       vars:
         # data_bucket: nci-cbiit-ctdc-{{tier}}
-        data_bucket: nci-cbiit-ctdc-dev
+        data_bucket: nci-cbiit-caninedatacommons-dev

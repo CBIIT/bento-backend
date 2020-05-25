@@ -1,0 +1,9 @@
+---
+# vars file for neo4j
+collector_name: "{{ env }}-neo4j"
+additional_logs:
+  - name: "{{ env }} Neo4j Logs" 
+    description: "{{ env }} neo4j logs"
+    category: "{{env }}/db/neo4j"
+    path: "/var/log/neo4j/*.log"
+    filters: ""    

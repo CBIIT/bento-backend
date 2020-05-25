@@ -1,0 +1,11 @@
+---
+- name: setup neo4j database
+  hosts: all
+  connection: local
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - common
+    - neo4j
+   

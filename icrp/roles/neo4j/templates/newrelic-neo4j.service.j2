@@ -1,0 +1,12 @@
+[Unit]
+Description=newrelic-neo4j service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/bin/newrelic-neo4j >/dev/null 2>&1 &
+[Install]
+WantedBy=multi-user.target

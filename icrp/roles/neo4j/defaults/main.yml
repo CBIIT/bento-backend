@@ -1,0 +1,6 @@
+---
+# defaults file for neo4j
+newrelic: yes
+neo4j_home: /var/lib/neo4j
+heap_min_size: 1024m
+heap_max_size: 1024m

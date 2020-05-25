@@ -1,0 +1,33 @@
+---
+- name: add newrelic-infra gpg key
+  rpm_key:
+    state: present
+    key: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+
+- name: setup newrelic repo
+  yum_repository:
+    name: newrelic-infra
+    description: Newrelic infrastruture repository
+    baseurl: https://download.newrelic.com/infrastructure_agent/linux/yum/el/7/x86_64/
+
+- name: install newrelic-infra
+  package:
+    name:
+      - libcap
+      - newrelic-infra
+    state: installed
+  environment:
+    NRIA_MODE: PRIVILEGED
+
+- name: copy newrelic config file to /etc/
+  template:
+    src: newrelic-infra.yml.j2
+    dest: /etc/newrelic-infra.yml
+
+- name: enable and start newrelic-infra service
+  service:
+    name: newrelic-infra
+    state: started
+    enabled: yes
+
+

@@ -4,14 +4,14 @@
   ec2_instance_facts:
     region: us-east-1
     filters:
-      "tag:Name": comets-processor
+      "tag:Name": bento-frontend-{{env}}
       "instance-state-name": running
       "tag:Environment": "{{env}}"
-  register: processor
+  register: frontend
 
 - name: set instance name
   set_fact:
-    processor_ip: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
+    frontend_ip: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"
     
 #set local routing 
 - name: set localhost routing

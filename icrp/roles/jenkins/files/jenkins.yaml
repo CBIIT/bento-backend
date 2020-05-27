@@ -64,10 +64,6 @@ jobs:
           }
       }
 tool:
-  git:
-    installations:
-      - name: Default
-        home: git
   jdk:
     installations:
       - name: jdk11

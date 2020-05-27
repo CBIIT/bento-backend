@@ -78,7 +78,8 @@
     state: present
 
 - name: start the jenkins
-  docker_service:
-    project_src: "{{ docker_home }}"
-    state: present
+  command: docker-compose up -d
+  args:
+    chdir: "{{ docker_home }}"
+    
 

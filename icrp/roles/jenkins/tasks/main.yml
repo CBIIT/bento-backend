@@ -1,0 +1,84 @@
+---
+# tasks file for jenkins
+- name: open http and https services
+  firewalld:
+    service: "{{item}}"
+    zone: public
+    immediate: yes
+    permanent: yes
+    state: enabled
+  loop:
+    - http
+    - https
+
+- name: set fact
+  set_fact:
+    docker_agent_ip: "{{ansible_default_ipv4.address}}"
+
+- name: install openjdk11 for local slave
+  yum:
+    name: java-11-openjdk
+    state: latest
+
+- name: create file structure for the jenkins
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: bento
+    owner: bento
+  loop:
+    - "{{ jenkins_home }}/jk_secrets"
+    - "{{ docker_home }}"
+
+- name: copy docker files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    group: bento
+    owner: bento
+  loop:
+    - {src: 'docker-compose.yml.j2',dest: '{{ docker_home }}/docker-compose.yml'}
+    - {src: 'dockerfile_jenkins.j2',dest: '{{docker_home}}/dockerfile_jenkins'}
+    - {src: 'plugins.txt.j2',dest: '{{docker_home}}/plugins.txt'}
+    - {src: 'jenkins.env.j2',dest: '{{docker_home}}/jenkins.env'}
+
+- name: copy conf files
+  copy:
+    src: jenkins.yaml
+    dest: "{{jenkins_home}}/jenkins.yaml"
+    owner: bento
+    group: bento
+
+- name: copy server_sshkey files
+  copy:
+    content: "{{server_sshkey_file}}"
+    dest: "{{jenkins_home}}/jk_secrets/server_sshkey"
+
+- name: add secret files
+  copy:
+    content: "{{docker_agent_ip}}"
+    dest: "{{jenkins_home}}/docker_agent_ip"
+
+- name: add secrets files
+  copy:
+    content: "{{ item.src }}"
+    dest: "{{jenkins_home}}/jk_secrets/{{ item.dest }}"
+    group: bento
+    owner: bento
+  loop:
+    - {src: "{{docker_agent_ip}}",dest: "docker_agent_ip"}
+    - {src: "{{jenkinsadmin_ps}}",dest: "jenkinsadmin_ps"}
+
+
+- name: build the docker image
+  docker_image:
+    path: "{{ docker_home }}"
+    name: bento/jenkins
+    dockerfile: "{{ dockerfile }}"
+    state: present
+
+- name: start the jenkins
+  docker_compose:
+    project_src: "{{ docker_home }}"
+    state: present
+

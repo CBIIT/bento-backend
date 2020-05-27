@@ -1,0 +1,6 @@
+---
+# handlers file for jenkins
+- name: restart docker
+  service:
+    name: docker
+    state: restarted

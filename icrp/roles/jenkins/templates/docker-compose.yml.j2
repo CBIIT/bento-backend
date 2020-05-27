@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+  jenkins:
+    image: bento/jenkins
+    ports:
+      - 80:8080
+      - 5001:5000
+    volumes:
+      - {{jenkins_home}}:/var/jenkins_home
+    env_file:
+      - ./jenkins.env
+    environment:
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/jenkins.yaml
+      - SECRETS=/var/jenkins_home/jk_secrets/
+    restart: always

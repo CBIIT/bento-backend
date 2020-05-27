@@ -1,0 +1,90 @@
+jenkins:
+  systemMessage: "This jenkins instance is for icdc program"
+  agentProtocols:
+    - "JNLP4-connect"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: jenkinsAdmin
+          password: ${jenkinsAdmin}
+  authorizationStrategy:
+    globalMatrix:
+      grantedPermissions:
+        - "Overall/Read:authenticated"
+        - "Job/Read:authenticated"
+        - "View/Read:authenticated"
+        - "Overall/Administer:authenticated"
+  crumbIssuer: "standard"
+  clouds:
+    - docker:
+        name: "docker"
+        dockerApi:
+          dockerHost:
+            uri: "tcp://${DOCKER_AGENT_IP}:2375"
+        templates:
+          - labelString: "cicd_microservice"
+            dockerTemplateBase:
+              image: "cbiitssrepo/cicd-microservice"
+            remoteFs: "/home/jenkins"
+            connector:
+              attach:
+                user: "root"
+            instanceCapStr: "10"
+
+  nodes:
+    - permanent:
+        name: "build-agent"
+        remoteFS: "./jenkins-agent-dir"
+        labelString: "build-agent"
+        launcher:
+          ssh:
+            credentialsId: server_ssh_key
+            host: ${DOCKER_AGENT_IP}
+            SshHostKeyVerificationStrategy: nonVerifyingKeyVerificationStrategy
+              
+jobs:
+  - script: >
+      folder('Bento')
+  - script: >
+      pipelineJob('Bento/DeployBento') {
+          def repo = 'https://github.com/CBIIT/icdc-devops.git'
+          description("Bento pipeline Job")
+          definition {
+              cpsScm {
+                  scm {
+                    git {
+                        remote { url(repo) }
+                        branch('master')
+                        scriptPath('jenkins/jobs/bento/Jenkinsfile')
+                        extensions {}
+                    }
+                  }
+              }
+          }
+      }
+tool:
+  git:
+    installations:
+      - name: Default
+        home: git
+  jdk:
+    installations:
+      - name: jdk11
+        home: /usr/lib/jvm/jre-11-openjdk
+  maven:
+    installations:
+      - name: maven-3.6.1
+        home: /usr/local/maven
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - basicSSHUserPrivateKey:
+              scope: GLOBAL
+              id: server_ssh_key
+              username: bento
+              description: "ssh key for connecting to server as centos"
+              privateKeySource:
+                directEntry:
+                  privateKey: ${server_sshkey}

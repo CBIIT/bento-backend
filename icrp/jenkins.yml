@@ -1,0 +1,16 @@
+---
+- name: setup jenkins 
+  hosts: all
+  connection: local
+  become: yes
+  gather_facts: yes
+  
+  vars_files:
+    - config/icdc-env-vars.yaml
+
+  roles:
+    - common
+    - docker
+    - jenkins
+   
+   

@@ -78,7 +78,7 @@
     state: present
 
 - name: start the jenkins
-  docker_compose:
+  docker_service:
     project_src: "{{ docker_home }}"
     state: present
 

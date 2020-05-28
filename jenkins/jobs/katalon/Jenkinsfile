@@ -31,7 +31,7 @@ pipeline {
 
     extendedChoice( 
         name: 'Browser', 
-        defaultValue: 'Firefox', 
+        defaultValue: 'Chrome', 
         description: 'Choose the browser (headless) to use', 
         type: 'PT_SINGLE_SELECT',
         value: 'Chrome,Firefox' )
@@ -42,6 +42,10 @@ pipeline {
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
         value: 'QA_ICDC,QA_CTDC' )
+
+	string(defaultValue: "", 
+        description: 'Enter a list of email adresses to notify in case of test failures:', 
+        name: 'EmailRecipients')
 
         }
     // options {
@@ -75,11 +79,21 @@ pipeline {
                 script {
                     switch("${params.Profile}") {
                     case "QA_ICDC":
+						withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email')]) {
+                            BOX_EMAIL="${box_email}"
+                            }
                         withCredentials([file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
                             sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
-                    
+                    case "QA_CTDC":
+						withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
+                            BOX_EMAIL="${box_email}"
+                            }
+                        withCredentials([file(credentialsId: 'Katalon_QA_CTDC', variable: 'pass_file')]) {
+                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+                            }
+                        break
                        }
                     }
 				}
@@ -124,7 +138,7 @@ pipeline {
 
                         # Recreate the results directory
                         rm -rf results && mkdir results
-												
+						
 						# Run Katalon Tests
 						katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="index_$dateStamp" -apiKey="1d9d7e79-dde9-45c1-9d21-b31424a47864"
 
@@ -142,15 +156,102 @@ pipeline {
 					alwaysLinkToLastBuild: false,
 					keepAll: false,
 					reportDir: 'results',
-					reportFiles: 'index_*.html',
+					reportFiles: '*.html',
 					reportName: 'HTML Report',
 					reportTitles: ''])
 
-                emailext(attachmentsPattern: 'results/index_*.html',
+				emailext(attachmentsPattern: 'results/index_*.html',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results',
-                    to: 'Katalon.w1imuj982tottg1c@u.box.com')
+                    to: "${BOX_EMAIL}")
 				
 				}
+				
+			failure {
+
+				script {
+				
+				    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
+
+					inputFile=$(exec find $WORKSPACE/results -type f -name "*.csv")
+					testCaseHeader="Test Cases/"
+
+					# function to read output file: index.csv
+					parse_results_csv(){
+						error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile: \\n\\n "
+
+						while IFS= read -r line
+						do
+						  if [[ "$line" =~ .*"FAILED" || "$line" =~ .*"ERROR" ]]
+					      then
+						    if [[ "$line" == $testCaseHeader* ]]
+						    then
+						      error_message+="$(echo $line | cut -d ',' -f 1 | cut -d '/' -f2-) \\n "
+						    fi
+						  fi
+						done < "$inputFile"
+						}
+
+						# Get test failures
+						parse_results_csv
+												
+						error_message="\'$error_message\'"
+						echo $error_message
+
+                        ''',
+						returnStdout: true).trim()
+
+                        }
+					
+					script {
+
+						withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
+						
+							sh label: 'Katalon-Results-Slack', script: '''#!/bin/bash
+
+							slackHeaders="\'Content-type: application/json\'"
+
+							# POST function to send to Slack
+							post_message_to_slack(){
+									curlCMD="curl --silent --max-time 10 --request POST --header $slackHeaders --data $payload $slack_url"
+									slackError=$(eval $curlCMD)
+									echo "Slack Error:   $slackError"
+									}
+
+							errorOutput=''' + ERROR_OUTPUT + '''
+							resultsFile=$(basename results/*.html)
+							errorOutput="$errorOutput \\n\\n The results of this test run can be found in Box:  $resultsFile"
+							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
+							post_message_to_slack
+
+							'''
+						
+							}
+					
+						}
+					
+					script {
+						EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash
+
+						emailBody=''' + ERROR_OUTPUT + '''
+						emailBody="<b> $emailBody"
+						emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
+						emailBody=${emailBody//\\\\n/<br>}
+						emailBody="$emailBody <br><br><br> The test results from the latest run can be found attached to this message and in Box."
+						echo $emailBody
+
+						''',
+						returnStdout: true).trim()
+
+						}
+
+					emailext(attachmentsPattern: 'results/index_*.html',
+						mimeType: 'text/html',
+						body: "${EMAIL_BODY}",
+						subject: 'Failed Katalon Tests: results attached',
+						to: "${EmailRecipients}")
+					
+				}
+
 			}
 	}

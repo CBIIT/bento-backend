@@ -142,13 +142,14 @@ pipeline {
 					sh label: 'Katalon-Tests', script: '''#!/bin/bash
 
 						# Set datestamp for results file
-                        dateStamp=$(date +%Y%m%d%H%M)
+                        dateStamp=$(date +%Y%m%d)
+						reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
 
                         # Recreate the results directory
                         rm -rf results && mkdir results
 						
 						# Run Katalon Tests
-						katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="index_$dateStamp" -apiKey="1d9d7e79-dde9-45c1-9d21-b31424a47864"
+						katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="1d9d7e79-dde9-45c1-9d21-b31424a47864"
 
                         '''
 
@@ -168,7 +169,7 @@ pipeline {
 					reportName: 'HTML Report',
 					reportTitles: ''])
 
-				emailext(attachmentsPattern: 'results/index_*.html',
+				emailext(attachmentsPattern: 'results/*.html',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results',
                     to: "${BOX_EMAIL}")
@@ -253,7 +254,7 @@ pipeline {
 
 			//			}
 
-			//		emailext(attachmentsPattern: 'results/index_*.html',
+			//		emailext(attachmentsPattern: 'results/*.html',
 			//			mimeType: 'text/html',
 			//			body: "${EMAIL_BODY}",
 			//			subject: 'Failed Katalon Tests: results attached',

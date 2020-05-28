@@ -20,6 +20,8 @@ docker-compose command to load bento infrastructure:
 docker-compose command to rebuild an individual container:
 
 	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose up -d --no-deps --build <service_name>
+	
+		NOTE: The available containers for this command are: bento-backend, bento-frontend, neo4j
 
 
 
@@ -41,9 +43,12 @@ Notes on script behavior:
 	- The script requires defining a .env file alongside the docker-compose.yml. This should be defined as:
 
 	FRONT_ENV=  set this value to "dev" if you will be building the frontend container code locally, used for frontend development
-	FRONTEND_BUILD_DIR=<value>  the directory you are building into for local frontend development
 	BACKEND_IP=<value>  the IP address used to access the backend webapp
 	BACK_ENV=  set this value to "dev" if you will be building the backend container code locally, used for backend development
-	BACKEND_BUILD_DIR=<value>  the directory you are building into for local backend development
 	NEO4J_USER=<value>  the user to set for Neo4j. The username is assumed to be the default "neo4j" if this is not set
 	NEO4J_PASS=<value>  the password to set for Neo4j. The username is assumed to be the default "neo4j" if this is not set
+
+
+	- If you are using frontend or backend dev settings you will need your local code to be in the "source" folder for the appropriate container (backend/source or frontend/source).
+	  Note that the dev build requires that the code be built into or copied into the correct folder, linking this folder to a location outside of the bento-local workspace will
+	  not work. 

@@ -44,7 +44,7 @@ pipeline {
         value: 'QA_ICDC,QA_CTDC' )
 
 	string(defaultValue: "", 
-        description: 'Enter a list of email adresses to notify in case of test failures:', 
+        description: 'Enter a list of email addresses to notify in case of test failures:', 
         name: 'EmailRecipients')
 
         }

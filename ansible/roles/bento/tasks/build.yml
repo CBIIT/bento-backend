@@ -5,19 +5,19 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: environment == "dev"
 
-- name: set dev environment facts
+- name: set qa environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: environment == "qa"
 
-- name: set dev environment facts
+- name: set stage environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_STAGE_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: environment == "stage"
 
-- name: set dev environment facts
+- name: set prod environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"

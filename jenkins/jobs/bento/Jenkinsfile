@@ -51,41 +51,51 @@ pipeline {
   	}
     stage('Set Environment'){
         environment {
-          TEST_URL = "bento.essential-dev.com"
+          ENVIRONMENT = "${params.Environment}"
           VERSION = "${params.Tag}"
+          SLACK_URL = "${SLACK_URL}"
         }
         steps {
           script {
             switch("${params.Environment}") {
-              case "test":
-                withCredentials([file(credentialsId: 'test_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/bento-frontend/.env"
-                  sh "cd ${WORKSPACE}/bento-frontend && sed -i 's,tag_version,${VERSION},g' .env"
-                  env.BACKEND_HOST = "backend"
-                  env.NEO4J_IP    = "${NEO4J_IP}"
-                  env.FENCE_URL   = "bento.essential-dev.com"
+              case "dev":
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                }
+              break
+              case "qa":
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
+                  env.BEARER = "${BEARER}"
+                }
+              break
+              case "stage":
+                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+                  env.BEARER = "${BEARER}"
+                }
+              break
+              case "prod":
+                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                  env.BEARER = "${BEARER}"
                 }
               break
               default:
-                println "Select valid option"
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                }
               break
-              }
+            }
           }
         }
     }
   	stage('build'){
- 		environment {
- 			SLACK_URL = "${SLACK_URL}"
- 		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
-          			usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
-          			string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
-          			usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-          			string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
-
- 					ansiblePlaybook( 
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
             			playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             			colorized: true) 

@@ -45,18 +45,18 @@
     region: "{{region}}" 
   register: task_backend
 
-- name: query ecs service
+- name: query backend service
   ecs_service_info:
-    cluster: ctdc-ecs
-    service: ctdc_ecs_backend
+    cluster: bento-{{environment}}
+    service: bento-{{environment}}-backend
     details: true
     region: "{{region}}"
   register: service_backend
 
 - name: query ecs service
   ecs_service_info:
-    cluster: ctdc-ecs
-    service: ctdc_ecs_frontend
+    cluster: bento-{{environment}}
+    service: bento-{{environment}}-frontend
     details: true
     region: "{{region}}"
   register: service_frontend
@@ -72,17 +72,11 @@
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
-
-- debug:
-    msg: "{{service_frontend}}"
-- debug:
-    msg: "{{service_backend}}"
-
 - name: update frontend service
   ecs_service:
     state: present
-    name: ctdc_ecs_frontend
-    cluster: ctdc-ecs
+    name: bento-{{environment}}-frontend
+    cluster: bento-{{environment}}
     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes
@@ -98,8 +92,8 @@
 - name: update backend service
   ecs_service:
     state: present
-    name: ctdc_ecs_backend
-    cluster: ctdc-ecs
+    name: bento-{{environment}}-backend
+    cluster: bento-{{environment}}
     task_definition: "{{task_backend_name}}:{{backend_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes
@@ -110,11 +104,3 @@
     load_balancers: "{{ lb_backend }}"
     region: "{{region}}"
   register: service_backend_output
-
-- name: show frontend service
-  debug:
-    msg: "{{service_frontend_output}}"
-
-- name: show backend service
-  debug:
-    msg: "{{service_backend_output}}"

@@ -1,10 +1,31 @@
 ---
-# tasks file for cicd
-# - name: copy application_example.properties to application.properties
-#   copy:
-#     remote_src: yes
-#     src: "{{workspace}}/src/main/resources/application_example.properties"
-#     dest: "{{workspace}}/src/main/resources/application.properties"
+- name: show tier
+  debug:
+    msg: "{{version}}"
+
+- name: set dev environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "dev"
+
+- name: set qa environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "qa"
+
+- name: set stage environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_STAGE_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "stage"
+
+- name: set prod environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "prod"
 
 - name: remove the application_example.properties file 
   file:
@@ -26,11 +47,6 @@
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
-# - name: remove ICDC-0.0.1.war file 
-#   file:
-#     path: "{{workspace}}/target/ICDC-0.0.1.war"
-#     state: absent
-
 - name: log into DockerHub
   docker_login:
     username: "{{docker_user}}"
@@ -46,6 +62,11 @@
     tag: "{{build_number}}"
     push: yes
     source: build
+
+- name: copy environment file to {{workspace}}/bento-frontend
+  template:
+    src: env.j2
+    dest: "{{workspace}}/bento-frontend/.env"
 
 - name: run npm install in {{workspace}}/bento-frontend/
   command: "{{item}}"

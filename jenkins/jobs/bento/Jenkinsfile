@@ -50,10 +50,9 @@ pipeline {
  
   	}
     stage('Set Environment'){
-        environment {
-          TAG = "${params.Tag}"
-          SLACK_URL = "${SLACK_URL}"
-        }
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+      }
         steps {
           script {
             switch("${params.Environment}") {
@@ -62,6 +61,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
+                  env.TAG = "${params.Tag}"
                 }
               break
               case "qa":
@@ -69,6 +69,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
+                  env.TAG = "${params.Tag}"
                 }
               break
               case "stage":
@@ -76,6 +77,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
+                  env.TAG = "${params.Tag}"
                 }
               break
               case "prod":
@@ -83,6 +85,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
+                  env.TAG = "${params.Tag}"
                 }
               break
               default:
@@ -90,6 +93,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
+                  env.TAG = "${params.Tag}"
                 }
               break
             }

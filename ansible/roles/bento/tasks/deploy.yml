@@ -47,16 +47,16 @@
 
 - name: query backend service
   ecs_service_info:
-    cluster: bento-{{environment}}
-    service: bento-{{environment}}-backend
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-backend
     details: true
     region: "{{region}}"
   register: service_backend
 
 - name: query ecs service
   ecs_service_info:
-    cluster: bento-{{environment}}
-    service: bento-{{environment}}-frontend
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-frontend
     details: true
     region: "{{region}}"
   register: service_frontend
@@ -75,8 +75,8 @@
 - name: update frontend service
   ecs_service:
     state: present
-    name: bento-{{environment}}-frontend
-    cluster: bento-{{environment}}
+    name: bento-{{tier}}-frontend
+    cluster: bento-{{tier}}
     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes
@@ -92,8 +92,8 @@
 - name: update backend service
   ecs_service:
     state: present
-    name: bento-{{environment}}-backend
-    cluster: bento-{{environment}}
+    name: bento-{{tier}}-backend
+    cluster: bento-{{tier}}
     task_definition: "{{task_backend_name}}:{{backend_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes

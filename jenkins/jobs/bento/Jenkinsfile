@@ -51,7 +51,7 @@ pipeline {
   	}
     stage('Set Environment'){
         environment {
-          VERSION = "${params.Tag}"
+          TAG = "${params.Tag}"
           SLACK_URL = "${SLACK_URL}"
         }
         steps {

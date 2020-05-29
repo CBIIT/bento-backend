@@ -35,10 +35,8 @@ RUN mkdir -p "$CATALINA_HOME" \
 FROM base AS dev
 RUN echo "Building DEV Install.."
 
-ARG BACKEND_BUILD_DIR
-
 RUN rm -rf ${CATALINA_HOME}/webapps/ROOT/
-COPY ${BACKEND_BUILD_DIR}/*.war ${CATALINA_HOME}/webapps/ROOT.war
+COPY backend/source/*.war ${CATALINA_HOME}/webapps/ROOT.war
 
 USER ${TOMCAT_USER}
 
@@ -79,7 +77,7 @@ ARG NEO4J_PASS
 RUN git clone https://github.com/CBIIT/bento-backend.git /usr/local/bento-backend \
  && cd /usr/local/bento-backend \
  && mv src/main/resources/application_example.properties src/main/resources/application.properties \
- && sed -i "s|neo4j.graphql.endpoint =http://localhost:7474/graphql/|neo4j.graphql.endpoint=http://neo4:7474/graphql/|" src/main/resources/application.properties \
+ && sed -i "s|neo4j.graphql.endpoint =http://localhost:7474/graphql/|neo4j.graphql.endpoint=http://neo4j:7474/graphql/|" src/main/resources/application.properties \
  && sed -i "s/spring.data.neo4j.username=neo4j_username/spring.data.neo4j.username=${NEO4J_USER}/" src/main/resources/application.properties \
  && sed -i "s/spring.data.neo4j.password=localhost/spring.data.neo4j.password=${NEO4J_PASS}/" src/main/resources/application.properties \
  && sed -i "s/neo4j.authorization =Basic 123456/neo4j.authorization =$(echo "Basic $(echo -n "${NEO4J_USER}:${NEO4J_PASS}" | base64)")/" src/main/resources/application.properties \

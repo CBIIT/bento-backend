@@ -6,9 +6,7 @@ FROM nginx:alpine AS base
 FROM base AS dev
 RUN echo "Building DEV Install.."
 
-ARG FRONTEND_BUILD_DIR
-
-COPY ${FRONTEND_BUILD_DIR} /usr/share/nginx/html
+COPY frontend/source /usr/share/nginx/html
 
 ##############################################################
 

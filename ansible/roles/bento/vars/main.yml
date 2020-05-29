@@ -8,3 +8,4 @@ docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 region: us-east-1
 
+

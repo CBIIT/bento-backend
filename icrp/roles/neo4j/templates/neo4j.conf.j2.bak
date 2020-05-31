@@ -1,3 +1,4 @@
+
 #*****************************************************************
 # Neo4j configuration
 #
@@ -8,10 +9,10 @@
 # The name of the database to mount. Note that this is *not* to be confused with
 # the causal_clustering.database setting, used to specify a logical database
 # name when creating a multi-clustering deployment.
-dbms.active_database=graph.db
+#dbms.active_database=graph.db
 
 # Paths of directories in the installation.
-dbms.directories.data=/var/lib/neo4j/data
+dbms.unmanaged_extension_classes=org.neo4j.graphql=/graphql
 dbms.directories.plugins=/var/lib/neo4j/plugins
 dbms.directories.certificates=/var/lib/neo4j/certificates
 dbms.directories.logs=/var/log/neo4j
@@ -29,14 +30,14 @@ dbms.directories.import=/var/lib/neo4j/import
 #dbms.security.auth_enabled=false
 
 # Enable this to be able to upgrade a store from an older version.
-dbms.allow_upgrade=true
+#dbms.allow_upgrade=true
 
 # Java Heap Size: by default the Java heap size is dynamically
 # calculated based on available system resources.
 # Uncomment these lines to set specific initial and maximum
 # heap size.
-#dbms.memory.heap.initial_size=512m
-#dbms.memory.heap.max_size=512m
+dbms.memory.heap.initial_size={{heap_min_size}}
+dbms.memory.heap.max_size={{heap_max_size}}
 
 # The amount of memory to use for mapping the store files, in bytes (or
 # kilobytes with the 'k' suffix, megabytes with 'm' and gigabytes with 'g').
@@ -56,7 +57,7 @@ dbms.backup.enabled=true
 # network interface (e.g. 0.0.0.0 for all interfaces).
 # The protocol running varies depending on deployment. In a Causal Clustering environment this is the
 # same protocol that runs on causal_clustering.transaction_listen_address.
-dbms.backup.address=0.0.0.0:6362
+#dbms.backup.address=0.0.0.0:6362
 
 # Enable encryption on the backup service for CC instances (does not work for single-instance or HA clusters)
 #dbms.backup.ssl_policy=backup
@@ -260,35 +261,35 @@ dbms.connector.https.enabled=true
 #dbms.logs.debug.rotation.keep_number=7
 
 # Log executed queries that takes longer than the configured threshold. Enable by uncommenting this line.
-#dbms.logs.query.enabled=true
+dbms.logs.query.enabled=true
 
 # If the execution of query takes more time than this threshold, the query is logged. If set to zero then all queries
 # are logged.
-#dbms.logs.query.threshold=0
+dbms.logs.query.threshold=0
 
 # The file size in bytes at which the query log will auto-rotate. If set to zero then no rotation will occur. Accepts a
 # binary suffix "k", "m" or "g".
-#dbms.logs.query.rotation.size=20m
+dbms.logs.query.rotation.size=20m
 
 # Maximum number of history files for the query log.
-#dbms.logs.query.rotation.keep_number=7
+dbms.logs.query.rotation.keep_number=7
 
 # Include parameters for the executed queries being logged (this is enabled by default).
-#dbms.logs.query.parameter_logging_enabled=true
+dbms.logs.query.parameter_logging_enabled=true
 
 # Uncomment this line to include detailed time information for the executed queries being logged:
-#dbms.logs.query.time_logging_enabled=true
+dbms.logs.query.time_logging_enabled=true
 
 # Uncomment this line to include bytes allocated by the executed queries being logged:
 #dbms.logs.query.allocation_logging_enabled=true
 
 # Uncomment this line to include page hits and page faults information for the executed queries being logged:
-#dbms.logs.query.page_logging_enabled=true
+dbms.logs.query.page_logging_enabled=true
 
 # The security log is always enabled when `dbms.security.auth_enabled=true`, and resides in `logs/security.log`.
 
 # Log level for the security log. One of DEBUG, INFO, WARN and ERROR.
-#dbms.logs.security.level=INFO
+dbms.logs.security.level=INFO
 
 # Threshold for rotation of the security log.
 #dbms.logs.security.rotation.size=20m
@@ -685,7 +686,7 @@ dbms.connector.https.enabled=true
 #*****************************************************************
 
 # Enable this to specify a parser other than the default one.
-#cypher.default_language_version=2.3
+#cypher.default_language_version=3.0
 
 # Determines if Cypher will allow using file URLs when loading data using
 # `LOAD CSV`. Setting this value to `false` will cause Neo4j to fail `LOAD CSV`
@@ -791,12 +792,6 @@ dbms.jvm.additional=-Djdk.tls.ephemeralDHKeySize=2048
 # This mitigates a DDoS vector.
 dbms.jvm.additional=-Djdk.tls.rejectClientInitiatedRenegotiation=true
 
-# This filter prevents deserialization of arbitrary objects via java object serialization, addressing potential vulnerabilities.
-# By default this filter whitelists all neo4j classes, as well as classes from the hazelcast library and the java standard library.
-# These defaults should only be modified by expert users!
-# For more details (including filter syntax) see: https://openjdk.java.net/jeps/290
-#dbms.jvm.additional=-Djdk.serialFilter=java.**;org.neo4j.**;com.neo4j.**;com.hazelcast.**;net.sf.ehcache.Element;com.sun.proxy.*;org.openjdk.jmh.**;!*
-
 #********************************************************************
 # Wrapper Windows NT/2000/XP Service Properties
 #********************************************************************
@@ -812,9 +807,10 @@ dbms.windows_service_name=neo4j
 # Other Neo4j system properties
 #********************************************************************
 dbms.jvm.additional=-Dunsupported.dbms.udc.source=rpm
-dbms.unmanaged_extension_classes=org.neo4j.graphql=/graphql
+dbms.jvm.additional=-javaagent:/var/lib/neo4j/newrelic/newrelic.jar
 metrics.enabled=true
 metrics.neo4j.enabled=true
 metrics.neo4j.tx.enabled=true
 metrics.neo4j.pagecache.enabled=true
-
+metrics.neo4j.counts.enabled=true
+metrics.neo4j.network.enabled=true

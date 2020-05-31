@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-            label 'docker-ansible'
+            label 'docker-katalon'
             }
         }
 	environment { 
@@ -179,38 +179,41 @@ pipeline {
 			//failure {
 
 			//	script {
-				
+			//	
 			//	    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
+			//	
+			//		inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
 
-			//		inputFile=$(exec find $WORKSPACE/results -type f -name "*.csv")
-			//		testCaseHeader="Test Cases/"
+			//		# Get test stats
+			//		totalTestCases="$(grep -c '<testcase' $inputFile)"
+			//		passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
+			//		failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
+			//		errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
+				
+			//		# function to read output file: JUnit.xml
+			//		parse_results_xml(){
+			//			error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile: \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
 
-			//		# function to read output file: index.csv
-			//		parse_results_csv(){
-			//			error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile: \\n\\n "
-
-			//			while IFS= read -r line
+			//			IFS=$'\\n'
+			//			for line in $(grep '<testcase' $inputFile)
 			//			do
 			//			  if [[ "$line" =~ .*"FAILED" || "$line" =~ .*"ERROR" ]]
 			//		      then
-			//			    if [[ "$line" == $testCaseHeader* ]]
-			//			    then
-			//			      error_message+="$(echo $line | cut -d ',' -f 1 | cut -d '/' -f2-) \\n "
-			//			    fi
+			//				  error_message+="$(echo $line | cut -d '=' -f 2 | cut -d '"' -f 2) \\n "
 			//			  fi
-			//			done < "$inputFile"
+			//			done
 			//			}
-
+			//	
 			//			# Get test failures
-			//			parse_results_csv
-												
+			//			parse_results_xml
+			//									
 			//			error_message="\'$error_message\'"
 			//			echo $error_message
-
-            //           ''',
+			//	
+            //          ''',
 			//			returnStdout: true).trim()
-
-            //            }
+				
+            //        }
 					
 			//		script {
 

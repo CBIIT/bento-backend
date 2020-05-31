@@ -97,3 +97,5 @@
     dest: /etc/neo4j/neo4j.conf
     owner: neo4j
     group: neo4j
+  notify:
+    - restart neo4j

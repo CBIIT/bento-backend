@@ -1,7 +1,25 @@
+node('docker-ansible') {
+	parameters {
+		extendedChoice( 
+			name: 'Browser', 
+			defaultValue: 'Chrome', 
+			description: 'Choose the browser (headless) to use', 
+			type: 'PT_SINGLE_SELECT',
+			value: 'Chrome,Firefox' )
+		}
+	stage('set agent'){
+		if (params.Browser == 'Firefox') {
+			AGENT_LABEL = "docker-katalon"
+			} else {
+				AGENT_LABEL = "docker-ansible"
+				}
+		}
+	}
+
 pipeline {
-    agent {
+	agent {
         node {
-            label 'docker-katalon'
+            label "${AGENT_LABEL}"
             }
         }
 	environment { 
@@ -192,7 +210,7 @@ pipeline {
 				
 			//		# function to read output file: JUnit.xml
 			//		parse_results_xml(){
-			//			error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile (tested using: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
+			//			error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
 
 			//			IFS=$'\\n'
 			//			for line in $(grep '<testcase' $inputFile)

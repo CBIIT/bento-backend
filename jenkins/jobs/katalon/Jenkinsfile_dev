@@ -112,7 +112,7 @@ pipeline {
                     //        sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                     //        }
                     //    break
-					case "Katalon_dev_ICDC":
+					case "Katalon_Dev_ICDC":
 					//	withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
@@ -120,7 +120,7 @@ pipeline {
                             sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
-					case "Katalon_dev_CTDC":
+					case "Katalon_Dev_CTDC":
 					//	withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }

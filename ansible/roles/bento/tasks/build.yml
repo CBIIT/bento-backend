@@ -1,7 +1,7 @@
 ---
 - name: show tier
   debug:
-    msg: "{{version}}"
+    msg: "{{tier}}"
 
 - name: set dev environment facts
   set_fact:

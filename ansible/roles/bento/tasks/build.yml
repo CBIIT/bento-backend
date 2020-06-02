@@ -1,7 +1,7 @@
 ---
 - name: show tier
   debug:
-    msg: "{{version}}"
+    msg: "{{tier}}"
 
 - name: set dev environment facts
   set_fact:
@@ -99,4 +99,15 @@
     tag: "{{build_number}}"
     push: yes
     source: build
+
+- name: post schemas
+  uri:
+    url: http://{{neo4j_ip}}:7474/graphql/idl/
+    method: POST
+    body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/ctdc.graphql') }}"
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      Authorization: "{{bearer}}"
+
     

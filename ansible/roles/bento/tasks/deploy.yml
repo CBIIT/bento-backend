@@ -35,13 +35,13 @@
 
 - name: query task definition
   ecs_taskdefinition_info:
-    task_definition: bento-frontend
+    task_definition: bento-{{tier}}-frontend
     region: "{{region}}" 
   register: task_frontend
 
 - name: query task definition
   ecs_taskdefinition_info:
-    task_definition: bento-backend
+    task_definition: bento-{{tier}}-backend
     region: "{{region}}" 
   register: task_backend
 

@@ -55,6 +55,7 @@
       dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
       pull: yes
     name: cbiitssrepo/bento-backend
+    nocache: yes
     tag: "{{build_number}}"
     push: yes
     source: build
@@ -94,6 +95,7 @@
     name: cbiitssrepo/bento-frontend
     tag: "{{build_number}}"
     push: yes
+    nocache: yes
     source: build
 
 - name: post schemas

@@ -26,6 +26,8 @@ jenkins:
           - labelString: "cicd_microservice"
             dockerTemplateBase:
               image: "cbiitssrepo/cicd-microservice"
+              volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
             remoteFs: "/home/jenkins"
             connector:
               attach:
@@ -68,9 +70,13 @@ tool:
     installations:
       - name: jdk11
         home: /usr/lib/jvm/jre-11-openjdk
+      - name: Default
+        home: /usr/lib/jvm/jre-11-openjdk
   maven:
     installations:
       - name: maven-3.6.1
+        home: /usr/local/maven
+      - name: Default
         home: /usr/local/maven
 credentials:
   system:

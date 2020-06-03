@@ -1,8 +1,4 @@
 ---
-- name: show tier
-  debug:
-    msg: "{{tier}}"
-
 - name: set dev environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"

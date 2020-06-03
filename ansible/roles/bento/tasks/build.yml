@@ -103,6 +103,7 @@
     url: http://{{neo4j_ip}}:7474/graphql/idl/
     method: POST
     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/ctdc.graphql') }}"
+    body_format: yes
     headers:
       Content-Type: "application/json"
       Authorization: "{{bearer}}"

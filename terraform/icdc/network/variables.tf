@@ -1,7 +1,7 @@
 
 variable "profile" {
   description = "Profile for launching vm"
-  default = "default"
+  default = "icdc"
 }
 
 variable "region" {

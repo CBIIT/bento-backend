@@ -14,7 +14,7 @@ resource "aws_subnet" "private_subnet" {
 resource "aws_route_table" "private_route" {
   vpc_id                        = "${var.vpc_id}"
 
-  tags {
+  tags = {
     Name                        = "${var.subnet_name}"
     Type                        = "private"
   }

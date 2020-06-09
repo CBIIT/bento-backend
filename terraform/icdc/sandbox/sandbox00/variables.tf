@@ -1,15 +1,15 @@
 variable "profile" {
-  # default = "default"
+  default = "icdc"
 }
 
 variable "stack_name" {
   description = "The name for terraform stack "
-  default = "sandbox00"
+  default     = "sandbox00"
 }
 
 variable "org_name" {
   description = "The name for organization "
-  default = "icdc"
+  default     = "icdc"
 }
 
 variable "region" {
@@ -64,8 +64,6 @@ variable "health_check_jenkins" {
   }
 }
 
-
-
 variable "appserver_instance_type" {
   default = "t2.medium"
 }
@@ -81,11 +79,9 @@ variable "health_check_app" {
   }
 }
 
-
 variable "neo4j_instance_type" {
   default = "t2.medium"
 }
-
 
 variable "svc_neo4j" {
   default = "neo4j"
@@ -113,6 +109,8 @@ variable "rule_priority_jenkins" {
 variable "rule_priority_app" {
   default = "130"
 }
+
 variable "rule_priority_bolt" {
   default = "140"
 }
+

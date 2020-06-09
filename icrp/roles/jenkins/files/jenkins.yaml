@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "This jenkins instance is for icdc program"
+  systemMessage: "This jenkins instance is for Bento program"
   agentProtocols:
     - "JNLP4-connect"
   securityRealm:
@@ -11,12 +11,29 @@ jenkins:
         - id: bento-user
           password: ${jenkinUserPassword}
   authorizationStrategy:
-    globalMatrix:
-      grantedPermissions:
-        - "Overall/Read:authenticated"
-        - "Job/Read:authenticated"
-        - "View/Read:authenticated"
-        - "Overall/Administer:authenticated"
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            description: "Jenkins administrators"
+            permissions:
+              - "Overall/Administer"
+            assignments:
+              - "jenkinsAdmin"
+              - "bento-user"
+          - name: "readonly"
+            description: "Read-only users"
+            permissions:
+              - "Overall/Read"
+              - "Job/Read"
+            assignments:
+              - "authenticated"
+    # globalMatrix:
+    #   grantedPermissions:
+    #     - "Overall/Read:authenticated"
+    #     - "Job/Read:authenticated"
+    #     - "View/Read:authenticated"
+    #     - "Overall/Administer:authenticated"
   crumbIssuer: "standard"
   clouds:
     - docker:

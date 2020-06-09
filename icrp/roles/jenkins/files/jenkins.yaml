@@ -7,7 +7,9 @@ jenkins:
       allowsSignup: false
       users:
         - id: jenkinsAdmin
-          password: ${jenkinsAdmin}
+          password: ${jenkinsAdminPassword}
+        - id: bento-user
+          password: ${jenkinUserPassword}
   authorizationStrategy:
     globalMatrix:
       grantedPermissions:
@@ -86,7 +88,7 @@ credentials:
               scope: GLOBAL
               id: server_ssh_key
               username: bento
-              description: "ssh key for connecting to server as centos"
+              description: "ssh key for connecting to server as bento"
               privateKeySource:
                 directEntry:
                   privateKey: ${server_sshkey}

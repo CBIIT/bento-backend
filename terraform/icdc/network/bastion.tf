@@ -32,19 +32,19 @@ connection {
     user = "${local.devops_user}"
     private_key  = "${local.devops_ssh_key}"
   }
- provisioner "ansible" {
-    plays {
-      playbook = {
-        file_path = "../playbook/nat.yml"
-        roles_path = ["../roles"]
-      }
-      verbose = false
-    }
-    ansible_ssh_settings {
-      insecure_no_strict_host_key_checking = "${var.insecure_no_strict_host_key_checking}"
-      connect_timeout_seconds = 60
-    }
-  }
+#  provisioner "ansible" {
+#     plays {
+#       playbook = {
+#         file_path = "../playbook/nat.yml"
+#         roles_path = ["../roles"]
+#       }
+#       verbose = false
+#     }
+#     ansible_ssh_settings {
+#       insecure_no_strict_host_key_checking = "${var.insecure_no_strict_host_key_checking}"
+#       connect_timeout_seconds = 60
+#     }
+#   }
 }
 
 data "aws_eip" "icdc_bastion" {

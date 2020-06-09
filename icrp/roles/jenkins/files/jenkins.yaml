@@ -21,13 +21,6 @@ jenkins:
             assignments:
               - "jenkinsAdmin"
 
-          - name: "developers"
-            description: "Jenkins administrators"
-            permissions:
-              - "Overall/Administer"
-            assignments:
-              - "bento-user"
-              
           - name: "readonly"
             description: "Read-only users"
             permissions:
@@ -35,6 +28,18 @@ jenkins:
               - "Job/Read"
             assignments:
               - "authenticated"
+
+        items:
+          - name: "Bento"
+            description: "Jobs in Folder A, but not the folder itself"
+            pattern: "Bento/.*"
+            permissions:
+              - "Job/Configure"
+              - "Job/Build"
+              - "Job/Delete"
+            assignments:
+              - "bento-user"
+              
     # globalMatrix:
     #   grantedPermissions:
     #     - "Overall/Read:authenticated"

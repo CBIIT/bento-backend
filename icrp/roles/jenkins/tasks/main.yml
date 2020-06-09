@@ -67,8 +67,8 @@
     owner: bento
   loop:
     - {src: "{{docker_agent_ip}}",dest: "docker_agent_ip"}
-    - {src: "{{jenkins_admin_password}}",dest: "jenkins_admin_password"}
-    - {src: "{{jenkins_user_password}}",dest: "jenkins_user_password"}
+    - {src: "{{jenkins_admin_password}}",dest: "jenkinsAdminPassword"}
+    - {src: "{{jenkins_user_password}}",dest: "jenkinsUserPassword"}
 
 
 - name: build the docker image

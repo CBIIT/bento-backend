@@ -14,13 +14,18 @@ jenkins:
     roleBased:
       roles:
         global:
-          - name: "admin"
+          - name: "jenkinsAdmin"
             description: "Jenkins administrators"
             permissions:
               - "Overall/Administer"
             assignments:
-              - "jenkinsAdmin"
-              - "bento-user"
+              - "admin"
+          - name: "bento-user"
+            description: "Jenkins administrators"
+            permissions:
+              - "Overall/Administer"
+            assignments:
+              - "admin"
           - name: "readonly"
             description: "Read-only users"
             permissions:

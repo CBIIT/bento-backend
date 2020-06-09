@@ -741,17 +741,17 @@ type QueryType {
     numberOfFiles: Int @cypher(statement: "MATCH (n:file) return count(n)")
 
     "Group counts"
-    subjectCountByProgram: [GroupCount] @cypher(statement: "MATCH (g:program)<-[*]-(ss:study_subject) RETURN g.program_acronym AS group, count(distinct ss) as count")
-    subjectCountByStudy: [GroupCount] @cypher(statement: "MATCH (g:study)<-[*]-(ss:study_subject) RETURN g.study_acronym + ': ' + g.study_short_description AS group, count(distinct ss) as count")
+    subjectCountByProgram: [GroupCount] @cypher(statement: "MATCH (g:program) OPTIONAL MATCH (g)<-[*]-(ss:study_subject) RETURN g.program_acronym AS group, count(distinct ss) as count")
+    subjectCountByStudy: [GroupCount] @cypher(statement: "MATCH (g:study) OPTIONAL MATCH (g)<-[*]-(ss:study_subject) RETURN g.study_acronym + ': ' + g.study_short_description AS group, count(distinct ss) as count")
     subjectCountByDiagnoses: [GroupCount] @cypher(statement: "MATCH (ss:study_subject) RETURN ss.disease_subtype AS group, count(distinct ss) as count")
-    subjectCountByRecurrenceScore: [GroupCount] @cypher(statement: "MATCH (g:stratification_factor)-[*]->(ss:study_subject) RETURN g.grouped_recurrence_score AS group, count(distinct ss) as count")
-    subjectCountByTumorSize: [GroupCount] @cypher(statement: "MATCH (g:diagnosis)-[*]->(ss:study_subject) RETURN g.tumor_size_group AS group, count(distinct ss) as count")
-    subjectCountByTumorGrade: [GroupCount] @cypher(statement: "MATCH (g:diagnosis)-[*]->(ss:study_subject) RETURN g.tumor_grade AS group, count(distinct ss) as count")
-    subjectCountByErStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis)-[*]->(ss:study_subject) RETURN g.er_status AS group, count(distinct ss) as count")
-    subjectCountByPrStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis)-[*]->(ss:study_subject) RETURN g.pr_status AS group, count(distinct ss) as count")
-    subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure)-[*]->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(distinct ss) as count")
-    subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure)-[*]->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(distinct ss) as count")
-    subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data)-[*]->(ss:study_subject) RETURN g.menopause_status AS group, count(distinct ss) as count")
+    subjectCountByRecurrenceScore: [GroupCount] @cypher(statement: "MATCH (g:stratification_factor) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.grouped_recurrence_score AS group, count(distinct ss) as count")
+    subjectCountByTumorSize: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.tumor_size_group AS group, count(distinct ss) as count")
+    subjectCountByTumorGrade: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.tumor_grade AS group, count(distinct ss) as count")
+    subjectCountByErStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.er_status AS group, count(distinct ss) as count")
+    subjectCountByPrStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.pr_status AS group, count(distinct ss) as count")
+    subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(distinct ss) as count")
+    subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(distinct ss) as count")
+    subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.menopause_status AS group, count(distinct ss) as count")
 
     subjectOverView: [SubjectOverview] @cypher(statement: "MATCH (ss:study_subject) OPTIONAL MATCH (ss)-[*]->(p:program) OPTIONAL MATCH (ss)-[*]->(s:study) OPTIONAL MATCH (ss)<-[*]-(sf:stratification_factor) OPTIONAL MATCH (ss)<-[*]-(d:diagnosis) OPTIONAL MATCH (ss)<-[*]-(tp:therapeutic_procedure) OPTIONAL MATCH (ss)<-[*]-(demo:demographic_data) OPTIONAL MATCH (ss)<-[*]-(f:file) RETURN p.program_acronym AS program, s.study_acronym AS study_acronym, s.study_short_description AS study_short_description, ss.study_subject_id AS subject_id, ss.disease_subtype AS diagnosis, sf.grouped_recurrence_score AS recurrence_score, d.tumor_size_group AS tumor_size, d.tumor_grade AS tumor_grade, d.er_status AS er_status, d.pr_status AS pr_status, tp.chemotherapy_regimen AS chemotherapy, tp.endocrine_therapy_type AS endocrine_therapy, demo.menopause_status AS menopause_status, demo.age_at_index AS age_at_index, demo.survival_time AS survival_time, demo.survival_time_unit AS survival_time_unit, COLLECT(f) AS files", passThrough: true)
 

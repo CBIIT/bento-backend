@@ -206,6 +206,27 @@ pipeline {
                     subject: 'Katalon Test Results',
                     to: "${BOX_EMAIL}")
 				
+				//script {
+
+				//	withCredentials([usernamePassword(credentialsId: 'Katalon_wiki_results', passwordVariable: 'passwd', usernameVariable: 'user')]) {
+
+				//		sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
+
+				//		pageID="434110502"
+				//		resultsURL="https://wiki.nci.nih.gov/rest/api/content/$pageID/child/attachment"
+				//		resultsFile=$(basename results/*.html)
+				//		creds="\'$user:$passwd\'"
+				//		curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
+				//		echo $curlCMD
+				//		curlError=$(eval $curlCMD)
+				//		echo "Confluence Error:   $curlError"
+
+				//		'''
+						
+				//		}
+					
+				//	}
+				
 				}
 				
 			//failure {

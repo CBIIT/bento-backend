@@ -201,7 +201,7 @@ pipeline {
 						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
 
 						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-						resultsFile=$(exec find $WORKSPACE/results -type f -name "*.html" -printf "%f\n")
+						resultsFile=$(basename results/*.html)
 						pageID=''' + WIKI_PAGE + '''
 						pageName=''' + WIKI_NAME + '''
 						pageName="$pageName Automated Test Results"

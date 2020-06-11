@@ -13,14 +13,14 @@
 - name: clone dataloader
   git:
     repo: 'https://github.com/CBIIT/icdc-dataloader'
-    dest: "{{workspace}}"
+    dest: "{{workspace}}/icdc-dataloader"
     track_submodules: yes
     update: yes
 
 - name: clone bento-custodian
   git:
     repo: 'https://github.com/CBIIT/bento-custodian'
-    dest: "{{workspace}}"
+    dest: "{{workspace}}/bento-custodian"
 
 - name: update settings
   template:

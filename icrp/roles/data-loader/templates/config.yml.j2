@@ -1,0 +1,42 @@
+Config:
+  temp_folder: tmp
+  backup_folder: /tmp/data-loader-backups
+
+  neo4j:
+    # Location of Neo4j server, e.g., bolt://127.0.0.1:7687
+    uri: bolt://127.0.0.1:7687
+    # Neo4j username
+    user: neo4j
+    # Neo4j password
+    password: {{neo4j_password}}
+
+  # Schema files' locations
+  schema:
+    - {{workspace}}/bento-custodian/data/model-desc/bento_model_file.yaml
+    - {{workspace}}/bento-custodian/model-desc/bento_model_properties.yaml
+
+  #Property file location
+  prop_file: {{workspace}}/bento-custodian/config/props-bento-ext.yml
+
+  # Skip validations, aka. Cheat Mode
+  cheat_mode: false
+  # Validations only, skip loading
+  dry_run: false
+  # Wipe out database before loading, you'll lose all data!
+  wipe_db: false
+  # Skip backup step
+  no_backup: true
+  # Automatically confirm deletion and database wiping (without asking user to confirm)
+  no_confirmation: true
+  # Max violations to display, default is 10
+  max_violations: 10
+  no_parents: false
+
+  # S3 bucket name, if you are loading from an S3 bucket
+  s3_bucket:
+  # S3 folder for dataset
+  s3_folder:
+  # Loading mode, can be UPSERT_MODE, NEW_MODE or DELETE_MODE, default is UPSERT_MODE
+  loading_mode: UPSERT_MODE
+  # Location of dataset
+  dataset: {{workspace}}/bento-custodian/data/Bento_Mock_Data_for_PACT1

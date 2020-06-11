@@ -299,7 +299,7 @@ pipeline {
 							errorOutput=''' + ERROR_OUTPUT + '''
 							boxUrl=''' + BOX_URL + '''
 							resultsFile=$(basename results/*.html)
-							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
+							errorOutput="$errorOutput \\n\\n <!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
 							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
 							post_message_to_slack
 

@@ -1,0 +1,45 @@
+---
+- name: Check if workspace exists
+  stat:
+    path: "{{workspace}}"
+  register: bento_result
+
+- name: remove old bento
+  file:
+    path: "{{workspace}}"
+    state: absent
+  when: bento_result.stat.exists
+
+- name: clone dataloader
+  git:
+    repo: 'https://github.com/CBIIT/icdc-dataloader'
+    dest: "{{workspace}}"
+    track_submodules: yes
+    update: yes
+
+- name: clone bento-custodian
+  git:
+    repo: 'https://github.com/CBIIT/bento-custodian'
+    dest: "{{workspace}}"
+
+- name: update settings
+  template:
+    dest: "{{workspace}}/icdc-dataloader/config.yml"
+    src: config.yml.j2
+
+- name: execute dataloader script
+  shell:
+    cmd: >
+      /usr/bin/python3
+      loader.py 
+      {{workspace}}/icdc-dataloader/config.yml
+    chdir: "{{workspace}}/icdc-dataloader"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

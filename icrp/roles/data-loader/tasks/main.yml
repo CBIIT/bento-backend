@@ -16,6 +16,7 @@
     dest: "{{workspace}}/icdc-dataloader"
     track_submodules: yes
     update: yes
+    version: "Bento"
 
 - name: clone bento-custodian
   git:

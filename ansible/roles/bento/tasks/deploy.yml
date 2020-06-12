@@ -20,7 +20,7 @@
           sumo-url: "{{sumo_collector_url}}"
           sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
           sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
-          sumo-source-host: "{{hostname}}"
+          # sumo-source-host: "{{hostname}}"
     network_mode: bridge
     family: bento-{{tier}}-backend
     memory: '512'
@@ -44,7 +44,7 @@
           sumo-url: "{{sumo_collector_url}}"
           sumo-source-category: "{{tier}}/{{platform}}/bento/frontend/logs"
           sumo-source-name: "bento-{{platform}}-frontend-docker-{{tier}}"
-          sumo-source-host: "{{hostname}}"
+          # sumo-source-host: "{{hostname}}"
     network_mode: bridge
     family: bento-{{tier}}-frontend
     state: present

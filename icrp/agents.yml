@@ -1,0 +1,25 @@
+---
+- name: setup ecs agent
+  hosts: all
+  connection: local
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: install newrelic
+      include_role:
+        name: newrelic
+    - name: define logs when app is ecs
+      set_fact:
+        additional_logs: 
+          - name: "{{ tier }} ECS Logs" 
+            description: "{{ env }} ECS logs"
+            category: "{{env }}/ecs/logs"
+            path: "/var/log/ecs/ecs-agent.log"
+            filters: "" 
+      when: app == "ecs"
+
+    - name: install sumologic
+      include_role:
+        name: sumologic
+   

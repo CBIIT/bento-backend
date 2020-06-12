@@ -5,20 +5,24 @@
     - name: backend
       essential: true
       image: "cbiitssrepo/bento-backend:{{build_number}}"
-      # environment:
-      #   - NEW_RELIC_LICENSE_KEY={{ newrelic_license_key }}
-      #   - NEW_RELIC_APP_NAME={{ app_name }}
-      #   - NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
-      #   - NEW_RELIC_HOST=gov-collector.newrelic.com
+      environment:
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
-      # logConfiguration:
-      #   logDriver: sumologic
-      #   options:
-      #     sumo-url: "{{sumo_collector_url}}"
-      #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
-      #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
+      logConfiguration:
+        logDriver: sumologic
+        options:
+          sumo-url: "{{sumo_collector_url}}"
+          sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
+          sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
     network_mode: bridge
     family: bento-{{tier}}-backend
     memory: '512'
@@ -36,12 +40,12 @@
       portMappings:
       - containerPort: "80"
         hostPort: "80"
-      # logConfiguration:
-      #   logDriver: sumologic
-      #   options:
-      #     sumo-url: "{{sumo_collector_url}}"
-      #     sumo-source-category: "{{tier}}/{{platform}}/bento/frontend/logs"
-      #     sumo-source-name: "bento-{{platform}}-frontend-docker-{{tier}}"
+      logConfiguration:
+        logDriver: sumologic
+        options:
+          sumo-url: "{{sumo_collector_url}}"
+          sumo-source-category: "{{tier}}/{{platform}}/bento/frontend/logs"
+          sumo-source-name: "bento-{{platform}}-frontend-docker-{{tier}}"
     network_mode: bridge
     family: bento-{{tier}}-frontend
     state: present

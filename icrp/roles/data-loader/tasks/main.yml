@@ -32,6 +32,7 @@
   shell:
     cmd: >
       /usr/bin/python
+      BENTO_LOG_LEVEL=INFO
       loader.py 
       {{workspace}}/icdc-dataloader/config.yml
     chdir: "{{workspace}}/icdc-dataloader"

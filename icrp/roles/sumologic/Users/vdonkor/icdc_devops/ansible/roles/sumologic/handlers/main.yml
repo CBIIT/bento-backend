@@ -1,6 +1,0 @@
----
-# handlers file for sumologic
-- name: restart collector
-  service:
-    name: collector
-    state: restarted

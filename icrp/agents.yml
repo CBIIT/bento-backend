@@ -13,8 +13,8 @@
       set_fact:
         additional_logs: 
           - name: "{{ tier }} ECS Logs" 
-            description: "{{ env }} ECS logs"
-            category: "{{env }}/ecs/logs"
+            description: "{{ tier }} ECS logs"
+            category: "{{ tier }}/ecs/logs"
             path: "/var/log/ecs/ecs-agent.log"
             filters: "" 
       when: app == "ecs"

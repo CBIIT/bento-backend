@@ -3,3 +3,4 @@
 timezone: 'Etc/EST'
 additional_logs: []
 config: /opt/SumoCollector/config
+sumo_docker_version: 1.0.3

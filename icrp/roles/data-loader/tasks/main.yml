@@ -31,7 +31,7 @@
 - name: execute dataloader script
   shell:
     cmd: >
-      /usr/bin/python
+      /bin/python3
       BENTO_LOG_LEVEL=INFO
       loader.py 
       {{workspace}}/icdc-dataloader/config.yml

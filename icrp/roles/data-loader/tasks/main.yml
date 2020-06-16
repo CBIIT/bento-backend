@@ -29,7 +29,7 @@
     src: config.yml.j2
 
 - name: install python3
-  dnf:
+  yum:
     name: python3
     state: installed
 
@@ -50,7 +50,7 @@
     headers:
       Accept: "application/json"
       Content-Type: "application/json"
-      
+
 - name: loader data
   shell:
     cmd: >

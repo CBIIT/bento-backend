@@ -32,7 +32,7 @@
   dnf:
     name: python3
     state: installed
-    
+
 - name: pip install requirements
   pip:
     requirements: "{{workspace}}/icdc-dataloader/requirements.txt"
@@ -50,7 +50,8 @@
     headers:
       Accept: "application/json"
       Content-Type: "application/json"
-
+      
+- name: loader data
   shell:
     cmd: >
       python3

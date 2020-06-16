@@ -32,8 +32,8 @@
   dnf:
     name: python3
     state: installed
+    
 - name: pip install requirements
-
   pip:
     requirements: "{{workspace}}/icdc-dataloader/requirements.txt"
     executable: pip3

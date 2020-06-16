@@ -49,10 +49,8 @@
     body_format: json
     headers:
       Accept: "application/json"
+      Content-Type: "application/json"
 
-  comand: >
-    curl -H "Content-Type: application/json" -X POST -d '' -u neo4j:neo4j 
-- name: execute dataloader script
   shell:
     cmd: >
       python3
@@ -64,4 +62,3 @@
 - name: show dataloader output
   debug:
     msg: "{{data_loader}}"
-    

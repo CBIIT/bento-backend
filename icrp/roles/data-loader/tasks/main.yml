@@ -28,6 +28,30 @@
     dest: "{{workspace}}/icdc-dataloader/config.yml"
     src: config.yml.j2
 
+- name: install python3
+  dnf:
+    name: python3
+    state: installed
+- name: pip install requirements
+
+  pip:
+    requirements: "{{workspace}}/icdc-dataloader/requirements.txt"
+    executable: pip3
+
+- name: set neo4j password
+  uri:
+    url: http://127.0.0.1:7474/user/neo4j/password
+    user: neo4j
+    password: neo4j
+    method: POST
+    body: >
+      {"password":"custodian"}
+    body_format: json
+    headers:
+      Accept: "application/json"
+
+  comand: >
+    curl -H "Content-Type: application/json" -X POST -d '' -u neo4j:neo4j 
 - name: execute dataloader script
   shell:
     cmd: >
@@ -40,7 +64,4 @@
 - name: show dataloader output
   debug:
     msg: "{{data_loader}}"
-
-- name: show dataloader output
-  debug:
-    msg: "{{data_loader}}"
+    

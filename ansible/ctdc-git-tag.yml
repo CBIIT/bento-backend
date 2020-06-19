@@ -4,7 +4,8 @@
   connection: local
 
   vars:
-    retention: 31
+    retention: 30
+    date_regex: '([12]\d{3}_(0[1-9]|1[0-2])_(0[1-9]|[12]\d|3[01])_(0[1-9]|1[0-2])_([0-5]\d))'
     current_date: "{{ lookup('pipe','date +%Y_%m_%d_%H_%M') }}"
     git_tag: "{{current_date}}"
     git_home: "{{ ansible_env.HOME }}/git-tag"

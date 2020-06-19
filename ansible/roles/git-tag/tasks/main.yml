@@ -1,41 +1,10 @@
 ---
-- name: checkout icdc-codebase
+- name: checkout commons codebase
   git:
     repo: "{{git_url}}"
     dest: "{{ git_home }}"
     update: yes
     version: master
-
-- name: count the current tags
-  shell: git tag 
-  args:
-    chdir: "{{ git_home }}"
-    warn: false
-  register: tag_count
-
-- name: list of git tags
-  set_fact:
-    tags: "{{tag_count.stdout_lines}}"
-    tags_length: "{{ tag_count.stdout_lines | length }}"
-
-- name: tag to be deleted
-  set_fact:
-    tag_remove: "{{ tags | first }}"
-  when: tags_length |int > 0
-
-- name: delete excess tag remote
-  command: git push --delete origin {{ tag_remove }}
-  args:
-    chdir: "{{ git_home }}"
-    warn: false
-  when: tags_length |int > retention
-
-- name: delete excess tag local
-  command: git tag --delete {{ tag_remove }}
-  args:
-    chdir: "{{ git_home }}"
-    warn: false
-  when: tags_length |int > retention
 
 - name: tag the repo
   command: git tag "{{git_tag}}"
@@ -49,5 +18,31 @@
     chdir: "{{ git_home }}"
     warn: false
 
+- name: count the current tags
+  shell: git tag 
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+  register: tag_list
 
-    
+- name: list git daily tags
+  set_fact:
+    tags: "{{ tag_list.stdout_lines | map('regex_search',date_regex) | select('string') | list }}"
+
+- name: tags to be deleted
+  set_fact:
+    tags_to_remove: "{{ tags[:-retention] }}"
+
+- name: delete excess tags remote
+  command: git push --delete origin {{ item }}
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+  loop: "{{ tags_to_remove }}"
+
+- name: delete excess tags local
+  command: git tag --delete {{ item }}
+  args:
+    chdir: "{{ git_home }}"
+    warn: false
+  loop: "{{ tags_to_remove }}"

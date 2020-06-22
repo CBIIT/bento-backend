@@ -1,4 +1,9 @@
 ---
+- name: clean up local folders
+  file:
+    path: "{{ git_home }}"
+    state: absent
+
 - name: checkout commons codebase
   git:
     repo: "{{git_url}}"

@@ -1,4 +1,4 @@
-- name: Tag ctdc repository daily
+- name: Tag bento repository daily
   
   hosts: localhost
   connection: local
@@ -18,5 +18,4 @@
       include_role:
         name: git-tag
       vars:
-        git_url: https://{{git_username}}:{{git_password}}@github.com/CBIIT/ctdc-codebase
-
+        git_url: https://{{git_username}}:{{git_password}}@github.com/CBIIT/{{ branch }}

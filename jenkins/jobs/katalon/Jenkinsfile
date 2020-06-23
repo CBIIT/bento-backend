@@ -97,6 +97,8 @@ pipeline {
                 script {
                     switch("${params.Profile}") {
                     case "QA_ICDC":
+						WIKI_PAGE="434110502"
+						WIKI_NAME="ICDC"
 						withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email')]) {
                             BOX_EMAIL="${box_email}"
                             }
@@ -108,6 +110,8 @@ pipeline {
                             }
                         break
                     case "QA_CTDC":
+						WIKI_PAGE="434110839"
+						WIKI_NAME="CTDC"
 						withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
                             BOX_EMAIL="${box_email}"
                             }
@@ -196,12 +200,37 @@ pipeline {
 
 						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
 
-						pageID="434110502"
+						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
+						resultsFile=$(basename results/*.html)
+						pageID=''' + WIKI_PAGE + '''
+						pageName=''' + WIKI_NAME + '''
+						pageName="$pageName Automated Test Results"
+						creds="\'$user:$passwd\'"
+						
+						# get updated page text
+						totalTestCases="$(grep -c '<testcase' $inputFile)"
+						passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
+						failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
+						errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
+						pageMessage="<p>Test results from the latest Katalon Test: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
+						curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
+						pageText=$(eval $curlCMD)
+						pageMessage="$pageMessage $pageText </p>"
+						
+						# get page version
+						curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=version.number | grep -oP '(?<=number\\\":).*' | awk -F, '{print \\$1}'"
+						pageVer=$(eval $curlCMD)
+						pageVer="$((pageVer+1))"
+
+						# update page content
+						curlCMD="curl -u $creds -X PUT -H 'Content-Type: application/json' -d \'{\\\"id\\\":\\\"$pageID\\\",\\\"type\\\":\\\"page\\\",\\\"title\\\":\\\"$pageName\\\",\\\"body\\\":{\\\"storage\\\":{\\\"value\\\":\\\"$pageMessage\\\",\\\"representation\\\":\\\"storage\\\"}},\\\"version\\\":{\\\"number\\\":$pageVer}}\' https://wiki.nci.nih.gov/rest/api/content/$pageID"
+						curlError=$(eval $curlCMD)
+						echo "Confluence Error:   $curlError"
+						
+						# add latest results as attachment
 						resultsURL="https://wiki.nci.nih.gov/rest/api/content/$pageID/child/attachment"
 						resultsFile=$(basename results/*.html)
-						creds="\'$user:$passwd\'"
 						curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
-						echo $curlCMD
 						curlError=$(eval $curlCMD)
 						echo "Confluence Error:   $curlError"
 
@@ -270,7 +299,7 @@ pipeline {
 							errorOutput=''' + ERROR_OUTPUT + '''
 							boxUrl=''' + BOX_URL + '''
 							resultsFile=$(basename results/*.html)
-							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
+							errorOutput="$errorOutput \\n\\n <!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
 							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
 							post_message_to_slack
 

@@ -1,4 +1,7 @@
 ---
 # vars file for roles/newrelic
-newrelic_license_key: "{{ newrelic_key }}"
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
 hostname: "{{ hostname }}"
+env: "{{env}}"
+app: "{{app}}"
+platform: "{{platform}}"

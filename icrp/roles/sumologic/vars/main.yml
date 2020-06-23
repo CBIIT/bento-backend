@@ -1,0 +1,11 @@
+---
+# vars file for sumologic
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+collector_name: bento-{{platform}}-{{app}}-{{env}}
+env: "{{env}}"
+app: "{{app}}"
+platform: "{{platform}}"
+
+
+

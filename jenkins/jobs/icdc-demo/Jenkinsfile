@@ -54,7 +54,7 @@ pipeline {
             defaultValue: 'dev', 
             description: 'Choose the environment to build', 
             type: 'PT_SINGLE_SELECT',
-            value: 'sandbox,dev,qa,stage,prod' )
+            value: 'demo,dev,qa,stage,prod' )
   }
    // triggers { 
    //   pollSCM('H/15 * * * 1-5') 
@@ -84,11 +84,7 @@ pipeline {
     }
     stage('Set Environment'){
         environment {
-          SANDBOX_URL = "k9dc.essential-dev.com"
-          DEV_URL = "caninecommons-dev.cancer.gov"
-          QA_URL = "caninecommons-qa.cancer.gov"
-          STAGE_URL = "caninecommons-stage.cancer.gov"
-          PROD_URL = "caninecommons.cancer.gov" 
+          DEMO_URL = "caninecommons-demo.cancer.gov"
           VERSION = "${params.Tag}"
         }
         steps {

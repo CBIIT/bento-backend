@@ -94,64 +94,22 @@ pipeline {
         steps {
           script {
             switch("${params.Environment}") {
-              case "sandbox":
-                withCredentials([file(credentialsId: 'sandbox_env_file', variable: 'secret_file')]) {
+              case "demo":
+                withCredentials([file(credentialsId: 'demo_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${SANDBOX_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_IP}"
-                  env.NEO4J_IP    = "${NEO4J_IP}"
-                }
-              break
-              case "dev":
-                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
-                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
-                }
-              break
-              case "qa":
-                withCredentials([file(credentialsId: 'qa_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${QA_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_QA_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_QA_IP}"
-                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
-                }
-              break
-              case "stage":
-                withCredentials([file(credentialsId: 'stage_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${STAGE_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_STAGE_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_STAGE_IP}"
-                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
-                }
-              break
-              case "prod":
-                withCredentials([file(credentialsId: 'prod_env_file', variable: 'secret_file')]) {
-                  sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
-                  sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${PROD_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_PROD_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_PROD_IP}"
-                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEMO_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEMO_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                 }
               break
               default:
-                withCredentials([file(credentialsId: 'dev_env_file', variable: 'secret_file')]) {
+                withCredentials([file(credentialsId: 'demo_env_file', variable: 'secret_file')]) {
                   sh "cp ${secret_file} ${WORKSPACE}/src/main/frontend/.env"
                   sh "cd ${WORKSPACE}/src/main/frontend/ && sed -i 's,tag_version,${VERSION},g' .env"
-                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEV_URL}/,g' application_example.properties"
-                  env.TOMCAT01_IP = "${TOMCAT01_DEV_IP}"
-                  env.TOMCAT02_IP = "${TOMCAT02_DEV_IP}"
-                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  sh "cd ${WORKSPACE}/src/main/resources && sed -i 's,fence.redirect_url=https://localhost/,fence.redirect_url=https://${DEMO_URL}/,g' application_example.properties"
+                  env.TOMCAT01_IP = "${TOMCAT01_DEMO_IP}"
+                  env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                 }
               break
             }
@@ -160,7 +118,7 @@ pipeline {
     }
     stage('Build') {
       environment {
-        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+        SLACK_URL = "${SLACK_URL}"
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -188,19 +146,19 @@ pipeline {
           withCredentials([sshUserPrivateKey(credentialsId: 'commonsdocker', keyFileVariable: 'deployer_key', passphraseVariable: '', usernameVariable: 'deployer')]) {
 sh label: '', script: '''
 
-for server in $TOMCAT02_IP $TOMCAT01_IP;
+for server in $TOMCAT01_IP;
 do
 pushd target
 scp -i $deployer_key -o StrictHostKeyChecking=no ROOT.war $deployer@${server}:
 popd
 ssh -i $deployer_key -T -o StrictHostKeyChecking=no $deployer@${server} << EOF
-sudo docker rm -f k9dc
+sudo docker rm -f icdc_demo
 cd /local/content/docker
-sudo docker pull cbiitssrepo/bento-backend:release
+sudo docker pull cbiitssrepo/tomcat9
 sudo docker-compose up -d &
 wait %1
 sleep 20
-docker cp ~/ROOT.war k9dc:/usr/local/tomcat/webapps
+docker cp ~/ROOT.war icdc_demo:/usr/local/tomcat/webapps
 rm -rf ~/ROOT.war
 EOF
 done'''

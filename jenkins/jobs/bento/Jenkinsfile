@@ -36,17 +36,8 @@ pipeline {
 		}
 	}
 	parameters {
-    gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
-        name: 'Backend_Tag', 
-        type: 'PT_BRANCH_TAG',
-        quickFilterEnabled: false, 
-        selectedValue: 'DEFAULT', 
-        sortMode: 'ASCENDING_SMART', 
-        tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/bento-backend')
 	gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
+        defaultValue: 'integration', 
         name: 'Frontend_Tag', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 
@@ -54,6 +45,15 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-frontend')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'Integration', 
+        name: 'Backend_Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-backend')
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
@@ -89,6 +89,7 @@ pipeline {
 
   			dir('icdc-devops'){
   				git branch: 'master',
+				    poll: false,
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
         

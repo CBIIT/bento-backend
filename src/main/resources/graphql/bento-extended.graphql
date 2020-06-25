@@ -728,6 +728,17 @@ type FileInfo {
     md5sum: String
 }
 
+type ProgramInfo {
+    program_acronym: String
+    program_id: String
+    program_name: String
+    start_date: String
+    end_date: String
+    pubmed_id: String
+    num_studies: Int
+    num_subjects: Int
+}
+
 schema {
     query: QueryType
 }
@@ -755,6 +766,8 @@ type QueryType {
     subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(distinct ss) as count")
     subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(distinct ss) as count")
     subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.menopause_status AS group, count(distinct ss) as count")
+
+    programInfo: [ProgramInfo] @cypher(statement: "MATCH (p:program) OPTIONAL MATCH (p)<-[*]-(s:study) OPTIONAL MATCH (p)<-[*]-(sj:study_subject) RETURN p.program_acronym AS program_acronym, p.program_id AS program_id, p.program_name AS program_name, p.start_date AS start_date, p.end_date AS end_date, p.pubmed_id AS pubmed_id, COUNT(DISTINCT s.study_acronym) AS num_studies, COUNT(DISTINCT sj.study_subject_id) AS num_subjects")
 
     subjectOverView: [SubjectOverview] @cypher(statement: "MATCH (ss:study_subject) OPTIONAL MATCH (ss)-[*]->(p:program) OPTIONAL MATCH (ss)-[*]->(s:study) OPTIONAL MATCH (ss)<-[*]-(sf:stratification_factor) OPTIONAL MATCH (ss)<-[*]-(d:diagnosis) OPTIONAL MATCH (ss)<-[*]-(tp:therapeutic_procedure) OPTIONAL MATCH (ss)<-[*]-(demo:demographic_data) OPTIONAL MATCH (ss)<-[*]-(f:file) OPTIONAL MATCH (ss)<-[*]-(sp:sample) OPTIONAL MATCH (ss)<--()-->(lp:laboratory_procedure) RETURN p.program_acronym AS program, s.study_acronym AS study_acronym, s.study_short_description AS study_short_description, s.study_acronym + ': ' + s.study_short_description AS study_info, ss.study_subject_id AS subject_id, ss.disease_subtype AS diagnosis, sf.grouped_recurrence_score AS recurrence_score, d.tumor_size_group AS tumor_size, d.tumor_grade AS tumor_grade, d.er_status AS er_status, d.pr_status AS pr_status, tp.chemotherapy_regimen AS chemotherapy, tp.endocrine_therapy_type AS endocrine_therapy, demo.menopause_status AS menopause_status, demo.age_at_index AS age_at_index, demo.survival_time AS survival_time, demo.survival_time_unit AS survival_time_unit, collect(f) AS files, collect(sp.sample_id) AS samples, collect(lp.laboratory_procedure_id) AS lab_procedures", passThrough: true)
 

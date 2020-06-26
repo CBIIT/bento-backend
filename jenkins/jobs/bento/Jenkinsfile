@@ -87,11 +87,18 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-frontend']]])
 
-  			dir('icdc-devops'){
-  				git branch: 'master',
-				    poll: false,
-    				url: 'https://github.com/CBIIT/icdc-devops.git'
-  			}
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
         
         }
  

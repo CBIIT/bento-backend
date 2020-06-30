@@ -1,0 +1,123 @@
+---
+- name: install wget and curl
+  yum:
+    name:
+      - wget
+      - curl
+      - java-11-openjdk-devel
+
+- name: install maven and nodejs to build 
+  shell: >
+    wget https://www-us.apache.org/dist/maven/maven-3/{{maven_version}}/binaries/apache-maven-{{maven_version}}-bin.tar.gz -P /tmp
+    && tar xf /tmp/apache-maven-{{maven_version}}-bin.tar.gz -C /usr/local 
+    && ln -s /usr/local/apache-maven-{{maven_version}} /usr/local/maven 
+    && curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+    && yum install -y nodejs
+
+- name: clone backend github
+  git:
+    repo: 'https://github.com/CBIIT/bento-backend'
+    dest: "{{workspace}}/backend"
+    version: master
+
+- name: clone frontend github
+  git:
+    repo: 'https://github.com/CBIIT/bento-frontend'
+    dest: "{{workspace}}/frontend"
+    version: master
+
+- name: remove the application_example.properties file 
+  file:
+    path: "{{workspace}}/backend/src/main/resources/application_example.properties"
+    state: absent
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: application.properties.j2
+    dest: "{{workspace}}/backend/src/main/resources/application.properties"
+
+- name: build backend code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+
+- name: copy Bento-0.0.1.war to api.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/backend/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/backend/target/ROOT.war"
+
+- name: build custodian/bento-backend image
+  docker_image:
+    build:
+      path: "{{workspace}}/backend"
+      dockerfile: "{{workspace}}/backend/dockerfiles/backend-dockerfile"
+    name: custodian/bento-backend
+    source: build
+
+- name: copy environment file to {{workspace}}/bento-frontend
+  template:
+    src: env.j2
+    dest: "{{workspace}}/frontend/bento-frontend/.env"
+
+- name: run npm install in {{workspace}}/bento-frontend/
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/frontend/bento-frontend"
+  loop:
+    - npm install 
+    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+
+- name: run npm install and build in {{workspace}}/bento-frontend/node_modules/mui-custom-datatables
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/frontend/bento-frontend/node_modules/mui-custom-datatables"
+  loop:
+    - npm install
+    - npm run build
+    
+- name: run npm build in frontend
+  command: npm run-script build
+  args:
+    chdir: "{{workspace}}/frontend/bento-frontend"
+          
+- name: build custodian/bento-frontend image
+  docker_image:
+    build:
+      path: "{{workspace}}/frontend/bento-frontend"
+      dockerfile: "{{workspace}}/frontend/dockerfiles/frontend-dockerfile"
+      pull: yes
+      nocache: yes
+    name: custodian/bento-frontend
+    source: build
+
+- name: gather neo4j facts
+  ec2_instance_facts:
+    region: "{{region}}"
+    filters:
+      "tag:Name": custodian-database-demo 
+      "instance-state-name": running
+  register: database
+
+- name: set neo4j bearer
+  shell: echo "Basic $(echo -n "neo4j:{{neo4j_password}}" | base64)"
+  register: output_bearer
+
+- name: set instance ip
+  set_fact:
+    neo4j_ip: "{{ database.instances[0].network_interfaces[0].private_ip_address }}"
+    bearer: "{{output_bearer.stdout_lines}}"
+
+- name: post schemas
+  uri:
+    url: http://{{neo4j_ip}}:7474/graphql/idl/
+    method: POST
+    body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
+    headers:
+      Accept: "application/json"
+      Authorization: "{{bearer}}"
+  register: schema
+
+- name: schema output
+  debug:
+    msg: "{{schema}}"

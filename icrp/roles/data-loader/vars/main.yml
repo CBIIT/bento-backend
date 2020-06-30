@@ -1,6 +1,6 @@
 ---
 # vars file for data loading
-neo4j_password: "custodian"
+neo4j_password: "{{neo4j_password}}"
 neo4j_user: neo4j
 tier: "{{ lookup('env','TIER') }}"
 workspace: "/tmp/workspace"

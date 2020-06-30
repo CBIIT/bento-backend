@@ -42,7 +42,7 @@
   uri:
     url: http://127.0.0.1:7474/user/neo4j/password
     user: neo4j
-    password: neo4j
+    password: "{{neo4j_password}}"
     method: POST
     body: >
       {"password":"custodian"}

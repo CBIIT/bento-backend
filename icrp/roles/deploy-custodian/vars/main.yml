@@ -1,0 +1,6 @@
+---
+# vars file for cicd
+workspace: "/tmp/workspace"
+region: "{{region}}"
+maven_version: 3.6.3
+

@@ -71,15 +71,15 @@
     chdir: "{{workspace}}/bento-frontend"
   loop:
     - npm install 
-    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+    # - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
 
-- name: run npm install and build in {{workspace}}/bento-frontend/node_modules/mui-custom-datatables
-  command: "{{item}}"
-  args:
-    chdir: "{{workspace}}/bento-frontend/node_modules/mui-custom-datatables"
-  loop:
-    - npm install
-    - npm run build
+# - name: run npm install and build in {{workspace}}/bento-frontend/node_modules/mui-custom-datatables
+#   command: "{{item}}"
+#   args:
+#     chdir: "{{workspace}}/bento-frontend/node_modules/mui-custom-datatables"
+#   loop:
+#     - npm install
+#     - npm run build
     
 - name: run npm build in frontend
   command: npm run-script build

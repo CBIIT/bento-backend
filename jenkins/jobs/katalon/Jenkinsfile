@@ -158,21 +158,23 @@ pipeline {
             steps {
 
 				script {
+					withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key')]) {
 
-					sh label: 'Katalon-Tests', script: '''#!/bin/bash
+						sh label: 'Katalon-Tests', script: '''#!/bin/bash
 
-						# Set datestamp for results file
-                        dateStamp=$(date +%Y%m%d)
-						reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
+							# Set datestamp for results file
+							dateStamp=$(date +%Y%m%d)
+							reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
 
-                        # Recreate the results directory
-                        rm -rf results && mkdir results
-						
-						# Run Katalon Tests
-						katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="1d9d7e79-dde9-45c1-9d21-b31424a47864"
+							# Recreate the results directory
+							rm -rf results && mkdir results
+							
+							# Run Katalon Tests
+							katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
 
-                        '''
+							'''
 
+						}
 					}
 
                 }

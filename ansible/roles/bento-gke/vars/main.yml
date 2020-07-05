@@ -1,0 +1,13 @@
+---
+# vars file for cicd
+tier: "{{ lookup('env','TIER') }}"
+version: "{{ lookup('env','TAG') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+region: us-east-1
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_collector_url: "{{ lookup('aws_ssm', 'sumo_collector_url', region='us-east-1' ) }}"
+app_name: bento-{{platform}}-{{tier}}
+#hostname: "{{ansible_fqdn}}"

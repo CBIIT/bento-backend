@@ -1,0 +1,83 @@
+---
+- name: set demo environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_DEMO_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "demo"
+
+- name: copy environment file to {{workspace}}/bento-frontend
+  template:
+    src: env.j2
+    dest: "{{workspace}}/src/main/frontend/.env"
+
+- name: run npm install in {{workspace}}/src/main/frontend/
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/src/main/frontend/"
+  loop:
+    - npm install 
+    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+
+- name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/src/main/frontend/node_modules/mui-custom-datatables"
+  loop:
+    - npm install
+    - npm run build
+    
+- name: run npm build in frontend
+  command: npm run-script build
+  args:
+    chdir: "{{workspace}}/src/main/frontend"
+          
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: application.properties.j2
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+
+- name: copy ICDC-0.0.1.war to ROOT.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/ICDC-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: build cbiitssrepo/bento-backend:demo image
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/icdc-devops/dockerfile/backend-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/bento-backend
+    tag: demo
+    push: yes
+    source: build
+
+
+# - name: post schemas
+#   uri:
+#     url: http://{{neo4j_ip}}:7474/graphql/idl/
+#     method: POST
+#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
+#     headers:
+#       Accept: "application/json"
+#       Authorization: "{{bearer}}"
+#   register: schema
+
+# - name: schema output
+#   debug:
+#     msg: "{{schema}}"
+
+    

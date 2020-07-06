@@ -27,12 +27,12 @@
     - {src: 'user.properties.j2',dest: '{{config}}/user.properties'}
   notify: restart collector
   
-- name: install sumologic docker plugin
-  command: docker plugin install store/sumologic/docker-logging-driver:{{sumo_docker_version}} --alias sumologic --grant-all-permissions
-- name: Start service
-  service:
-    name: collector
-    state: started
-    enabled: yes
+# - name: install sumologic docker plugin
+#   command: docker plugin install store/sumologic/docker-logging-driver:{{sumo_docker_version}} --alias sumologic --grant-all-permissions
+# - name: Start service
+#   service:
+#     name: collector
+#     state: started
+#     enabled: yes
 
 

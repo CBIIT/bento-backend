@@ -33,6 +33,16 @@
     src: application.properties.j2
     dest: "{{workspace}}/src/main/resources/application.properties"
 
+- name: copy deployment and services manufests
+  template:
+    src: "{{item.src}}"
+    dest: "{{itemp.dest}}"
+  loop:
+    - { src: 'backend.yml.j2', dest: '{{workspace}}/backend.yml'}
+    - { src: 'frontend.yml.j2', dest: '{{workspace}}/frontend.yml'}
+    - { src: 'bento-backend.yml.j2', dest: '{{workspace}}/bento-backend.yml'}
+    - { src: 'bento-frontend.yml.j2', dest: '{{workspace}}/bento-frontend.yml'}
+    
 - name: build springboot code
   command: mvn package -DskipTests
   args:

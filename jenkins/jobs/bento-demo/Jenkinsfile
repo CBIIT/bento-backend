@@ -116,7 +116,7 @@ pipeline {
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-        withCredentials([string(credentialsId: 'authorization_bearer', variable: 'BEARER'), 
+        withCredentials([string(credentialsId: 'demo_bearer', variable: 'BEARER'), 
                 usernamePassword(credentialsId: 'demo_neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
                 usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
                 string(credentialsId: 'fence-id', variable: 'FENCE_ID'),

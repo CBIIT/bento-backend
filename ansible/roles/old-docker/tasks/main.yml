@@ -1,46 +1,36 @@
 ---
-# - name: Remove other Docker versions
-#   yum:
-#     name:
-#       - docker
-#       - docker-client
-#       - docker-client-latest
-#       - docker-common
-#       - docker-latest
-#       - docker-latest-logrotate
-#       - docker-logrotate
-#       - docker-engine
-#       - docker-compose
-#     state: absent
+- name: Remove other Docker versions
+  yum:
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
+      - docker-compose
+    state: absent
 
 # tasks file for docker
-- name: install epel-release
-  yum: 
-    name:
-      - epel-release
 - name: install systems packages needed for docker
   yum:
     name: 
       - yum-utils
+      # - epel-release
       - device-mapper-persistent-data
       - lvm2
       - python-setuptools
       - firewalld
-      - python-pip
-      - docker-compose
-    state: installed
+    #   - http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: latest
 
-- name: install docker python module
-  pip:
-    name: docker
-    
 - name: enable and start firewalld
   service:
     name: firewalld
     state: started
     enabled: yes
-  tags:
-    - master
   
 - name: open tcp port 2375 and 2376
   firewalld:
@@ -59,6 +49,13 @@
 #   command: subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
 #   when: ansible_distribution == 'Red Hat Enterprise Linux'
 
+- name: install pip and docker-compose
+  command: "{{ item }}"
+  with_items:
+    - "easy_install pip"
+    - "pip install --upgrade --force-reinstall pip==9.0.3"
+    - "pip install docker-compose"
+
 - name: add docker repo 
   command: >
     yum-config-manager --add-repo 
@@ -67,7 +64,7 @@
 - name: install docker
   yum:
     name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
-    state: installed
+    state: latest
     
 - name: enable and start docker
   service:

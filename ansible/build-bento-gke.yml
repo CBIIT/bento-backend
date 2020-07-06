@@ -1,6 +1,6 @@
 ---
 - name: bento cicd pipeline
-  hosts: bento
+  hosts: gke
   connection: local
   gather_facts: no
     

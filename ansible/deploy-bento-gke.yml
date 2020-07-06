@@ -1,6 +1,6 @@
 ---
 - name: deploy stage of bento pipeline
-  hosts: bento
+  hosts: gke
   connection: local
   gather_facts: no
     

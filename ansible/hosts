@@ -7,11 +7,13 @@ localhost
 [gke]
 localhost
 
-
 [bento:vars]
 ansible_python_interpreter=/usr/bin/python3
 
 [loader:vars]
 ansible_python_interpreter=/usr/bin/python3
+
+[all]
+127.0.0.1
 
 

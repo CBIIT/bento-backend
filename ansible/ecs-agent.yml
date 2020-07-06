@@ -3,8 +3,10 @@
   hosts: all
   connection: local
   become: yes
-  gather_facts: no
+  gather_facts: yes
 
+  vars:
+    - ansible_python_interpreter: /usr/bin/python2.7
   roles:
     - common
     - docker

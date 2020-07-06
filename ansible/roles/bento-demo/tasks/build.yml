@@ -57,11 +57,11 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "{{workspace}}/icdc-devops/dockerfile/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-backend
-    tag: demo
+    name: cbiitssrepo/icdc-demo
+    tag: "{{build_number}}"
     push: yes
     source: build
 

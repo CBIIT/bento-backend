@@ -14,8 +14,8 @@
     validate_certs: no
     namespace: "{{tier}}"
   loop:
-    - bento-backend.yml
-    - bento-frontend.yml
+    - bento-backend.yml.j2
+    - bento-frontend.yml.j2
 
 - name: deploy frontend and backend services
   k8s:
@@ -24,7 +24,7 @@
     validate_certs: no
     namespace: "{{tier}}"
   loop:
-    - backend.yml
-    - frontend.yml
+    - backend.yml.j2
+    - frontend.yml.j2
     
 

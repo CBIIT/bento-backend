@@ -61,7 +61,7 @@
       pull: yes
       nocache: yes
     name: cbiitssrepo/icdc-demo
-    tag: "{{build_number}}"
+    tag: latest
     push: yes
     source: build
 

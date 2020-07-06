@@ -2,7 +2,7 @@
 - name: bento cicd pipeline
   hosts: gke
   connection: local
-  gather_facts: no
+  gather_facts: yes
     
   tasks:
     - name: This is a build stage

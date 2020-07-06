@@ -7,6 +7,6 @@
   tasks:
     - name: deploy stage
       include_role:
-        name: bento-demo
+        name: bento-gke
         tasks_from: deploy
       

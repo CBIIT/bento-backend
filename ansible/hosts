@@ -15,5 +15,3 @@ ansible_python_interpreter=/usr/bin/python3
 [loader:vars]
 ansible_python_interpreter=/usr/bin/python3
 
-[gke:vars]
-ansible_python_interpreter=/bin/python3

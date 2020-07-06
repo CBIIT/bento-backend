@@ -1,21 +1,21 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: bento-frontend
+  name: bento-frontend-{{tier}}
 spec:
   replicas:
   selector:
       matchLabels:
           app: bento
           role: frontend
-          env: dev
+          env: {{tier}}
   template:
     metadata:
-      name: bento-frontend
+      name: bento-frontend-{{tier}}
       labels:
         app: bento
         role: frontend
-        env: dev
+        env: {{tier}}
     spec:
       containers:
       - name: frontend

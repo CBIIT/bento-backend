@@ -1,9 +1,30 @@
 ---
 
-- name: Create a {{tier}} namespace
+- name: create a {{tier}} namespace
   k8s:
     name: "{{tier}}"
     api_version: v1
     kind: Namespace
     state: present
+
+- name: deploy frontend and backend bento applications
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
+    validate_certs: no
+    namespace: "{{tier}}"
+  loop:
+    - bento-backend.yml
+    - bento-frontend.yml
+
+- name: deploy frontend and backend services
+    k8s:
+    state: present
+    definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
+    validate_certs: no
+    namespace: "{{tier}}"
+  loop:
+    - backend.yml
+    - frontend.yml
+    
 

@@ -18,7 +18,7 @@
     - bento-frontend.yml
 
 - name: deploy frontend and backend services
-    k8s:
+  k8s:
     state: present
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
     validate_certs: no

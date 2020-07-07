@@ -142,7 +142,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
-                  env.TAG = "${params.Backend_Tag}"
+                 
                 }
               break
               case "qa":
@@ -150,7 +150,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                 }
               break
               case "stage":
@@ -158,7 +158,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                 }
               break
               case "prod":
@@ -166,7 +166,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                 }
               break
               default:
@@ -174,7 +174,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                 }
               break
             }
@@ -182,6 +182,9 @@ pipeline {
         }
     }
   	stage('build'){
+      environment {
+        TAG = "${params.Backend_Tag}"
+      }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){

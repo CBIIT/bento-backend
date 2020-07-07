@@ -83,9 +83,6 @@ pipeline {
       }
     }
     stage('Set Environment'){
-        environment {
-          DEMO_URL = "bento.essential-dev.com"
-        }
         steps {
           script {
             switch("${params.Environment}") {

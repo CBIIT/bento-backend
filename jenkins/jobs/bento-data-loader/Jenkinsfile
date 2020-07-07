@@ -54,7 +54,7 @@ pipeline {
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
-        dir('icdc-model-tool'){
+        dir('bento-model'){
           git branch: 'master',
           url: 'https://github.com/CBIIT/bento-model'
         }

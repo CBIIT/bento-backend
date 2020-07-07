@@ -85,7 +85,6 @@ pipeline {
     stage('Set Environment'){
         environment {
           DEMO_URL = "bento.essential-dev.com"
-          VERSION = "${params.Tag}"
         }
         steps {
           script {
@@ -95,7 +94,7 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "demo"
-                  env.TAG = "${params.Tag}"
+                  
                 }
               break
               default:
@@ -103,7 +102,6 @@ pipeline {
                   env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "demo"
-                  env.TAG = "${params.Tag}"
                 }
               break
             }
@@ -113,6 +111,8 @@ pipeline {
     stage('Build') {
       environment {
         SLACK_URL = "${SLACK_URL}"
+        VERSION = "${params.Tag}"
+        DEMO_URL = "bento.essential-dev.com"
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

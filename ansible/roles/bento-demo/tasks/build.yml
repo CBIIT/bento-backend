@@ -5,9 +5,6 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "demo"
 
-- name:  show {{version}}
-  debug: 
-    msg: "{{version}},{{bearer}},{{demo_url}}"
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
     src: env.j2

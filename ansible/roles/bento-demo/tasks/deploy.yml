@@ -4,7 +4,7 @@
     containers:
     - name: demo
       essential: true
-      image: "cbiitssrepo/icdc-demo:latest"
+      image: "cbiitssrepo/icdc-demo:{{build_number}}"
       environment:
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"

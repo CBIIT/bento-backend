@@ -3,8 +3,12 @@
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_DEMO_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
+    version: "{{ lookup('env','TAG') }}"
   when: tier == "demo"
 
+- name:  show {{version}}
+  debug: 
+    msg: "{{version}}"
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
     src: env.j2
@@ -61,7 +65,7 @@
       pull: yes
       nocache: yes
     name: cbiitssrepo/icdc-demo
-    tag: latest
+    tag: "{{build_number}}"
     push: yes
     source: build
 

@@ -10,22 +10,9 @@
     state: absent
   when: stat_result.stat.exists
 
-# - name: clone dataloader
-#   git:
-#     repo: 'https://github.com/CBIIT/icdc-dataloader'
-#     dest: "{{workspace}}/icdc-dataloader"
-#     track_submodules: yes
-#     update: yes
-#     version: "Bento"
-
-# - name: clone bento-custodian
-#   git:
-#     repo: 'https://github.com/CBIIT/bento-custodian'
-#     dest: "{{workspace}}/bento-custodian"
-
 - name: update settings
   template:
-    dest: "{{workspace}}/icdc-dataloader/config.yml"
+    dest: "{{workspace}}/config/config.yml"
     src: config.yml.j2
 
 - name: install python3
@@ -35,7 +22,7 @@
 
 - name: pip install requirements
   pip:
-    requirements: "{{workspace}}/icdc-dataloader/requirements.txt"
+    requirements: "{{workspace}}/requirements.txt"
     executable: pip3
 
 
@@ -44,8 +31,8 @@
     cmd: >
       python3
       loader.py 
-      {{workspace}}/icdc-dataloader/config.yml
-    chdir: "{{workspace}}/icdc-dataloader"
+      {{workspace}}/config/config.yml
+    chdir: "{{workspace}}"
   register: data_loader
 
 - name: show dataloader output

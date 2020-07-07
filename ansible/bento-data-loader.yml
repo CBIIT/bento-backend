@@ -1,6 +1,6 @@
 ---
 - name: load data to neo4j db
-  hosts: loader
+  hosts: all
   connection: local
   gather_facts: yes
     

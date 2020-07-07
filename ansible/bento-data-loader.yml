@@ -12,3 +12,4 @@
       vars:
         # data_bucket: nci-cbiit-ctdc-{{tier}}
         data_bucket: bento-metadata-dev
+        ansible_python_interpreter: /usr/bin/python2.7

@@ -53,7 +53,7 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/bento-backend:demo image
+- name: build cbiitssrepo/icdc-demo  image
   docker_image:
     build:
       path: "{{workspace}}"
@@ -66,18 +66,18 @@
     source: build
 
 
-# - name: post schemas
-#   uri:
-#     url: http://{{neo4j_ip}}:7474/graphql/idl/
-#     method: POST
-#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
-#     headers:
-#       Accept: "application/json"
-#       Authorization: "{{bearer}}"
-#   register: schema
+- name: post schemas
+  uri:
+    url: http://{{neo4j_ip}}:7474/graphql/idl/
+    method: POST
+    body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/icdc.graphql') }}"
+    headers:
+      Accept: "application/json"
+      Authorization: "{{bearer}}"
+  register: schema
 
-# - name: schema output
-#   debug:
-#     msg: "{{schema}}"
+- name: schema output
+  debug:
+    msg: "{{schema}}"
 
     

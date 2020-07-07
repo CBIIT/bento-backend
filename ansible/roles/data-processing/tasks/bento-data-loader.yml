@@ -1,14 +1,14 @@
 ---
-- name: Check if workspace exists
+- name: Check if tmp directory exist
   stat:
-    path: "{{workspace}}"
-  register: bento_result
+    path: "{{workspace}}/tmp"
+  register: stat_result
 
-- name: remove old bento
+- name: remove the tmp if exists
   file:
-    path: "{{workspace}}"
+    path: "{{workspace}}/tmp"
     state: absent
-  when: bento_result.stat.exists
+  when: stat_result.stat.exists
 
 # - name: clone dataloader
 #   git:

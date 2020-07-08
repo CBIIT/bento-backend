@@ -24,7 +24,7 @@
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
     validate_certs: no
     namespace: "{{tier}}"
-    force: yes
+    apply: yes
   loop:
     - backend.yml.j2
     - frontend.yml.j2
@@ -35,7 +35,7 @@
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
     validate_certs: no
     namespace: "{{tier}}"
-    force: yes
+    apply: yes
   loop:
     - ingress.yml.j2
     - managedcert.yml.j2

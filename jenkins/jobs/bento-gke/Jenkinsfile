@@ -43,7 +43,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
 	gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'integration', 
+        defaultValue: 'master', 
         name: 'Frontend_Tag', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 

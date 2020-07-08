@@ -1,0 +1,18 @@
+- name: clone bento-custodian
+  git:
+    repo: 'https://github.com/CBIIT/bento-backend'
+    dest: "{{workspace}}/bento-backend"
+
+- name: post schemas
+  uri:
+    url: http://{{neo4j_ip}}:7474/graphql/idl/
+    method: POST
+    body: "{{ lookup('file','{{workspace}}/bento-backend/src/main/resources/graphql/bento-extended.graphql') }}"
+    headers:
+      Accept: "application/json"
+      Authorization: "{{bearer}}"
+  register: schema
+
+- name: schema output
+  debug:
+    msg: "{{schema}}"

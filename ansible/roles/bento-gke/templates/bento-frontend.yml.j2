@@ -2,8 +2,9 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: bento-frontend-{{tier}}
+  namespace: {{tier}}
 spec:
-  replicas:
+  replicas: 1
   selector:
       matchLabels:
           app: bento

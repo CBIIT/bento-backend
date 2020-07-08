@@ -2,6 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: bento-backend-{{tier}}
+  namespace: {{tier}}
 spec:
   ports:
   - name: http

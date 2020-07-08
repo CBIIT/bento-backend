@@ -62,8 +62,8 @@
     role: "{{role_arn}}"
     force_new_deployment: yes
     deployment_configuration:
-      minimum_healthy_percent: 100
-      maximum_percent: 200
+      minimum_healthy_percent: 0
+      maximum_percent: 100
     desired_count: 2
     load_balancers: "{{ lb_demo }}"
     region: "{{region}}"

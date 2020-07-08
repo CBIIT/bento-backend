@@ -25,7 +25,7 @@
       #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
     network_mode: bridge
     family: bento-{{tier}}
-    memory: '512'
+    memory: '1024'
     cpu: '512'
     state: present
     region: "{{region}}"

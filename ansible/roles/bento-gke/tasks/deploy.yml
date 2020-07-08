@@ -13,6 +13,7 @@
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
     validate_certs: no
     namespace: "{{tier}}"
+    apply: yes
   loop:
     - bento-backend.yml.j2
     - bento-frontend.yml.j2
@@ -23,6 +24,7 @@
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
     validate_certs: no
     namespace: "{{tier}}"
+    apply: yes
   loop:
     - backend.yml.j2
     - frontend.yml.j2
@@ -33,6 +35,7 @@
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
     validate_certs: no
     namespace: "{{tier}}"
+    apply: yes
   loop:
     - ingress.yml.j2
     

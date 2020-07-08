@@ -26,5 +26,15 @@
   loop:
     - backend.yml.j2
     - frontend.yml.j2
+
+- name: deploy ingress
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
+    validate_certs: no
+    namespace: "{{tier}}"
+  loop:
+    - ingress.yml.j2
+    
     
 

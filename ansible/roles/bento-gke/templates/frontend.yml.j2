@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: bento-frontend-{{tier}}
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - name: http
     port: 80

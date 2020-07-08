@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1beta1
+kind: ManagedCertificate
+metadata:
+  name: bento-certificate-{{tier}}
+spec:
+  domains:
+    - gke-{{tier}}.bento-tools.org

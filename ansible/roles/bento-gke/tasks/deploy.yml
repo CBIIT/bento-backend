@@ -29,7 +29,7 @@
     - backend.yml.j2
     - frontend.yml.j2
 
-- name: deploy ingress
+- name: deploy ingress and certificate
   k8s:
     state: present
     definition: "{{ lookup('template', '{{item}}') | from_yaml }}"
@@ -38,6 +38,7 @@
     apply: yes
   loop:
     - ingress.yml.j2
+    - managedcert.yml.j2
     
     
 

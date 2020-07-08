@@ -5,6 +5,7 @@ metadata:
   namespace: {{tier}}
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "{{tier}}-web-frontend-ip"
+     networking.gke.io/managed-certificates: bento-certificate-{{tier}}
 spec:
   backend:
     serviceName: bento-frontend-{{tier}}

@@ -2,6 +2,7 @@
 - name: load data to neo4j db
   hosts: all
   connection: local
+  become: yes
   gather_facts: yes
     
   tasks:

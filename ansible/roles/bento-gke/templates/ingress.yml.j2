@@ -13,3 +13,7 @@ spec:
         backend:
           serviceName: bento-frontend-service-{{tier}}
           servicePort: 80
+      - path: /v1/graphql/*
+        backend:
+          serviceName: bento-backend-service-{{tier}}
+          servicePort: 8080

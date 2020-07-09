@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: bento-frontend-{{tier}}
+  name: bento-frontend-service-{{tier}}
 spec:
   type: NodePort
   ports:
@@ -12,3 +12,4 @@ spec:
   selector:
     app: bento
     role: frontend
+    env: {{tier}}

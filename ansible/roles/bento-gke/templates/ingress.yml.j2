@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: bento-ingress-{{tier}}
-  namespace: {{tier}}
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "{{tier}}-web-frontend-ip"
     networking.gke.io/managed-certificates: bento-certificate-{{tier}}

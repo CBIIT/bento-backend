@@ -5,7 +5,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "{{tier}}-web-frontend-ip"
     networking.gke.io/managed-certificates: bento-certificate-{{tier}}
-    kubernetes.io/ingress.class: "gce"
     ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:

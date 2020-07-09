@@ -7,6 +7,14 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "{{tier}}-web-frontend-ip"
     networking.gke.io/managed-certificates: bento-certificate-{{tier}}
 spec:
-  backend:
-    serviceName: bento-frontend-{{tier}}
-    servicePort: 80
+  rules:
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: bento-frontend-{{tier}}
+          servicePort: 80
+      - path: /api/*
+        backend:
+          serviceName: bento-backend-{{tier}}
+          servicePort: 8080

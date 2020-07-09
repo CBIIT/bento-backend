@@ -11,9 +11,9 @@ spec:
       paths:
       - path: /*
         backend:
-          serviceName: bento-frontend-{{tier}}
+          serviceName: bento-frontend-service-{{tier}}
           servicePort: 80
       - path: /api/*
         backend:
-          serviceName: bento-backend-{{tier}}
+          serviceName: bento-backend-service-{{tier}}
           servicePort: 8080

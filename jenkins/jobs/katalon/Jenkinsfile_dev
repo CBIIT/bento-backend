@@ -85,7 +85,7 @@ pipeline {
 
                 dir('icdc-devops'){
                     git branch: 'master',
-                    url: 'https://github.com/michael-fleming/DevOps.git'}
+                    url: 'https://github.com/CBIIT/icdc-devops.git'}
 
                 }
             }

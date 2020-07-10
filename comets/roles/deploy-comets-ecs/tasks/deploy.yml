@@ -1,0 +1,196 @@
+---
+- name: create task comets definition 
+  ecs_taskdefinition:
+    network_mode: bridge
+    family: comets-{{env}}-comets
+    memory: '1024'
+    cpu: '1024'
+    state: present
+    region: "{{region}}"
+    containers:
+    - name: comets
+      essential: true
+      image: "{{ecr}}/comets:app-{{version}}"
+      portMappings:
+      - containerPort: "8000"
+        hostPort: "8000"
+        protocol: tcp
+      links:
+      - activemq
+      dependsOn:
+      - containerName: activemq
+        condition: START 
+      logConfiguration:
+        logDriver: awslogs
+        options:
+          awslogs-group: "comets-app-logs"
+          awslogs-region: "us-east-1"
+          awslogs-stream-prefix: "comets-{{env}}"
+    - name: activemq
+      image: cbiitss/activemq:latest
+      essential: true
+      portMappings:
+      - protocol: tcp
+        containerPort: 61613
+        hostPort: 61613
+      - protocol: tcp
+        containerPort: 8161
+        hostPort: 8161
+
+  register: task_output
+
+- name: create processor task definition 
+  ecs_taskdefinition:
+    network_mode: bridge
+    family: comets-{{env}}-processor
+    state: present
+    memory: '2048'
+    cpu: '1024'
+    region: "{{region}}"
+    containers:
+    - name: processor
+      essential: true
+      image: "{{ecr}}/comets:processor-{{version}}"
+      logConfiguration:
+        logDriver: awslogs
+        options:
+          awslogs-group: "comets-processor-logs"
+          awslogs-region: "us-east-1"
+          awslogs-stream-prefix: "comets-{{env}}"  
+  register: task_output
+
+# - name: create apach task definition 
+#   ecs_taskdefinition:
+#     network_mode: bridge
+#     family: comets-{{env}}-apache
+#     state: present
+#     memory: '512'
+#     cpu: '512'
+#     region: "{{region}}"
+#     containers:
+#     - name: apache
+#       essential: true
+#       image: "{{ecr}}/comets:apache-{{version}}"
+#       portMappings:
+#       - protocol: tcp
+#         containerPort: 80
+#         hostPort: 80
+#       logConfiguration:
+#         logDriver: awslogs
+#         options:
+#           awslogs-group: "comets-apache-logs"
+#           awslogs-region: "us-east-1"
+#           awslogs-stream-prefix: "comets-{{env}}"  
+#   register: task_output
+
+
+
+# - name: query task definition apache
+#   ecs_taskdefinition_facts:
+#     task_definition: comets-{{env}}-apache
+#     region: "{{region}}" 
+#   register: task_apache
+
+- name: query task definition comets
+  ecs_taskdefinition_facts:
+    task_definition: comets-{{env}}-comets
+    region: "{{region}}" 
+  register: task_comets
+
+- name: query task definition processor
+  ecs_taskdefinition_facts:
+    task_definition: comets-{{env}}-processor
+    region: "{{region}}" 
+  register: task_processor
+
+# - name: query ecs service apache
+#   ecs_service_facts:
+#     cluster: comets-{{env}}
+#     service: comets-{{env}}-apache
+#     details: true
+#     region: "{{region}}"
+#   register: service_apache
+
+- name: query ecs service comets
+  ecs_service_facts:
+    cluster: comets-{{env}}
+    service: comets-{{env}}-comets
+    details: true
+    region: "{{region}}"
+  register: service_comets
+
+- name: query ecs service processor
+  ecs_service_facts:
+    cluster: comets-{{env}}
+    service: comets-{{env}}-processor
+    details: true
+    region: "{{region}}"
+  register: service_processor
+
+
+- name: set facts
+  set_fact:
+    comets_revision: "{{task_comets.revision}}"
+    # apache_revision: "{{task_apache.revision}}"
+    processor_revision: "{{task_processor.revision}}"
+    task_processor_name: "{{task_processor.family}}"
+    # task_apache_name: "{{task_apache.family}}"
+    task_comets_name: "{{task_comets.family}}"
+    lb_frontend: "{{service_comets.services[0].loadBalancers}}"
+    role_arn: "{{service_comets.services[0].roleArn}}"
+
+
+# - debug:
+#     msg: "{{service_comets}}"
+# - debug:
+#     msg: "{{service_processor}}"
+
+# - name: update apache service
+#   ecs_service:
+#     state: present
+#     name: comets-{{env}}-apache
+#     cluster: comets-{{env}}
+#     task_definition: "{{task_apache_name}}:{{apache_revision}}"
+#     role: "{{role_arn}}"
+#     # force_new_deployment: yes
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     desired_count: 1
+#     load_balancers: "{{ lb_frontend }}"
+#     region: "{{region}}"
+#   register: service_apache_output
+
+
+- name: update comets service
+  ecs_service:
+    state: present
+    name: comets-{{env}}-comets
+    cluster: comets-{{env}}
+    task_definition: "{{task_comets_name}}:{{comets_revision}}"
+    role: "{{role_arn}}"
+    # force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_comets_output
+
+
+- name: update processor service
+  ecs_service:
+    state: present
+    name: comets-{{env}}-processor
+    cluster: comets-{{env}}
+    task_definition: "{{task_processor_name}}:{{processor_revision}}"
+    # role: "{{role_arn}}"
+    # force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_processor_output
+

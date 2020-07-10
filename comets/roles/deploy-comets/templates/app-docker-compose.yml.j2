@@ -1,0 +1,21 @@
+version: '3'
+services:
+  app:
+    image: "{{ecr}}/comets:app-{{version}}"
+    container_name: app
+    restart: always
+    depends_on:
+      - activemq
+    links:
+      - activemq
+    ports:
+      - "8000:8000"
+  activemq:
+    image: "cbiitss/activemq:latest"
+    container_name: activemq
+    restart: always
+    expose:
+      - "61613"
+    ports:
+      - "8161:8161"
+      - "61613:61613"

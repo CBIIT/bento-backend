@@ -58,7 +58,7 @@
     path: /tmp/R-cometsAnalytics
     state: absent
   register: delete_folder
-  retries: 3
+  retries: 5
   delay: 2
   until: delete_folder is success
   when: comets_analytics.stat.exists

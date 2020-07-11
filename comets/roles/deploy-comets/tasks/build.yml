@@ -9,7 +9,7 @@
     - app
     - logs
 
-- name: gather comets-app facts
+- name: gather comets-processor facts
   ec2_instance_facts:
     region: us-east-1
     filters:
@@ -32,6 +32,10 @@
   set_fact:
     queue_host: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
     app_host: "{{ app.instances[0].network_interfaces[0].private_ip_address }}"
+
+- name: show ip
+  debug:
+    msg: "{{queue_host}}-{{app_host}}"
 
 - name: Check if comets and exits 
   stat:
@@ -104,7 +108,7 @@
     tag: "app-{{version}}"
     push: yes
   when: 
-    - ansible_default_ipv4.address == app_host
+    - "{{ansible_default_ipv4.address}}" == "{{app_host}}"
     
 
 - name:  build {{ecr}}/comets:processor image
@@ -116,7 +120,7 @@
     tag: "processor-{{version}}"
     push: yes
   when: 
-    - ansible_default_ipv4.address == queue_host
+    - "{{ansible_default_ipv4.address}}" == "{{queue_host}}"
 
 - name: start app
   docker_compose:
@@ -124,6 +128,8 @@
     files:
       - app-docker-compose.yml
     state: present
+  when:
+    - "{{ansible_default_ipv4.address}}" == "{{app_host}}"
 
 - name: start processor
   docker_compose:
@@ -131,3 +137,5 @@
     files:
       - processor-docker-compose.yml
     state: present
+  when:
+    - "{{ansible_default_ipv4.address}}" == "{{queue_host}}"

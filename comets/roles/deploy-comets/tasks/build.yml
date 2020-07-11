@@ -120,7 +120,7 @@
 
 - name: start app
   docker_compose:
-    project_src: "{{app_base_directory}"
+    project_src: "{{app_base_directory}}"
     files:
       - app-docker-compose.yml
     state: present

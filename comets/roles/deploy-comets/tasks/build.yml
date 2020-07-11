@@ -108,7 +108,7 @@
     tag: "app-{{version}}"
     push: yes
   when: 
-    - ansible_default_ipv4.address == app_host
+    -  app_host == inventory_hostname
     
 
 - name:  build {{ecr}}/comets:processor image
@@ -120,7 +120,7 @@
     tag: "processor-{{version}}"
     push: yes
   when: 
-    - ansible_default_ipv4.address == queue_host
+    - queue_host == inventory_hostname
 
 - name: start app
   docker_compose:
@@ -129,7 +129,7 @@
       - app-docker-compose.yml
     state: present
   when:
-    - ansible_default_ipv4.address == app_host
+    - app_host == inventory_hostname
 
 - name: start processor
   docker_compose:
@@ -138,4 +138,4 @@
       - processor-docker-compose.yml
     state: present
   when:
-    - ansible_default_ipv4.address == queue_host
+    - queue_host == inventory_hostname

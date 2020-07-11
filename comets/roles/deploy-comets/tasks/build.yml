@@ -57,6 +57,10 @@
   file:
     path: /tmp/R-cometsAnalytics
     state: absent
+  register: delete_folder
+  retries: 3
+  delay: 2
+  until: delete_folder is success
   when: comets_analytics.stat.exists
 
 - name: checkout comets repo
@@ -94,7 +98,7 @@
     - { src: 'app-docker-compose.yml.j2', dest: '{{app_base_directory}}/app-docker-compose.yml' }
 
 - name: login into ecr
-  shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  shell: "$(/usr/local/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
   ignore_errors: True
   delegate_to: 127.0.0.1
   register: ecr_login
@@ -102,7 +106,7 @@
 - name: show login
   debug:
     msg: "{{ecr_login}}"
-    
+
 - name:  build {{ecr}}/comets:app image
   docker_image:
     build:

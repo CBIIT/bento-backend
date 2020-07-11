@@ -35,9 +35,9 @@
 
 - name: show ip
   debug:
-    msg: "{{queue_host}}-{{app_host}}"
+    msg: "processor: {{queue_host}} \t app: {{app_host}}"
 
-- name: Check if comets and exits 
+- name: Check if comets directory exist
   stat:
     path: /tmp/comets
   register: comets_result
@@ -48,16 +48,16 @@
     state: absent
   when: comets_result.stat.exists
 
-- name: Check if R-cometsAnalytics exits 
+- name: Check if R-cometsAnalytics exists
   stat:
     path: /tmp/R-cometsAnalytics
-  register: r_comets
+  register: comets_analytics
 
 - name: remove old r repo
   file:
     path: /tmp/R-cometsAnalytics
     state: absent
-  when: r_comets.stat.exists
+  when: comets_analytics.stat.exists
 
 - name: checkout comets repo
   git:
@@ -66,7 +66,7 @@
     version: master
     force: yes
 
-- name: checkout R repo
+- name: checkout comets_analytics repo
   git:
     repo: "{{R_repo}}"
     dest: /tmp/R-cometsAnalytics
@@ -87,40 +87,44 @@
     dest: /tmp/comets/comets/restricted/settings.yml
     src: settings.yml.j2
 
-- name: login into ecr
-  shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
-  ignore_errors: True
-  register: ecr_login
-
-
-- name: copy docker-compse to 
+- name: copy docker-compse files
   template:  src={{item.src}} dest={{item.dest}}
   with_items:
     - { src: 'processor-docker-compose.yml.j2', dest: '{{app_base_directory}}/processor-docker-compose.yml' }
     - { src: 'app-docker-compose.yml.j2', dest: '{{app_base_directory}}/app-docker-compose.yml' }
 
+- name: login into ecr
+  shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  ignore_errors: True
+  delegate_to: 127.0.0.1
+  register: ecr_login
+
+- name: show login
+  debug:
+    msg: "{{ecr_login}}"
+    
 - name:  build {{ecr}}/comets:app image
   docker_image:
-    path: "/tmp/comets"
-    dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
-    pull: yes
+    build:
+      path: "/tmp/comets"
+      dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
+      pull: yes
     name: "{{ecr}}/comets"
     tag: "app-{{version}}"
     push: yes
-  when: 
-    -  app_host == inventory_hostname
-    
+    source: build
+  delegate_to: 127.0.0.1
 
 - name:  build {{ecr}}/comets:processor image
   docker_image:
-    path: "/tmp/comets"
-    dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
-    pull: yes
+    build:
+      path: "/tmp/comets"
+      dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
+      pull: yes
     name: "{{ecr}}/comets"
     tag: "processor-{{version}}"
     push: yes
-  when: 
-    - queue_host == inventory_hostname
+  delegate_to: 127.0.0.1
 
 - name: start app
   docker_compose:

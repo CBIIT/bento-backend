@@ -84,7 +84,7 @@
     src: settings.yml.j2
 
 - name: login into ecr
-  shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  shell: "$(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
   ignore_errors: True
   register: ecr_login
 

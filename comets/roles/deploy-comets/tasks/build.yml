@@ -47,13 +47,13 @@
 - name: Check if R-cometsAnalytics exits 
   stat:
     path: /tmp/R-cometsAnalytics
-  register: r_result
+  register: r_comets
 
 - name: remove old r repo
   file:
     path: /tmp/R-cometsAnalytics
     state: absent
-  when: r_result.stat.exists
+  when: r_comets.stat.exists
 
 - name: checkout comets repo
   git:

@@ -1,5 +1,17 @@
 ---
+- name: upgrade pip
+  pip:
+    name: pip
+    state: forceinstall
 
+- name: install docker and docker-compose
+  pip:
+    name: "{{item}}"
+    state: present
+  loop:
+    - docker
+    - docker-compose
+    
 #create app and logs directory
 - name: create app and logs directory
   file: 

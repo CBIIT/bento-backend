@@ -105,11 +105,7 @@
   shell: "$(/usr/local/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
   ignore_errors: True
   delegate_to: 127.0.0.1
-  register: ecr_login
-
-- name: show login
-  debug:
-    msg: "{{ecr_login}}"
+  
 
 - name:  build {{ecr}}/comets:app image
   docker_image:

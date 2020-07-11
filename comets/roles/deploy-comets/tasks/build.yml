@@ -46,6 +46,10 @@
   file:
     path: /tmp/comets
     state: absent
+  register: delete_folder
+  retries: 5
+  delay: 2
+  until: delete_folder is success
   when: comets_result.stat.exists
 
 - name: Check if R-cometsAnalytics exists
@@ -128,6 +132,7 @@
     name: "{{ecr}}/comets"
     tag: "processor-{{version}}"
     push: yes
+    source: build
   delegate_to: 127.0.0.1
 
 - name: start app
@@ -141,7 +146,7 @@
 
 - name: start processor
   docker_compose:
-    project_src: "{{app_base_directory}"
+    project_src: "{{app_base_directory}}"
     files:
       - processor-docker-compose.yml
     state: present

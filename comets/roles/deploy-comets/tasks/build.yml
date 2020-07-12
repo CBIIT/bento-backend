@@ -186,7 +186,7 @@
     files:
       - app-docker-compose.yml
     state: present
-    recreate: smart
+    recreate: always
   when:
     - app_host == inventory_hostname
 
@@ -196,6 +196,6 @@
     files:
       - processor-docker-compose.yml
     state: present
-    recreate: smart
+    recreate: always
   when:
     - queue_host == inventory_hostname

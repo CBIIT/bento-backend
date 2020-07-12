@@ -45,9 +45,15 @@
     queue_host: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
     app_host: "{{ app.instances[0].network_interfaces[0].private_ip_address }}"
 
+- name: Start service firewalld if not started
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
 - name: open port 61613
   firewalld:
-    port: 61613
+    port: 61613/tcp
     zone: public
     permanent: yes
     immediate: yes
@@ -57,7 +63,7 @@
 
 - name: open 8000
   firewalld:
-    port: 8000
+    port: 8000/tcp
     zone: public
     permanent: yes
     immediate: yes

@@ -135,7 +135,8 @@
     - { src: 'processor-docker-compose.yml.j2', dest: '{{app_base_directory}}/processor-docker-compose.yml' }
     - { src: 'app-docker-compose.yml.j2', dest: '{{app_base_directory}}/app-docker-compose.yml' }
     - { src: 'Dockerfile.j2', dest: '/tmp/comets/Dockerfile' }
-    - { src: 'httpd.conf.j2', dest: '/tmp/comets/comets-httpd.conf' }
+    - { src: 'httpd.conf.j2', dest: '/tmp/comets/httpd.conf' }
+    - { src: 'comets-httpd.conf.j2', dest: '/tmp/comets/comets-httpd.conf' }
 
 - name: login into ecr
   shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"

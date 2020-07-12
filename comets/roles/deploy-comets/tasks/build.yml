@@ -2,7 +2,7 @@
 - name: upgrade pip
   pip:
     name: pip
-    state: forceinstall
+    state: forcereinstall
 
 - name: install docker and docker-compose
   pip:

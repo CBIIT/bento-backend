@@ -63,7 +63,7 @@
     immediate: yes
     state: enabled
   when:
-    - queue_host == inventory_hostname
+    - app_host == inventory_hostname
 
 - name: Check if comets directory exist
   stat:

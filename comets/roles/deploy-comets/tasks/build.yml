@@ -153,6 +153,7 @@
     tag: "app-{{version}}"
     push: yes
     source: build
+    nocache: yes
   when:
     - app_host == inventory_hostname
 
@@ -165,6 +166,7 @@
     tag: "apache-{{version}}"
     push: yes
     source: build
+    nocache: yes
   when:
     - app_host == inventory_hostname
 
@@ -178,6 +180,7 @@
     tag: "processor-{{version}}"
     push: yes
     source: build
+    nocache: yes
   when:
     - queue_host == inventory_hostname
 

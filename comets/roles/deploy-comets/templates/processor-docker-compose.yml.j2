@@ -4,7 +4,7 @@ services:
     image: "{{ecr}}/comets:app-{{version}}"
     container_name: processor
     volumes:
-      - "{{app_base_directory}}/logs":/deploy/logs
+      - "{{app_base_directory}}/logs:/deploy/logs"
     restart: always
     ports:
       - "61613:61613"

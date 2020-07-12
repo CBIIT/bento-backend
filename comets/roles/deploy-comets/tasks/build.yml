@@ -11,7 +11,7 @@
   loop:
     - docker
     - docker-compose
-    
+
 #create app and logs directory
 - name: create app and logs directory
   file: 
@@ -114,9 +114,9 @@
     - { src: 'app-docker-compose.yml.j2', dest: '{{app_base_directory}}/app-docker-compose.yml' }
 
 - name: login into ecr
-  shell: "$(/usr/local/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
   ignore_errors: True
-  delegate_to: 127.0.0.1
+ 
   
 
 - name:  build {{ecr}}/comets:app image
@@ -129,7 +129,8 @@
     tag: "app-{{version}}"
     push: yes
     source: build
-  delegate_to: 127.0.0.1
+  when:
+    - app_host == inventory_hostname
 
 - name:  build {{ecr}}/comets:processor image
   docker_image:
@@ -141,7 +142,8 @@
     tag: "processor-{{version}}"
     push: yes
     source: build
-  delegate_to: 127.0.0.1
+  when:
+    - queue_host == inventory_hostname
 
 - name: start app
   docker_compose:

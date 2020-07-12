@@ -45,9 +45,25 @@
     queue_host: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
     app_host: "{{ app.instances[0].network_interfaces[0].private_ip_address }}"
 
-- name: show ip
-  debug:
-    msg: "processor: {{queue_host}} \t app: {{app_host}}"
+- name: open port 61613
+  firewalld:
+    port: 61613
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+  when:
+    - queue_host == inventory_hostname
+
+- name: open 8000
+  firewalld:
+    port: 8000
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+  when:
+    - queue_host == inventory_hostname
 
 - name: Check if comets directory exist
   stat:

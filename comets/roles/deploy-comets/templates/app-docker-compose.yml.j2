@@ -10,12 +10,12 @@ services:
       - activemq
     ports:
       - "8000:8000"
+    volumes:
+      - "{{app_base_directory}}/logs":/deploy/logs
   activemq:
     image: "cbiitss/activemq:latest"
     container_name: activemq
     restart: always
-    expose:
-      - "61613"
     ports:
       - "8161:8161"
       - "61613:61613"

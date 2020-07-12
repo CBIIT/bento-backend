@@ -149,11 +149,11 @@
       path: "/tmp/comets"
       dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
       pull: yes
+      nocache: yes
     name: "{{ecr}}/comets"
     tag: "app-{{version}}"
     push: yes
     source: build
-    nocache: yes
   when:
     - app_host == inventory_hostname
 
@@ -162,11 +162,11 @@
     build:
       path: "/tmp/comets"
       pull: yes
+      nocache: yes
     name: "{{ecr}}/comets"
     tag: "apache-{{version}}"
     push: yes
     source: build
-    nocache: yes
   when:
     - app_host == inventory_hostname
 
@@ -176,11 +176,11 @@
       path: "/tmp/comets"
       dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
       pull: yes
+      nocache: yes
     name: "{{ecr}}/comets"
     tag: "processor-{{version}}"
     push: yes
     source: build
-    nocache: yes
   when:
     - queue_host == inventory_hostname
 

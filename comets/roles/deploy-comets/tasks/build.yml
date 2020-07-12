@@ -134,6 +134,8 @@
   with_items:
     - { src: 'processor-docker-compose.yml.j2', dest: '{{app_base_directory}}/processor-docker-compose.yml' }
     - { src: 'app-docker-compose.yml.j2', dest: '{{app_base_directory}}/app-docker-compose.yml' }
+    - { src: 'Dockerfile.j2', dest: '/tmp/comets/Dockerfile' }
+    - { src: 'httpd.conf.j2', dest: '/tmp/comets/comets-httpd.conf' }
 
 - name: login into ecr
   shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
@@ -154,6 +156,18 @@
   when:
     - app_host == inventory_hostname
 
+- name:  build apache image
+  docker_image:
+    build:
+      path: "/tmp/comets"
+      pull: yes
+    name: "{{ecr}}/comets"
+    tag: "apache-{{version}}"
+    push: yes
+    source: build
+  when:
+    - app_host == inventory_hostname
+
 - name:  build {{ecr}}/comets:processor image
   docker_image:
     build:
@@ -166,6 +180,7 @@
     source: build
   when:
     - queue_host == inventory_hostname
+
 
 - name: start app
   docker_compose:

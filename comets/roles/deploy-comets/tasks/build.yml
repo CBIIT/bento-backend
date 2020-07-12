@@ -140,8 +140,7 @@
 - name: login into ecr
   shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
   ignore_errors: True
- 
-  
+   
 
 - name:  build {{ecr}}/comets:app image
   docker_image:
@@ -181,13 +180,13 @@
   when:
     - queue_host == inventory_hostname
 
-
 - name: start app
   docker_compose:
     project_src: "{{app_base_directory}}"
     files:
       - app-docker-compose.yml
     state: present
+    recreate: smart
   when:
     - app_host == inventory_hostname
 
@@ -197,5 +196,6 @@
     files:
       - processor-docker-compose.yml
     state: present
+    recreate: smart
   when:
     - queue_host == inventory_hostname

@@ -2,7 +2,6 @@
 #comets conf
 
 ServerName localhost
-
 LoadModule proxy_module modules/mod_proxy.so
 LoadModule xml2enc_module modules/mod_xml2enc.so
 LoadModule proxy_html_module modules/mod_proxy_html.so
@@ -40,7 +39,7 @@ OIDCProviderJwksUri {{open_id_issuer}}/.well-known/jwks.json
 OIDCSessionMaxDuration 0
 #OIDCScope "openid email family_name given_name app_metadata user_metadata user_id comets"
 OIDCRedirectURI https://comets-analytics-{{env}}.org/auth0_redirect
-#OIDCCryptoPassphrase "{{open_passphrase}}"
+OIDCCryptoPassphrase "{{open_passphrase}}"
 OIDCCookiePath /
 
 OIDCProviderMetadataURL {{open_id_issuer}}/.well-known/openid-configuration

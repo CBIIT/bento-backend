@@ -2,16 +2,20 @@
 #comets conf
 
 ServerName localhost
+
 LoadModule proxy_module modules/mod_proxy.so
-LoadModule xml2enc_module modules/mod_xml2enc.so
-LoadModule proxy_html_module modules/mod_proxy_html.so
 LoadModule auth_openidc_module modules/mod_auth_openidc.so
 LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule ssl_module modules/mod_ssl.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+LoadModule proxy_connect_module modules/mod_proxy_connect.so
 
 <VirtualHost *:80>
 
   ServerName comets-analytics-stage.com
   ServerAlias www.comets-analytics-stage.com
+  SSLCertificateFile        conf/extra/cert.pem
+  SSLCertificateKeyFile     conf/extra/key.pem
 
   CustomLog logs/access.log combined env=!dontlog
   ErrorLog  logs/error.log

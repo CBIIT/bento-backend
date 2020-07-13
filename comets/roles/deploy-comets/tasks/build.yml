@@ -105,7 +105,7 @@
   git:
     repo: "{{comets_repo}}"
     dest: /tmp/comets
-    version: comets_1.6.0_20191205
+    version: master
     force: yes
 
 - name: checkout comets_analytics repo

@@ -10,12 +10,12 @@ LoadModule ssl_module modules/mod_ssl.so
 LoadModule proxy_http_module modules/mod_proxy_http.so
 LoadModule proxy_connect_module modules/mod_proxy_connect.so
 
-<VirtualHost *:443>
+<VirtualHost *:80>
 
   ServerName comets-analytics-stage.com
-  ServerAlias www.comets-analytics-stage.com
-  SSLCertificateFile        conf/extra/cert.pem
-  SSLCertificateKeyFile     conf/extra/key.pem
+  ServerAlias www.comets-analytics-{{env}}.com
+  #SSLCertificateFile        conf/extra/cert.pem
+  #SSLCertificateKeyFile     conf/extra/key.pem
 
   CustomLog logs/access.log combined env=!dontlog
   ErrorLog  logs/error.log

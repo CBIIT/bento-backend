@@ -4,7 +4,10 @@ RUN apt-get update  \
   && apt-get install -y apt-utils libapache2-mod-auth-openidc apache2-bin \
   && ln -s /usr/lib/apache2/modules/mod_auth_openidc.so /usr/local/apache2/modules/mod_auth_openidc.so 
 
-RUN echo "Include conf/extra/comets-vhosts.conf" >> /usr/local/apache2/conf/httpd.conf
+RUN echo "Include conf/extra/comets-vhosts.conf" >> /usr/local/apache2/conf/httpd.conf \
+  && cd /usr/local/apache2/conf/extra \
+  && openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -subj '/CN=comets-analytics-{{env}}.org' -nodes
+
 COPY ./comets-httpd.conf /usr/local/apache2/conf/extra/comets-vhosts.conf
 
 

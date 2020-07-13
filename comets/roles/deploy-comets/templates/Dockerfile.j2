@@ -4,7 +4,8 @@ RUN apt-get update  \
   && apt-get install -y apt-utils libapache2-mod-auth-openidc apache2-bin \
   && ln -s /usr/lib/apache2/modules/mod_auth_openidc.so /usr/local/apache2/modules/mod_auth_openidc.so 
 
-COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
-COPY ./comets-httpd.conf /usr/local/apache2/conf/extra/comets-httpd.conf
+RUN echo "Include conf/extra/comets-vhosts.conf" >> /usr/local/apache2/conf/httpd.conf
+COPY ./comets-httpd.conf /usr/local/apache2/conf/extra/comets-vhosts.conf
+
 
   

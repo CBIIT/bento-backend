@@ -1,13 +1,21 @@
 
 #comets conf
 
+ServerName localhost
+
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule xml2enc_module modules/mod_xml2enc.so
+LoadModule proxy_html_module modules/mod_proxy_html.so
 LoadModule auth_openidc_module modules/mod_auth_openidc.so
 LoadModule rewrite_module modules/mod_rewrite.so
 
-ServerName localhost:80
+<VirtualHost *:80>
 
-        CustomLog logs/access.log combined env=!dontlog
-        ErrorLog  logs/error.log
+  ServerName comets-analytics-stage.com
+  ServerAlias www.comets-analytics-stage.com
+
+  CustomLog logs/access.log combined env=!dontlog
+  ErrorLog  logs/error.log
 
 <Location "/server-info">
     SetHandler server-info
@@ -96,3 +104,4 @@ OIDCSessionInactivityTimeout 1800
 </LocationMatch>
 
 
+</VirtualHost>

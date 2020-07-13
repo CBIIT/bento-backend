@@ -9,5 +9,5 @@ RUN echo "Include conf/extra/comets-vhosts.conf" >> /usr/local/apache2/conf/http
   && openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -subj '/CN=comets-analytics-{{env}}.org' -nodes
 
 COPY ./comets-httpd.conf /usr/local/apache2/conf/extra/comets-vhosts.conf
-EXPOSE 443
+
   

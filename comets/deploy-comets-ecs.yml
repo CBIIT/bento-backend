@@ -10,8 +10,8 @@
       include_role:
         name: deploy-comets
         tasks_from: build
-    # - name: deploy comets
-    #   include_role:
-    #     name: deploy-comets
-    #     tasks_from: deploy
+    - name: deploy comets
+      include_role:
+        name: deploy-comets
+        tasks_from: deploy
 

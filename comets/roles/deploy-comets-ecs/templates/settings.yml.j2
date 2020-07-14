@@ -1,0 +1,20 @@
+auth0:
+    token: "{{token}}"
+    domain: "ncicbiit"
+email:
+    admin: [ "{{admin_email}}" ]
+    sender: "{{sender}}"
+    host: "{{host}}"
+    port: 465
+    auth: true
+    username: "{{username}}"
+    password: "{{password}}"
+queue:
+    host: "{{queue_host}}"
+    port: 61613
+s3:
+    bucket: "cbiit-tools-data"
+    username: "{{s3_username}}"
+    password: "{{s3_password}}"
+    input_folder: "comets-test/input/"
+    output_folder: "comets-test/output/"

@@ -1,0 +1,204 @@
+---
+- name: upgrade pip
+  pip:
+    name: pip
+    state: forcereinstall
+
+- name: install docker and docker-compose
+  pip:
+    name: "{{item}}"
+    state: present
+  loop:
+    - docker
+    - docker-compose
+
+#create app and logs directory
+- name: create app and logs directory
+  file: 
+    path: "{{app_base_directory}}/{{item}}"
+    state: directory
+  loop:
+    - app
+    - logs
+
+- name: gather comets-processor facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Environment": "{{env}}"
+      "tag:Name": comets-{{env}}-processor
+      "instance-state-name": running
+  register: processor
+
+
+- name: gather comets-app facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Environment": "{{env}}"
+      "tag:Name": comets-{{env}}-app
+      "instance-state-name": running
+  register: app
+
+- name: set instance ip
+  set_fact:
+    queue_host: "{{ processor.instances[0].network_interfaces[0].private_ip_address }}"
+    app_host: "{{ app.instances[0].network_interfaces[0].private_ip_address }}"
+
+- name: Start service firewalld if not started
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: open port 61613
+  firewalld:
+    port: 61613/tcp
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+  when:
+    - queue_host == inventory_hostname
+
+- name: open 8000
+  firewalld:
+    port: 8000/tcp
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+  when:
+    - app_host == inventory_hostname
+
+- name: Check if comets directory exist
+  stat:
+    path: /tmp/comets
+  register: comets_result
+
+- name: remove old comets repo
+  file:
+    path: /tmp/comets
+    state: absent
+  register: delete_folder
+  # retries: 5
+  # delay: 2
+  # until: delete_folder is success
+  when: comets_result.stat.exists
+
+- name: Check if R-cometsAnalytics exists
+  stat:
+    path: /tmp/R-cometsAnalytics
+  register: comets_analytics
+
+- name: remove old r repo
+  file:
+    path: /tmp/R-cometsAnalytics
+    state: absent
+  register: delete_folder
+  # retries: 5
+  # delay: 2
+  # until: delete_folder is success
+  when: comets_analytics.stat.exists
+
+- name: checkout comets repo
+  git:
+    repo: "{{comets_repo}}"
+    dest: /tmp/comets
+    version: comets_1.6.1_20200713
+    force: yes
+
+- name: checkout comets_analytics repo
+  git:
+    repo: "{{R_repo}}"
+    dest: /tmp/R-cometsAnalytics
+    version: comets_1.6.0_20191205
+    force: yes
+
+- name: copy R code
+  synchronize:
+    dest: /tmp/comets/comets/restricted/rcode/
+    src: /tmp/R-cometsAnalytics/
+    delete: yes
+    recursive: true
+    rsync_opts:
+      - "--exclude=.git"
+
+- name: update settings
+  template:
+    dest: /tmp/comets/comets/restricted/settings.yml
+    src: settings.yml.j2
+
+- name: copy docker-compse files
+  template:  src={{item.src}} dest={{item.dest}}
+  with_items:
+    - { src: 'processor-docker-compose.yml.j2', dest: '{{app_base_directory}}/processor-docker-compose.yml' }
+    - { src: 'app-docker-compose.yml.j2', dest: '{{app_base_directory}}/app-docker-compose.yml' }
+    - { src: 'Dockerfile.j2', dest: '/tmp/comets/Dockerfile' }
+    - { src: 'comets-httpd.conf.j2', dest: '/tmp/comets/comets-httpd.conf' }
+
+- name: login into ecr
+  shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  ignore_errors: True
+   
+
+- name:  build {{ecr}}/comets:app image
+  docker_image:
+    build:
+      path: "/tmp/comets"
+      dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
+      pull: yes
+      nocache: yes
+    name: "{{ecr}}/comets"
+    tag: "app-{{version}}"
+    push: yes
+    source: build
+  when:
+    - app_host == inventory_hostname
+
+- name:  build apache image
+  docker_image:
+    build:
+      path: "/tmp/comets"
+      pull: yes
+      nocache: yes
+    name: "{{ecr}}/comets"
+    tag: "apache-{{version}}"
+    push: yes
+    source: build
+  when:
+    - app_host == inventory_hostname
+
+- name:  build {{ecr}}/comets:processor image
+  docker_image:
+    build:
+      path: "/tmp/comets"
+      dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
+      pull: yes
+      nocache: yes
+    name: "{{ecr}}/comets"
+    tag: "processor-{{version}}"
+    push: yes
+    source: build
+  when:
+    - queue_host == inventory_hostname
+
+- name: start app
+  docker_compose:
+    project_src: "{{app_base_directory}}"
+    files:
+      - app-docker-compose.yml
+    state: present
+    recreate: always
+  when:
+    - app_host == inventory_hostname
+
+- name: start processor
+  docker_compose:
+    project_src: "{{app_base_directory}}"
+    files:
+      - processor-docker-compose.yml
+    state: present
+    recreate: always
+  when:
+    - queue_host == inventory_hostname

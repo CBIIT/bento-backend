@@ -1,0 +1,110 @@
+
+#comets conf
+
+ServerName localhost
+
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule auth_openidc_module modules/mod_auth_openidc.so
+LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule ssl_module modules/mod_ssl.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+LoadModule proxy_connect_module modules/mod_proxy_connect.so
+
+<VirtualHost *:80>
+
+  ServerName comets-analytics-stage.com
+  ServerAlias www.comets-analytics-{{env}}.com
+  #SSLCertificateFile        conf/extra/cert.pem
+  #SSLCertificateKeyFile     conf/extra/key.pem
+
+  CustomLog logs/access.log combined env=!dontlog
+  ErrorLog  logs/error.log
+
+<Location "/server-info">
+    SetHandler server-info
+    ProxyPass !
+</Location>
+
+RewriteEngine On
+ProxyRequests Off
+
+ProxyPass / http://{{app_host}}:8000/  timeout=1800
+ProxyPassReverse / http://{{app_host}}:8000/
+
+OIDCProviderIssuer {{open_id_issuer}}
+OIDCProviderAuthorizationEndpoint {{open_id_issuer}}/authorize
+OIDCProviderTokenEndpoint {{open_id_issuer}}/oauth/token
+OIDCProviderTokenEndpointAuth client_secret_post
+OIDCProviderUserInfoEndpoint {{open_id_issuer}}/userinfo
+OIDCClientID {{open_client_id}}
+OIDCClientSecret {{open_client_secret}}
+OIDCDefaultURL https://comets-analytics-{{env}}.org/public/timeout.html
+OIDCProviderJwksUri {{open_id_issuer}}/.well-known/jwks.json
+OIDCSessionMaxDuration 0
+#OIDCScope "openid email family_name given_name app_metadata user_metadata user_id comets"
+OIDCRedirectURI https://comets-analytics-{{env}}.org/auth0_redirect
+OIDCCryptoPassphrase "{{open_passphrase}}"
+OIDCCookiePath /
+
+OIDCProviderMetadataURL {{open_id_issuer}}/.well-known/openid-configuration
+OIDCPassIDTokenAs payload
+OIDCUserInfoRefreshInterval 5
+OIDCSessionInactivityTimeout 1800
+
+<Location />
+ AuthType openid-connect
+ <RequireAny>
+   Require claim comets:active
+   Require claim comets:admin
+ </RequireAny>
+ Header echo ^OIDC_id_token_payload$
+ Header set Cache-Control "no-cache, no-store, must-revalidate"
+ Header set Pragma "no-cache"
+ Header set Expires 0
+ ErrorDocument 401 /errordocs/unauthorized.html
+ LogLevel debug
+</Location>
+
+<LocationMatch "^(/cometsRest)?/admin/">
+ <RequireAll>
+   Require claim comets:admin
+ </RequireAll>
+ ErrorDocument 401 /errordocs/index.html
+</LocationMatch>
+
+<Location /unauthorized/>
+ <RequireAll>
+  Require claim "comets~^\w+$"
+  <RequireNone>
+   Require claim comets:active
+   Require claim comets:admin
+  </RequireNone>
+ </RequireAll>
+ ErrorDocument 401 /errordocs/registration.html
+</Location>
+
+<LocationMatch "^(/cometsRest)?/registration/">
+ <RequireAll>
+  Require valid-user
+  <RequireNone>
+   Require claim "comets~^\w+$"
+  </RequireNone>
+ </RequireAll>
+ ErrorDocument 401 /errordocs/index.html
+</LocationMatch>
+
+<Directory /restricted/>
+  Require all denied
+</Directory>
+
+<LocationMatch "^(/cometsRest)?/(public|errordocs)/>
+ AuthType none
+ Require all granted
+</LocationMatch>
+
+<LocationMatch "^/cometsRest/">
+ ErrorDocument 401 !
+</LocationMatch>
+
+
+</VirtualHost>

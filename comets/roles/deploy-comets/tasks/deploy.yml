@@ -1,0 +1,11 @@
+- name: deploy docker
+  docker_compose:
+    project_name: comets
+    definition:
+      version: '3'
+      services:
+        app:
+          image: "{{ecr}}/comets:app-{{version}}"
+        activemq:
+          image: cbiitss/activemq:latest
+      

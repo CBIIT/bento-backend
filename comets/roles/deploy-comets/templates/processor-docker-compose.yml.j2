@@ -1,7 +1,7 @@
 version: '3'
 services:
   processor:
-    image: "{{ecr}}/comets:app-{{version}}"
+    image: comets/processor
     container_name: processor
     volumes:
       - "{{app_base_directory}}/logs:/deploy/logs"

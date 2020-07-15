@@ -1,7 +1,6 @@
 
 #comets conf
 
-ServerName localhost
 
 LoadModule proxy_module modules/mod_proxy.so
 LoadModule auth_openidc_module modules/mod_auth_openidc.so
@@ -12,10 +11,9 @@ LoadModule proxy_connect_module modules/mod_proxy_connect.so
 
 <VirtualHost *:80>
 
-  ServerName comets-analytics-stage.com
-  ServerAlias www.comets-analytics-{{env}}.com
-  #SSLCertificateFile        conf/extra/cert.pem
-  #SSLCertificateKeyFile     conf/extra/key.pem
+  ServerName www.comets-analytics-{{env}}.com
+  ServerAlias comets-analytics-{{env}}.com
+  Loglevel INFO
 
   CustomLog logs/access.log combined env=!dontlog
   ErrorLog  logs/error.log
@@ -25,11 +23,12 @@ LoadModule proxy_connect_module modules/mod_proxy_connect.so
     ProxyPass !
 </Location>
 
-RewriteEngine On
-ProxyRequests Off
 
-ProxyPass / http://{{app_host}}:8000/  timeout=1800
-ProxyPassReverse / http://{{app_host}}:8000/
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^www.comets-analytics-{{env}}.org$
+RewriteRule (.*) https://www.comets-analytics-{{env}}.org$1 [R=301,L]
+
+
 
 OIDCProviderIssuer {{open_id_issuer}}
 OIDCProviderAuthorizationEndpoint {{open_id_issuer}}/authorize
@@ -41,11 +40,10 @@ OIDCClientSecret {{open_client_secret}}
 OIDCDefaultURL https://comets-analytics-{{env}}.org/public/timeout.html
 OIDCProviderJwksUri {{open_id_issuer}}/.well-known/jwks.json
 OIDCSessionMaxDuration 0
-#OIDCScope "openid email family_name given_name app_metadata user_metadata user_id comets"
+OIDCScope "openid email family_name given_name app_metadata user_metadata user_id comets"
 OIDCRedirectURI https://comets-analytics-{{env}}.org/auth0_redirect
 OIDCCryptoPassphrase "{{open_passphrase}}"
 OIDCCookiePath /
-
 OIDCProviderMetadataURL {{open_id_issuer}}/.well-known/openid-configuration
 OIDCPassIDTokenAs payload
 OIDCUserInfoRefreshInterval 5
@@ -106,5 +104,9 @@ OIDCSessionInactivityTimeout 1800
  ErrorDocument 401 !
 </LocationMatch>
 
+RewriteEngine On
+ProxyRequests Off
+ProxyPass / http://{{app_host}}:8000/  timeout=1800
+ProxyPassReverse / http://{{app_host}}:8000/
 
 </VirtualHost>

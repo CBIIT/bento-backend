@@ -63,11 +63,14 @@
 
 - name: open 8000
   firewalld:
-    port: 8000/tcp
+    port: "{{item}}/tcp"
     zone: public
     permanent: yes
     immediate: yes
     state: enabled
+  loop:
+    - 8000
+    - 80
   when:
     - app_host == inventory_hostname
 

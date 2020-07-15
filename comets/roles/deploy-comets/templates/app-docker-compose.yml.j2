@@ -1,8 +1,8 @@
 version: '3'
 services:
   auth0:
-    image: {{ecr}}/comets:apache-{{version}}
-    container_name: apache
+    image: comets/auth0
+    container_name: auth0
     ports:
       - "80:80"
     links:
@@ -10,7 +10,7 @@ services:
     depends_on:
       - app
   app:
-    image: "{{ecr}}/comets:app-{{version}}"
+    image: comets/app
     container_name: app
     restart: always
     depends_on:

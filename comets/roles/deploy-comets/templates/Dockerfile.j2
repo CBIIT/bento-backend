@@ -1,7 +1,7 @@
 FROM httpd:2.4.43
 
 RUN apt-get update  \
-  && apt-get install -y apt-utils libapache2-mod-auth-openidc apache2-bin openssl \
+  && apt-get install -y apt-utils ca-certificates libapache2-mod-auth-openidc apache2-bin openssl \
   && ln -s /usr/lib/apache2/modules/mod_auth_openidc.so /usr/local/apache2/modules/mod_auth_openidc.so 
 
 RUN echo "Include conf/extra/comets-vhosts.conf" >> /usr/local/apache2/conf/httpd.conf 

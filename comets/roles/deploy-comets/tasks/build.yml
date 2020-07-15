@@ -124,6 +124,7 @@
     src: /tmp/R-cometsAnalytics/
     delete: yes
     recursive: true
+    remote_src: yes
     rsync_opts:
       - "--exclude=.git"
 

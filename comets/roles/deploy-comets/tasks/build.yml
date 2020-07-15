@@ -118,16 +118,19 @@
     version: comets_1.6.0_20191205
     force: yes
 
-- name: copy R code
-  synchronize:
-    dest: /tmp/comets/comets/restricted/rcode/
-    src: /tmp/R-cometsAnalytics/
-    delete: yes
-    recursive: true
-    remote_src: yes
-    rsync_opts:
-      - "--exclude=.git"
+# - name: copy R code
+#   synchronize:
+#     dest: /tmp/comets/comets/restricted/rcode/
+#     src: /tmp/R-cometsAnalytics/
+#     delete: yes
+#     recursive: true
+#     remote_src: yes
+#     rsync_opts:
+#       - "--exclude=.git"
 
+- name: copy R code
+  shell: rsync -avh --exclude=.git /tmp/R-cometsAnalytics/ /tmp/R-cometsAnalytics/
+  
 - name: update settings
   template:
     dest: /tmp/comets/comets/restricted/settings.yml

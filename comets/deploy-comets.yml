@@ -1,7 +1,6 @@
 ---
 - name: setup ecs agent
-  hosts: all
-  connection: local
+  hosts: comets
   become: yes
   gather_facts: yes
 

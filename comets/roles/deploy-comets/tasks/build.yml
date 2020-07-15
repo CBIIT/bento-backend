@@ -140,9 +140,9 @@
     - { src: 'Dockerfile.j2', dest: '/tmp/comets/Dockerfile' }
     - { src: 'comets-httpd.conf.j2', dest: '/tmp/comets/comets-httpd.conf' }
 
-- name: login into ecr
-  shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
-  ignore_errors: True
+# - name: login into ecr
+#   shell: "$(/usr/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+#   ignore_errors: True
    
 
 - name:  build {{ecr}}/comets:app image
@@ -152,9 +152,10 @@
       dockerfile: "/tmp/comets/docker/comets.app.dockerfile"
       pull: yes
       nocache: yes
-    name: "{{ecr}}/comets"
-    tag: "app-{{version}}"
-    push: yes
+    # name: "{{ecr}}/comets"
+    name: comets/app
+    # tag: "app-{{version}}"
+    # push: yes
     source: build
   when:
     - app_host == inventory_hostname
@@ -165,9 +166,9 @@
       path: "/tmp/comets"
       pull: yes
       nocache: yes
-    name: "{{ecr}}/comets"
-    tag: "apache-{{version}}"
-    push: yes
+    name: "comets/auth0"
+    # tag: "apache-{{version}}"
+    # push: yes
     source: build
   when:
     - app_host == inventory_hostname
@@ -179,9 +180,9 @@
       dockerfile: "/tmp/comets/docker/comets.app.processor.dockerfile"
       pull: yes
       nocache: yes
-    name: "{{ecr}}/comets"
-    tag: "processor-{{version}}"
-    push: yes
+    name: "comets/processor"
+    # tag: "processor-{{version}}"
+    # push: yes
     source: build
   when:
     - queue_host == inventory_hostname

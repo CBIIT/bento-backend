@@ -1,4 +1,4 @@
-node('docker-ansible') {
+node('docker-katalon-ch') {
 	parameters {
 		extendedChoice( 
 			name: 'Browser', 
@@ -9,9 +9,9 @@ node('docker-ansible') {
 		}
 	stage('set agent'){
 		if (params.Browser == 'Firefox') {
-			AGENT_LABEL = "docker-katalon"
+			AGENT_LABEL = "docker-katalon-ff"
 			} else {
-				AGENT_LABEL = "docker-ansible"
+				AGENT_LABEL = "docker-katalon-ch"
 				}
 		}
 	}
@@ -142,28 +142,6 @@ pipeline {
                     }
 				}
 			}
-        stage('set Environment'){
-            steps {
-			
-                script {
-
-						sh "wget https://github.com/katalon-studio/katalon-studio/releases/download/v${env.katalonVer}/Katalon_Studio_Engine_Linux_64-${env.katalonVer}.tar.gz && tar -xvzf Katalon_Studio_Engine_Linux_64-${env.katalonVer}.tar.gz && mv Katalon_Studio_Engine_Linux_64-${env.katalonVer} katalon && chown -R root:root katalon"
-
-				    }
-
-				script {
-                    switch("${params.Browser}") {
-                    case "Firefox":
-						sh "wget https://github.com/mozilla/geckodriver/releases/download/v${env.geckodriverVer}/geckodriver-v${env.geckodriverVer}-linux64.tar.gz && mv katalon/configuration/resources/drivers/firefox_linux64/geckodriver katalon/configuration/resources/drivers/firefox_linux64/geckodriver.bak && tar -C katalon/configuration/resources/drivers/firefox_linux64/ -xzf geckodriver-v${env.geckodriverVer}-linux64.tar.gz && chown root:root katalon/configuration/resources/drivers/firefox_linux64/geckodriver && yum -y install firefox"
-						break
-                    case "Chrome":
-						sh "wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm && yum -y install google-chrome-stable_current_x86_64.rpm && wget https://chromedriver.storage.googleapis.com/${env.chromedriverVer}/chromedriver_linux64.zip && mv katalon/configuration/resources/drivers/chromedriver_linux64/chromedriver katalon/configuration/resources/drivers/chromedriver_linux64/chromedriver.bak && unzip chromedriver_linux64.zip -d katalon/configuration/resources/drivers/chromedriver_linux64/"
-						break
-                       }
-                    }
-
-                }
-            }
 		stage('run tests'){
             environment {
 				KATALON_BROWSER     =   "${params.Browser}"
@@ -186,7 +164,7 @@ pipeline {
 							rm -rf results && mkdir results
 							
 							# Run Katalon Tests
-							katalon/katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
+							katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
 
 							'''
 

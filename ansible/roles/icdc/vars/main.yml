@@ -1,0 +1,15 @@
+---
+# vars file for k9dc
+docker_home: /local/content/docker
+k9dc_home: /local/content/k9dc
+deployments: /local/content/canine-data
+container_name: k9dc
+app_name: "{{env}}-icdc"
+collector_name: "{{ env }}-k9dc"
+newrelic_license_key: "{{ newrelic_key }}"
+additional_logs:
+  - name: "{{ env }} k9dc Logs" 
+    description: "{{ env }} k9dc logs"
+    category: "{{env }}/app/k9dc"
+    path: "/local/content/k9dc/logs/*.log"
+    filters: "" 

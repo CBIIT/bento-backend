@@ -136,28 +136,30 @@ type QueryType {
     numberOfFiles: Int @cypher(statement: "MATCH (n:file) return count(n)")
 
     "Group counts"
-    subjectCountByProgram: [GroupCount] @cypher(statement: "MATCH (g:program) OPTIONAL MATCH (g)<-[*]-(ss:study_subject) RETURN g.program_acronym AS group, count(distinct ss) as count")
-    subjectCountByStudy: [GroupCount] @cypher(statement: "MATCH (g:study) OPTIONAL MATCH (g)<-[*]-(ss:study_subject) RETURN g.study_acronym + ': ' + g.study_short_description AS group, count(distinct ss) as count")
-    subjectCountByDiagnoses: [GroupCount] @cypher(statement: "MATCH (ss:study_subject) RETURN ss.disease_subtype AS group, count(distinct ss) as count")
-    subjectCountByRecurrenceScore: [GroupCount] @cypher(statement: "MATCH (g:stratification_factor) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.grouped_recurrence_score AS group, count(distinct ss) as count")
-    subjectCountByTumorSize: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.tumor_size_group AS group, count(distinct ss) as count")
-    subjectCountByTumorGrade: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.tumor_grade AS group, count(distinct ss) as count")
-    subjectCountByErStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.er_status AS group, count(distinct ss) as count")
-    subjectCountByPrStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.pr_status AS group, count(distinct ss) as count")
-    subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(distinct ss) as count")
-    subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(distinct ss) as count")
-    subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-[*]->(ss:study_subject) RETURN g.menopause_status AS group, count(distinct ss) as count")
+    subjectCountByProgram: [GroupCount] @cypher(statement: "MATCH (g:program) OPTIONAL MATCH (g)<--(:study)<--(ss:study_subject) RETURN g.program_acronym AS group, count(DISTINCT ss) as count")
+    subjectCountByStudy: [GroupCount] @cypher(statement: "MATCH (g:study) OPTIONAL MATCH (g)<--(ss:study_subject) RETURN g.study_acronym + ': ' + g.study_short_description AS group, count(DISTINCT ss) as count")
+    subjectCountByDiagnoses: [GroupCount] @cypher(statement: "MATCH (ss:study_subject) RETURN ss.disease_subtype AS group, count(DISTINCT ss) as count")
+    subjectCountByRecurrenceScore: [GroupCount] @cypher(statement: "MATCH (g:stratification_factor) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.grouped_recurrence_score AS group, count(DISTINCT ss) as count")
+    subjectCountByTumorSize: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.tumor_size_group AS group, count(DISTINCT ss) as count")
+    subjectCountByTumorGrade: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.tumor_grade AS group, count(DISTINCT ss) as count")
+    subjectCountByErStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.er_status AS group, count(DISTINCT ss) as count")
+    subjectCountByPrStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.pr_status AS group, count(DISTINCT ss) as count")
+    subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(DISTINCT ss) as count")
+    subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as count")
+    subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.menopause_status AS group, count(DISTINCT ss) as count")
 
 
     subjectOverView: [SubjectOverview] @cypher(statement: """
-        MATCH (ss:study_subject)-->(s:study)-->(p:program)
+        MATCH (ss:study_subject)
+        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
+        OPTIONAL MATCH (f)-->(lp:laboratory_procedure)
+        WITH ss, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (ss)-->(s:study)-->(p:program)
         OPTIONAL MATCH (ss)<--(sf:stratification_factor)
         OPTIONAL MATCH (ss)<--(d:diagnosis)
         OPTIONAL MATCH (d)<--(tp:therapeutic_procedure)
         OPTIONAL MATCH (ss)<--(demo:demographic_data)
         OPTIONAL MATCH (ss)<--(sp:sample)
-        OPTIONAL MATCH (sp)<--(f:file)
-        OPTIONAL MATCH (ss)<--()-->(lp:laboratory_procedure)
         RETURN p.program_acronym AS program,
                s.study_acronym AS study_acronym,
                s.study_short_description AS study_short_description,
@@ -175,14 +177,15 @@ type QueryType {
                demo.age_at_index AS age_at_index,
                demo.survival_time AS survival_time,
                demo.survival_time_unit AS survival_time_unit,
-               collect(f) AS files,
                collect(sp.sample_id) AS samples,
-               collect(lp.laboratory_procedure_id) AS lab_procedures
+               files,
+               lab_procedures
     """, passThrough: true)
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] @cypher(statement: """
-        MATCH (ss:study_subject)-->(s:study)-->(p:program)
+        MATCH (ss:study_subject)
           WHERE ss.study_subject_id IN $subject_ids
+        OPTIONAL MATCH (ss)-->(s:study)-->(p:program)
         OPTIONAL MATCH (ss)<--(sf:stratification_factor)
         OPTIONAL MATCH (ss)<--(d:diagnosis)
         OPTIONAL MATCH (d)<--(tp:therapeutic_procedure)
@@ -201,8 +204,10 @@ type QueryType {
     """)
 
     filesOfSubjects(subject_ids: [String]=[]): [FileInfo] @cypher(statement:"""
-        MATCH (ss:study_subject)<-[*]-(f:file), (parent)<--(f)
+        MATCH (ss:study_subject)
           WHERE ss.study_subject_id IN $subject_ids
+        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
+        OPTIONAL MATCH (parent)<--(f)
         RETURN ss.study_subject_id AS subject_id,
                f.file_name AS file_name,
                f.file_type AS file_type,
@@ -224,18 +229,18 @@ type QueryType {
                p.start_date AS start_date,
                p.end_date AS end_date,
                p.pubmed_id AS pubmed_id,
-               COUNT(DISTINCT s.study_acronym) AS num_studies,
-               COUNT(DISTINCT ss.study_subject_id) AS num_subjects
+               COUNT(DISTINCT s) AS num_studies,
+               COUNT(DISTINCT ss) AS num_subjects
     """)
     programDetail(program_id: String):  ProgramDetail @cypher(statement: """
         MATCH (p:program {program_id: $program_id})
-        MATCH (p)<--()<--(ss:study_subject)<--()<--(f:file)
+        OPTIONAL MATCH (p)<--(:study)<--(ss:study_subject)
+        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
         WITH p, count(DISTINCT f) AS num_files, count(DISTINCT ss) AS num_subjects, collect(DISTINCT ss.disease_subtype) AS disease_subtypes
         MATCH (p)<--(s:study)<--(ss:study_subject)
         WITH s {.study_type, .study_acronym, .study_name, .study_full_description,
-            num_subjects:count(DISTINCT ss.study_subject_id)} AS study, p, num_files, num_subjects, disease_subtypes
+            num_subjects:count(DISTINCT ss)} AS study, p, num_files, num_subjects, disease_subtypes
         OPTIONAL MATCH (p)-->(ins:institution)
-        OPTIONAL MATCH (p)<-[*..1]-(f:file)
         RETURN p.program_acronym AS program_acronym,
                p.program_id AS program_id,
                p.program_name AS program_name,
@@ -249,14 +254,18 @@ type QueryType {
     """, passThrough:true)
 
     subjectDetail(subject_id: String): SubjectDetail @cypher(statement:  """
-        MATCH (ss:study_subject {study_subject_id: $subject_id})-[*]->(s:study)-[*]->(p:program)
-        OPTIONAL MATCH (ss)<-[*]-(demo:demographic_data)
-        OPTIONAL MATCH (ss)<-[*]-(diag:diagnosis)
-        OPTIONAL MATCH (ss)<-[*]-(pr:therapeutic_procedure)
-        OPTIONAL MATCH (ss)<-[*]-(fu:follow_up)
-        OPTIONAL MATCH (ss)<-[*]-(f:file)
+        MATCH (ss:study_subject {study_subject_id: $subject_id})
+        OPTIONAL MATCH (ss)-->(s:study)
+        OPTIONAL MATCH (s)-->(p:program)
+        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
         OPTIONAL MATCH (parent)<--(f)
-        OPTIONAL MATCH (ss)<-[*]-(samp:sample)
+        WITH p, s, ss, collect(f {subject_id:ss.study_subject_id, .file_name, .file_type,
+            association:head(labels(parent)), .file_description, .file_format, .file_size, .file_id, .md5sum}) AS files
+        OPTIONAL MATCH (ss)<--(demo:demographic_data)
+        OPTIONAL MATCH (ss)<--(diag:diagnosis)
+        OPTIONAL MATCH (ss)<--(pr:therapeutic_procedure)
+        OPTIONAL MATCH (ss)<--(fu:follow_up)
+        OPTIONAL MATCH (ss)<--(samp:sample)
         OPTIONAL MATCH (ss)<--()-->(lp:laboratory_procedure)
         RETURN ss.study_subject_id AS subject_id,
                p.program_acronym AS program_acronym,
@@ -288,8 +297,7 @@ type QueryType {
                fu.first_recurrence_type AS first_recurrence_type,
                fu.days_to_progression AS days_to_progression,
                fu.days_to_recurrence AS days_to_recurrence,
-               collect(f {subject_id:ss.study_subject_id, .file_name, .file_type,
-                 association:head(labels(parent)), .file_description, .file_format, .file_size, .file_id, .md5sum}) AS files,
+               files,
                COUNT(DISTINCT samp) AS num_samples,
                COUNT(DISTINCT lp) AS num_lab_procedures
     """, passThrough: true)

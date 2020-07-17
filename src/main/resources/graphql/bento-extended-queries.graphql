@@ -208,6 +208,7 @@ type QueryType {
           WHERE ss.study_subject_id IN $subject_ids
         OPTIONAL MATCH (ss)<-[*..2]-(f:file)
         OPTIONAL MATCH (parent)<--(f)
+          WHERE NOT (parent:laboratory_procedure)
         RETURN ss.study_subject_id AS subject_id,
                f.file_name AS file_name,
                f.file_type AS file_type,
@@ -259,6 +260,7 @@ type QueryType {
         OPTIONAL MATCH (s)-->(p:program)
         OPTIONAL MATCH (ss)<-[*..2]-(f:file)
         OPTIONAL MATCH (parent)<--(f)
+          WHERE NOT (parent:laboratory_procedure)
         WITH p, s, ss, collect(f {subject_id:ss.study_subject_id, .file_name, .file_type,
             association:head(labels(parent)), .file_description, .file_format, .file_size, .file_id, .md5sum}) AS files
         OPTIONAL MATCH (ss)<--(demo:demographic_data)

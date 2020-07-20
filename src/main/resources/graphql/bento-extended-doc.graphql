@@ -814,6 +814,16 @@ type SubjectDetail {
     num_lab_procedures: Int
 }
 
+type ArmDetail {
+    study_acronym: String
+    study_name: String
+    study_type: String
+    study_full_description: String
+    num_subjects: Int
+    diagnoses: [GroupCount]
+    files: [file]
+}
+
 schema {
     query: QueryType
 }
@@ -853,4 +863,6 @@ type QueryType {
     programDetail(program_id: String):  ProgramDetail 
 
     subjectDetail(subject_id: String): SubjectDetail 
+
+    armDetail(study_acronym: String): ArmDetail 
 }

@@ -694,7 +694,7 @@ type therapeutic_procedure {
 
 type GroupCount {
     group: String
-    count: Int
+    subjects: Int
 }
 
 type SubjectOverview {

@@ -42,15 +42,52 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
-	gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'integration', 
-        name: 'Frontend_Tag', 
-        type: 'PT_BRANCH_TAG',
-        quickFilterEnabled: false, 
-        selectedValue: 'DEFAULT', 
-        sortMode: 'ASCENDING_SMART', 
-        tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/bento-frontend')
+
+//	gitParameter(branchFilter: 'origin/(.*)', 
+//        defaultValue: 'integration', 
+//        name: 'Frontend_Tag', 
+//        type: 'PT_BRANCH_TAG',
+//        quickFilterEnabled: false, 
+//        selectedValue: 'DEFAULT', 
+//        sortMode: 'ASCENDING_SMART', 
+//        tagFilter: '*', 
+//        useRepository: 'https://github.com/CBIIT/bento-frontend')
+//
+//	The Frontend_Tag parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The GUI definition for this parameter should follow Environment and use the following values:
+//	
+//	Script:
+//		env_value = Environment
+//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
+//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
+//		List tagnames = tags.collect{ '' + it + '' }
+//
+//		if(env_value.equalsIgnoreCase("qa")) {
+//		  for(int i=0; i < tagnames.size(); i++) {
+//			if(tagnames.get(i).equalsIgnoreCase("master")) {
+//			  new_value = tagnames[i] + ':selected'
+//			  tagnames.set(i, new_value);
+//			  }
+//			}
+//		  } else {
+//			for(int i=0; i < tagnames.size(); i++) {
+//			  if(tagnames.get(i).equalsIgnoreCase("integration")) {
+//				new_value = tagnames[i] + ':selected'
+//				tagnames.set(i, new_value);
+//				}
+//			  }
+//			}
+//
+//		return tagnames
+//		
+//	Fallback Script:
+//		return ['integration']
+//		
+//		NOTE: this sets the default frontend branch to "integration" and is required for builds triggered from SCM polling.
+//		
+//	Referenced parameters:
+//		Environment
+
 //    gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'Integration', 
 //        name: 'Backend_Tag', 
@@ -72,6 +109,13 @@ pipeline {
 //
 //		for(int i=0; i < tagnames.size(); i++) {
 //		  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
+//			new_value = tagnames[i] + ':selected'
+//			tagnames.set(i, new_value);
+//			}
+//		  }
+//
+//		for(int i=0; i < tagnames.size(); i++) {
+//		  if(tagnames.get(i).equalsIgnoreCase("Integration")) {
 //			new_value = tagnames[i] + ':selected'
 //			tagnames.set(i, new_value);
 //			}

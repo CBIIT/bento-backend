@@ -17,12 +17,16 @@ public class ConfigurationDAO {
 	
 	@Value("${neo4j.authorization}")
 	private String neo4jHttpHeaderAuthorization;
-	
 
 	@Value("${neo4j.graphql.endpoint}")
 	private String neo4jGraphQLEndPoint;
-	
-	
+
+	@Value("${neo4j.graphql.endpoint.schema_endpoint}")
+	private String neo4jGraphQLSchemaEndpoint;
+
+	@Value("${graphql.schema}")
+	private String schemaFile;
+
 	@Value("${allow_grapqh_query}")
 	private boolean allowGraphQLQuery;
 	
@@ -38,7 +42,14 @@ public class ConfigurationDAO {
 		this.neo4jGraphQLEndPoint = neo4jGraphQLEndPoint;
 	}
 
-	
+	public String getNeo4jGraphQLSchemaEndpoint() {
+		return neo4jGraphQLSchemaEndpoint;
+	}
+
+	public void setNeo4jGraphQLSchemaEndpoint(String neo4jGraphQLSchemaEndpoint) {
+		this.neo4jGraphQLSchemaEndpoint = neo4jGraphQLSchemaEndpoint;
+	}
+
 	public String getNeo4jHttpHeaderAuthorization() {
 		return neo4jHttpHeaderAuthorization;
 	}
@@ -47,7 +58,14 @@ public class ConfigurationDAO {
 		this.neo4jHttpHeaderAuthorization = neo4jHttpHeaderAuthorization;
 	}
 
-	
+	public String getSchemaFile() {
+		return schemaFile;
+	}
+
+	public void setSchemaFile(String schemaFile) {
+		this.schemaFile = schemaFile;
+	}
+
 	public boolean isAllowGraphQLQuery() {
 		return allowGraphQLQuery;
 	}

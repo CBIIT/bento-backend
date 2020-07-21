@@ -164,7 +164,7 @@ pipeline {
 							rm -rf results && mkdir results
 							
 							# Run Katalon Tests
-							katalonc -noSplash -runMode=console -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
+							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
 
 							'''
 

@@ -59,6 +59,15 @@
     tag: "{{build_number}}"
     push: yes
     source: build
+  register: backend_build
+
+- name: tag backend build as latest
+  docker_image:
+    name: "cbiitssrepo/bento-backend:{{build_number}}"
+    repository: cbiitssrepo/bento-backend:latest
+    pull: no
+    state: present
+  when: backend_build.changed
 
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
@@ -97,6 +106,15 @@
     tag: "{{build_number}}"
     push: yes
     source: build
+  register: frontend_build
+
+- name: tag frontend build as latest
+  docker_image:
+    name: "cbiitssrepo/bento-frontend:{{build_number}}"
+    repository: cbiitssrepo/bento-frontend:latest
+    pull: no
+    state: present
+  when: frontend_build.changed
 
 - name: post schemas
   uri:

@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,15 +35,28 @@ public class GraphQLControllerTests {
 	@Before
 	public void setUp() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(context)
-				.apply(documentationConfiguration(this.jUnitRestDocumentation)).build();
+				.apply(documentationConfiguration(this.jUnitRestDocumentation))
+				.build();
 	}
 
-
 	@Test
-	public void testGraphQLEndPointWithInValidPayLoad() throws Exception {
-		this.mockMvc
-				.perform(RestDocumentationRequestBuilders.post("/v1/graphql/").contentType(MediaType.APPLICATION_JSON)
-						.content("{\"query\":\"{e{id}}\"}"))
-				.andDo(print()).andExpect(status().is4xxClientError()).andDo(document("{ClassName}/{methodName}"));
+	public void testGraphQLEndPointWithInValidPayLoad(){
+		boolean successful;
+		try{
+			this.mockMvc
+					.perform(RestDocumentationRequestBuilders
+							.post("/v1/graphql/")
+							.contentType(MediaType.APPLICATION_JSON)
+							.content("{\"query\":\"{e{id}}\"}"))
+					.andDo(print())
+					.andExpect(status()
+							.is4xxClientError())
+					.andDo(document("{ClassName}/{methodName}"));
+			successful = true;
+		}
+		catch (Exception e){
+			successful = false;
+		}
+		assertTrue(successful);
 	}
 }

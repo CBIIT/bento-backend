@@ -30,7 +30,7 @@
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: application.properties.j2
+    src: "{{workspace}}/src/main/resources/application.properties.j2"
     dest: "{{workspace}}/src/main/resources/application.properties"
 
 - name: build springboot code

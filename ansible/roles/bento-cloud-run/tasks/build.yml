@@ -102,7 +102,7 @@
   docker_image:
     build:
       path: "{{workspace}}/frontend"
-      dockerfile: "{{workspace}}/backend/dockerfiles/frontend-dockerfile"
+      dockerfile: "{{workspace}}/backend/dockerfiles/frontend-cloudrun-dockerfile"
       # pull: yes
       nocache: yes
     name: custodian/bento-frontend

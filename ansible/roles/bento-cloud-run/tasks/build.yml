@@ -74,10 +74,12 @@
     build:
       path: "{{workspace}}/backend"
       dockerfile: "{{workspace}}/backend/dockerfiles/backend-dockerfile"
-    name: custodian/bento-backend
+      pull: yes
+    name: gcr.io/{{gcp_projec}}/bento-backend
     tag: latest
     force_tag: yes
     source: build
+    push: yes
     
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
@@ -103,12 +105,13 @@
     build:
       path: "{{workspace}}/frontend"
       dockerfile: "{{workspace}}/backend/dockerfiles/frontend-cloudrun-dockerfile"
-      # pull: yes
+      pull: yes
       nocache: yes
-    name: custodian/bento-frontend
+    name: gcr.io/{{gcp_projec}}/bento-frontend
     tag: latest
     force_tag: yes
     source: build
+    push: yes
 
 # - name: post schemas
 #   uri:

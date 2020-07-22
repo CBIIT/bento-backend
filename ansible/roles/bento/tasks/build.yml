@@ -65,6 +65,7 @@
     name: "cbiitssrepo/bento-backend:{{build_number}}"
     repository: cbiitssrepo/bento-backend:latest
     force_tag: yes
+    push: yes
     source: local
 
 - name: copy environment file to {{workspace}}/bento-frontend
@@ -110,6 +111,7 @@
     name: "cbiitssrepo/bento-frontend:{{build_number}}"
     repository: cbiitssrepo/bento-frontend:latest
     force_tag: yes
+    push: yes
     source: local
 
 - name: post schemas

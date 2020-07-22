@@ -69,13 +69,19 @@
     src: "{{workspace}}/backend/target/Bento-0.0.1.war"
     dest: "{{workspace}}/backend/target/ROOT.war"
 
+- name: login to docker
+  expect: 
+    command: gcloud auth configure-docker
+    responses:
+      (?i)(Y/n)?: Y
+
 - name: build custodian/bento-backend image
   docker_image:
     build:
       path: "{{workspace}}/backend"
       dockerfile: "{{workspace}}/backend/dockerfiles/backend-dockerfile"
       pull: yes
-    name: gcr.io/{{gcp_projec}}/bento-backend
+    name: gcr.io/{{gcp_project}}/bento-backend
     tag: latest
     force_tag: yes
     source: build
@@ -107,7 +113,7 @@
       dockerfile: "{{workspace}}/backend/dockerfiles/frontend-cloudrun-dockerfile"
       pull: yes
       nocache: yes
-    name: gcr.io/{{gcp_projec}}/bento-frontend
+    name: gcr.io/{{gcp_project}}/bento-frontend
     tag: latest
     force_tag: yes
     source: build

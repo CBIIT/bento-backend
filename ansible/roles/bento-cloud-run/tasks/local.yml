@@ -1,120 +1,125 @@
 ---
-- name: set dev environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "dev"
+- name: install wget and curl
+  yum:
+    name:
+      - wget
+      - curl
+      - java-11-openjdk-devel
 
-- name: set qa environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "qa"
+- name: install maven and nodejs to build 
 
-- name: set stage environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_STAGE_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "stage"
+  shell: >
+    wget https://www-us.apache.org/dist/maven/maven-3/{{maven_version}}/binaries/apache-maven-{{maven_version}}-bin.tar.gz -P /tmp
+    && tar xf /tmp/apache-maven-{{maven_version}}-bin.tar.gz -C /usr/local 
+    && ln -f -s /usr/local/apache-maven-{{maven_version}} /usr/local/maven 
+    && curl -sL https://rpm.nodesource.com/setup_13.x | bash -
+    && yum install -y nodejs
+  args:
+    warn: False
 
-- name: set prod environment facts
+- name: clone backend github
+  git:
+    repo: 'https://github.com/CBIIT/bento-backend'
+    dest: "{{workspace}}/backend"
+    force: yes
+    version: master
+
+- name: clone frontend github
+  git:
+    repo: 'https://github.com/CBIIT/bento-frontend'
+    dest: "{{workspace}}/frontend"
+    force: yes
+    version: master
+
+# - name: gather neo4j facts
+#   ec2_instance_facts:
+#     region: "{{region}}"
+#     filters:
+#       "tag:Name": "{{stack_name}}-{{database_asg_name}}" 
+#       "instance-state-name": running
+#   register: database
+
+- name: set neo4j bearer
+  shell: echo "Basic $(echo -n "neo4j:{{neo4j_password}}" | base64)"
+  register: output_bearer
+
+- name: set instance ip
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "prod"
+    # neo4j_ip: "{{ database.instances[0].network_interfaces[0].private_ip_address }}"
+    bearer: "{{output_bearer.stdout_lines}}"
 
 - name: remove the application_example.properties file 
   file:
-    path: "{{workspace}}/src/main/resources/application_example.properties"
+    path: "{{workspace}}/backend/src/main/resources/application_example.properties"
     state: absent
 
 - name: copy application.properties file to /src/main/resources/
   template:
     src: application.properties.j2
-    dest: "{{workspace}}/src/main/resources/application.properties"
+    dest: "{{workspace}}/backend/src/main/resources/application.properties"
 
-- name: copy deployment and services manufests
-  template:
-    src: "{{item.src}}"
-    dest: "{{item.dest}}"
-  loop:
-    - { src: 'backend.yml.j2', dest: '{{workspace}}/backend.yml'}
-    - { src: 'frontend.yml.j2', dest: '{{workspace}}/frontend.yml'}
-    - { src: 'bento-backend.yml.j2', dest: '{{workspace}}/bento-backend.yml'}
-    - { src: 'bento-frontend.yml.j2', dest: '{{workspace}}/bento-frontend.yml'}
-    
-- name: build springboot code
-  command: mvn package -DskipTests
+- name: build backend code
+  command: /usr/local/maven/bin/mvn package -DskipTests
   args:
-    chdir: "{{workspace}}"
+    chdir: "{{workspace}}/backend"
+
 - name: copy Bento-0.0.1.war to api.war
   copy:
     remote_src: yes
-    src: "{{workspace}}/target/Bento-0.0.1.war"
-    dest: "{{workspace}}/target/ROOT.war"
+    src: "{{workspace}}/backend/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/backend/target/ROOT.war"
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
-
-- name: build cbiitssrepo/bento-backend image
+- name: build custodian/bento-backend image
   docker_image:
     build:
-      path: "{{workspace}}"
-      dockerfile: "{{workspace}}/dockerfiles/backend-dockerfile"
-      pull: yes
-      nocache: yes
-    name: cbiitssrepo/bento-backend
-    tag: "{{build_number}}"
-    push: yes
+      path: "{{workspace}}/backend"
+      dockerfile: "{{workspace}}/backend/dockerfiles/backend-dockerfile"
+    name: custodian/bento-backend
+    tag: latest
+    force_tag: yes
     source: build
-
+    
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
     src: env.j2
-    dest: "{{workspace}}/bento-frontend/.env"
+    dest: "{{workspace}}/frontend/.env"
 
 - name: run npm install in {{workspace}}/bento-frontend/
-  command: "{{item}}"
+  shell: "{{item}}"
   args:
-    chdir: "{{workspace}}/bento-frontend"
+    chdir: "{{workspace}}/frontend"
+  ignore_errors: True
   loop:
     - npm install 
     
 - name: run npm build in frontend
-  command: npm run-script build
+  shell: npm run-script build
   args:
-    chdir: "{{workspace}}/bento-frontend"
+    chdir: "{{workspace}}/frontend"
+  ignore_errors: True
           
-- name: build cbiitssrepo/bento-frontend image
+- name: build custodian/bento-frontend image
   docker_image:
     build:
-      path: "{{workspace}}/bento-frontend"
-      dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
-      pull: yes
+      path: "{{workspace}}/frontend"
+      dockerfile: "{{workspace}}/backend/dockerfiles/frontend-dockerfile"
+      # pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-frontend
-    tag: "{{build_number}}"
-    push: yes
+    name: custodian/bento-frontend
+    tag: latest
+    force_tag: yes
     source: build
 
 # - name: post schemas
 #   uri:
 #     url: http://{{neo4j_ip}}:7474/graphql/idl/
 #     method: POST
-#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
+#     body: "{{ lookup('file','{{workspace}}/backend/src/main/resources/graphql/bento-extended.graphql') }}"
 #     headers:
 #       Accept: "application/json"
 #       Authorization: "{{bearer}}"
 #   register: schema
 
-# - name: post schema
-#   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/bento-backend/src/main/resources/graphql/ctdc.graphql"
-#   register: schema
-
-# - name: schema output
-#   debug:
-#     msg: "{{schema}}"
-
-    
+- name: schema output
+  debug:
+    msg: "{{schema}}"

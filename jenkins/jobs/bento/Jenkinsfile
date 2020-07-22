@@ -62,16 +62,16 @@ pipeline {
 //		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
 //		List tagnames = tags.collect{ '' + it + '' }
 //
-//		if(env_value.equalsIgnoreCase("qa")) {
+//		if(env_value.equalsIgnoreCase("dev")) {
 //		  for(int i=0; i < tagnames.size(); i++) {
-//			if(tagnames.get(i).equalsIgnoreCase("master")) {
+//			if(tagnames.get(i).equalsIgnoreCase("integration")) {
 //			  new_value = tagnames[i] + ':selected'
 //			  tagnames.set(i, new_value);
 //			  }
 //			}
 //		  } else {
 //			for(int i=0; i < tagnames.size(); i++) {
-//			  if(tagnames.get(i).equalsIgnoreCase("integration")) {
+//			  if(tagnames.get(i).equalsIgnoreCase("master")) {
 //				new_value = tagnames[i] + ':selected'
 //				tagnames.set(i, new_value);
 //				}

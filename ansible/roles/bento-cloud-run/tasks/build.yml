@@ -73,7 +73,7 @@
   expect: 
     command: gcloud auth configure-docker
     responses:
-      (?i)(Y/n)?: Y
+      Do you want to continue (Y/n)?: Y
 
 - name: build custodian/bento-backend image
   docker_image:

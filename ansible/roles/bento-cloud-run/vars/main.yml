@@ -13,3 +13,7 @@
 #hostname: "{{ansible_fqdn}}"
 
 workspace: "/tmp/workspace"
+region: us-east-1
+maven_version: 3.6.3
+version: master
+stack_name: bento

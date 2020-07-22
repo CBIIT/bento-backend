@@ -73,7 +73,7 @@
   copy:
     remote_src: yes
     src: "{{workspace}}/backend/dockerfiles/nginx.conf"
-    dest: "{{workspace}}/frontend/nginx"
+    dest: "{{workspace}}/frontend/nginx.conf"
 
 - name: login to docker
   expect: 

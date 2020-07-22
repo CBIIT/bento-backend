@@ -60,13 +60,13 @@
     push: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-backend image
-  docker_image:
-    name: "cbiitssrepo/bento-backend:{{build_number}}"
-    repository: cbiitssrepo/bento-backend:latest
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add tag latest to cbiitssrepo/bento-backend image
+#  docker_image:
+#    name: "cbiitssrepo/bento-backend:{{build_number}}"
+#    repository: cbiitssrepo/bento-backend:latest
+#    force_tag: yes
+#    push: yes
+#    source: local
 
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
@@ -106,13 +106,13 @@
     push: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-frontend image
-  docker_image:
-    name: "cbiitssrepo/bento-frontend:{{build_number}}"
-    repository: cbiitssrepo/bento-frontend:latest
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add tag latest to cbiitssrepo/bento-frontend image
+#  docker_image:
+#    name: "cbiitssrepo/bento-frontend:{{build_number}}"
+#    repository: cbiitssrepo/bento-frontend:latest
+#    force_tag: yes
+#    push: yes
+#    source: local
 
 - name: post schemas
   uri:

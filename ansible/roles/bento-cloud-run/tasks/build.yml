@@ -69,6 +69,12 @@
     src: "{{workspace}}/backend/target/Bento-0.0.1.war"
     dest: "{{workspace}}/backend/target/ROOT.war"
 
+- name: copy nginx conf
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/backend/dockerfiles/nginx.conf"
+    dest: "{{workspace}}/frontend/nginx"
+
 - name: login to docker
   expect: 
     command: gcloud auth configure-docker

@@ -11,3 +11,5 @@
 # sumo_collector_url: "{{ lookup('aws_ssm', 'sumo_collector_url', region='us-east-1' ) }}"
 # app_name: bento-{{platform}}-{{tier}}
 #hostname: "{{ansible_fqdn}}"
+
+workspace: "/tmp/workspace"

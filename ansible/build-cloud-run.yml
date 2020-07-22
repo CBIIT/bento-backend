@@ -7,5 +7,5 @@
   tasks:
     - name: This is a build stage
       include_role:
-        name: bento-gke
+        name: bento-cloud-run
         tasks_from: build

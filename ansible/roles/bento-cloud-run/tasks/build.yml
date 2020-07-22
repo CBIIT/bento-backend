@@ -120,6 +120,6 @@
 #       Authorization: "{{bearer}}"
 #   register: schema
 
-- name: schema output
-  debug:
-    msg: "{{schema}}"
+# - name: schema output
+#   debug:
+#     msg: "{{schema}}"

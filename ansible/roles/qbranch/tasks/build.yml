@@ -30,7 +30,7 @@
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: "{{workspace}}/src/main/resources/application.properties.j2"
+    src: application.properties.j2
     dest: "{{workspace}}/src/main/resources/application.properties"
 
 - name: build springboot code
@@ -60,26 +60,11 @@
     push: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-backend image
-  docker_image:
-    name: "cbiitssrepo/bento-backend:{{build_number}}"
-    repository: cbiitssrepo/bento-backend:latest
-    force_tag: yes
-    push: yes
-    source: local
-
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
     src: env.j2
     dest: "{{workspace}}/bento-frontend/.env"
-- name: cat env content
-  command: cat {{workspace}}/bento-frontend/.env
-  register: cat_out
 
-- name: show env content
-  debug:
-    msg: "{{cat_out.stdout_lines}}"
-    
 - name: run npm install in {{workspace}}/bento-frontend/
   command: "{{item}}"
   args:
@@ -112,14 +97,6 @@
     tag: "{{build_number}}"
     push: yes
     source: build
-
-- name: Add tag latest to cbiitssrepo/bento-frontend image
-  docker_image:
-    name: "cbiitssrepo/bento-frontend:{{build_number}}"
-    repository: cbiitssrepo/bento-frontend:latest
-    force_tag: yes
-    push: yes
-    source: local
 
 - name: post schemas
   uri:

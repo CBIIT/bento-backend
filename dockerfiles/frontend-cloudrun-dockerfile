@@ -1,6 +1,6 @@
 FROM nginx:alpine
 
-COPY ../backend/dockerfiles/nginx.conf /etc/nginx/conf.d/configfile.template
+COPY nginx.conf /etc/nginx/conf.d/configfile.template
 
 ENV PORT 8080
 

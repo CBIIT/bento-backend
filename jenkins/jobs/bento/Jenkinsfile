@@ -243,7 +243,8 @@ pipeline {
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            			colorized: true) 
+            			colorized: true,
+						extras: '-vvv' )) 
  				}
  			}
  		}

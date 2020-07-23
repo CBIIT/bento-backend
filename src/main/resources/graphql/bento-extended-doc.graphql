@@ -724,6 +724,7 @@ type SubjectOverview {
 type SubjectInfo {
     subject_id: String
     program: String
+    program_id: String
     study_acronym: String
     diagnosis: String
     recurrence_score: String

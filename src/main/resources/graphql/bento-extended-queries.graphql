@@ -30,6 +30,7 @@ type SubjectOverview {
 type SubjectInfo {
     subject_id: String
     program: String
+    program_id: String
     study_acronym: String
     diagnosis: String
     recurrence_score: String
@@ -203,6 +204,7 @@ type QueryType {
         OPTIONAL MATCH (d)<--(tp:therapeutic_procedure)
         OPTIONAL MATCH (ss)<--(demo:demographic_data)
         RETURN p.program_acronym AS program,
+               p.program_id AS program_id,
                s.study_acronym AS study_acronym,
                ss.study_subject_id AS subject_id,
                ss.disease_subtype AS diagnosis,

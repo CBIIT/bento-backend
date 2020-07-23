@@ -58,16 +58,16 @@
     name: cbiitssrepo/bento-backend
     tag: "{{build_number}}"
     push: yes
-    force: yes
+    force_source: yes
     source: build
 
-#- name: Add tag latest to cbiitssrepo/bento-backend image
-#  docker_image:
-#    name: "cbiitssrepo/bento-backend:{{build_number}}"
-#    repository: cbiitssrepo/bento-backend:latest
-#    force_tag: yes
-#    push: yes
-#    source: local
+- name: Add tag latest to cbiitssrepo/bento-backend image
+  docker_image:
+    name: "cbiitssrepo/bento-backend:{{build_number}}"
+    repository: cbiitssrepo/bento-backend:latest
+    force_tag: yes
+    push: yes
+    source: local
 
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
@@ -87,23 +87,22 @@
   docker_image:
     build:
       path: "{{workspace}}/bento-frontend"
-#      dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
       dockerfile: "../dockerfiles/frontend-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-frontend
     tag: "{{build_number}}"
     push: yes
-    force: yes
+    force_source: yes
     source: build
 
-#- name: Add tag latest to cbiitssrepo/bento-frontend image
-#  docker_image:
-#    name: "cbiitssrepo/bento-frontend:{{build_number}}"
-#    repository: cbiitssrepo/bento-frontend:latest
-#    force_tag: yes
-#    push: yes
-#    source: local
+- name: Add tag latest to cbiitssrepo/bento-frontend image
+  docker_image:
+    name: "cbiitssrepo/bento-frontend:{{build_number}}"
+    repository: cbiitssrepo/bento-frontend:latest
+    force_tag: yes
+    push: yes
+    source: local
 
 - name: post schemas
   uri:

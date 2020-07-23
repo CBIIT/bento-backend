@@ -700,6 +700,7 @@ type GroupCount {
 type SubjectOverview {
     subject_id: String
     program: String
+    program_id: String
     study_acronym: String
     study_short_description: String
     study_info: String
@@ -865,6 +866,7 @@ type QueryType {
         OPTIONAL MATCH (ss)<--(demo:demographic_data)
         OPTIONAL MATCH (ss)<--(sp:sample)
         RETURN p.program_acronym AS program,
+               p.program_id AS program_id,
                s.study_acronym AS study_acronym,
                s.study_short_description AS study_short_description,
                s.study_acronym + ': ' + s.study_short_description AS study_info,

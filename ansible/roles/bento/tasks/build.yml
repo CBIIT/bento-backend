@@ -55,10 +55,11 @@
       dockerfile: "./dockerfiles/backend-dockerfile"
 #      pull: yes
       pull: no
-      nocache: yes
+#      nocache: yes
     name: cbiitssrepo/bento-backend
     tag: "{{build_number}}"
     push: yes
+    force: yes
     source: build
 
 - name: Add tag latest to cbiitssrepo/bento-backend image
@@ -108,6 +109,7 @@
     name: cbiitssrepo/bento-frontend
     tag: "{{build_number}}"
     push: yes
+    force: yes
     source: build
 
 - name: Add tag latest to cbiitssrepo/bento-frontend image

@@ -53,22 +53,21 @@
     build:
       path: "{{workspace}}"
       dockerfile: "./dockerfiles/backend-dockerfile"
-#      pull: yes
-      pull: no
-#      nocache: yes
+      pull: yes
+      nocache: yes
     name: cbiitssrepo/bento-backend
     tag: "{{build_number}}"
     push: yes
     force: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-backend image
-  docker_image:
-    name: "cbiitssrepo/bento-backend:{{build_number}}"
-    repository: cbiitssrepo/bento-backend:latest
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add tag latest to cbiitssrepo/bento-backend image
+#  docker_image:
+#    name: "cbiitssrepo/bento-backend:{{build_number}}"
+#    repository: cbiitssrepo/bento-backend:latest
+#    force_tag: yes
+#    push: yes
+#    source: local
 
 - name: copy environment file to {{workspace}}/bento-frontend
   template:
@@ -83,20 +82,6 @@
     - npm install npm@latest -g
     - npm install
     - npm run build
-    # - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
-
-# - name: run npm install and build in {{workspace}}/bento-frontend/node_modules/mui-custom-datatables
-#   command: "{{item}}"
-#   args:
-#     chdir: "{{workspace}}/bento-frontend/node_modules/mui-custom-datatables"
-#   loop:
-#     - npm install
-#     - npm run build
-    
-#- name: run npm build in frontend
-#  command: npm run-script build
-#  args:
-#    chdir: "{{workspace}}/bento-frontend"
           
 - name: build cbiitssrepo/bento-frontend image
   docker_image:
@@ -104,7 +89,7 @@
       path: "{{workspace}}/bento-frontend"
 #      dockerfile: "{{workspace}}/dockerfiles/frontend-dockerfile"
       dockerfile: "../dockerfiles/frontend-dockerfile"
-      pull: no
+      pull: yes
       nocache: yes
     name: cbiitssrepo/bento-frontend
     tag: "{{build_number}}"
@@ -112,13 +97,13 @@
     force: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-frontend image
-  docker_image:
-    name: "cbiitssrepo/bento-frontend:{{build_number}}"
-    repository: cbiitssrepo/bento-frontend:latest
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add tag latest to cbiitssrepo/bento-frontend image
+#  docker_image:
+#    name: "cbiitssrepo/bento-frontend:{{build_number}}"
+#    repository: cbiitssrepo/bento-frontend:latest
+#    force_tag: yes
+#    push: yes
+#    source: local
 
 - name: post schemas
   uri:

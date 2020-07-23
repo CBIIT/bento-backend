@@ -9,6 +9,6 @@
   roles:
     - common
     - icdc_demo
-    #- docker-as-service
-    - sumologic
-    - newrelic
+    # - docker-as-service
+    # - sumologic
+    # - newrelic

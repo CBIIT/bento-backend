@@ -12,20 +12,20 @@ Config:
 
   # Schema files' locations
   schema:
-    - {{workspace}}/bento-model/model-desc/bento_model_file.yaml
-    - {{workspace}}/bento-model/model-desc/bento_model_properties.yaml
+    - {{model_file1}}
+    - {{model_file2}}
 
   #Property file location
-  prop_file: {{workspace}}/config/props-bento-ext.yml
+  prop_file: {{workspace}}/config/{{property_file}}
 
   # Skip validations, aka. Cheat Mode
-  cheat_mode: false
+  cheat_mode: {{cheat_mode}}
   # Validations only, skip loading
   dry_run: false
   # Wipe out database before loading, you'll lose all data!
-  wipe_db: false
+  wipe_db: {{wipe_db}}
   # Skip backup step
-  no_backup: true
+  no_backup: false
   # Automatically confirm deletion and database wiping (without asking user to confirm)
   no_confirmation: true
   # Max violations to display, default is 10

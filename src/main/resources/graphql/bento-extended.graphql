@@ -821,7 +821,9 @@ type ArmDetail {
     study_name: String
     study_type: String
     study_full_description: String
+    study_info: String
     num_subjects: Int
+    num_files: Int
     diagnoses: [GroupCount]
     files: [file]
 }
@@ -1016,14 +1018,18 @@ type QueryType {
         MATCH (s:study {study_acronym: $study_acronym})<--(ss:study_subject)
         WITH s, ss.disease_subtype AS group, COUNT(DISTINCT ss) AS subjects
         WITH s, COLLECT ({group: group, subjects:  subjects}) AS diagnoses
-        OPTIONAL MATCH (s)<-[*..3]-(f:file)
+        OPTIONAL MATCH (s)<--(f:file)
         WITH s, diagnoses, COLLECT(DISTINCT f) AS files
+        OPTIONAL MATCH (s)<-[*..3]-(f:file)
+        WITH s, diagnoses, files, COUNT(DISTINCT f) AS num_files
         OPTIONAL MATCH (s)<--(ss)
         RETURN s.study_acronym AS study_acronym,
                s.study_name AS study_name,
                s.study_type AS study_type,
                s.study_full_description AS study_full_description,
+               s.study_acronym + ': ' + s.study_short_description AS study_info,
                COUNT(DISTINCT ss) AS num_subjects,
+               num_files,
                diagnoses,
                files
     """, passThrough: true)

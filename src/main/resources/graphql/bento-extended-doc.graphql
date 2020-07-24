@@ -821,7 +821,9 @@ type ArmDetail {
     study_name: String
     study_type: String
     study_full_description: String
+    study_info: String
     num_subjects: Int
+    num_files: Int
     diagnoses: [GroupCount]
     files: [file]
 }

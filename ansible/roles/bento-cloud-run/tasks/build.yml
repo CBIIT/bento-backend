@@ -91,6 +91,7 @@
     tag: latest
     force_tag: yes
     source: build
+    force_source: yes
     push: yes
     
 - name: copy environment file to {{workspace}}/bento-frontend
@@ -123,6 +124,7 @@
     tag: latest
     force_tag: yes
     source: build
+    force_source: yes
     push: yes
 
 # - name: post schemas

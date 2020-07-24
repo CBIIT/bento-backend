@@ -22,14 +22,14 @@
     repo: 'https://github.com/CBIIT/bento-backend'
     dest: "{{workspace}}/backend"
     force: yes
-    version: master
+    version: Integration
 
 - name: clone frontend github
   git:
     repo: 'https://github.com/CBIIT/bento-frontend'
     dest: "{{workspace}}/frontend"
     force: yes
-    version: master
+    version: integration
 
 # - name: gather neo4j facts
 #   ec2_instance_facts:

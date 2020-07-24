@@ -45,7 +45,7 @@
     password: "{{neo4j_password}}"
     method: POST
     body: >
-      {"password":"custodian"}
+      {"password":"{{neo4j_password}}"}
     body_format: json
     headers:
       Accept: "application/json"

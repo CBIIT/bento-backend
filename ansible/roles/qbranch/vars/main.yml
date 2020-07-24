@@ -10,5 +10,4 @@ region: us-east-1
 newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
 sumo_collector_url: "{{ lookup('aws_ssm', 'sumo_collector_url', region='us-east-1' ) }}"
 app_name: bento-{{platform}}-{{tier}}
-schema_file: bento-extended.graphql
-# hostname: "{{ansible_fqdn}}"
+ecr: 019211168375.dkr.ecr.us-east-1.amazonaws.com/nci-cbiit-ecr-repo

@@ -21,7 +21,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'demo,dev,qa,stage,prod' )
     extendedChoice( 
-        name: 'Project', 
+        name: 'ProjectName', 
         defaultValue: 'icdc', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
@@ -86,8 +86,9 @@ pipeline {
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.PROJECT         = "${params.Project}"
+                  
                 }
               break
               case "dev":
@@ -96,8 +97,8 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.PROJECT        = "${params.Project}"
-                  env.CHEAT_MODE        = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                 }
               break
@@ -108,8 +109,8 @@ pipeline {
                   env.TIER            = "${params.Environment}"
                   env.TIER            = "dev"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.PROJECT        = "${params.Project}"
-                  env.CHEAT_MODE        = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                 }
               break
@@ -119,9 +120,10 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.CHEAT_MODE        = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.PROJECT        = "${params.Project}"
+                  
                 }
               break
               case "prod":
@@ -130,9 +132,10 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
+                  env.PROJECT        = "${params.ProjectName}"
                   env.CHEAT_MODE        = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.PROJECT        = "${params.Project}"
+                  
                 }
               break
               default:

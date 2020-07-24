@@ -1,0 +1,42 @@
+Config:
+  temp_folder: tmp
+  backup_folder: /tmp/data-loader-backups
+
+  neo4j:
+    # Location of Neo4j server, e.g., bolt://127.0.0.1:7687
+    uri: bolt://{{neo4j_ip}}:7687
+    # Neo4j username
+    user: neo4j
+    # Neo4j password
+    password: {{neo4j_password}}
+
+  # Schema files' locations
+  schema:
+    - {{workspace}}/{{model_repo}}/model-desc/{{model_file1}}
+    - {{workspace}}/{{model_repo}}/model-desc/{{model_file2}}
+
+  #Property file location
+  prop_file: {{workspace}}/config/{{property_file}}
+
+  # Skip validations, aka. Cheat Mode
+  cheat_mode: {{cheat_mode}}
+  # Validations only, skip loading
+  dry_run: false
+  # Wipe out database before loading, you'll lose all data!
+  wipe_db: {{wipe_db}}
+  # Skip backup step
+  no_backup: false
+  # Automatically confirm deletion and database wiping (without asking user to confirm)
+  no_confirmation: true
+  # Max violations to display, default is 10
+  max_violations: 10
+  no_parents: false
+
+  # S3 bucket name, if you are loading from an S3 bucket
+  s3_bucket: {{data_bucket}}
+  # S3 folder for dataset
+  s3_folder: {{s3_folder}}
+  # Loading mode, can be UPSERT_MODE, NEW_MODE or DELETE_MODE, default is UPSERT_MODE
+  loading_mode: UPSERT_MODE
+  # Location of dataset
+  dataset: "{{s3_folder}}"

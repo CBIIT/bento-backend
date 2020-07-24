@@ -20,6 +20,12 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'demo,dev,qa,stage,prod' )
+    extendedChoice( 
+        name: 'Project', 
+        defaultValue: 'icdc', 
+        description: 'Choose the project', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'icdc,ctdc,bento' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -27,6 +33,14 @@ pipeline {
         defaultValue: 'no', 
         name: 'WipeDB', 
         description: 'Choose yes to wipe DB',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'no,yes',
+        type: 'PT_RADIO')
+    extendedChoice( 
+        defaultValue: 'no', 
+        name: 'CheatMode', 
+        description: 'Bypass Data Validation',
         quoteValue: false,
         multiSelectDelimiter: ',',
         value: 'no,yes',
@@ -54,7 +68,7 @@ pipeline {
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
-        dir('icdc-model-tool'){
+        dir('icdc-model'){
           git branch: 'master',
           url: 'https://github.com/CBIIT/icdc-model-tool'
         }
@@ -71,7 +85,9 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.CHEAT_MODE        = "${params.CheatMode}"
+                  env.NEO4J_PASSWORD  = "$  {neo4j_password}"
+                  env.PROJECT        = "${params.Project}"
                 }
               break
               case "dev":
@@ -80,6 +96,8 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
+                  env.PROJECT        = "${params.Project}"
+                  env.CHEAT_MODE        = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                 }
               break
@@ -90,6 +108,8 @@ pipeline {
                   env.TIER            = "${params.Environment}"
                   env.TIER            = "dev"
                   env.WIPE_DB         = "${params.WipeDB}"
+                  env.PROJECT        = "${params.Project}"
+                  env.CHEAT_MODE        = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                 }
               break
@@ -99,7 +119,9 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
+                  env.CHEAT_MODE        = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.PROJECT        = "${params.Project}"
                 }
               break
               case "prod":
@@ -108,7 +130,9 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
+                  env.CHEAT_MODE        = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.PROJECT        = "${params.Project}"
                 }
               break
               default:

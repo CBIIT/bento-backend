@@ -46,7 +46,7 @@
 - name: set instance ip
   set_fact:
     # neo4j_ip: "{{ database.instances[0].network_interfaces[0].private_ip_address }}"
-    bearer: "{{output_bearer.stdout_lines}}"
+    bearer: "{{output_bearer.stdout_lines | first}}"
 
 - name: remove the application_example.properties file 
   file:

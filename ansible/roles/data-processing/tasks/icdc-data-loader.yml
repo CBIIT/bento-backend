@@ -1,7 +1,7 @@
 ---
 - name: show project
   debug:
-    msg: "{{project}}"
+    msg: "{{project}}{{s3_folder}}{{wipe_db}}{{cheat_mode}}"
 
 - name: set model files location for icdc
   set_fact:

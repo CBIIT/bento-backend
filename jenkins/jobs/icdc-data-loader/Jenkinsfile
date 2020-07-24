@@ -85,9 +85,9 @@ pipeline {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.CHEAT_MODE        = "${params.CheatMode}"
-                  env.NEO4J_PASSWORD  = "$  {neo4j_password}"
-                  env.PROJECT        = "${params.Project}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.PROJECT         = "${params.Project}"
                 }
               break
               case "dev":

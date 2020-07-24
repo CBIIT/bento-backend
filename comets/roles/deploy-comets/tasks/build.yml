@@ -129,7 +129,7 @@
 #       - "--exclude=.git"
 
 - name: copy R code
-  shell: rsync -avh --exclude=.git  /tmp/R-cometsAnalytics/ /tmp/comets/comets/restricted/rcode
+  shell: rsync -iRcCvh --exclude=.git  /tmp/R-cometsAnalytics/ /tmp/comets/comets/restricted/rcode
 
 - name: update settings
   template:

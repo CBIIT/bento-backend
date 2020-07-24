@@ -1,82 +1,73 @@
+---
+
+- name: set model files
+  set_fact:
+    model_file1: "{{workspace}}/icdc-model/model-desc/icdc-model.yml"
+    model_file2: "{{workspace}}/icdc-model/model-desc/icdc-model-props.yml"
+    property_file: "{{workspace}}/config/props-icdc-pmvp.yml"
+  when: project == "icdc"
+
+- name: set model files
+  set_fact:
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_model_properties_file.yaml"
+    property_file: "{{workspace}}/config/props-bento-ext.yml"
+  when: project == "bento"
+
+- name: set model files
+  set_fact:
+    model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
+    model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
+    property_file: "{{workspace}}/config/props-ctdc.yml"
+  when: project == "ctdc"
 
 - name: Check if tmp directory exist
   stat:
     path: "{{workspace}}/tmp"
   register: stat_result
 
+- name: Check if tmp {{s3_folder}} exist
+  stat:
+    path: "{{workspace}}/{{s3_folder}}"
+  register: s3folder_result
+
 - name: remove the tmp if exists
   file:
     path: "{{workspace}}/tmp"
     state: absent
-  when: stat_result.stat.exists == True
+  when: stat_result.stat.exists
 
-# - name: list the content  of {{ data_bucket }}
-#   aws_s3: 
-#     bucket: "{{data_bucket}}"
-#     prefix: "{{s3_folder}}" 
-#     mode: list
-#     marker: "{{s3_folder}}"
-#   register: s3_content
+- name: remove the {{s3_folder}} if exists
+  file:
+    path: "{{workspace}}/{{s3_folder}}"
+    state: absent
+  when: stat_result.stat.exists
 
+- name: update settings
+  template:
+    dest: "{{workspace}}/config/config.yml"
+    src: icdc-config.yml.j2
 
-# - name: download all the files from {{s3_folder}}
-#   aws_s3:
-#     bucket: "{{data_bucket}}"
-#     object: "{{ item }}" 
-#     dest: "{{ workspace }}/{{ item | basename }}"
-#     mode: get
-#   loop: "{{ s3_content.s3_keys }}"
+- name: install python3
+  yum:
+    name: python3
+    state: installed
 
-
-- name: copy config.sample.ini config.ini
-  copy:
-    remote_src: yes
-    src: "{{workspace}}/config/config.example.ini"
-    dest: "{{workspace}}/config/config.ini"
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/requirements.txt"
+    executable: pip3
 
 
-- name: execute dataloader script
+- name: loader data
   shell:
     cmd: >
-      /usr/bin/python3
-      loader.py -i bolt://{{ neo4j_ip }}:7687 
-      --config-file config/config.ini
-      --prop-file config/props-icdc.yml
-      -p {{ neo4j_password }}
-      -s {{workspace}}/icdc-model-tool/model-desc/icdc-model.yml
-      -s {{workspace}}/icdc-model-tool/model-desc/icdc-model-props.yml
-      -c -b {{ data_bucket }}
-      -f {{ s3_folder }} tmp
-      --no-backup
+      python3
+      loader.py 
+      {{workspace}}/config/config.yml
     chdir: "{{workspace}}"
   register: data_loader
-  when: wipe_db == "no"
 
 - name: show dataloader output
   debug:
     msg: "{{data_loader}}"
-
-- name: wipe out database then execute dataloader script
-  shell:
-    cmd: >
-      /usr/bin/python3
-      loader.py -i bolt://{{ neo4j_ip }}:7687 
-      --config-file config/config.ini
-      --prop-file config/props-icdc.yml
-      -p {{ neo4j_password }}
-      -s {{workspace}}/icdc-model-tool/model-desc/icdc-model.yml
-      -s {{workspace}}/icdc-model-tool/model-desc/icdc-model-props.yml
-      -c -b {{ data_bucket }}
-      -f {{ s3_folder }} tmp
-      --no-backup
-      --wipe-db
-      --yes
-    chdir: "{{workspace}}"
-  register: data_loader
-  when: wipe_db == "yes"
-
-- name: show dataloader output
-  debug:
-    msg: "{{data_loader}}"
-
-

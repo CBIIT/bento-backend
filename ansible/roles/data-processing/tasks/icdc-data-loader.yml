@@ -46,7 +46,7 @@
 - name: update settings
   template:
     dest: "{{workspace}}/config/config.yml"
-    src: icdc-config.yml.j2
+    src: config.yml.j2
 
 - name: install python3
   yum:

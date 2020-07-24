@@ -21,9 +21,18 @@ public class ConfigurationDAO {
 	@Value("${neo4j.graphql.endpoint}")
 	private String neo4jGraphQLEndPoint;
 
+	@Value("${neo4j.graphql.endpoint.schema_endpoint}")
+	private String neo4jGraphQLSchemaEndpoint;
+
+	@Value("${graphql.schema}")
+	private String schemaFile;
+
 	@Value("${allow_grapqh_query}")
 	private boolean allowGraphQLQuery;
-
+	
+	
+	@Value("${allow_graphql_mutation}")
+	private boolean allowGraphQLMutation;
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
@@ -31,6 +40,14 @@ public class ConfigurationDAO {
 
 	public void setNeo4jGraphQLEndPoint(String neo4jGraphQLEndPoint) {
 		this.neo4jGraphQLEndPoint = neo4jGraphQLEndPoint;
+	}
+
+	public String getNeo4jGraphQLSchemaEndpoint() {
+		return neo4jGraphQLSchemaEndpoint;
+	}
+
+	public void setNeo4jGraphQLSchemaEndpoint(String neo4jGraphQLSchemaEndpoint) {
+		this.neo4jGraphQLSchemaEndpoint = neo4jGraphQLSchemaEndpoint;
 	}
 
 	public String getNeo4jHttpHeaderAuthorization() {
@@ -41,12 +58,28 @@ public class ConfigurationDAO {
 		this.neo4jHttpHeaderAuthorization = neo4jHttpHeaderAuthorization;
 	}
 
+	public String getSchemaFile() {
+		return schemaFile;
+	}
+
+	public void setSchemaFile(String schemaFile) {
+		this.schemaFile = schemaFile;
+	}
+
 	public boolean isAllowGraphQLQuery() {
 		return allowGraphQLQuery;
 	}
 
 	public void setAllowGraphQLQuery(boolean allowGraphQLQuery) {
 		this.allowGraphQLQuery = allowGraphQLQuery;
+	}
+
+	public boolean isAllowGraphQLMutation() {
+		return allowGraphQLMutation;
+	}
+
+	public void setAllowGraphQLMutation(boolean allowGraphQLMutation) {
+		this.allowGraphQLMutation = allowGraphQLMutation;
 	}
 
 	@Bean

@@ -35,7 +35,47 @@ public class Neo4JGraphQLService {
 	
 	@Autowired
 	private ConfigurationDAO config;
-	
+
+	@PostConstruct
+	public void loadSchema(){
+		logger.info("Loading schema into Neo4j");
+		HttpResponse<JsonNode> jsonResponse;
+		try {
+			ResourceLoader resourceLoader = new DefaultResourceLoader();
+			Resource resource = resourceLoader.getResource("classpath:"+config.getSchemaFile());
+			Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+			String schema = FileCopyUtils.copyToString(reader);
+			String endpoint = config.getNeo4jGraphQLEndPoint()+config.getNeo4jGraphQLSchemaEndpoint();
+			jsonResponse = Unirest
+					.post(endpoint)
+					.header(CONTENT_TYPE, APPLICATION_JSON)
+					.header(AUTHORIZATION, config.getNeo4jHttpHeaderAuthorization())
+					.header(ACCEPT, APPLICATION_JSON)
+					.body(schema)
+					.asJson();
+			if(jsonResponse.getStatus() == 404){
+				logger.error("Schema load failure, unable to connect to endpoint: "+endpoint);
+			}
+			else if(jsonResponse.getStatus() == 500){
+				logger.error("Schema load failure, Neo4j was unable to parse the schema file.");
+			}
+			else if(jsonResponse.getStatus() == 200){
+				logger.info("Schema loaded successfully");
+			}
+			else{
+				//Handles any response that is not one of the expected possible responses
+				logger.error("Schema load failure, Bento received an unexpected response from from the" +
+						" Neo4j GraphQL endpoint: "+jsonResponse.getStatus()+"-"+jsonResponse.getStatusText());
+			}
+		} catch (UnirestException e1) {
+			logger.error("Unable to load the GraphQL schema into Neo4j");
+			logger.error(e1.toString());
+		} catch (IOException e2) {
+			logger.error("Unable to read the GraphQL schema");
+			logger.error(e2.toString());
+		}
+	}
+
 	public String query(String graphQLQuery) throws ApiError {
 		logger.info("Query neo4j:  "+graphQLQuery);
 

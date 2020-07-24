@@ -11,7 +11,7 @@
     # - { role: docker,tags: ['sandbox'] }
     # - docker
     - neo4j
-    - sumologic
-    - newrelic
+    # - sumologic
+    # - newrelic
     # - sumologic-journalctl
 

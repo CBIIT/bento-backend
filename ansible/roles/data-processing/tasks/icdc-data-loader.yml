@@ -1,5 +1,8 @@
 ---
-
+- name: show project
+  debug:
+    msg: "{{project}}"
+    
 - name: set model files
   set_fact:
     model_file1: "{{workspace}}/icdc-model/model-desc/icdc-model.yml"

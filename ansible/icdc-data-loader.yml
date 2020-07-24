@@ -10,6 +10,6 @@
         name: data-processing
         tasks_from: icdc-data-loader
       vars:
-        data_bucket: nci-cbiit-caninedatacommons-dev
+        data_bucket: nci-cbiit-ctdc-dev
         ansible_python_interpreter: /usr/bin/python2.7
         # data_bucket: nci-cbiit-caninedatacommons-dev

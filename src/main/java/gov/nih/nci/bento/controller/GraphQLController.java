@@ -74,7 +74,7 @@ public class GraphQLController {
 		}
 
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
-				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
+				|| (operation.equals("mutation"))) {
 			try{
 				String responseText = "";
 				responseText = neo4jService.query(reqBody);

@@ -700,6 +700,7 @@ type GroupCount {
 type SubjectOverview {
     subject_id: String
     program: String
+    program_id: String
     study_acronym: String
     study_short_description: String
     study_info: String
@@ -723,6 +724,7 @@ type SubjectOverview {
 type SubjectInfo {
     subject_id: String
     program: String
+    program_id: String
     study_acronym: String
     diagnosis: String
     recurrence_score: String
@@ -819,7 +821,9 @@ type ArmDetail {
     study_name: String
     study_type: String
     study_full_description: String
+    study_info: String
     num_subjects: Int
+    num_files: Int
     diagnoses: [GroupCount]
     files: [file]
 }

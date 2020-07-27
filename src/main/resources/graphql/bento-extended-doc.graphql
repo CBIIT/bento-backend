@@ -783,6 +783,7 @@ type ProgramDetail {
 type SubjectDetail {
     subject_id: String
     program_acronym: String
+    program_id: String
     study_acronym: String
     study_name: String
     gender: String

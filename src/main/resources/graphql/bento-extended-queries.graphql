@@ -89,6 +89,7 @@ type ProgramDetail {
 type SubjectDetail {
     subject_id: String
     program_acronym: String
+    program_id: String
     study_acronym: String
     study_name: String
     gender: String
@@ -287,6 +288,7 @@ type QueryType {
         OPTIONAL MATCH (ss)<--()-->(lp:laboratory_procedure)
         RETURN ss.study_subject_id AS subject_id,
                p.program_acronym AS program_acronym,
+               p.program_id AS program_id,
                s.study_acronym AS study_acronym,
                s.study_name AS study_name,
                demo.gender AS gender,

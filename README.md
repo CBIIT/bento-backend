@@ -21,3 +21,5 @@ The basic access authentication value used in the ````application.properties````
 ````echo -n "neo4j:my_password" | base64````
 #### Generate base64 encoding in powershell:
 ````[Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("neo4j:my_password"))````
+
+codacy test

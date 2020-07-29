@@ -24,7 +24,7 @@
       #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
       #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
     network_mode: bridge
-    family: icdc-{{tier}}
+    family: icdc-{{tier}}-task-definition
     memory: '1024'
     cpu: '512'
     state: present
@@ -38,13 +38,13 @@
     region: "{{region}}" 
   register: task_icdc
 
-# - name: query demo service
-#   ecs_service_info:
-#     cluster: default
-#     service: icdc-{{tier}}-service
-#     details: true
-#     region: "{{region}}"
-#   register: service_icdc
+- name: query demo service
+  ecs_service_info:
+    cluster: default
+    service: icdc-{{tier}}-service
+    details: true
+    region: "{{region}}"
+  register: service_icdc
 
 # - name: show service query output
 #   debug:
@@ -59,23 +59,23 @@
     # role_arn: "{{service_icdc.services[0].roleArn}}"
 
 
-- name: create ecs service
-  ecs_service:
-    state: present
-    name: icdc-{{tier}}-service
-    cluster: default
-    task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
-    desired_count: 1
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    # placement_constraints:
-    #   - type: memberOf
-    #     expression: 'attribute:flavor==test'
-    # placement_strategy:
-    #   - type: binpack
-    #     field: memory
-    region: "{{region}}"
+# - name: create ecs service
+#   ecs_service:
+#     state: present
+#     name: icdc-{{tier}}-service
+#     cluster: default
+#     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+#     desired_count: 1
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     # placement_constraints:
+#     #   - type: memberOf
+#     #     expression: 'attribute:flavor==test'
+#     # placement_strategy:
+#     #   - type: binpack
+#     #     field: memory
+#     region: "{{region}}"
 
 - name: update icdc service
   ecs_service:
@@ -88,7 +88,7 @@
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
-    desired_count: 2
+    desired_count: 1
     # load_balancers: "{{ lb_icdc }}"
     region: "{{region}}"
   

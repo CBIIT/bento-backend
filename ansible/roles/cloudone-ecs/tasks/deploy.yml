@@ -75,6 +75,7 @@
     # placement_strategy:
     #   - type: binpack
     #     field: memory
+    region: "{{region}}"
 
 - name: update icdc service
   ecs_service:

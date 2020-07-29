@@ -282,7 +282,7 @@ type QueryType {
             association:head(labels(parent)), .file_description, .file_format, .file_size, .file_id, .md5sum}) AS files
         OPTIONAL MATCH (ss)<--(demo:demographic_data)
         OPTIONAL MATCH (ss)<--(diag:diagnosis)
-        OPTIONAL MATCH (ss)<--(pr:therapeutic_procedure)
+        OPTIONAL MATCH (diag)<--(pr:therapeutic_procedure)
         OPTIONAL MATCH (ss)<--(fu:follow_up)
         OPTIONAL MATCH (ss)<--(samp:sample)
         OPTIONAL MATCH (ss)<--()-->(lp:laboratory_procedure)

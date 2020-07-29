@@ -41,10 +41,15 @@
 - name: query demo service
   ecs_service_info:
     cluster: default
-    service: icdc-{{tier}}
+    service: icdc-{{tier}}-service
     details: true
     region: "{{region}}"
   register: service_icdc
+
+- name: show service query output
+  debug:
+    msg: "{{service_icdc}}"
+
 
 - name: set facts
   set_fact:
@@ -53,10 +58,28 @@
     lb_icdc: "{{service_icdc.services[0].loadBalancers}}"
     # role_arn: "{{service_icdc.services[0].roleArn}}"
 
+
+- name: create ecs service
+  ecs_service:
+    state: present
+    name: icdc-{{tier}}-service
+    cluster: default
+    task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+    desired_count: 1
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    # placement_constraints:
+    #   - type: memberOf
+    #     expression: 'attribute:flavor==test'
+    # placement_strategy:
+    #   - type: binpack
+    #     field: memory
+
 - name: update icdc service
   ecs_service:
     state: present
-    name: icdc-{{tier}}
+    name: icdc-{{tier}}-service
     cluster: default
     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
     # role: "{{role_arn}}"
@@ -65,6 +88,6 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 2
-    load_balancers: "{{ lb_icdc }}"
+    # load_balancers: "{{ lb_icdc }}"
     region: "{{region}}"
   

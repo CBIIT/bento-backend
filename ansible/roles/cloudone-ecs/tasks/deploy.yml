@@ -1,0 +1,70 @@
+---
+- name: create task definition 
+  ecs_taskdefinition:
+    containers:
+    - name: icdc-cloudone
+      essential: true
+      image: "cbiitssrepo/icdc-cloudone:ecs"
+      environment:
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+      portMappings:
+      - containerPort: "8080"
+        hostPort: "8080"
+      # logConfiguration:
+      #   logDriver: sumologic
+      #   options:
+      #     sumo-url: "{{sumo_collector_url}}"
+      #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
+      #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
+    network_mode: bridge
+    family: icdc-{{tier}}
+    memory: '1024'
+    cpu: '512'
+    state: present
+    region: "{{region}}"
+  register: task_output
+
+
+- name: query task definition
+  ecs_taskdefinition_info:
+    task_definition: icdc-{{tier}}
+    region: "{{region}}" 
+  register: task_icdc
+
+- name: query demo service
+  ecs_service_info:
+    cluster: default
+    service: icdc-{{tier}}
+    details: true
+    region: "{{region}}"
+  register: service_icdc
+
+- name: set facts
+  set_fact:
+    icdc_revision: "{{task_icdc.revision}}"
+    task_icdc_name: "{{task_icdc.family}}"
+    lb_icdc: "{{service_icdc.services[0].loadBalancers}}"
+    # role_arn: "{{service_icdc.services[0].roleArn}}"
+
+- name: update icdc service
+  ecs_service:
+    state: present
+    name: icdc-{{tier}}
+    cluster: default
+    task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+    # role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 2
+    load_balancers: "{{ lb_icdc }}"
+    region: "{{region}}"
+  

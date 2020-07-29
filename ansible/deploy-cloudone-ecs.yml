@@ -1,0 +1,12 @@
+---
+- name: deploy stage of cloudone ecs pipeline
+  hosts: cicd
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: cloudone-ecs
+        tasks_from: deploy
+      

@@ -38,17 +38,17 @@
     region: "{{region}}" 
   register: task_icdc
 
-- name: query demo service
-  ecs_service_info:
-    cluster: default
-    service: icdc-{{tier}}-service
-    details: true
-    region: "{{region}}"
-  register: service_icdc
+# - name: query demo service
+#   ecs_service_info:
+#     cluster: default
+#     service: icdc-{{tier}}-service
+#     details: true
+#     region: "{{region}}"
+#   register: service_icdc
 
-- name: show service query output
-  debug:
-    msg: "{{service_icdc}}"
+# - name: show service query output
+#   debug:
+#     msg: "{{service_icdc}}"
 
 
 - name: set facts

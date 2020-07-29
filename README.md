@@ -6,8 +6,8 @@ The Bento Backend Framework is a server-side backend written in Java to be used 
 
 The Bento Backend can be found in this Github Repository: [Bento Backend](https://github.com/CBIIT/bento-backend)
 ## Pre-requisites
-*  Java 11 or newer installed on the server hosting the Bento Backend 
-*  The Neo4j database containing the Bento data has been initialized and is running 
+* Java 11 or newer installed on the server hosting the Bento Backend
+* The Neo4j database containing the Bento data has been initialized and is running
 
 ## Configuration
 The following file will need to be edited to configure the Bento Backend Code to work within a Bento based application:
@@ -23,12 +23,12 @@ The following file will need to be edited to configure the Bento Backend Code to
 
 ## Basic Access Authentication
 The basic access authentication value used in the ````application.properties```` file is of the form ````Basic <base64 encoding of username:password>````. To generate this value generate the base64 encoding of the username and password as shown below and append that to the String “Basic “.
-
+    a
 ### Example
 
-*  Username:   ````neo4j````
-*  Password:   ````my_password````
-*  Authorization Value:    ````Basic bmVvNGo6bXlfcGFzc3dvcmQ=````
+* Username:````neo4j````
+* Password:````my_password````
+* Authorization Value:````Basic bmVvNGo6bXlfcGFzc3dvcmQ=````
 
 ### Generate base64 encoding in terminal/bash
 

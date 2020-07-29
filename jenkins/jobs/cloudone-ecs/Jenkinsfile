@@ -107,14 +107,14 @@ pipeline {
     }
     stage('Build') {
       environment {
-        SLACK_URL = "${SLACK_URL}"
+        // SLACK_URL = "${SLACK_URL}"
         VERSION = "${params.Tag}"
         ECS_DEV_URL = "caninecommons-ecs-dev.nci.nih.gov"
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-        withCredentials([string(credentialsId: 'demo_bearer', variable: 'BEARER'), 
-                usernamePassword(credentialsId: 'demo_neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
+        withCredentials([string(credentialsId: 'ecs_dev_bearer', variable: 'BEARER'), 
+                usernamePassword(credentialsId: 'neo4j_ecs_dev_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
                 usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
                 string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
                 string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {

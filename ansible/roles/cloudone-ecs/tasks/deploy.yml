@@ -55,7 +55,7 @@
   set_fact:
     icdc_revision: "{{task_icdc.revision}}"
     task_icdc_name: "{{task_icdc.family}}"
-    lb_icdc: "{{service_icdc.services[0].loadBalancers}}"
+    # lb_icdc: "{{service_icdc.services[0].loadBalancers}}"
     # role_arn: "{{service_icdc.services[0].roleArn}}"
 
 

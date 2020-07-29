@@ -70,6 +70,7 @@ type StudyInfo {
     study_name: String
     study_full_description: String
     study_type: String
+    study_info: String
     num_subjects: Int
 }
 
@@ -258,8 +259,8 @@ type QueryType {
         OPTIONAL MATCH (ss)<-[*..2]-(f:file)
         WITH p, count(DISTINCT f) AS num_files, count(DISTINCT ss) AS num_subjects, collect(DISTINCT ss.disease_subtype) AS disease_subtypes
         MATCH (p)<--(s:study)<--(ss:study_subject)
-        WITH s {.study_type, .study_acronym, .study_name, .study_full_description,
-            num_subjects:count(DISTINCT ss)} AS study, p, num_files, num_subjects, disease_subtypes
+        WITH s {.study_type, .study_acronym, .study_name, .study_full_description, num_subjects:count(DISTINCT ss),
+                 study_info: s.study_acronym + ': ' + s.study_short_description} AS study, p, num_files, num_subjects, disease_subtypes
         OPTIONAL MATCH (p)-->(ins:institution)
         RETURN p.program_acronym AS program_acronym,
                p.program_id AS program_id,

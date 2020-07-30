@@ -48,21 +48,25 @@
     dest: "{{workspace}}/target/ROOT.war"
 
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
+# - name: log into DockerHub
+#   docker_login:
+#     username: "{{docker_user}}"
+#     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/icdc-cloudone  image
+- name: login into ecr
+  shell: "$(/usr/local/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  ignore_errors: True
+
+- name: build {{ecr}}:icdc  image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/icdc-cloudeone
+    name: "{{ecr}}:icdc"
     # tag: "{{build_number}}"
-    tag: ecs
+    tag: latest
     push: yes
     source: build
 

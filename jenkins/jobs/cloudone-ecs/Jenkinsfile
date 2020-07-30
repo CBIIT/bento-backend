@@ -117,6 +117,7 @@ pipeline {
                 usernamePassword(credentialsId: 'neo4j_ecs_dev_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER'),
                 usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
                 string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+                string(credentialsId: 'ecr_repo', variable: 'ECR'),
                 string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
 
           ansiblePlaybook( 

@@ -1,6 +1,7 @@
 ---
 # vars file for cicd
 tier: "{{ lookup('env','TIER') }}"
+ecr: "{{ lookup('env','ECR') }}"
 version: "{{ lookup('env','VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"

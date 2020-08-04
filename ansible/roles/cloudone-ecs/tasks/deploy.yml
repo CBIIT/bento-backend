@@ -4,7 +4,8 @@
     containers:
     - name: icdc-cloudone
       essential: true
-      image: "{{ecr}}:icdc"
+      # image: "{{ecr}}:icdc"
+      image: cbiitssrepo/icdc:ecs
       environment:
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"

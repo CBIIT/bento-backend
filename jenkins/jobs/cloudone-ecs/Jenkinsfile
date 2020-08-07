@@ -83,6 +83,9 @@ pipeline {
       }
     }
     stage('Set Environment'){
+      environment {
+        SLACK_URL = "${SLACK_ECS_ICDC_URL}"
+      }
         steps {
           script {
             switch("${params.Environment}") {
@@ -107,7 +110,6 @@ pipeline {
     }
     stage('Build') {
       environment {
-        // SLACK_URL = "${SLACK_URL}"
         VERSION = "${params.Tag}"
         ECS_DEV_URL = "caninecommons-ecs-dev.nci.nih.gov"
       }

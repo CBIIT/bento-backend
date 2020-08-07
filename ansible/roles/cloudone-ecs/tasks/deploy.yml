@@ -35,7 +35,7 @@
 
 - name: query task definition
   ecs_taskdefinition_info:
-    task_definition: icdc-{{tier}}
+    task_definition: icdc-{{tier}}-task-definition
     region: "{{region}}" 
   register: task_icdc
 
@@ -47,19 +47,12 @@
     region: "{{region}}"
   register: service_icdc
 
-- name: show service query output
-  debug:
-    msg: "{{task_icdc}}"
 
 
-- name: show service query output
-  debug:
-    msg: "{{service_icdc}}"
-
-# - name: set facts
-#   set_fact:
-#     icdc_revision: "{{task_icdc.revision}}"
-#     task_icdc_name: "{{task_icdc.family}}"
+- name: set facts
+  set_fact:
+    icdc_revision: "{{task_icdc.revision}}"
+    task_icdc_name: "{{task_icdc.family}}"
     # lb_icdc: "{{service_icdc.services[0].loadBalancers}}"
     # role_arn: "{{service_icdc.services[0].roleArn}}"
 
@@ -82,18 +75,18 @@
 #     #     field: memory
 #     region: "{{region}}"
 
-# - name: update icdc service
-#   ecs_service:
-#     state: present
-#     name: icdc-{{tier}}-service
-#     cluster: default
-#     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
-#     # role: "{{role_arn}}"
-#     force_new_deployment: yes
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     # load_balancers: "{{ lb_icdc }}"
-#     region: "{{region}}"
+- name: update icdc service
+  ecs_service:
+    state: present
+    name: icdc-{{tier}}-service
+    cluster: default
+    task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+    # role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    # load_balancers: "{{ lb_icdc }}"
+    region: "{{region}}"
   

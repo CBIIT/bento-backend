@@ -166,39 +166,38 @@ type QueryType {
     subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as subjects")
     subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.menopause_status AS group, count(DISTINCT ss) as subjects")
 
-
     subjectOverView: [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
-        OPTIONAL MATCH (f)-->(lp:laboratory_procedure)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(:sample)<-[:of_sample]-(f:file)
+        OPTIONAL MATCH (f)-[:of_laboratory_procedure]->(lp)
         WITH ss, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
-        OPTIONAL MATCH (ss)-->(s:study)-->(p:program)
-        OPTIONAL MATCH (ss)<--(sf:stratification_factor)
-        OPTIONAL MATCH (ss)<--(d:diagnosis)
-        OPTIONAL MATCH (d)<--(tp:therapeutic_procedure)
-        OPTIONAL MATCH (ss)<--(demo:demographic_data)
-        OPTIONAL MATCH (ss)<--(sp:sample)
-        RETURN p.program_acronym AS program,
-               p.program_id AS program_id,
-               s.study_acronym AS study_acronym,
-               s.study_short_description AS study_short_description,
-               s.study_acronym + ': ' + s.study_short_description AS study_info,
-               ss.study_subject_id AS subject_id,
-               ss.disease_subtype AS diagnosis,
-               sf.grouped_recurrence_score AS recurrence_score,
-               d.tumor_size_group AS tumor_size,
-               d.tumor_grade AS tumor_grade,
-               d.er_status AS er_status,
-               d.pr_status AS pr_status,
-               tp.chemotherapy_regimen AS chemotherapy,
-               tp.endocrine_therapy_type AS endocrine_therapy,
-               demo.menopause_status AS menopause_status,
-               demo.age_at_index AS age_at_index,
-               demo.survival_time AS survival_time,
-               demo.survival_time_unit AS survival_time_unit,
-               collect(sp.sample_id) AS samples,
-               files,
-               lab_procedures
+        OPTIONAL MATCH (ss)-[:of_study]->(s)-[:of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sf:stratification_factor)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(d:diagnosis)
+        OPTIONAL MATCH (d)<-[:of_diagnosis]-(tp:therapeutic_procedure)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(demo:demographic_data)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sp:sample)
+        RETURN  p.program_acronym AS program,
+                p.program_id AS program_id,
+                s.study_acronym AS study_acronym,
+                s.study_short_description AS study_short_description,
+                s.study_acronym + ': ' + s.study_short_description AS study_info,
+                ss.study_subject_id AS subject_id,
+                ss.disease_subtype AS diagnosis,
+                sf.grouped_recurrence_score AS recurrence_score,
+                d.tumor_size_group AS tumor_size,
+                d.tumor_grade AS tumor_grade,
+                d.er_status AS er_status,
+                d.pr_status AS pr_status,
+                tp.chemotherapy_regimen AS chemotherapy,
+                tp.endocrine_therapy_type AS endocrine_therapy,
+                demo.menopause_status AS menopause_status,
+                demo.age_at_index AS age_at_index,
+                demo.survival_time AS survival_time,
+                demo.survival_time_unit AS survival_time_unit,
+                collect(sp.sample_id) AS samples,
+                files,
+                lab_procedures
     """, passThrough: true)
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] @cypher(statement: """

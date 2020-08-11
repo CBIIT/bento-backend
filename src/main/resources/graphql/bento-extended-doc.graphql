@@ -860,6 +860,8 @@ type QueryType {
     subjectCountByEndocrineTherapy: [GroupCount] 
     subjectCountByMenopauseStatus: [GroupCount] 
 
+    subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] 
+
     subjectOverView: [SubjectOverview] 
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] 

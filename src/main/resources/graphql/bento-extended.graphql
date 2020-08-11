@@ -818,6 +818,18 @@ type SubjectDetail {
     num_lab_procedures: Int
 }
 
+type ArmInfo {
+    title: String
+    size: Int
+    caseSize: Int
+}
+
+type ProgramArms {
+    title: String
+    caseSize: Int
+    children: [ArmInfo]
+}
+
 type ArmDetail {
     study_acronym: String
     study_name: String
@@ -859,6 +871,17 @@ type QueryType {
     subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(DISTINCT ss) as subjects")
     subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as subjects")
     subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.menopause_status AS group, count(DISTINCT ss) as subjects")
+
+    armsByPrograms: [ProgramArms] @cypher(statement: """
+        MATCH (p:program)
+        OPTIONAL MATCH (p)<-[:of_program]-()<-[:of_study]-(ss:study_subject)
+        WITH p, COUNT(DISTINCT ss) AS caseSize
+        OPTIONAL MATCH (p)<--(s:study)<--(ss:study_subject)
+        WITH p, caseSize, {title: p.program_acronym + ' : ' + s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
+        RETURN  p.program_acronym AS title,
+                caseSize,
+                collect(s) AS children
+    """, passThrough: true)
 
     subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)

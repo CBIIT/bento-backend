@@ -818,6 +818,18 @@ type SubjectDetail {
     num_lab_procedures: Int
 }
 
+type ArmInfo {
+    title: String
+    size: Int
+    caseSize: Int
+}
+
+type ProgramArms {
+    title: String
+    caseSize: Int
+    children: [ArmInfo]
+}
+
 type ArmDetail {
     study_acronym: String
     study_name: String
@@ -859,6 +871,8 @@ type QueryType {
     subjectCountByChemotherapyRegimen: [GroupCount] 
     subjectCountByEndocrineTherapy: [GroupCount] 
     subjectCountByMenopauseStatus: [GroupCount] 
+
+    armsByPrograms: [ProgramArms] 
 
     subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] 
 

@@ -1,9 +1,5 @@
 ---
 
-bento_tailorx_model_file.yaml
-bento_tailorx_model_properties.yaml
-model-desc/bento_tailorx_model_file.yaml
-
 - name: set model files location for icdc
   set_fact:
     model_file1: "{{workspace}}/icdc-model/model-desc/icdc-model.yml"

@@ -109,6 +109,7 @@ pipeline {
       environment {
         VERSION = "${params.Tag}"
         ECS_DEV_URL = "caninecommons-ecs-dev.nci.nih.gov"
+        SLACK_URL = "${SLACK_ECS_ICDC_URL}"
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -139,9 +140,7 @@ pipeline {
     }
   }
   post {
-    environment {
-        SLACK_URL = "${SLACK_ECS_ICDC_URL}"
-      }
+    
     always {
       
       sendSlackMessage()

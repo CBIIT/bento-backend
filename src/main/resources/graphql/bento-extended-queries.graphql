@@ -180,7 +180,7 @@ type QueryType {
 
     armsByPrograms: [ProgramArms] @cypher(statement: """
         MATCH (p:program)
-        OPTIONAL MATCH (p)<-[:of_program]-()<-[:of_study]-(ss:study_subject)
+        OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
         WITH p, COUNT(DISTINCT ss) AS caseSize
         OPTIONAL MATCH (p)<--(s:study)<--(ss:study_subject)
         WITH p, caseSize, {title: p.program_acronym + ' : ' + s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
@@ -194,13 +194,13 @@ type QueryType {
         WITH ss ORDER BY ss.study_subject_id
         SKIP $offset
         LIMIT $first
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sp)<-[:of_sample]-(f:file)-[:of_laboratory_procedure]->(lp)
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
-        OPTIONAL MATCH (ss)-[:of_study]->(s)-[:of_program]->(p)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sf:stratification_factor)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(d:diagnosis)
-        OPTIONAL MATCH (d)<-[:of_diagnosis]-(tp:therapeutic_procedure)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(demo:demographic_data)
+        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
+        OPTIONAL MATCH (d)<-[:tp_of_diagnosis]-(tp)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
         RETURN  p.program_acronym AS program,
                 p.program_id AS program_id,
                 s.study_acronym AS study_acronym,
@@ -226,13 +226,13 @@ type QueryType {
 
     subjectOverView: [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sp)<-[:of_sample]-(f:file)-[:of_laboratory_procedure]->(lp)
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
-        OPTIONAL MATCH (ss)-[:of_study]->(s)-[:of_program]->(p)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sf:stratification_factor)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(d:diagnosis)
-        OPTIONAL MATCH (d)<-[:of_diagnosis]-(tp:therapeutic_procedure)
-        OPTIONAL MATCH (ss)<-[:of_study_subject]-(demo:demographic_data)
+        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
+        OPTIONAL MATCH (d)<-[:tp_of_diagnosis]-(tp)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
         RETURN  p.program_acronym AS program,
                 p.program_id AS program_id,
                 s.study_acronym AS study_acronym,

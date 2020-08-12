@@ -1,4 +1,29 @@
 ---
+- name: show project
+  debug:
+    msg: "{{project}}{{s3_folder}}{{wipe_db}}{{cheat_mode}}"
+
+- name: set model files location for icdc
+  set_fact:
+    model_file1: "{{workspace}}/icdc-model/model-desc/icdc-model.yml"
+    model_file2: "{{workspace}}/icdc-model/model-desc/icdc-model-props.yml"
+    property_file: "{{workspace}}/config/props-icdc-pmvp.yml"
+  when: project == "icdc"
+
+- name: set model files location for bento
+  set_fact:
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_model_properties_file.yaml"
+    property_file: "{{workspace}}/config/props-bento-ext.yml"
+  when: project == "bento"
+
+- name: set model files location for ctdc
+  set_fact:
+    model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
+    model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
+    property_file: "{{workspace}}/config/props-ctdc.yml"
+  when: project == "ctdc"
+
 - name: Check if tmp directory exist
   stat:
     path: "{{workspace}}/tmp"

@@ -83,9 +83,13 @@
     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
     # role: "{{role_arn}}"
     force_new_deployment: yes
+    
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
+    placement_constraints:
+      - type: memberOf
+        expression: 'attribute:project==icdc'
     desired_count: 1
     # load_balancers: "{{ lb_icdc }}"
     region: "{{region}}"

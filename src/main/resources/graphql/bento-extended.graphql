@@ -814,13 +814,13 @@ type SubjectDetail {
 }
 
 type ArmInfo {
-    title: String
+    arm: String
     size: Int
     caseSize: Int
 }
 
 type ProgramArms {
-    title: String
+    program: String
     caseSize: Int
     children: [ArmInfo]
 }
@@ -871,9 +871,9 @@ type QueryType {
         MATCH (p:program)
         OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
         WITH p, COUNT(DISTINCT ss) AS caseSize
-        OPTIONAL MATCH (p)<--(s:study)<--(ss:study_subject)
-        WITH p, caseSize, {title: p.program_acronym + ' : ' + s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
-        RETURN  p.program_acronym AS title,
+        OPTIONAL MATCH (p)<-[:of_program]-(s)<-[:of_study]-(ss:study_subject)
+        WITH p, caseSize, {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
+        RETURN  p.program_acronym AS program,
                 caseSize,
                 collect(s) AS children
     """, passThrough: true)

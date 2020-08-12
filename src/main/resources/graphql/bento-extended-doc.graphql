@@ -814,13 +814,13 @@ type SubjectDetail {
 }
 
 type ArmInfo {
-    title: String
+    arm: String
     size: Int
     caseSize: Int
 }
 
 type ProgramArms {
-    title: String
+    program: String
     caseSize: Int
     children: [ArmInfo]
 }

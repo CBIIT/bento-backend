@@ -182,7 +182,7 @@ type QueryType {
         MATCH (p:program)
         OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
         WITH p, COUNT(DISTINCT ss) AS caseSize
-        OPTIONAL MATCH (p)<-[:of_program]-(s)<-[:of_study]-(ss:study_subject)
+        OPTIONAL MATCH (p)<-[:study_of_program]-(s)<-[:study_subject_of_study]-(ss)
         WITH p, caseSize, {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
         RETURN  p.program_acronym AS program,
                 caseSize,

@@ -1,7 +1,8 @@
 ---
-- name: show project
-  debug:
-    msg: "{{project}}{{s3_folder}}{{wipe_db}}{{cheat_mode}}"
+
+bento_tailorx_model_file.yaml
+bento_tailorx_model_properties.yaml
+model-desc/bento_tailorx_model_file.yaml
 
 - name: set model files location for icdc
   set_fact:
@@ -12,8 +13,8 @@
 
 - name: set model files location for bento
   set_fact:
-    model_file1: "{{workspace}}/bento-model/model-desc/bento_model_file.yaml"
-    model_file2: "{{workspace}}/bento-model/model-desc/bento_model_properties_file.yaml"
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
     property_file: "{{workspace}}/config/props-bento-ext.yml"
   when: project == "bento"
 

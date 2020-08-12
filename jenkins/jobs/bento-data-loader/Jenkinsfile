@@ -55,8 +55,8 @@ pipeline {
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
         dir('bento-model'){
-          git branch: 'bento_core_data_model_tailorx_extension',
-          url: 'https://github.com/CBIIT/bento-model'
+          git branch: 'master',
+          url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
         }
   		}
  

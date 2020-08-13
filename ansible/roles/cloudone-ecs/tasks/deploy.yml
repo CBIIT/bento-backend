@@ -106,8 +106,8 @@
     state: present
     name: icdc-{{tier}}-service
     cluster: default
-    # task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
-    force_new_deployment: yes
+    task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+    # force_new_deployment: yes
     
     desired_count: 0
     # load_balancers: "{{ lb_icdc }}"

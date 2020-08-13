@@ -117,7 +117,7 @@
 
 
 
-    - name: update icdc service
+- name: update icdc service
   ecs_service:
     state: absent
     name: icdc-{{tier}}-service

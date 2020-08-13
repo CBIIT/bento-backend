@@ -1,51 +1,51 @@
 ---
-# - name: create task definition 
-#   ecs_taskdefinition:
-#     containers:
-#     - name: icdc-cloudone
-#       essential: true
-#       # image: "{{ecr}}:icdc"
-#       image: cbiitssrepo/icdc:ecs
-#       environment:
-#         - name: NEW_RELIC_LICENSE_KEY
-#           value: "{{ newrelic_license_key }}"
-#         - name: NEW_RELIC_APP_NAME
-#           value: "{{ app_name }}"
-#         - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-#           value: true
-#         - name: NEW_RELIC_HOST
-#           value: "gov-collector.newrelic.com"
-#       portMappings:
-#       - containerPort: "8080"
-#         hostPort: "8080"
-#       # logConfiguration:
-#       #   logDriver: sumologic
-#       #   options:
-#       #     sumo-url: "{{sumo_collector_url}}"
-#       #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
-#       #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
-#     network_mode: bridge
-#     family: icdc-{{tier}}-task-definition
-#     memory: '1024'
-#     cpu: '512'
-#     state: present
-#     region: "{{region}}"
-#   register: task_output
-
-
 - name: query task definition
   ecs_taskdefinition_info:
     task_definition: icdc-{{tier}}-task-definition
     region: "{{region}}" 
   register: task_icdc
 
-
-- name: query task definition
+- name: create task definition 
   ecs_taskdefinition:
-    task_definition: icdc-{{tier}}-task-definition
-    region: "{{region}}" 
+    containers:
+    - name: icdc-cloudone
+      essential: true
+      # image: "{{ecr}}:icdc"
+      image: cbiitssrepo/icdc:ecs
+      environment:
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+      portMappings:
+      - containerPort: "8080"
+        hostPort: "8080"
+      # logConfiguration:
+      #   logDriver: sumologic
+      #   options:
+      #     sumo-url: "{{sumo_collector_url}}"
+      #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
+      #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
+    network_mode: bridge
+    family: icdc-{{tier}}-task-definition
+    memory: '1024'
+    cpu: '512'
     state: absent
-  register: task_icdc
+    region: "{{region}}"
+  register: task_output
+
+
+# - name: query task definition
+#   ecs_taskdefinition_info:
+#     task_definition: icdc-{{tier}}-task-definition
+#     region: "{{region}}" 
+#   register: task_icdc
+
+
 
 - name: query demo service
   ecs_service_info:

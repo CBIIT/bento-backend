@@ -23,9 +23,9 @@ type aliquot {
   selected_normal_targeted_sequencing: Boolean
   selected_normal_wgs: Boolean
   selected_normal_wxs: Boolean
-  analyte: analyte @relation(name:"of_analyte", direction:OUT)
-  laboratory_procedures: [laboratory_procedure] @relation(name:"processed_by", direction:OUT)
-  report: report @relation(name:"of_aliquot", direction:IN)
+  laboratory_procedures: [laboratory_procedure] @relation(name:"aliquot_processed_by", direction:OUT)
+  report: report @relation(name:"report_of_aliquot", direction:IN)
+  analyte: analyte @relation(name:"aliquot_of_analyte", direction:OUT)
 }
 
 type analyte {
@@ -49,23 +49,18 @@ type analyte {
   spectrophotometer_method: String
   well_number: Int
   normal_tumor_genotype_snp_match: String
-  sample: sample @relation(name:"of_sample", direction:OUT)
-  fraction: fraction @relation(name:"of_fraction", direction:OUT)
-  aliquot: aliquot @relation(name:"of_analyte", direction:IN)
-  report: report @relation(name:"of_analyte", direction:IN)
-  laboratory_procedures: [laboratory_procedure] @relation(name:"processed_by", direction:OUT)
+  laboratory_procedures: [laboratory_procedure] @relation(name:"analyte_processed_by", direction:OUT)
+  aliquots: [aliquot] @relation(name:"aliquot_of_analyte", direction:IN)
+  report: report @relation(name:"report_of_analyte", direction:IN)
+  fraction: fraction @relation(name:"analyte_of_fraction", direction:OUT)
+  sample: sample @relation(name:"analyte_of_sample", direction:OUT)
 }
 
 type cross_reference_database {
   cross_reference_database_id: String
   cross_reference_database_name: String
   cross_reference_database_url: String
-  study_subjects: [study_subject] @relation(name:"cross_referenced_at", direction:IN)
-}
-
-type cross_referenced_at {
-  cross_reference_id: String
-  cross_reference_url: String
+  study_subjects: [study_subject] @relation(name:"study_subject_cross_referenced_at", direction:IN)
 }
 
 type demographic_data {
@@ -76,9 +71,9 @@ type demographic_data {
   survival_time_unit: String
   survival_time_original: Int
   survival_time_original_unit: String
-  days_to_death: String
+  days_to_death: Int
   days_to_death_unit: String
-  days_to_death_original: String
+  days_to_death_original: Int
   days_to_death_original_unit: String
   ethnicity: String
   race: String
@@ -89,7 +84,7 @@ type demographic_data {
   breed: String
   cause_of_death_source: String
   date_of_birth: String
-  days_to_birth: String
+  days_to_birth: Int
   neutered_indicator: Boolean
   occupation_duration_years: Int
   premature_at_birth: String
@@ -104,7 +99,7 @@ type demographic_data {
   weight_original_unit: String
   year_of_birth: Int
   year_of_death: Int
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
+  study_subject: study_subject @relation(name:"demographic_of_study_subject", direction:OUT)
 }
 
 type diagnosis {
@@ -152,10 +147,10 @@ type diagnosis {
   date_of_diagnosis: String
   date_of_histology_confirmation: String
   days_to_best_overall_response: Int
-  days_to_birth: String
-  days_to_death: String
+  days_to_birth: Int
+  days_to_death: Int
   days_to_death_unit: String
-  days_to_death_original: String
+  days_to_death_original: Int
   days_to_death_original_unit: String
   days_to_diagnosis: Int
   days_to_hiv_diagnosis: String
@@ -249,10 +244,10 @@ type diagnosis {
   weiss_assessment_score: String
   wilms_tumor_histologic_subtype: String
   year_of_diagnosis: Int
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
-  files: [file] @relation(name:"of_diagnosis", direction:IN)
-  therapeutic_procedures: [therapeutic_procedure] @relation(name:"of_diagnosis", direction:IN)
-  follow_ups: [follow_up] @relation(name:"of_diagnosis", direction:IN)
+  study_subject: study_subject @relation(name:"diagnosis_of_study_subject", direction:OUT)
+  files: [file] @relation(name:"file_of_diagnosis", direction:IN)
+  follow_ups: [follow_up] @relation(name:"fu_of_diagnosis", direction:IN)
+  therapeutic_procedures: [therapeutic_procedure] @relation(name:"tp_of_diagnosis", direction:IN)
 }
 
 type exposure {
@@ -277,7 +272,7 @@ type exposure {
   type_of_smoke_exposure: String
   type_of_tobacco_used: String
   years_smoked: Float
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
+  study_subject: study_subject @relation(name:"exposure_of_study_subject", direction:OUT)
 }
 
 type family_medical_history {
@@ -291,7 +286,7 @@ type family_medical_history {
   relationship_type: String
   relative_with_cancer_history: String
   relatives_with_cancer_history_count: Int
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
+  study_subject: study_subject @relation(name:"fmh_of_study_subject", direction:OUT)
 }
 
 type file {
@@ -304,13 +299,13 @@ type file {
   file_status: String
   file_type: String
   md5sum: String
-  program: program @relation(name:"of_program", direction:OUT)
-  project: project @relation(name:"of_project", direction:OUT)
-  study: study @relation(name:"of_study", direction:OUT)
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
-  sample: sample @relation(name:"of_sample", direction:OUT)
-  laboratory_procedure: laboratory_procedure @relation(name:"of_laboratory_procedure", direction:OUT)
-  diagnosis: diagnosis @relation(name:"of_diagnosis", direction:OUT)
+  diagnosis: diagnosis @relation(name:"file_of_diagnosis", direction:OUT)
+  laboratory_procedure: laboratory_procedure @relation(name:"file_of_laboratory_procedure", direction:OUT)
+  study_subject: study_subject @relation(name:"file_of_study_subject", direction:OUT)
+  program: program @relation(name:"file_of_program", direction:OUT)
+  project: project @relation(name:"file_of_project", direction:OUT)
+  sample: sample @relation(name:"file_of_sample", direction:OUT)
+  study: study @relation(name:"file_of_study", direction:OUT)
 }
 
 type follow_up {
@@ -378,8 +373,8 @@ type follow_up {
   weight_unit: String
   weight_original: Float
   weight_original_unit: String
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
-  diagnosis: diagnosis @relation(name:"of_diagnosis", direction:OUT)
+  diagnosis: diagnosis @relation(name:"fu_of_diagnosis", direction:OUT)
+  study_subject: study_subject @relation(name:"fu_of_study_subject", direction:OUT)
 }
 
 type fraction {
@@ -394,10 +389,10 @@ type fraction {
   weight_original: Float
   weight_original_unit: String
   fraction_type: String
-  sample: sample @relation(name:"of_sample", direction:OUT)
-  analyte: analyte @relation(name:"of_fraction", direction:IN)
-  report: report @relation(name:"of_fraction", direction:IN)
-  laboratory_procedures: [laboratory_procedure] @relation(name:"processed_by", direction:OUT)
+  laboratory_procedures: [laboratory_procedure] @relation(name:"fraction_processed_by", direction:OUT)
+  analytes: [analyte] @relation(name:"analyte_of_fraction", direction:IN)
+  report: report @relation(name:"report_of_fraction", direction:IN)
+  sample: sample @relation(name:"fraction_of_sample", direction:OUT)
 }
 
 type institution {
@@ -405,7 +400,7 @@ type institution {
   institution_name: String
   institution_url: String
   institution_acronymn: String
-  programs: [program] @relation(name:"of_institution", direction:IN)
+  programs: [program] @relation(name:"program_of_institution", direction:IN)
 }
 
 type laboratory_procedure {
@@ -419,13 +414,13 @@ type laboratory_procedure {
   software_name: String
   software_version: String
   reagent_description: String
-  program: program @relation(name:"of_program", direction:OUT)
-  aliquots: [aliquot] @relation(name:"processed_by", direction:IN)
-  analytes: [analyte] @relation(name:"processed_by", direction:IN)
-  fractions: [fraction] @relation(name:"processed_by", direction:IN)
-  samples: [sample] @relation(name:"processed_by", direction:IN)
-  reports: [report] @relation(name:"of_laboratory_procedure", direction:IN)
-  files: [file] @relation(name:"of_laboratory_procedure", direction:IN)
+  aliquots: [aliquot] @relation(name:"aliquot_processed_by", direction:IN)
+  analytes: [analyte] @relation(name:"analyte_processed_by", direction:IN)
+  files: [file] @relation(name:"file_of_laboratory_procedure", direction:IN)
+  fractions: [fraction] @relation(name:"fraction_processed_by", direction:IN)
+  programs: [program] @relation(name:"laboratory_procedure_of_program", direction:OUT)
+  report: report @relation(name:"report_of_laboratory_procedure", direction:IN)
+  samples: [sample] @relation(name:"sample_processed_by", direction:IN)
 }
 
 type program {
@@ -454,12 +449,12 @@ type program {
   releasable: Boolean
   request_submission: Boolean
   submission_enabled: Boolean
-  institutions: [institution] @relation(name:"of_institution", direction:OUT)
-  projects: [project] @relation(name:"of_program", direction:IN)
-  studies: [study] @relation(name:"of_program", direction:IN)
-  study_subjects: [study_subject] @relation(name:"of_program", direction:IN)
-  laboratory_procedures: [laboratory_procedure] @relation(name:"of_program", direction:IN)
-  files: [file] @relation(name:"of_program", direction:IN)
+  institutions: [institution] @relation(name:"program_of_institution", direction:OUT)
+  projects: [project] @relation(name:"project_of_program", direction:IN)
+  studies: [study] @relation(name:"study_of_program", direction:IN)
+  study_subjects: [study_subject] @relation(name:"study_subject_of_program", direction:IN)
+  laboratory_procedures: [laboratory_procedure] @relation(name:"laboratory_procedure_of_program", direction:IN)
+  files: [file] @relation(name:"file_of_program", direction:IN)
 }
 
 type project {
@@ -490,9 +485,9 @@ type project {
   project_sort_order: Int
   acquisition_type: String
   analytical_fraction: String
-  program: program @relation(name:"of_program", direction:OUT)
-  study_subjects: [study_subject] @relation(name:"of_project", direction:IN)
-  files: [file] @relation(name:"of_project", direction:IN)
+  programs: [program] @relation(name:"project_of_program", direction:OUT)
+  study_subjects: [study_subject] @relation(name:"study_subject_of_project", direction:IN)
+  files: [file] @relation(name:"file_of_project", direction:IN)
 }
 
 type report {
@@ -504,11 +499,11 @@ type report {
   report_format: String
   report_location: String
   report_size: Float
-  sample: sample @relation(name:"of_sample", direction:OUT)
-  fraction: fraction @relation(name:"of_fraction", direction:OUT)
-  analyte: analyte @relation(name:"of_analyte", direction:OUT)
-  aliquot: aliquot @relation(name:"of_aliquot", direction:OUT)
-  laboratory_procedure: laboratory_procedure @relation(name:"of_laboratory_procedure", direction:OUT)
+  aliquot: aliquot @relation(name:"report_of_aliquot", direction:OUT)
+  analyte: analyte @relation(name:"report_of_analyte", direction:OUT)
+  fraction: fraction @relation(name:"report_of_fraction", direction:OUT)
+  sample: sample @relation(name:"report_of_sample", direction:OUT)
+  laboratory_procedure: laboratory_procedure @relation(name:"report_of_laboratory_procedure", direction:OUT)
 }
 
 type sample {
@@ -579,12 +574,12 @@ type sample {
   distributor_reference: String
   pool: String
   sample_is_ref: String
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
-  fractions: [fraction] @relation(name:"of_sample", direction:IN)
-  analytes: [analyte] @relation(name:"of_sample", direction:IN)
-  reports: [report] @relation(name:"of_sample", direction:IN)
-  files: [file] @relation(name:"of_sample", direction:IN)
-  laboratory_procedures: [laboratory_procedure] @relation(name:"processed_by", direction:OUT)
+  fractions: [fraction] @relation(name:"fraction_of_sample", direction:IN)
+  analytes: [analyte] @relation(name:"analyte_of_sample", direction:IN)
+  report: report @relation(name:"report_of_sample", direction:IN)
+  files: [file] @relation(name:"file_of_sample", direction:IN)
+  study_subject: study_subject @relation(name:"sample_of_study_subject", direction:OUT)
+  laboratory_procedures: [laboratory_procedure] @relation(name:"sample_processed_by", direction:OUT)
 }
 
 type stratification_factor {
@@ -595,7 +590,7 @@ type stratification_factor {
   planned_chemotherapy_stratification: String
   planned_radiotherapy_stratification: String
   tumor_size_stratification: String
-  study_subject: study_subject @relation(name:"of_study_subject", direction:OUT)
+  study_subject: study_subject @relation(name:"sf_of_study_subject", direction:OUT)
 }
 
 type study {
@@ -626,9 +621,9 @@ type study {
   study_sort_order: Int
   acquisition_type: String
   analytical_fraction: String
-  program: program @relation(name:"of_program", direction:OUT)
-  study_subjects: [study_subject] @relation(name:"of_study", direction:IN)
-  files: [file] @relation(name:"of_study", direction:IN)
+  programs: [program] @relation(name:"study_of_program", direction:OUT)
+  study_subjects: [study_subject] @relation(name:"study_subject_of_study", direction:IN)
+  files: [file] @relation(name:"file_of_study", direction:IN)
 }
 
 type study_subject {
@@ -650,18 +645,18 @@ type study_subject {
   days_to_lost_to_followup: Int
   index_date: String
   pool: String
-  program: program @relation(name:"of_program", direction:OUT)
-  cross_reference_databases: [cross_reference_database] @relation(name:"cross_referenced_at", direction:OUT)
-  project: project @relation(name:"of_project", direction:OUT)
-  study: study @relation(name:"of_study", direction:OUT)
-  samples: [sample] @relation(name:"of_study_subject", direction:IN)
-  demographic_data: [demographic_data] @relation(name:"of_study_subject", direction:IN)
-  exposures: [exposure] @relation(name:"of_study_subject", direction:IN)
-  family_medical_histories: [family_medical_history] @relation(name:"of_study_subject", direction:IN)
-  files: [file] @relation(name:"of_study_subject", direction:IN)
-  diagnoses: [diagnosis] @relation(name:"of_study_subject", direction:IN)
-  stratification_factors: [stratification_factor] @relation(name:"of_study_subject", direction:IN)
-  follow_ups: [follow_up] @relation(name:"of_study_subject", direction:IN)
+  cross_reference_databases: [cross_reference_database] @relation(name:"study_subject_cross_referenced_at", direction:OUT)
+  demographic_data: demographic_data @relation(name:"demographic_of_study_subject", direction:IN)
+  diagnoses: [diagnosis] @relation(name:"diagnosis_of_study_subject", direction:IN)
+  exposure: exposure @relation(name:"exposure_of_study_subject", direction:IN)
+  files: [file] @relation(name:"file_of_study_subject", direction:IN)
+  family_medical_history: family_medical_history @relation(name:"fmh_of_study_subject", direction:IN)
+  follow_ups: [follow_up] @relation(name:"fu_of_study_subject", direction:IN)
+  programs: [program] @relation(name:"study_subject_of_program", direction:OUT)
+  projects: [project] @relation(name:"study_subject_of_project", direction:OUT)
+  studies: [study] @relation(name:"study_subject_of_study", direction:OUT)
+  samples: [sample] @relation(name:"sample_of_study_subject", direction:IN)
+  stratification_factor: stratification_factor @relation(name:"sf_of_study_subject", direction:IN)
 }
 
 type therapeutic_procedure {
@@ -689,7 +684,7 @@ type therapeutic_procedure {
   treatment_or_therapy: String
   treatment_outcome: String
   treatment_type: String
-  diagnosis: diagnosis @relation(name:"of_diagnosis", direction:OUT)
+  diagnosis: diagnosis @relation(name:"tp_of_diagnosis", direction:OUT)
 }
 
 type GroupCount {
@@ -818,6 +813,18 @@ type SubjectDetail {
     num_lab_procedures: Int
 }
 
+type ArmInfo {
+    arm: String
+    size: Int
+    caseSize: Int
+}
+
+type ProgramArms {
+    program: String
+    caseSize: Int
+    children: [ArmInfo]
+}
+
 type ArmDetail {
     study_acronym: String
     study_name: String
@@ -860,39 +867,82 @@ type QueryType {
     subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as subjects")
     subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.menopause_status AS group, count(DISTINCT ss) as subjects")
 
+    armsByPrograms: [ProgramArms] @cypher(statement: """
+        MATCH (p:program)
+        OPTIONAL MATCH (p)<-[:of_program]-()<-[:of_study]-(ss:study_subject)
+        WITH p, COUNT(DISTINCT ss) AS caseSize
+        OPTIONAL MATCH (p)<-[:of_program]-(s)<-[:of_study]-(ss:study_subject)
+        WITH p, caseSize, {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
+        RETURN  p.program_acronym AS program,
+                caseSize,
+                collect(s) AS children
+    """, passThrough: true)
+
+    subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH ss ORDER BY ss.study_subject_id
+        SKIP $offset
+        LIMIT $first
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sp)<-[:of_sample]-(f:file)-[:of_laboratory_procedure]->(lp)
+        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (ss)-[:of_study]->(s)-[:of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sf:stratification_factor)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(d:diagnosis)
+        OPTIONAL MATCH (d)<-[:of_diagnosis]-(tp:therapeutic_procedure)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(demo:demographic_data)
+        RETURN  p.program_acronym AS program,
+                p.program_id AS program_id,
+                s.study_acronym AS study_acronym,
+                s.study_short_description AS study_short_description,
+                s.study_acronym + ': ' + s.study_short_description AS study_info,
+                ss.study_subject_id AS subject_id,
+                ss.disease_subtype AS diagnosis,
+                sf.grouped_recurrence_score AS recurrence_score,
+                d.tumor_size_group AS tumor_size,
+                d.tumor_grade AS tumor_grade,
+                d.er_status AS er_status,
+                d.pr_status AS pr_status,
+                tp.chemotherapy_regimen AS chemotherapy,
+                tp.endocrine_therapy_type AS endocrine_therapy,
+                demo.menopause_status AS menopause_status,
+                demo.age_at_index AS age_at_index,
+                demo.survival_time AS survival_time,
+                demo.survival_time_unit AS survival_time_unit,
+                samples,
+                files,
+                lab_procedures
+    """, passThrough: true)
 
     subjectOverView: [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
-        OPTIONAL MATCH (f)-->(lp:laboratory_procedure)
-        WITH ss, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
-        OPTIONAL MATCH (ss)-->(s:study)-->(p:program)
-        OPTIONAL MATCH (ss)<--(sf:stratification_factor)
-        OPTIONAL MATCH (ss)<--(d:diagnosis)
-        OPTIONAL MATCH (d)<--(tp:therapeutic_procedure)
-        OPTIONAL MATCH (ss)<--(demo:demographic_data)
-        OPTIONAL MATCH (ss)<--(sp:sample)
-        RETURN p.program_acronym AS program,
-               p.program_id AS program_id,
-               s.study_acronym AS study_acronym,
-               s.study_short_description AS study_short_description,
-               s.study_acronym + ': ' + s.study_short_description AS study_info,
-               ss.study_subject_id AS subject_id,
-               ss.disease_subtype AS diagnosis,
-               sf.grouped_recurrence_score AS recurrence_score,
-               d.tumor_size_group AS tumor_size,
-               d.tumor_grade AS tumor_grade,
-               d.er_status AS er_status,
-               d.pr_status AS pr_status,
-               tp.chemotherapy_regimen AS chemotherapy,
-               tp.endocrine_therapy_type AS endocrine_therapy,
-               demo.menopause_status AS menopause_status,
-               demo.age_at_index AS age_at_index,
-               demo.survival_time AS survival_time,
-               demo.survival_time_unit AS survival_time_unit,
-               collect(sp.sample_id) AS samples,
-               files,
-               lab_procedures
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sp)<-[:of_sample]-(f:file)-[:of_laboratory_procedure]->(lp)
+        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (ss)-[:of_study]->(s)-[:of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(sf:stratification_factor)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(d:diagnosis)
+        OPTIONAL MATCH (d)<-[:of_diagnosis]-(tp:therapeutic_procedure)
+        OPTIONAL MATCH (ss)<-[:of_study_subject]-(demo:demographic_data)
+        RETURN  p.program_acronym AS program,
+                p.program_id AS program_id,
+                s.study_acronym AS study_acronym,
+                s.study_short_description AS study_short_description,
+                s.study_acronym + ': ' + s.study_short_description AS study_info,
+                ss.study_subject_id AS subject_id,
+                ss.disease_subtype AS diagnosis,
+                sf.grouped_recurrence_score AS recurrence_score,
+                d.tumor_size_group AS tumor_size,
+                d.tumor_grade AS tumor_grade,
+                d.er_status AS er_status,
+                d.pr_status AS pr_status,
+                tp.chemotherapy_regimen AS chemotherapy,
+                tp.endocrine_therapy_type AS endocrine_therapy,
+                demo.menopause_status AS menopause_status,
+                demo.age_at_index AS age_at_index,
+                demo.survival_time AS survival_time,
+                demo.survival_time_unit AS survival_time_unit,
+                samples,
+                files,
+                lab_procedures
     """, passThrough: true)
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] @cypher(statement: """

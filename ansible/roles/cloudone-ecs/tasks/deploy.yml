@@ -39,6 +39,14 @@
     region: "{{region}}" 
   register: task_icdc
 
+
+- name: query task definition
+  ecs_taskdefinition:
+    task_definition: icdc-{{tier}}-task-definition
+    region: "{{region}}" 
+    state: absent
+  register: task_icdc
+
 - name: query demo service
   ecs_service_info:
     cluster: default

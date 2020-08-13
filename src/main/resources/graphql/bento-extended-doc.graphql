@@ -23,9 +23,9 @@ type aliquot {
   selected_normal_targeted_sequencing: Boolean
   selected_normal_wgs: Boolean
   selected_normal_wxs: Boolean
-  analyte: analyte 
   laboratory_procedures: [laboratory_procedure] 
   report: report 
+  analyte: analyte 
 }
 
 type analyte {
@@ -49,11 +49,11 @@ type analyte {
   spectrophotometer_method: String
   well_number: Int
   normal_tumor_genotype_snp_match: String
-  sample: sample 
-  fraction: fraction 
-  aliquot: aliquot 
-  report: report 
   laboratory_procedures: [laboratory_procedure] 
+  aliquots: [aliquot] 
+  report: report 
+  fraction: fraction 
+  sample: sample 
 }
 
 type cross_reference_database {
@@ -61,11 +61,6 @@ type cross_reference_database {
   cross_reference_database_name: String
   cross_reference_database_url: String
   study_subjects: [study_subject] 
-}
-
-type cross_referenced_at {
-  cross_reference_id: String
-  cross_reference_url: String
 }
 
 type demographic_data {
@@ -76,9 +71,9 @@ type demographic_data {
   survival_time_unit: String
   survival_time_original: Int
   survival_time_original_unit: String
-  days_to_death: String
+  days_to_death: Int
   days_to_death_unit: String
-  days_to_death_original: String
+  days_to_death_original: Int
   days_to_death_original_unit: String
   ethnicity: String
   race: String
@@ -89,7 +84,7 @@ type demographic_data {
   breed: String
   cause_of_death_source: String
   date_of_birth: String
-  days_to_birth: String
+  days_to_birth: Int
   neutered_indicator: Boolean
   occupation_duration_years: Int
   premature_at_birth: String
@@ -152,10 +147,10 @@ type diagnosis {
   date_of_diagnosis: String
   date_of_histology_confirmation: String
   days_to_best_overall_response: Int
-  days_to_birth: String
-  days_to_death: String
+  days_to_birth: Int
+  days_to_death: Int
   days_to_death_unit: String
-  days_to_death_original: String
+  days_to_death_original: Int
   days_to_death_original_unit: String
   days_to_diagnosis: Int
   days_to_hiv_diagnosis: String
@@ -251,8 +246,8 @@ type diagnosis {
   year_of_diagnosis: Int
   study_subject: study_subject 
   files: [file] 
-  therapeutic_procedures: [therapeutic_procedure] 
   follow_ups: [follow_up] 
+  therapeutic_procedures: [therapeutic_procedure] 
 }
 
 type exposure {
@@ -304,13 +299,13 @@ type file {
   file_status: String
   file_type: String
   md5sum: String
+  diagnosis: diagnosis 
+  laboratory_procedure: laboratory_procedure 
+  study_subject: study_subject 
   program: program 
   project: project 
-  study: study 
-  study_subject: study_subject 
   sample: sample 
-  laboratory_procedure: laboratory_procedure 
-  diagnosis: diagnosis 
+  study: study 
 }
 
 type follow_up {
@@ -378,8 +373,8 @@ type follow_up {
   weight_unit: String
   weight_original: Float
   weight_original_unit: String
-  study_subject: study_subject 
   diagnosis: diagnosis 
+  study_subject: study_subject 
 }
 
 type fraction {
@@ -394,10 +389,10 @@ type fraction {
   weight_original: Float
   weight_original_unit: String
   fraction_type: String
-  sample: sample 
-  analyte: analyte 
-  report: report 
   laboratory_procedures: [laboratory_procedure] 
+  analytes: [analyte] 
+  report: report 
+  sample: sample 
 }
 
 type institution {
@@ -419,13 +414,13 @@ type laboratory_procedure {
   software_name: String
   software_version: String
   reagent_description: String
-  program: program 
   aliquots: [aliquot] 
   analytes: [analyte] 
-  fractions: [fraction] 
-  samples: [sample] 
-  reports: [report] 
   files: [file] 
+  fractions: [fraction] 
+  programs: [program] 
+  report: report 
+  samples: [sample] 
 }
 
 type program {
@@ -490,7 +485,7 @@ type project {
   project_sort_order: Int
   acquisition_type: String
   analytical_fraction: String
-  program: program 
+  programs: [program] 
   study_subjects: [study_subject] 
   files: [file] 
 }
@@ -504,10 +499,10 @@ type report {
   report_format: String
   report_location: String
   report_size: Float
-  sample: sample 
-  fraction: fraction 
-  analyte: analyte 
   aliquot: aliquot 
+  analyte: analyte 
+  fraction: fraction 
+  sample: sample 
   laboratory_procedure: laboratory_procedure 
 }
 
@@ -579,11 +574,11 @@ type sample {
   distributor_reference: String
   pool: String
   sample_is_ref: String
-  study_subject: study_subject 
   fractions: [fraction] 
   analytes: [analyte] 
-  reports: [report] 
+  report: report 
   files: [file] 
+  study_subject: study_subject 
   laboratory_procedures: [laboratory_procedure] 
 }
 
@@ -626,7 +621,7 @@ type study {
   study_sort_order: Int
   acquisition_type: String
   analytical_fraction: String
-  program: program 
+  programs: [program] 
   study_subjects: [study_subject] 
   files: [file] 
 }
@@ -650,18 +645,18 @@ type study_subject {
   days_to_lost_to_followup: Int
   index_date: String
   pool: String
-  program: program 
   cross_reference_databases: [cross_reference_database] 
-  project: project 
-  study: study 
-  samples: [sample] 
-  demographic_data: [demographic_data] 
-  exposures: [exposure] 
-  family_medical_histories: [family_medical_history] 
-  files: [file] 
+  demographic_data: demographic_data 
   diagnoses: [diagnosis] 
-  stratification_factors: [stratification_factor] 
+  exposure: exposure 
+  files: [file] 
+  family_medical_history: family_medical_history 
   follow_ups: [follow_up] 
+  programs: [program] 
+  projects: [project] 
+  studies: [study] 
+  samples: [sample] 
+  stratification_factor: stratification_factor 
 }
 
 type therapeutic_procedure {
@@ -818,6 +813,18 @@ type SubjectDetail {
     num_lab_procedures: Int
 }
 
+type ArmInfo {
+    arm: String
+    size: Int
+    caseSize: Int
+}
+
+type ProgramArms {
+    program: String
+    caseSize: Int
+    children: [ArmInfo]
+}
+
 type ArmDetail {
     study_acronym: String
     study_name: String
@@ -860,6 +867,9 @@ type QueryType {
     subjectCountByEndocrineTherapy: [GroupCount] 
     subjectCountByMenopauseStatus: [GroupCount] 
 
+    armsByPrograms: [ProgramArms] 
+
+    subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] 
 
     subjectOverView: [SubjectOverview] 
 

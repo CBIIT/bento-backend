@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Service
 public class Neo4JGraphQLService {
@@ -35,6 +38,8 @@ public class Neo4JGraphQLService {
 	
 	@Autowired
 	private ConfigurationDAO config;
+	@Autowired
+	private CachingService cachingService;
 
 	@PostConstruct
 	public void loadSchema(){
@@ -53,6 +58,7 @@ public class Neo4JGraphQLService {
 					.header(ACCEPT, APPLICATION_JSON)
 					.body(schema)
 					.asJson();
+
 			if(jsonResponse.getStatus() == 404){
 				logger.error("Schema load failure, unable to connect to endpoint: "+endpoint);
 			}
@@ -78,26 +84,40 @@ public class Neo4JGraphQLService {
 
 	public String query(String graphQLQuery) throws ApiError {
 		logger.info("Query neo4j:  "+graphQLQuery);
-
 		HttpResponse<JsonNode> jsonResponse;
-		try {
-			jsonResponse = Unirest.post(config.getNeo4jGraphQLEndPoint
-					()).header("Content-Type", "application/json")
-					.header("Authorization", config.getNeo4jHttpHeaderAuthorization()).header("accept", "application/json")
-					.body(graphQLQuery).asJson();
-		} catch (UnirestException e) {
-			logger.error("Exception in function query() "+e.toString());
-			throw new ApiError(HttpStatus.SERVICE_UNAVAILABLE, "Exception occurred while querying database service", e.getMessage());
+		JsonNode neo4jResponse = null;
+		boolean cacheEnabled = config.isEnableCache();
+		int hashValue = 0;
+
+		if (cacheEnabled){
+			hashValue = graphQLQuery.hashCode();
+			neo4jResponse = cachingService.checkInCache(hashValue);
 		}
 
-		JsonNode neo4jResponse = jsonResponse.getBody();
+		if (neo4jResponse == null) {
+			try {
+				jsonResponse = Unirest.post(config.getNeo4jGraphQLEndPoint
+						()).header("Content-Type", "application/json")
+						.header("Authorization", config.getNeo4jHttpHeaderAuthorization()).header("accept", "application/json")
+						.body(graphQLQuery).asJson();
+				neo4jResponse = jsonResponse.getBody();
+
+				if (cacheEnabled){
+					cachingService.cache(hashValue, neo4jResponse);
+				}
+			} catch (UnirestException e) {
+				logger.error("Exception in function query() " + e.toString());
+				throw new ApiError(HttpStatus.SERVICE_UNAVAILABLE, "Exception occurred while querying database service", e.getMessage());
+			}
+		}
+
 		if (neo4jResponse.getObject().has("errors")) {
 			String errors = neo4jResponse.getObject().get("errors").toString();
 			logger.error("Exception in function query() "+errors);
 			throw new ApiError(HttpStatus.BAD_REQUEST, "Request resulted in response containing errors", errors);
 		}
+
 		return neo4jResponse.toString();
 	}
-	
 
 }

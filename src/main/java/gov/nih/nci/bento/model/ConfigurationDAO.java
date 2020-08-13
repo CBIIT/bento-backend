@@ -29,10 +29,18 @@ public class ConfigurationDAO {
 
 	@Value("${allow_grapqh_query}")
 	private boolean allowGraphQLQuery;
-	
-	
+
 	@Value("${allow_graphql_mutation}")
 	private boolean allowGraphQLMutation;
+
+	@Value("${cache.enabled}")
+	private boolean enableCache;
+
+	@Value("${cache.time_to_live_sec}")
+	private int cacheTimeToLiveSec;
+
+	@Value("${cache.max_size_mb}")
+	private int cacheMaxSizeMB;
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
@@ -80,6 +88,30 @@ public class ConfigurationDAO {
 
 	public void setAllowGraphQLMutation(boolean allowGraphQLMutation) {
 		this.allowGraphQLMutation = allowGraphQLMutation;
+	}
+
+	public boolean isEnableCache() {
+		return enableCache;
+	}
+
+	public void setEnableCache(boolean enableCache) {
+		this.enableCache = enableCache;
+	}
+
+	public int getCacheTimeToLiveSec() {
+		return cacheTimeToLiveSec;
+	}
+
+	public void setCacheTimeToLiveSec(int cacheTimeToLive) {
+		this.cacheTimeToLiveSec = cacheTimeToLive;
+	}
+
+	public int getCacheMaxSizeMB() {
+		return cacheMaxSizeMB;
+	}
+
+	public void setCacheMaxSizeMB(int cacheMaxSizeMB) {
+		this.cacheMaxSizeMB = cacheMaxSizeMB;
 	}
 
 	@Bean

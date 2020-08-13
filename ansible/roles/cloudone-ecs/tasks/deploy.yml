@@ -108,6 +108,22 @@
     cluster: default
     # task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
     
+    desired_count: 0
+    # load_balancers: "{{ lb_icdc }}"
+    region: "{{region}}"
+
+
+
+
+
+
+    - name: update icdc service
+  ecs_service:
+    state: absent
+    name: icdc-{{tier}}-service
+    cluster: default
+    # task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+    
     # desired_count: 1
     # load_balancers: "{{ lb_icdc }}"
     region: "{{region}}"

@@ -74,6 +74,7 @@
       - type: memberOf
         expression: 'attribute:project==icdc'
     desired_count: 1
-    load_balancers: "{{ lb_icdc }}"
+    load_balancers: 
+      "{{ lb_icdc }}"
     region: "{{region}}"
   

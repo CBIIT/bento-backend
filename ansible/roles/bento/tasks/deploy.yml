@@ -125,3 +125,7 @@
     load_balancers: "{{ lb_backend }}"
     region: "{{region}}"
   register: service_backend_output
+
+- name: show lb_backend
+  debug: 
+    msg: "{{ lb_backend}}"

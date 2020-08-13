@@ -1,5 +1,6 @@
 ---
 
+
 - name: create task definition 
   ecs_taskdefinition:
     containers:
@@ -41,6 +42,7 @@
   register: task_icdc
 
 
+
 - name: query demo service
   ecs_service_info:
     cluster: default
@@ -48,6 +50,7 @@
     details: true
     region: "{{region}}"
   register: service_icdc
+
 
 
 - name: set facts
@@ -58,22 +61,70 @@
     # role_arn: "{{service_icdc.services[0].roleArn}}"
 
 
+# - name: create ecs service
+#   ecs_service:
+#     state: present
+#     name: icdc-{{tier}}-service
+#     cluster: default
+#     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+#     desired_count: 1
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     # placement_constraints:
+#     #   - type: memberOf
+#     #     expression: 'attribute:flavor==test'
+#     # placement_strategy:
+#     #   - type: binpack
+#     #     field: memory
+#     region: "{{region}}"
+
+# - name: update icdc service
+#   ecs_service:
+#     state: present
+#     name: icdc-{{tier}}-service
+#     cluster: default
+#     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+#     # role: "{{role_arn}}"
+#     force_new_deployment: yes
+    
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     placement_constraints:
+#       - type: memberOf
+#         expression: 'attribute:project==icdc'
+#     desired_count: 1
+#     # load_balancers: "{{ lb_icdc }}"
+#     region: "{{region}}"
+  
+
+
+
 - name: update icdc service
   ecs_service:
     state: present
     name: icdc-{{tier}}-service
     cluster: default
     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
-    # role: "{{role_arn}}"
-    force_new_deployment: yes
+    # force_new_deployment: yes
     
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    placement_constraints:
-      - type: memberOf
-        expression: 'attribute:project==icdc'
-    desired_count: 1
-    load_balancers: "{{ lb_icdc }}"
+    desired_count: 0
+    # load_balancers: "{{ lb_icdc }}"
     region: "{{region}}"
-  
+
+
+
+
+
+
+- name: update icdc service
+  ecs_service:
+    state: absent
+    name: icdc-{{tier}}-service
+    cluster: default
+    # task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
+    
+    # desired_count: 1
+    # load_balancers: "{{ lb_icdc }}"
+    region: "{{region}}"

@@ -1,29 +1,26 @@
 package gov.nih.nci.bento.service;
 
 import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.ObjectMapper;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Service to cache GraphQL queries and their results.
+ */
 @Service
 public class CachingService {
 
     private static final Logger logger = LogManager.getLogger(CachingService.class);
-
     private static final Object syncLock = new Object();
     private static final HashMap<Integer, CacheObject> cache = new HashMap<>();
     private static final Queue<Integer> timeoutQueue = new LinkedList<>();
-
     private static double cacheSize = 0;
     private static boolean runSweep;
 
@@ -32,6 +29,10 @@ public class CachingService {
     @Autowired
     private TaskExecutor taskExecutor;
 
+    /**
+     * Starts a thread that will loop every 30 seconds to check for expired cache entries and delete them. This will
+     * until either the stop flag (runSweep) is set to false or the program is shut down.
+     */
     private void startCacheSweeper() {
         runSweep = true;
         int timeout = config.getCacheTimeToLiveSec();
@@ -49,7 +50,7 @@ public class CachingService {
                             }
                         }
                     }
-                    Thread.sleep(10 * 1000);
+                    Thread.sleep(30 * 1000);    //Sleep for 30 seconds
                 }
                 logger.debug("Cache sweeping stopped");
             }catch (InterruptedException e) {
@@ -58,10 +59,18 @@ public class CachingService {
         });
     }
 
+    /**
+     * Sets a flag that will stop the cache sweeper thread.
+     */
     private void stopCacheSweeper(){
         runSweep = false;
     }
 
+    /**
+     * Removes an entry from the cache, the cache sweeper is stopped if the cache is empty after the removal.
+     *
+     * @param hash The query hash value of the entry to be removed.
+     */
     private void remove(int hash){
         double objectSize = cache.get(hash).getSize();
         cacheSize -= objectSize;
@@ -74,6 +83,13 @@ public class CachingService {
         logger.debug(hash+" has been cleared from cache, "+objectSize+" MB cleared");
     }
 
+    /**
+     * Add a query and response to the cache if it is not too big, if there is not room the oldest cached queries will
+     * be removed until there is enough room. The cache sweeper is started if the cache was previously empty.
+     *
+     * @param hashValue The hash value of the query
+     * @param response The JSON response to the query
+     */
     private void add(int hashValue, JsonNode response){
         CacheObject cacheObject = new CacheObject(hashValue, response);
         double maxSize = config.getCacheMaxSizeMB();
@@ -95,6 +111,12 @@ public class CachingService {
         }
     }
 
+    /**
+     * Thread safe operation to add a query and result to the cache if it has not already been stored.
+     *
+     * @param hashValue The hash value of the query
+     * @param response The JSON response to the query
+     */
     public void cache(int hashValue, JsonNode response){
         synchronized (syncLock){
             if(!cache.containsKey(hashValue)){
@@ -104,9 +126,9 @@ public class CachingService {
     }
 
     /**
-     * Checks the cache for a response to the input query and returns the response if it is found.
+     * Returns a cached query response if it exists in the cache, otherwise returns null
      *
-     * @param hashValue The hash representation of the query
+     * @param hashValue The hash value of the query
      * @return The query response as a JSONNode object, returns null if no response is cached
      */
     public JsonNode checkInCache(int hashValue){
@@ -120,36 +142,43 @@ public class CachingService {
         }
     }
 
-    private double getSizeMB(String s){
-        double bytes = s.length() * 2 + 38;
-        bytes += bytes % 8;
-        return bytes / 1000000;
-    }
-
+    /**
+     * An object wrapper for a query response that is stored in the cache
+     */
     private class CacheObject{
+        private final int hashValue;  // The hash value of the query
+        private final String data;    // The JSON response stored as a string
+        private final long time;      // The time that this object was created
+        private final double size;    // An estimate of the size of the object
 
-        private int hashValue;
-        private String data;
-        private long time;
-        private double size;
-
+        /**
+         * Class constructor
+         *
+         * @param hashValue The hash value of the query
+         * @param data The response to the query
+         */
         CacheObject(int hashValue, JsonNode data){
             this.hashValue = hashValue;
             this.data = data.toString();
             this.time = System.currentTimeMillis();
-            calcSizeEstimate();
+            this.size = calcSizeEstimate();
         }
 
-        private void calcSizeEstimate(){
+        /**
+         * Estimates the minimum size of the CacheObject in MBs by adding up the size of the object properties
+         */
+        private double calcSizeEstimate(){
+            double size = 0;
             double dataSize = data.length() * 2 + 38;
             dataSize += dataSize % 8;
             size += dataSize;
-            size += 4; //hashValue (int)
-            size += 8; //size (double)
+            size += 4;  //hashValue (int)
+            size += 8;  //size (double)
             size += 16; //time (long)
-            size = size/1000000;
+            return size/1000000;
         }
 
+        //Getters
         public int getHashValue() {
             return hashValue;
         }
@@ -166,8 +195,4 @@ public class CachingService {
             return size;
         }
     }
-
-
-
-
 }

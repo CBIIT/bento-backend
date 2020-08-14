@@ -27,7 +27,7 @@ public class ConfigurationDAO {
 	@Value("${graphql.schema}")
 	private String schemaFile;
 
-	@Value("${allow_grapqh_query}")
+	@Value("${allow_graphql_query}")
 	private boolean allowGraphQLQuery;
 
 	@Value("${allow_graphql_mutation}")
@@ -36,11 +36,14 @@ public class ConfigurationDAO {
 	@Value("${cache.enabled}")
 	private boolean enableCache;
 
-	@Value("${cache.time_to_live_sec}")
-	private int cacheTimeToLiveSec;
+	@Value("${cache.time_to_live_min}")
+	private double cacheTimeToLiveMin;
 
 	@Value("${cache.max_size_mb}")
-	private int cacheMaxSizeMB;
+	private double cacheMaxSizeMB;
+
+	@Value("${cache.sweep_frequency_min}")
+	private double cacheSweepFrequencyMin;
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
@@ -98,20 +101,28 @@ public class ConfigurationDAO {
 		this.enableCache = enableCache;
 	}
 
-	public int getCacheTimeToLiveSec() {
-		return cacheTimeToLiveSec;
+	public double getCacheTimeToLiveMin() {
+		return cacheTimeToLiveMin;
 	}
 
-	public void setCacheTimeToLiveSec(int cacheTimeToLive) {
-		this.cacheTimeToLiveSec = cacheTimeToLive;
+	public void setCacheTimeToLiveMin(double cacheTimeToLive) {
+		this.cacheTimeToLiveMin = cacheTimeToLive;
 	}
 
-	public int getCacheMaxSizeMB() {
+	public double getCacheMaxSizeMB() {
 		return cacheMaxSizeMB;
 	}
 
 	public void setCacheMaxSizeMB(int cacheMaxSizeMB) {
 		this.cacheMaxSizeMB = cacheMaxSizeMB;
+	}
+
+	public double getCacheSweepFrequencyMin() {
+		return cacheSweepFrequencyMin;
+	}
+
+	public void setCacheSweepFrequencyMin(double cacheSweepFrequencyMin) {
+		this.cacheSweepFrequencyMin = cacheSweepFrequencyMin;
 	}
 
 	@Bean

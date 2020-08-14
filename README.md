@@ -21,9 +21,9 @@ The following file will need to be edited to configure the Bento Backend Code to
 5.  ````Line 9```` - this value is an all lowercase Boolean value to determine if GraphQL queries will be enabled for the application.
 6.  ````Line 10```` - this value is an all lowercase Boolean value to determine if GraphQL mutations will be enabled for the application.
 7.  ````Line 11```` - this value is an all lowercase Boolean value to determine if GraphQL query caching will be enabled for the application.
-8.  ````Line 12```` - this value is an integer value that represents the time in seconds that a cached value will be stored.
-9.  ````Line 13```` - this value is an integer value that represents the max memory size in MBs for the query cache. 
-
+8.  ````Line 12```` - this value is a double value that represents the time in minutes that a cached value will be stored.
+9.  ````Line 13```` - this value is a double value that represents the max memory size in MBs for the query cache. 
+10. ````Line 14```` - this value is a double value that represents the frequency in minutes at which the program will check for cache entries that have timed out.
 ## Basic Access Authentication
 The basic access authentication value used in the ````application.properties```` file is of the form ````Basic <base64 encoding of username:password>````. To generate this value generate the base64 encoding of the username and password as shown below and append that to the String “Basic “.
     a

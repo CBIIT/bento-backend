@@ -35,7 +35,7 @@ public class CachingService {
      */
     private void startCacheSweeper() {
         runSweep = true;
-        int timeout = config.getCacheTimeToLiveSec();
+        double timeout = config.getCacheTimeToLiveMin();
         taskExecutor.execute(() -> {
             logger.debug("Cache sweeping started");
             try {
@@ -44,13 +44,13 @@ public class CachingService {
                         synchronized (syncLock) {
                             int hash = timeoutQueue.peek();
                             long diff = System.currentTimeMillis() - cache.get(hash).getTime();
-                            if (diff / 1000 > timeout) {
+                            if (diff / 6000 > timeout) {
                                 remove(hash);
                                 continue;
                             }
                         }
                     }
-                    Thread.sleep(30 * 1000);    //Sleep for 30 seconds
+                    Thread.sleep(5 / 60 * 6000);    //Sleep for 10 minutes
                 }
                 logger.debug("Cache sweeping stopped");
             }catch (InterruptedException e) {
@@ -118,11 +118,13 @@ public class CachingService {
      * @param response The JSON response to the query
      */
     public void cache(int hashValue, JsonNode response){
-        synchronized (syncLock){
-            if(!cache.containsKey(hashValue)){
-                add(hashValue, response);
+        taskExecutor.execute(() -> {
+            synchronized (syncLock){
+                if(!cache.containsKey(hashValue)){
+                    add(hashValue, response);
+                }
             }
-        }
+        });
     }
 
     /**

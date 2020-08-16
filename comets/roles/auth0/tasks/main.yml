@@ -50,7 +50,7 @@
     state: present
   loop:
     - https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.0/cjose-0.6.1.5-1.el7.x86_64.rpm
-    - yum -y install https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.3/mod_auth_openidc-2.4.3-1.el7.x86_64.rpm
+    - https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.3/mod_auth_openidc-2.4.3-1.el7.x86_64.rpm
 
 - name: add comets.conf 
   template:

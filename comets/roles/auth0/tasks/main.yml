@@ -55,7 +55,7 @@
 - name: add comets.conf 
   template:
     src: comets.conf.j2
-    dest: /etc/httd/conf.d/comets.conf
+    dest: /etc/httpd/conf.d/comets.conf
     
 - name: enable and start firewalld
   service:

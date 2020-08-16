@@ -1,0 +1,113 @@
+---
+# tasks file for auth0
+- name: install packages needed for auth0
+  yum:
+    state:  installed
+    name: 
+      - httpd 
+      - mod_ssl 
+      - mod_auth_openid
+      - firewalld
+
+- name: create directory to store self-signed certificate and logs
+  file:
+    state: directory
+    path:  "{{item}}"
+  loop:
+    - /etc/httpd/ssl
+    - /etc/httpd/logs/comets
+
+- name: set fact about the qa environment
+  set_fact:
+    env: -test
+  when: env == "qa"
+
+- name: set fact about the dev environment
+  set_fact:
+    env: -dev
+  when: env == "dev"
+
+- name: set fact about the stage environment
+  set_fact:
+    env: -stage
+  when: env == "stage"
+
+- name: set fact about the prod environment
+  set_fact:
+    env: ""
+  when: env == "prod"
+
+- name: generate self-signed certificate
+  shell: >
+    openssl req -new -x509 -sha256 -days 36500 
+    -nodes -out /etc/httpd/ssl/httpd.pem 
+    -keyout /etc/httpd/ssl/httpd.key 
+    -subj "/C=US/ST=Maryland/L=Rockville/O=NCI/OU=ESI/CN=comets-analytics{{env}}.org"
+
+- name: install openODIC module jose
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.0/cjose-0.6.1.5-1.el7.x86_64.rpm
+    - yum -y install https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.4.3/mod_auth_openidc-2.4.3-1.el7.x86_64.rpm
+
+- name: add comets.conf 
+  template:
+    src: comets.conf.j2
+    dest: /etc/httd/conf.d/comets.conf
+    
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: open https port
+  firewalld:
+    zone: dmz
+    service: https
+    permanent: yes
+    state: enabled
+  notify: restart_firewalld
+
+- name: open app port
+  firewalld:
+    zone: dmz
+    port: "{{item}}/tcp"
+    permanent: yes
+    state: enabled
+  loop:
+    - 8000
+    - 61613
+  notify: restart_firewalld
+
+- name: enable and start httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,107 @@
+ 
+<VirtualHost  *:443>
+
+ServerName comets-analytics{{env}}.org
+ServerAlias www.comets-analytics{{env}}.org
+
+      
+        SSLEngine On
+        SSLCertificateFile        /etc/httpd/ssl/httpd.pem
+        SSLCertificateKeyFile     /etc/httpd/ssl/httpd.key
+        
+
+        CustomLog /etc/httpd/logs/comets/access.log combined env=!dontlog
+        ErrorLog /etc/httpd/logs/comets/error.log
+	
+
+        RewriteEngine On
+        RewriteCond %{HTTP_HOST} !^www.comets-analytics{{env}}.org$
+        RewriteRule (.*) https://www.comets-analytics{{env}}.org$1 [R=301,L]
+
+<Location "/server-info">
+    SetHandler server-info
+    ProxyPass !
+</Location>
+
+RewriteEngine On
+ProxyRequests Off
+
+ProxyPass / http://127.0.0.1:8000/  timeout=1800
+ProxyPassReverse / http://127.0.0.1:8000/
+
+OIDCProviderIssuer {{open_id_issuer}}
+OIDCProviderAuthorizationEndpoint {{open_id_issuer}}/authorize
+OIDCProviderTokenEndpoint {{open_id_issuer}}/oauth/token
+OIDCProviderTokenEndpointAuth client_secret_post
+OIDCProviderUserInfoEndpoint {{open_id_issuer}}/userinfo
+OIDCClientID {{open_client_id}}
+OIDCClientSecret {{open_client_secret}}
+OIDCDefaultURL https://comets-analytics{{env}}.org/public/timeout.html
+OIDCProviderJwksUri {{open_id_issuer}}/.well-known/jwks.json
+OIDCSessionMaxDuration 0
+OIDCScope "openid email family_name given_name app_metadata user_metadata user_id comets"
+OIDCRedirectURI https://comets-analytics{{env}}.org/auth0_redirect
+OIDCCryptoPassphrase "{{open_passphrase}}"
+OIDCCookiePath /
+
+OIDCProviderMetadataURL {{open_id_issuer}}/.well-known/openid-configuration
+OIDCPassIDTokenAs payload
+OIDCUserInfoRefreshInterval 5
+OIDCSessionInactivityTimeout 1800
+
+<Location />
+ AuthType openid-connect
+ <RequireAny>
+   Require claim comets:active
+   Require claim comets:admin
+ </RequireAny>
+ Header echo ^OIDC_id_token_payload$
+ Header set Cache-Control "no-cache, no-store, must-revalidate"
+ Header set Pragma "no-cache"
+ Header set Expires 0
+ ErrorDocument 401 /errordocs/unauthorized.html
+ LogLevel debug
+</Location>
+
+<LocationMatch "^(/cometsRest)?/admin/">
+ <RequireAll>
+   Require claim comets:admin
+ </RequireAll>
+ ErrorDocument 401 /errordocs/index.html
+</LocationMatch>
+
+<Location /unauthorized/>
+ <RequireAll>
+  Require claim "comets~^\w+$"
+  <RequireNone>
+   Require claim comets:active
+   Require claim comets:admin
+  </RequireNone>
+ </RequireAll>
+ ErrorDocument 401 /errordocs/registration.html
+</Location>
+
+<LocationMatch "^(/cometsRest)?/registration/">
+ <RequireAll>
+  Require valid-user
+  <RequireNone>
+   Require claim "comets~^\w+$"
+  </RequireNone>
+ </RequireAll>
+ ErrorDocument 401 /errordocs/index.html
+</LocationMatch>
+
+<Directory /restricted/>
+  Require all denied
+</Directory>
+
+<LocationMatch "^(/cometsRest)?/(public|errordocs)/>
+ AuthType none
+ Require all granted
+</LocationMatch>
+
+<LocationMatch "^/cometsRest/">
+ ErrorDocument 401 !
+</LocationMatch>
+
+</VirtualHost>

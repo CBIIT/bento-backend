@@ -10,7 +10,7 @@ ServerAlias www.comets-analytics{{tier}}.org
         SSLCertificateKeyFile     /etc/httpd/ssl/httpd.key
         
 
-        CustomLog /etc/httpd/logs/comets/access.log combined tier=!dontlog
+        CustomLog /etc/httpd/logs/comets/access.log combined env=!dontlog
         ErrorLog /etc/httpd/logs/comets/error.log
 	
 

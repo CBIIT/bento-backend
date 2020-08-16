@@ -5,3 +5,8 @@
   service:
     name: firewalld
     state: restarted
+
+- name: restart_apache
+  service:
+    name: firewalld
+    state: restarted

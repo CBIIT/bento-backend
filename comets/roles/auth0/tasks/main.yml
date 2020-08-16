@@ -9,6 +9,18 @@
       - mod_auth_openid
       - firewalld
 
+- name: enable and start httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
 - name: create directory to store self-signed certificate and logs
   file:
     state: directory
@@ -56,13 +68,8 @@
   template:
     src: comets.conf.j2
     dest: /etc/httpd/conf.d/comets.conf
+  notify: restart_apache
     
-- name: enable and start firewalld
-  service:
-    name: firewalld
-    state: started
-    enabled: yes
-
 - name: open https port
   firewalld:
     zone: dmz
@@ -82,11 +89,7 @@
     - 61613
   notify: restart_firewalld
 
-- name: enable and start httpd
-  service:
-    name: httpd
-    state: started
-    enabled: yes
+
 
 
 

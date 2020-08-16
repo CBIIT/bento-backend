@@ -1,8 +1,8 @@
  
 <VirtualHost  *:443>
 
-ServerName comets-analytics{{env}}.org
-ServerAlias www.comets-analytics{{env}}.org
+ServerName comets-analytics{{tier}}.org
+ServerAlias www.comets-analytics{{tier}}.org
 
       
         SSLEngine On
@@ -10,13 +10,13 @@ ServerAlias www.comets-analytics{{env}}.org
         SSLCertificateKeyFile     /etc/httpd/ssl/httpd.key
         
 
-        CustomLog /etc/httpd/logs/comets/access.log combined env=!dontlog
+        CustomLog /etc/httpd/logs/comets/access.log combined tier=!dontlog
         ErrorLog /etc/httpd/logs/comets/error.log
 	
 
         RewriteEngine On
-        RewriteCond %{HTTP_HOST} !^www.comets-analytics{{env}}.org$
-        RewriteRule (.*) https://www.comets-analytics{{env}}.org$1 [R=301,L]
+        RewriteCond %{HTTP_HOST} !^www.comets-analytics{{tier}}.org$
+        RewriteRule (.*) https://www.comets-analytics{{tier}}.org$1 [R=301,L]
 
 <Location "/server-info">
     SetHandler server-info
@@ -36,11 +36,11 @@ OIDCProviderTokenEndpointAuth client_secret_post
 OIDCProviderUserInfoEndpoint {{open_id_issuer}}/userinfo
 OIDCClientID {{open_client_id}}
 OIDCClientSecret {{open_client_secret}}
-OIDCDefaultURL https://comets-analytics{{env}}.org/public/timeout.html
+OIDCDefaultURL https://comets-analytics{{tier}}.org/public/timeout.html
 OIDCProviderJwksUri {{open_id_issuer}}/.well-known/jwks.json
 OIDCSessionMaxDuration 0
 OIDCScope "openid email family_name given_name app_metadata user_metadata user_id comets"
-OIDCRedirectURI https://comets-analytics{{env}}.org/auth0_redirect
+OIDCRedirectURI https://comets-analytics{{tier}}.org/auth0_redirect
 OIDCCryptoPassphrase "{{open_passphrase}}"
 OIDCCookiePath /
 

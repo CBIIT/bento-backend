@@ -19,22 +19,22 @@
 
 - name: set fact about the qa environment
   set_fact:
-    env: -test
+    tier: -test
   when: env == "qa"
 
 - name: set fact about the dev environment
   set_fact:
-    env: -dev
+    tier: -dev
   when: env == "dev"
 
 - name: set fact about the stage environment
   set_fact:
-    env: -stage
+    tier: -stage
   when: env == "stage"
 
 - name: set fact about the prod environment
   set_fact:
-    env: ""
+    tier: ""
   when: env == "prod"
 
 - name: generate self-signed certificate
@@ -42,7 +42,7 @@
     openssl req -new -x509 -sha256 -days 36500 
     -nodes -out /etc/httpd/ssl/httpd.pem 
     -keyout /etc/httpd/ssl/httpd.key 
-    -subj "/C=US/ST=Maryland/L=Rockville/O=NCI/OU=ESI/CN=comets-analytics{{env}}.org"
+    -subj "/C=US/ST=Maryland/L=Rockville/O=NCI/OU=ESI/CN=comets-analytics{{tier}}.org"
 
 - name: install openODIC module jose
   yum:

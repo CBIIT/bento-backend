@@ -772,6 +772,8 @@ type ProgramDetail {
     program_external_url: String
     num_subjects: Int
     num_files: Int
+    num_samples: Int
+    num_lab_procedures: Int
     disease_subtypes: [String]
     studies: [StudyInfo]
 }

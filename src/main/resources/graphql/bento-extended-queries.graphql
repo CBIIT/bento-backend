@@ -83,6 +83,8 @@ type ProgramDetail {
     program_external_url: String
     num_subjects: Int
     num_files: Int
+    num_samples: Int
+    num_lab_procedures: Int
     disease_subtypes: [String]
     studies: [StudyInfo]
 }
@@ -310,23 +312,26 @@ type QueryType {
     """)
     programDetail(program_id: String):  ProgramDetail @cypher(statement: """
         MATCH (p:program {program_id: $program_id})
-        OPTIONAL MATCH (p)<--(:study)<--(ss:study_subject)
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
-        WITH p, count(DISTINCT f) AS num_files, count(DISTINCT ss) AS num_subjects, collect(DISTINCT ss.disease_subtype) AS disease_subtypes
-        MATCH (p)<--(s:study)<--(ss:study_subject)
+        OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
+        OPTIONAL MATCH (ss)<-[sp:sample_of_study_subject]-()<-[:file_of_sample]-(f)
+        WITH p, count(DISTINCT f) AS num_files, count(DISTINCT sp) AS num_samples, count(DISTINCT ss) AS num_subjects, collect(DISTINCT ss.disease_subtype) AS disease_subtypes
+        MATCH (p)<-[:study_of_program]-(s)<-[:study_subject_of_study]-(ss)
         WITH s {.study_type, .study_acronym, .study_name, .study_full_description, num_subjects:count(DISTINCT ss),
-                 study_info: s.study_acronym + ': ' + s.study_short_description} AS study, p, num_files, num_subjects, disease_subtypes
+        study_info: s.study_acronym + ': ' + s.study_short_description} AS study, p, num_files, num_subjects, disease_subtypes, num_samples
         OPTIONAL MATCH (p)-->(ins:institution)
-        RETURN p.program_acronym AS program_acronym,
-               p.program_id AS program_id,
-               p.program_name AS program_name,
-               p.program_full_description AS program_full_description,
-               ins.institution_name AS institution_name,
-               p.program_external_url AS program_external_url,
-               num_subjects,
-               num_files,
-               disease_subtypes,
-               collect(DISTINCT study) AS studies
+        OPTIONAL MATCH (p)<-[:laboratory_procedure_of_program]-(lp)
+        RETURN  p.program_acronym AS program_acronym,
+                p.program_id AS program_id,
+                p.program_name AS program_name,
+                p.program_full_description AS program_full_description,
+                ins.institution_name AS institution_name,
+                p.program_external_url AS program_external_url,
+                num_subjects,
+                num_files,
+                COUNT (DISTINCT lp) as num_lab_procedures,
+                num_samples,
+                disease_subtypes,
+                collect(DISTINCT study) AS studies
     """, passThrough:true)
 
     subjectDetail(subject_id: String): SubjectDetail @cypher(statement:  """

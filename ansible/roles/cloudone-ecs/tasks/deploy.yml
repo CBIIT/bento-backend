@@ -65,7 +65,7 @@
     name: icdc-{{tier}}-service
     cluster: default
     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
-    # role: "{{role_arn}}"
+    role: "{{service_role_arn}}"
     force_new_deployment: yes
     
     deployment_configuration:
@@ -76,7 +76,6 @@
         expression: 'attribute:project==icdc'
     desired_count: 1
     load_balancers: 
-      - { "containerName": "icdc", "containerPort": "8080", "targetGroupArn" : "{{lb_arn}}" }
-      
+      - { "containerName": "icdc", "containerPort": "8080", "targetGroupArn" : "{{alb_target_arn}}" }
     region: "{{region}}"
   

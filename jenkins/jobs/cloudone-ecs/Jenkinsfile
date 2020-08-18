@@ -118,7 +118,6 @@ pipeline {
                 usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
                 string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
                 string(credentialsId: 'ecr_repo', variable: 'ECR'),
-                string(credentialsId: 'dev_ecs_alb', variable: 'ALB_NAME'),
                 string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')]) {
 
           ansiblePlaybook( 

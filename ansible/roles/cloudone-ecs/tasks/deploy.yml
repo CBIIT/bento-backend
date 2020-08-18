@@ -54,6 +54,7 @@
   set_fact:
     icdc_revision: "{{task_icdc.revision}}"
     task_icdc_name: "{{task_icdc.family}}"
+  
     # lb_icdc: "{{service_icdc.services[0].loadBalancers}}"
     # role_arn: "{{service_icdc.services[0].roleArn}}"
 
@@ -75,9 +76,7 @@
         expression: 'attribute:project==icdc'
     desired_count: 1
     load_balancers: 
-      - containerName: icdc
-      - containerPort: 8080
-      - targetGroupArn: "{{lb_arn}}"
- 
+      - { "containerName": "icdc", "containerPort": "8080", "targetGroupArn" : "{{lb_arn}}" }
+      
     region: "{{region}}"
   

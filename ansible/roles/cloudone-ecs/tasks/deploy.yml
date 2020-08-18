@@ -75,6 +75,9 @@
         expression: 'attribute:project==icdc'
     desired_count: 1
     load_balancers: 
-      "{{ lb_icdc }}"
+      containerName: icdc-cloudone
+      containerPort: 8080
+      targetGroupArn: 
+ 
     region: "{{region}}"
   

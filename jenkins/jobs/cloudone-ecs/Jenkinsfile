@@ -132,7 +132,7 @@ pipeline {
     stage('deploy'){
       steps{
         wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-          withCredentials([string(credentialsId: 'dev_ecs_alb', variable: 'ALB_NAME')]){
+          withCredentials([string(credentialsId: 'dev_alb_arn', variable: 'ALB_ARN')]){
             ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-cloudone-ecs.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

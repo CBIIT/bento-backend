@@ -3,7 +3,7 @@
 - name: create task definition 
   ecs_taskdefinition:
     containers:
-    - name: icdc-cloudone
+    - name: icdc
       essential: true
       # image: "{{ecr}}:icdc"
       image: cbiitssrepo/icdc:ecs
@@ -75,9 +75,9 @@
         expression: 'attribute:project==icdc'
     desired_count: 1
     load_balancers: 
-      containerName: icdc-cloudone
+      containerName: icdc
       containerPort: 8080
-      targetGroupArn: 
+      targetGroupArn: "{{lb_arn}}"
  
     region: "{{region}}"
   

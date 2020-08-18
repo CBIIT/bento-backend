@@ -75,9 +75,9 @@
         expression: 'attribute:project==icdc'
     desired_count: 1
     load_balancers: 
-      containerName: icdc
-      containerPort: 8080
-      targetGroupArn: "{{lb_arn}}"
+      - containerName: icdc
+      - containerPort: 8080
+      - targetGroupArn: "{{lb_arn}}"
  
     region: "{{region}}"
   

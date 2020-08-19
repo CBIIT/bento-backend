@@ -950,23 +950,23 @@ type QueryType {
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] @cypher(statement: """
         MATCH (ss:study_subject)
           WHERE ss.study_subject_id IN $subject_ids
-        OPTIONAL MATCH (ss)-->(s:study)-->(p:program)
-        OPTIONAL MATCH (ss)<--(sf:stratification_factor)
-        OPTIONAL MATCH (ss)<--(d:diagnosis)
-        OPTIONAL MATCH (d)<--(tp:therapeutic_procedure)
-        OPTIONAL MATCH (ss)<--(demo:demographic_data)
-        RETURN p.program_acronym AS program,
-               p.program_id AS program_id,
-               s.study_acronym AS study_acronym,
-               ss.study_subject_id AS subject_id,
-               ss.disease_subtype AS diagnosis,
-               sf.grouped_recurrence_score AS recurrence_score,
-               d.tumor_size_group AS tumor_size,
-               d.er_status AS er_status,
-               d.pr_status AS pr_status,
-               demo.age_at_index AS age_at_index,
-               demo.survival_time AS survival_time,
-               demo.survival_time_unit AS survival_time_unit
+        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
+        OPTIONAL MATCH (d)<-[:tp_of_diagnosis]-(tp)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+        RETURN  p.program_acronym AS program,
+                p.program_id AS program_id,
+                s.study_acronym AS study_acronym,
+                ss.study_subject_id AS subject_id,
+                ss.disease_subtype AS diagnosis,
+                sf.grouped_recurrence_score AS recurrence_score,
+                d.tumor_size_group AS tumor_size,
+                d.er_status AS er_status,
+                d.pr_status AS pr_status,
+                demo.age_at_index AS age_at_index,
+                demo.survival_time AS survival_time,
+                demo.survival_time_unit AS survival_time_unit
     """)
 
     filesOfSubjects(subject_ids: [String]=[]): [FileInfo] @cypher(statement:"""

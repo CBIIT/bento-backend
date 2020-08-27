@@ -1,10 +1,8 @@
 package gov.nih.nci.bento.error;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.springframework.http.HttpStatus;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -12,7 +10,6 @@ import java.util.List;
 
 public class ApiError extends Throwable {
 
-	private static Gson gson = new Gson();
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	private HttpStatus status;
@@ -20,19 +17,19 @@ public class ApiError extends Throwable {
 	private List<String> errors;
 	private String time;
 
-	public static String JsonApiError(HttpStatus status, String message){
-		return JsonApiError(new ApiError(status, message));
+	public static String jsonApiError(HttpStatus status, String message){
+		return jsonApiError(new ApiError(status, message));
 	}
 
-	public static String JsonApiError(HttpStatus status, String message, String error){
-		return JsonApiError(new ApiError(status, message, error));
+	public static String jsonApiError(HttpStatus status, String message, String error){
+		return jsonApiError(new ApiError(status, message, error));
 	}
 
-	public static String JsonApiError(HttpStatus status, String message, List<String> errors){
-		return JsonApiError(new ApiError(status, message, errors));
+	public static String jsonApiError(HttpStatus status, String message, List<String> errors){
+		return jsonApiError(new ApiError(status, message, errors));
 	}
 
-	public static String JsonApiError(ApiError error){
+	public static String jsonApiError(ApiError error){
 		return new GsonBuilder().create().toJson(new ApiErrorWrapper(error));
 	}
 

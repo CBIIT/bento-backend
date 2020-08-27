@@ -44,7 +44,7 @@ public class GraphQLController {
 			)
 	public ResponseEntity<String> getGraphQLResponseByGET(HttpEntity<String> httpEntity, HttpServletResponse response){
 		HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
-		String error = ApiError.JsonApiError(new ApiError(status, "API will only accept POST requests"));
+		String error = ApiError.jsonApiError(new ApiError(status, "API will only accept POST requests"));
 		return logAndReturnError(status, error);
 	}
 
@@ -69,7 +69,7 @@ public class GraphQLController {
 		}
 		catch(Exception e){
 			HttpStatus status = HttpStatus.BAD_REQUEST;
-			String error = ApiError.JsonApiError(status, "Invalid query in request", e.getMessage());
+			String error = ApiError.jsonApiError(status, "Invalid query in request", e.getMessage());
 			return logAndReturnError(status, error);
 		}
 
@@ -81,18 +81,18 @@ public class GraphQLController {
 				return ResponseEntity.ok(responseText);
 			}
 			catch(ApiError e){
-				String error = ApiError.JsonApiError(e);
+				String error = ApiError.jsonApiError(e);
 				return logAndReturnError(e.getStatus(), error);
 			}
 		}
 		else if(operation.equals("query") || operation.equals("mutation")){
 			HttpStatus status = HttpStatus.FORBIDDEN;
-			String error = ApiError.JsonApiError(status, "Request type has been disabled", operation+" operations have been disabled in the application configuration.");
+			String error = ApiError.jsonApiError(status, "Request type has been disabled", operation+" operations have been disabled in the application configuration.");
 			return logAndReturnError(status, error);
 		}
 		else {
 			HttpStatus status = HttpStatus.BAD_REQUEST;
-			String error = ApiError.JsonApiError(status, "Unknown operation in request", operation+" operation is not recognized.");
+			String error = ApiError.jsonApiError(status, "Unknown operation in request", operation+" operation is not recognized.");
 			return logAndReturnError(status, error);
 		}
 

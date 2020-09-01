@@ -33,6 +33,14 @@ public class ConfigurationDAO {
 	
 	@Value("${allow_graphql_mutation}")
 	private boolean allowGraphQLMutation;
+
+	@Value("${redis.host}")
+	private String redisHost;
+	@Value("${redis.password}")
+	private String redisPassword;
+	@Value("${redis.ttl}")
+	private int redisTTL;
+
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
@@ -87,4 +95,27 @@ public class ConfigurationDAO {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 
+	public String getRedisHost() {
+		return redisHost;
+	}
+
+	public void setRedisHost(String redisHost) {
+		this.redisHost = redisHost;
+	}
+
+	public String getRedisPassword() {
+		return redisPassword;
+	}
+
+	public void setRedisPassword(String redisPassword) {
+		this.redisPassword = redisPassword;
+	}
+
+	public int getRedisTTL() {
+		return redisTTL;
+	}
+
+	public void setRedisTTL(int redisTTL) {
+		this.redisTTL = redisTTL;
+	}
 }

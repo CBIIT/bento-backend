@@ -1,6 +1,6 @@
 ---
 - name: cloudone-ecs cicd pipeline
-  hosts: cicdr
+  hosts: cicd
   connection: local
   gather_facts: yes
     

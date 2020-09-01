@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisException;
 
 import javax.annotation.PostConstruct;
 
@@ -23,35 +24,50 @@ public class RedisService {
     @PostConstruct
     public boolean connect() {
         try {
-            jedis = new Jedis(config.getRedisHost());
-            String result = jedis.auth(config.getRedisPassword());
-            return result.equals("OK");
-        } catch (JedisDataException authFailed) {
-            logger.error(authFailed);
-            System.exit(1);
-            return false;
-        } catch (JedisConnectionException connectionFailed) {
-            logger.error(connectionFailed);
-            System.exit(1);
+            String host = config.getRedisHost();
+            String password = config.getRedisPassword();
+            if (host.isBlank() || password.isBlank()) {
+               return false;
+            } else {
+                jedis = new Jedis(host);
+                String result = jedis.auth(password);
+                return result.equals("OK");
+            }
+        } catch (JedisException e) {
+            logger.error(e);
+            jedis.disconnect();
+            jedis = null;
             return false;
         }
     }
 
     public String getQueryResult(String query) {
-        if (jedis != null) {
-            return jedis.get(query);
-        } else {
-            logger.error("Redis not connected!");
+        try {
+            if (jedis != null) {
+                return jedis.get(query);
+            } else {
+                logger.warn("Redis not connected, fall back to query Neo4j!");
+                return null;
+            }
+        } catch (JedisException e) {
+            logger.error(e);
+            logger.warn("Redis exception caught, fall back to query Neo4j!");
             return null;
         }
     }
 
     public boolean setQueryResult(String query, String result) {
-        if (jedis != null) {
-            String status = jedis.setex(query, config.getRedisTTL(), result);
-            return status.equals("OK");
-        } else {
-            logger.error("Redis not connected!");
+        try {
+            if (jedis != null) {
+                String status = jedis.setex(query, config.getRedisTTL(), result);
+                return status.equals("OK");
+            } else {
+                logger.warn("Redis not connected, query won't be cached!");
+                return false;
+            }
+        } catch (JedisException e) {
+            logger.error(e);
+            logger.warn("Redis exception caught, query won't be cached!");
             return false;
         }
     }

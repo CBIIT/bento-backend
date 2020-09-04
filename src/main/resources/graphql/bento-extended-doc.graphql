@@ -711,6 +711,7 @@ type SubjectOverview {
     age_at_index: Int
     survival_time: Int
     survival_time_unit: String
+    race: String
     files: [file]
     samples: [String]
     lab_procedures: [String]

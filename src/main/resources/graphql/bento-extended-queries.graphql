@@ -22,6 +22,7 @@ type SubjectOverview {
     age_at_index: Int
     survival_time: Int
     survival_time_unit: String
+    race: String
     files: [file]
     samples: [String]
     lab_procedures: [String]
@@ -221,6 +222,7 @@ type QueryType {
                 demo.age_at_index AS age_at_index,
                 demo.survival_time AS survival_time,
                 demo.survival_time_unit AS survival_time_unit,
+                demo.race AS race,
                 samples,
                 files,
                 lab_procedures
@@ -253,6 +255,7 @@ type QueryType {
                 demo.age_at_index AS age_at_index,
                 demo.survival_time AS survival_time,
                 demo.survival_time_unit AS survival_time_unit,
+                demo.race AS race,
                 samples,
                 files,
                 lab_procedures

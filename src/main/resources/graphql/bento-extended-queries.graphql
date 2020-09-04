@@ -41,6 +41,7 @@ type SubjectInfo {
     age_at_index: Int
     survival_time: Int
     survival_time_unit: String
+    race: String
 }
 
 type FileInfo {
@@ -280,6 +281,7 @@ type QueryType {
                 d.pr_status AS pr_status,
                 demo.age_at_index AS age_at_index,
                 demo.survival_time AS survival_time,
+                demo.race AS race,
                 demo.survival_time_unit AS survival_time_unit
     """)
 

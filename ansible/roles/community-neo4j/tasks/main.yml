@@ -62,6 +62,14 @@
     - { src: 'neo4j.service.j2', dest: "/usr/lib/systemd/system/neo4j.service" }
   notify: restart_neo4j
 
+
+- name: add DefaultLimitNOFILE=60000 to /etc/systemd/user.conf
+  lineinfile:
+    path: /etc/systemd/user.conf
+    line: 'DefaultLimitNOFILE=60000'
+    regex: '#DefaultLimitNOFILE='
+    state: present
+
 - name: reload system daemon
   systemd:
     daemon_reload: yes

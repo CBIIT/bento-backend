@@ -16,7 +16,7 @@
     name: neo4j
     state: present
 
-- name: create tomcat user
+- name: create neo4j user
   user:
     name: neo4j
     groups: neo4j
@@ -63,6 +63,13 @@
     - { src: 'neo4j.service.j2', dest: "/usr/lib/systemd/system/neo4j.service" }
   notify: restart_neo4j
 
+- name: change ownership of /var/lib/neo4j
+  file: 
+    path: "{{neo4j_home}}"
+    owner: neo4j
+    group: neo4j
+    recurse: yes
+    
 - name: reload system daemon
   systemd:
     daemon_reload: yes

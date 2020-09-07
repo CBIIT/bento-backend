@@ -43,6 +43,21 @@
   loop:
     - data
     - logs
+
+- name: copy neo4j.conf and service "{{neo4j_home}}"
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+    owner: neo4j
+    group: neo4j
+  loop:
+    - { src: 'neo4j.conf.j2', dest: "{{neo4j_home}}/conf/neo4j.conf" }
+    - { src: 'neo4j.service.j2', dest: "/usr/lib/systemd/system/neo4j.service" }
+  notify: restart_neo4j
+
+- name: reload system daemon
+  systemd:
+    daemon_reload: yes
+    
 - name: start and enable neo4j service
   service:
     name: neo4j
@@ -69,31 +84,4 @@
     owner: neo4j
     group: neo4j
 
-# - name: create directories for ssl create
-#   file:
-#     path: "{{neo4j_home}}/certificates/{{item}}"
-#     state: directory
-#     owner: neo4j
-#     group: neo4j
-#   loop:
-#     - bak
-#     - trusted
-#     - revoked 
 
-# - name: Copy self cert to bak
-#   copy: 
-#     remote_src: True 
-#     src: "{{ item }}"
-#     dest: "{{neo4j_home}}/certificates/bak"
-#     owner: neo4j
-#     group: neo4j
-#   with_fileglob:
-#     - "{{neo4j_home}}/certificates/neo4j*"
-
-
-- name: copy neo4j.conf to "{{neo4j_home}}"
-    src: neo4j.conf.j2
-    dest: "{{neo4j_home}}/conf/neo4j.conf"
-    owner: neo4j
-    group: neo4j
-  notify: restart_neo4j

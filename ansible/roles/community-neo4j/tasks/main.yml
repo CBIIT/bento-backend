@@ -45,6 +45,7 @@
     - logs
 
 - name: copy neo4j.conf and service "{{neo4j_home}}"
+  template:
     src: "{{item.src}}"
     dest: "{{item.dest}}"
     owner: neo4j
@@ -57,7 +58,7 @@
 - name: reload system daemon
   systemd:
     daemon_reload: yes
-    
+
 - name: start and enable neo4j service
   service:
     name: neo4j

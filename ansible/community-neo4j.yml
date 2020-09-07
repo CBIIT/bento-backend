@@ -1,0 +1,9 @@
+---
+- name: setup neo4j community server
+  hosts: neo4j
+  become: yes
+    
+  roles:
+    - community-neo4j
+   
+

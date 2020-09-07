@@ -45,6 +45,13 @@
     - data
     - logs
 
+- name: add DefaultLimitNOFILE=60000 to /etc/systemd/user.conf
+  lineinfile:
+    path: /etc/systemd/user.conf
+    line: 'DefaultLimitNOFILE=60000'
+    regex: '#DefaultLimitNOFILE='
+    state: present
+
 - name: copy neo4j.conf and service "{{neo4j_home}}"
   template:
     src: "{{item.src}}"

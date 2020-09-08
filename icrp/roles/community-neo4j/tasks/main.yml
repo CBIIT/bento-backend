@@ -22,6 +22,11 @@
     groups: neo4j
     append: yes
 
+- name: create {{neo4j_home}}
+  file: 
+    path: "{{neo4j_home}}"
+    state: directory
+    
 - name: download neo4j tar ball
   get_url:
     url: https://dist.neo4j.org/neo4j-community-{{neo4j_version}}-unix.tar.gz

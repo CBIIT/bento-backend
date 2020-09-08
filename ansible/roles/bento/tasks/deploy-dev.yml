@@ -107,7 +107,7 @@
       image: "sumologic/collector:latest"
       environment:
         - name: SUMO_COLLECTOR_NAME
-          value: "{{ app_name }}-syslog"
+          value: "{{ app_name }}-docker"
         - name: SUMO_ACCESS_ID
           value: "{{ sumo_access_id }}"
         - name: SUMO_ACCESS_KEY

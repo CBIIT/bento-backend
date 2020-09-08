@@ -1,5 +1,5 @@
 ---
-- name: create task definition 
+- name: create task definition - backend
   ecs_taskdefinition:
     containers:
     - name: backend
@@ -38,7 +38,7 @@
     region: "{{region}}"
   register: task_output
 
-- name: create task definition 
+- name: create task definition - frontend
   ecs_taskdefinition:
     containers:
     - name: frontend
@@ -71,58 +71,58 @@
     region: "{{region}}"
   register: task_output
 
-- name: create task definition 
-  ecs_taskdefinition:
-    containers:
-    - name: sumologic-syslog
-      essential: true
-      image: "sumologic/collector:latest-syslog"
-      environment:
-        - name: SUMO_COLLECTOR_NAME
-          value: "{{ app_name }}-syslog"
-        - name: SUMO_ACCESS_ID
-          value: ""
-        - name: SUMO_ACCESS_KEY
-          value: ""
-        - name: SUMO_COLLECTOR_NAME_PREFIX
-          value: ""
-        - name: SUMO_CLOBBER
-          value: "true"
-      portMappings:
-      - containerPort: "514"
-        hostPort: "514"
-    network_mode: bridge
-    family: bento-{{tier}}-sumo_syslog
-    state: present
-    region: "{{region}}"
-  register: task_output
+#- name: create task definition - sumo syslog
+#  ecs_taskdefinition:
+#    containers:
+#    - name: sumologic-syslog
+#      essential: true
+#      image: "sumologic/collector:latest-syslog"
+#      environment:
+#        - name: SUMO_COLLECTOR_NAME
+#          value: "{{ app_name }}-syslog"
+#        - name: SUMO_ACCESS_ID
+#          value: ""
+#        - name: SUMO_ACCESS_KEY
+#          value: ""
+#        - name: SUMO_COLLECTOR_NAME_PREFIX
+#          value: ""
+#        - name: SUMO_CLOBBER
+#          value: "true"
+#      portMappings:
+#      - containerPort: "514"
+#        hostPort: "514"
+#    network_mode: bridge
+#    family: bento-{{tier}}-sumo_syslog
+#    state: present
+#    region: "{{region}}"
+#  register: task_output
 
-- name: create task definition 
-  ecs_taskdefinition:
-    containers:
-    - name: sumologic-docker
-      essential: true
-      image: "sumologic/collector:latest"
-      environment:
-        - name: SUMO_COLLECTOR_NAME
-          value: "{{ app_name }}-syslog"
-        - name: SUMO_ACCESS_ID
-          value: ""
-        - name: SUMO_ACCESS_KEY
-          value: ""
-        - name: SUMO_COLLECTOR_NAME_PREFIX
-          value: ""
-        - name: SUMO_CLOBBER
-          value: "true"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    network_mode: bridge
-    family: bento-{{tier}}-sumo_docker
-    state: present
-    region: "{{region}}"
-  register: task_output
+#- name: create task definition - sumo docker
+#  ecs_taskdefinition:
+#    containers:
+#    - name: sumologic-docker
+#      essential: true
+#      image: "sumologic/collector:latest"
+#      environment:
+#        - name: SUMO_COLLECTOR_NAME
+#          value: "{{ app_name }}-syslog"
+#        - name: SUMO_ACCESS_ID
+#          value: ""
+#        - name: SUMO_ACCESS_KEY
+#          value: ""
+#        - name: SUMO_COLLECTOR_NAME_PREFIX
+#          value: ""
+#        - name: SUMO_CLOBBER
+#          value: "true"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#    network_mode: bridge
+#    family: bento-{{tier}}-sumo_docker
+#    state: present
+#    region: "{{region}}"
+#  register: task_output
 
-- name: create task definition 
+- name: create task definition - newrelic docker
   ecs_taskdefinition:
     containers:
     - name: newrelic-docker
@@ -144,19 +144,19 @@
     region: "{{region}}"
   register: task_output
 
-- name: query task definition
+- name: query task definition - bento frontend
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-frontend
     region: "{{region}}" 
   register: task_frontend
 
-- name: query task definition
+- name: query task definition - bento backend
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-backend
     region: "{{region}}" 
   register: task_backend
 
-- name: query task definition
+- name: query task definition - newrelic docker
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-nr_docker
     region: "{{region}}" 
@@ -246,6 +246,6 @@
     region: "{{region}}"
   register: service_nr_docker_output
 
-- name: show lb_backend
-  debug: 
-    msg: "{{lb_backend}}"
+#- name: show lb_backend
+#  debug: 
+#    msg: "{{lb_backend}}"

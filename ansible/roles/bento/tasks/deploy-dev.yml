@@ -249,7 +249,6 @@
     name: bento-{{tier}}-nr_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_nr_docker_name}}"
-    role: "{{role_arn}}"
     force_new_deployment: no
     deployment_configuration:
       minimum_healthy_percent: 0

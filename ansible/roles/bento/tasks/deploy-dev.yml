@@ -14,10 +14,10 @@
 #          value: true
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
-        - name: NEW_RELIC_LOG_FILE_NAME
-          value: "STDOUT"
-        - name: JAVA_OPTS
-          value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+#        - name: NEW_RELIC_LOG_FILE_NAME
+#          value: "STDOUT"
+#        - name: JAVA_OPTS
+#          value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
 #      entryPoint:
 #        - "/bin/ash"
 #        - "-c"
@@ -142,12 +142,12 @@
       mountPoints:
         - containerPath: /var/run/docker.sock
           sourceVolume: docker-sock
-        - containerPath: /host
-          readOnly: true
-          sourceVolume: docker-host
+#        - containerPath: /host
+#          readOnly: true
+#          sourceVolume: docker-host
     volumes:
       - name: docker-sock
-      - name: docker-host
+#      - name: docker-host
     network_mode: bridge
     family: bento-{{tier}}-nr_docker
     state: present

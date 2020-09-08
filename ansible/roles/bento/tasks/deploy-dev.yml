@@ -135,9 +135,15 @@
           value: "{{ app_name }}-docker"
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
+      mountPoints:
+        - containerPath: /var/run/docker.sock
+          sourceVolume: docker-sock
+        - containerPath: /
+          readOnly: true
+          sourceVolume: docker-root
     volumes:
-      - /:/host:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - name: docker-sock
+      - name: docker-root
     network_mode: bridge
     family: bento-{{tier}}-nr_docker
     state: present

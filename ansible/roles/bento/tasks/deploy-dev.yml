@@ -223,7 +223,7 @@
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
-#    task_sumo_docker_name: "{{task_sumo_docker.family}}"
+    task_sumo_docker_name: "{{task_sumo_docker.family}}"
 #    task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"

@@ -10,6 +10,12 @@
       - java-11-openjdk-devel
     state: latest
     disable_gpg_check: yes
+    
+- name: enable and start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
 
 - name: create neo4j group
   group:
@@ -26,7 +32,7 @@
   file: 
     path: "{{neo4j_home}}"
     state: directory
-    
+
 - name: download neo4j tar ball
   get_url:
     url: https://dist.neo4j.org/neo4j-community-{{neo4j_version}}-unix.tar.gz

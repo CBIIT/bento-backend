@@ -104,22 +104,20 @@
     push: yes
     source: local
 
-- name: post schemas
-  uri:
-    url: http://{{neo4j_ip}}:7474/graphql/idl/
-    method: POST
-    body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
-    headers:
-      Accept: "application/json"
-      Authorization: "{{bearer}}"
-  register: schema
+# - name: post schemas
+#   uri:
+#     url: http://{{neo4j_ip}}:7474/graphql/idl/
+#     method: POST
+#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
+#     headers:
+#       Accept: "application/json"
+#       Authorization: "{{bearer}}"
+#   register: schema
 
 # - name: post schema
 #   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/bento-backend/src/main/resources/graphql/ctdc.graphql"
 #   register: schema
 
-- name: schema output
-  debug:
-    msg: "{{schema}}"
+
 
     

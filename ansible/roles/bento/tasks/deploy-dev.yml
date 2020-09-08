@@ -18,10 +18,10 @@
           value: "STDOUT"
         - name: JAVA_OPTS
           value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-      entryPoint:
-        - "/bin/ash"
-        - "-c"
-        - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'
+#      entryPoint:
+#        - "/bin/ash"
+#        - "-c"
+#        - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"

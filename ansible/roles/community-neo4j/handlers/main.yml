@@ -1,0 +1,12 @@
+---
+# handlers file for neo4j
+- name: restart_neo4j
+  service:
+    name: neo4j
+    state: restarted
+
+- name: restart_firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes

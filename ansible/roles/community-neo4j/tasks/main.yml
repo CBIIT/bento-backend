@@ -1,0 +1,103 @@
+---
+# tasks file for neo4j
+- name: install systems packages
+  yum:
+    name: 
+      - firewalld
+      - epel-release
+      - unzip
+      - wget
+      - java-11-openjdk-devel
+    state: latest
+    disable_gpg_check: yes
+
+- name: create neo4j group
+  group:
+    name: neo4j
+    state: present
+
+- name: create tomcat user
+  user:
+    name: neo4j
+    groups: neo4j
+    append: yes
+
+- name: download neo4j tar ball
+  get_url:
+    url: https://dist.neo4j.org/neo4j-community-{{neo4j_version}}-unix.tar.gz
+    dest: /tmp/neo4j-community.tar.gz
+
+- name: extract neo4j 
+  unarchive:
+    src: /tmp/neo4j-community.tar.gz
+    dest: "{{neo4j_home}}"
+    remote_src: yes
+
+- name: change ownership of /var/lib/neo4j
+  file: 
+    path: "{{neo4j_home}}"
+    owner: neo4j
+    group: neo4j
+    recurse: yes
+
+- name: change permission on /var/lib/neo4j/data 
+  file: 
+    path: "{{neo4j_home}}/{{item}}"
+    owner: neo4j
+    group: neo4j
+    recurse: yes
+    mode: '777'
+  loop:
+    - data
+    - logs
+
+- name: copy neo4j.conf and service "{{neo4j_home}}"
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+    owner: neo4j
+    group: neo4j
+  loop:
+    - { src: 'neo4j.conf.j2', dest: "{{neo4j_home}}/conf/neo4j.conf" }
+    - { src: 'neo4j.service.j2', dest: "/usr/lib/systemd/system/neo4j.service" }
+  notify: restart_neo4j
+
+
+- name: add DefaultLimitNOFILE=60000 to /etc/systemd/user.conf
+  lineinfile:
+    path: /etc/systemd/user.conf
+    line: 'DefaultLimitNOFILE=60000'
+    regex: '#DefaultLimitNOFILE='
+    state: present
+
+- name: reload system daemon
+  systemd:
+    daemon_reload: yes
+
+- name: start and enable neo4j service
+  service:
+    name: neo4j
+    state: started
+    enabled: yes
+
+- name: open neo4j data ports
+  firewalld:
+    port: "{{item}}/tcp"
+    zone: public
+    immediate: yes
+    permanent: yes
+    state: enabled
+  loop:
+    - 7474
+    - 7473
+    - 7687
+  notify: restart_firewalld
+
+- name: download neo4j-graphql plugins
+  get_url:
+    url: https://github.com/neo4j-graphql/neo4j-graphql/releases/download/{{graphql_version}}/neo4j-graphql-{{graphql_version}}.jar
+    dest: "{{neo4j_home}}/plugins"
+    owner: neo4j
+    group: neo4j
+
+

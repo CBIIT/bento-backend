@@ -142,29 +142,29 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
-			git branch: "${params.Backend_Tag}",
-				url: 'https://github.com/CBIIT/bento-backend'
+//			git branch: "${params.Backend_Tag}",
+//				url: 'https://github.com/CBIIT/bento-backend'
 				
-//  			checkout([$class: 'GitSCM', 
-//  				branches: [[name: "${params.Backend_Tag}"]], 
-//  				doGenerateSubmoduleConfigurations: 
-//  				false, extensions: [], submoduleCfg: [], 
-//  				userRemoteConfigs: 
-//  				[[url: 'https://github.com/CBIIT/bento-backend']]])
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Backend_Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/bento-backend']]])
 
-			dir('bento-frontend'){
-				git branch: "${params.Frontend_Tag}",
-				url: 'https://github.com/CBIIT/bento-frontend'
-				}
+//			dir('bento-frontend'){
+//				git branch: "${params.Frontend_Tag}",
+//				url: 'https://github.com/CBIIT/bento-frontend'
+//				}
 
-//			checkout([$class: 'GitSCM',
-//				branches: [[name: "${params.Frontend_Tag}"]],
-//				doGenerateSubmoduleConfigurations: false,
-//				extensions: [[$class: 'RelativeTargetDirectory',
-//				relativeTargetDir: 'bento-frontend']],
-//				submoduleCfg: [],
-//				userRemoteConfigs: 
-//				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-frontend']]])
 
   			checkout( poll: false, 
 				changelog:false,

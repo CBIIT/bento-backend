@@ -42,6 +42,12 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
+	extendedChoice(
+        name: 'Region', 
+        defaultValue: 'us-east-1', 
+        description: 'Choose aws region to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'us-east-1,us-west-1' )
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 

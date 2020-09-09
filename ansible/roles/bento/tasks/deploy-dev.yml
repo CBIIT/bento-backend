@@ -28,7 +28,8 @@
       logConfiguration:
         logDriver: syslog
         options:
-          syslog-address: tcp://host.docker.internal:514
+#          syslog-address: tcp://host.docker.internal:514
+          syslog-address: tcp://{{ syslog_host }}:514
           tag: "{{ app_name }}-backend"
     network_mode: bridge
     family: bento-{{tier}}-backend
@@ -61,7 +62,8 @@
       logConfiguration:
         logDriver: syslog
         options:
-          syslog-address: tcp://host.docker.internal:514
+#          syslog-address: tcp://host.docker.internal:514
+          syslog-address: tcp://{{ syslog_host }}:514
           tag: "{{ app_name }}-frontend"
     network_mode: bridge
     family: bento-{{tier}}-frontend
@@ -118,10 +120,11 @@
           value: "true"
       mountPoints:
         - containerPath: /var/run/docker.sock
-#          readOnly: true
           sourceVolume: docker-sock
-    volumes:
-      - name: docker-sock
+          readOnly: true
+      volumes:
+        - name: docker-sock
+          sourcePath: /var/run/docker.sock
     network_mode: bridge
     family: bento-{{tier}}-sumo_docker
     state: present

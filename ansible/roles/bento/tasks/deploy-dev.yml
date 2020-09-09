@@ -1,4 +1,10 @@
 ---
+############################################################################################################################
+
+#     Task Definitions
+
+############################################################################################################################
+
 - name: create task definition - backend
   ecs_taskdefinition:
     containers:
@@ -167,6 +173,12 @@
     region: "{{region}}"
   register: task_output
 
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
 - name: query task definition - bento frontend
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-frontend
@@ -196,6 +208,12 @@
     task_definition: bento-{{tier}}-nr_docker
     region: "{{region}}" 
   register: task_nr_docker
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
 
 - name: query backend service
   ecs_service_info:
@@ -237,6 +255,7 @@
     region: "{{region}}"
   register: service_nr_docker
 
+############################################################################################################################
 
 - name: set facts
   set_fact:
@@ -250,6 +269,12 @@
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
+
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
 
 - name: update frontend service
   ecs_service:
@@ -266,7 +291,6 @@
     load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"
   register: service_frontend_output
-
 
 - name: update backend service
   ecs_service:
@@ -290,7 +314,7 @@
     name: bento-{{tier}}-sumo_syslog
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_syslog_name}}"
-    force_new_deployment: no
+    force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
@@ -304,7 +328,7 @@
     name: bento-{{tier}}-sumo_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_docker_name}}"
-    force_new_deployment: no
+    force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
@@ -318,7 +342,7 @@
     name: bento-{{tier}}-nr_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_nr_docker_name}}"
-    force_new_deployment: no
+    force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100

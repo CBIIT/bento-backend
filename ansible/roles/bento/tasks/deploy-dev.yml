@@ -100,8 +100,8 @@
     network_mode: bridge
     family: bento-{{tier}}-sumo_syslog
     state: present
-    memory: '512'
-    cpu: '512'
+    memory: '256'
+    cpu: '128'
     region: "{{region}}"
   register: task_output
 
@@ -133,8 +133,8 @@
     network_mode: bridge
     family: bento-{{tier}}-sumo_docker
     state: present
-    memory: '512'
-    cpu: '512'
+    memory: '256'
+    cpu: '128'
     region: "{{region}}"
   register: task_output
 
@@ -168,8 +168,8 @@
     network_mode: bridge
     family: bento-{{tier}}-nr_docker
     state: present
-    memory: '512'
-    cpu: '512'
+    memory: '256'
+    cpu: '128'
     region: "{{region}}"
   register: task_output
 

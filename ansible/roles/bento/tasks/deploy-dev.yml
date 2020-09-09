@@ -10,8 +10,8 @@
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
           value: "{{ app_name }}-backend"
-#        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-#          value: true
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
 #        - name: NEW_RELIC_LOG_FILE_NAME
@@ -28,7 +28,6 @@
       logConfiguration:
         logDriver: syslog
         options:
-#          syslog-address: tcp://host.docker.internal:514
           syslog-address: tcp://{{ syslog_host }}:514
           tag: "{{ app_name }}-backend"
     network_mode: bridge
@@ -50,8 +49,8 @@
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
           value: "{{ app_name }}-frontend"
-#        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-#          value: true
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_NO_CONFIG_FILE
@@ -62,7 +61,6 @@
       logConfiguration:
         logDriver: syslog
         options:
-#          syslog-address: tcp://host.docker.internal:514
           syslog-address: tcp://{{ syslog_host }}:514
           tag: "{{ app_name }}-frontend"
     network_mode: bridge
@@ -134,35 +132,40 @@
     region: "{{region}}"
   register: task_output
 
-#- name: create task definition - newrelic docker
-#  ecs_taskdefinition:
-#    containers:
-#    - name: newrelic-docker
-#      essential: true
-#      image: "newrelic/infrastructure:latest"
-#      environment:
-#        - name: NRIA_LICENSE_KEY
-#          value: "{{ newrelic_license_key }}"
-#        - name: NRIA_DISPLAY_NAME
-#          value: "{{ app_name }}-docker"
-#        - name: NEW_RELIC_HOST
-#          value: "gov-collector.newrelic.com"
-#      mountPoints:
-#        - containerPath: /var/run/docker.sock
-#          sourceVolume: docker-sock
-#        - containerPath: /host
-#          readOnly: true
-#          sourceVolume: docker-host
-#    volumes:
-#      - name: docker-sock
-#      - name: docker-host
-#    network_mode: bridge
-#    family: bento-{{tier}}-nr_docker
-#    state: present
-#    memory: '512'
-#    cpu: '512'
-#    region: "{{region}}"
-#  register: task_output
+- name: create task definition - newrelic docker
+  ecs_taskdefinition:
+    containers:
+    - name: newrelic-docker
+      essential: true
+      image: "newrelic/infrastructure:latest"
+      environment:
+        - name: NRIA_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NRIA_DISPLAY_NAME
+          value: "{{ app_name }}-docker"
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+      mountPoints:
+        - containerPath: /var/run/docker.sock
+          sourceVolume: docker-sock
+          readOnly: true
+        - containerPath: /host
+          sourceVolume: docker-host
+          readOnly: true
+    volumes:
+    - name: docker-sock
+      host:
+        sourcePath: /var/run/docker.sock
+    - name: docker-host
+      host:
+        sourcePath: /
+    network_mode: bridge
+    family: bento-{{tier}}-nr_docker
+    state: present
+    memory: '512'
+    cpu: '512'
+    region: "{{region}}"
+  register: task_output
 
 - name: query task definition - bento frontend
   ecs_taskdefinition_info:
@@ -188,11 +191,11 @@
     region: "{{region}}" 
   register: task_sumo_docker
 
-#- name: query task definition - newrelic docker
-#  ecs_taskdefinition_info:
-#    task_definition: bento-{{tier}}-nr_docker
-#    region: "{{region}}" 
-#  register: task_nr_docker
+- name: query task definition - newrelic docker
+  ecs_taskdefinition_info:
+    task_definition: bento-{{tier}}-nr_docker
+    region: "{{region}}" 
+  register: task_nr_docker
 
 - name: query backend service
   ecs_service_info:
@@ -226,13 +229,13 @@
     region: "{{region}}"
   register: service_sumo_docker
 
-#- name: query newrelic docker service
-#  ecs_service_info:
-#    cluster: bento-{{tier}}
-#    service: bento-{{tier}}-nr_docker
-#    details: true
-#    region: "{{region}}"
-#  register: service_nr_docker
+- name: query newrelic docker service
+  ecs_service_info:
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-nr_docker
+    details: true
+    region: "{{region}}"
+  register: service_nr_docker
 
 
 - name: set facts
@@ -243,7 +246,7 @@
     task_frontend_name: "{{task_frontend.family}}"
     task_sumo_syslog_name: "{{task_sumo_syslog.family}}"
     task_sumo_docker_name: "{{task_sumo_docker.family}}"
-#    task_nr_docker_name: "{{task_nr_docker.family}}"
+    task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
@@ -287,7 +290,7 @@
     name: bento-{{tier}}-sumo_syslog
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_syslog_name}}"
-    force_new_deployment: yes
+    force_new_deployment: no
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
@@ -301,7 +304,7 @@
     name: bento-{{tier}}-sumo_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_docker_name}}"
-    force_new_deployment: yes
+    force_new_deployment: no
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
@@ -309,19 +312,19 @@
     region: "{{region}}"
   register: service_sumo_docker_output
 
-#- name: update newrelic docker service
-#  ecs_service:
-#    state: present
-#    name: bento-{{tier}}-nr_docker
-#    cluster: bento-{{tier}}
-#    task_definition: "{{task_nr_docker_name}}"
-#    force_new_deployment: no
-#    deployment_configuration:
-#      minimum_healthy_percent: 0
-#      maximum_percent: 100
-#    desired_count: 1
-#    region: "{{region}}"
-#  register: service_nr_docker_output
+- name: update newrelic docker service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-nr_docker
+    cluster: bento-{{tier}}
+    task_definition: "{{task_nr_docker_name}}"
+    force_new_deployment: no
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_nr_docker_output
 
 #- name: show lb_backend
 #  debug: 

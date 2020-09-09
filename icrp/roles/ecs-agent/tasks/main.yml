@@ -4,7 +4,7 @@
   ec2_instance_facts:
     region: us-east-1
     filters:
-      "tag:Name": bento--{{env}}-frontend
+      "tag:Name": bento-{{env}}-frontend
       "instance-state-name": running
       "tag:Environment": "{{env}}"
   register: frontend

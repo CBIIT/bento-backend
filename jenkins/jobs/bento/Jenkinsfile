@@ -201,6 +201,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.REGION = "${params.REGION}"
+                  env.TAG = "${params.Backend_Tag}"
                  
                 }
               break
@@ -210,6 +211,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.REGION = "${params.REGION}"
+                  env.TAG = "${params.Backend_Tag}"
                   
                 }
               break
@@ -219,6 +221,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
                   env.REGION = "${params.REGION}"
+                  env.TAG = "${params.Backend_Tag}"
                   
                 }
               break
@@ -228,6 +231,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
                   env.REGION = "${params.REGION}"
+                  env.TAG = "${params.Backend_Tag}"
                   
                 }
               break
@@ -237,6 +241,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.REGION = "${params.REGION}"
+                  env.TAG = "${params.Backend_Tag}"
                   
                 }
               break
@@ -246,8 +251,7 @@ pipeline {
     }
   	stage('build'){
       environment {
-        TAG = "${params.Backend_Tag}"
-        REGION = "${params.REGION}"
+       TAG = "${params.Backend_Tag}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -262,7 +266,6 @@ pipeline {
   	}
   	stage('deploy'){
       environment {
-        TAG = "${params.Backend_Tag}"
         REGION = "${params.REGION}"
       }
   		steps{

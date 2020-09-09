@@ -251,7 +251,7 @@ pipeline {
     }
   	stage('build'){
       environment {
-        REGION = "${params.REGION}"
+       TAG = "${params.Backend_Tag}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -266,7 +266,6 @@ pipeline {
   	}
   	stage('deploy'){
       environment {
-        TAG = "${params.Backend_Tag}"
         REGION = "${params.REGION}"
       }
   		steps{

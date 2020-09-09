@@ -201,7 +201,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.REGION = "${params.REGION}"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                  
                 }
               break
@@ -211,7 +211,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.REGION = "${params.REGION}"
-                  env.TAG = "${params.Backend_Tag}"
+                 
                   
                 }
               break
@@ -221,7 +221,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
                   env.REGION = "${params.REGION}"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                   
                 }
               break
@@ -231,7 +231,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
                   env.REGION = "${params.REGION}"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                   
                 }
               break
@@ -241,7 +241,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.REGION = "${params.REGION}"
-                  env.TAG = "${params.Backend_Tag}"
+                  
                   
                 }
               break

@@ -276,38 +276,6 @@
 
 ############################################################################################################################
 
-- name: update frontend service
-  ecs_service:
-    state: present
-    name: bento-{{tier}}-frontend
-    cluster: bento-{{tier}}
-    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-    role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    load_balancers: "{{ lb_frontend }}"
-    region: "{{region}}"
-  register: service_frontend_output
-
-- name: update backend service
-  ecs_service:
-    state: present
-    name: bento-{{tier}}-backend
-    cluster: bento-{{tier}}
-    task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    load_balancers: "{{ lb_backend }}"
-    region: "{{region}}"
-  register: service_backend_output
-
 - name: update sumologic syslog service
   ecs_service:
     state: present
@@ -349,6 +317,38 @@
     desired_count: 1
     region: "{{region}}"
   register: service_nr_docker_output
+
+- name: update backend service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-backend
+    cluster: bento-{{tier}}
+    task_definition: "{{task_backend_name}}:{{backend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_backend }}"
+    region: "{{region}}"
+  register: service_backend_output
+
+- name: update frontend service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-frontend
+    cluster: bento-{{tier}}
+    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_frontend_output
 
 #- name: show lb_backend
 #  debug: 

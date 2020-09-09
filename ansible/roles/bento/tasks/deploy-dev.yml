@@ -25,11 +25,11 @@
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
-#      logConfiguration:
-#        logDriver: syslog
-#        options:
-#          syslog-address: tcp://host.docker.internal:514
-#          tag: "{{ app_name }}-backend"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://host.docker.internal:514
+          tag: "{{ app_name }}-backend"
     network_mode: bridge
     family: bento-{{tier}}-backend
     memory: '512'
@@ -58,11 +58,11 @@
       portMappings:
       - containerPort: "80"
         hostPort: "80"
-#      logConfiguration:
-#        logDriver: syslog
-#        options:
-#          syslog-address: tcp://host.docker.internal:514
-#          tag: "{{ app_name }}-frontend"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://host.docker.internal:514
+          tag: "{{ app_name }}-frontend"
     network_mode: bridge
     family: bento-{{tier}}-frontend
     state: present
@@ -71,33 +71,33 @@
     region: "{{region}}"
   register: task_output
 
-#- name: create task definition - sumo syslog
-#  ecs_taskdefinition:
-#    containers:
-#    - name: sumologic-syslog
-#      essential: true
-#      image: "sumologic/collector:latest-syslog"
-#      environment:
-#        - name: SUMO_COLLECTOR_NAME
-#          value: "{{ app_name }}-syslog"
-#        - name: SUMO_ACCESS_ID
-#          value: ""
-#        - name: SUMO_ACCESS_KEY
-#          value: ""
-#        - name: SUMO_COLLECTOR_NAME_PREFIX
-#          value: ""
-#        - name: SUMO_CLOBBER
-#          value: "true"
-#      portMappings:
-#      - containerPort: "514"
-#        hostPort: "514"
-#    network_mode: bridge
-#    family: bento-{{tier}}-sumo_syslog
-#    state: present
-#    memory: '512'
-#    cpu: '512'
-#    region: "{{region}}"
-#  register: task_output
+- name: create task definition - sumo syslog
+  ecs_taskdefinition:
+    containers:
+    - name: sumologic-syslog
+      essential: true
+      image: "sumologic/collector:latest-syslog"
+      environment:
+        - name: SUMO_COLLECTOR_NAME
+          value: "{{ app_name }}-syslog"
+        - name: SUMO_ACCESS_ID
+          value: "{{ sumo_access_id }}"
+        - name: SUMO_ACCESS_KEY
+          value: "{{ sumo_access_key }}"
+        - name: SUMO_COLLECTOR_NAME_PREFIX
+          value: ""
+        - name: SUMO_CLOBBER
+          value: "true"
+      portMappings:
+      - containerPort: "514"
+        hostPort: "514"
+    network_mode: bridge
+    family: bento-{{tier}}-sumo_syslog
+    state: present
+    memory: '512'
+    cpu: '512'
+    region: "{{region}}"
+  register: task_output
 
 - name: create task definition - sumo docker
   ecs_taskdefinition:
@@ -118,7 +118,7 @@
           value: "true"
       mountPoints:
         - containerPath: /var/run/docker.sock
-          readOnly: true
+#          readOnly: true
           sourceVolume: docker-sock
     volumes:
       - name: docker-sock
@@ -172,6 +172,12 @@
     region: "{{region}}" 
   register: task_backend
 
+- name: query task definition - sumologic syslog
+  ecs_taskdefinition_info:
+    task_definition: bento-{{tier}}-sumo_syslog
+    region: "{{region}}" 
+  register: task_sumo_syslog
+
 - name: query task definition - sumologic docker
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-sumo_docker
@@ -200,6 +206,14 @@
     region: "{{region}}"
   register: service_frontend
 
+- name: query sumologic syslog service
+  ecs_service_info:
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-sumo_syslog
+    details: true
+    region: "{{region}}"
+  register: service_sumo_syslog
+
 - name: query sumologic docker service
   ecs_service_info:
     cluster: bento-{{tier}}
@@ -223,6 +237,7 @@
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
+    task_sumo_syslog_name: "{{task_sumo_syslog.family}}"
     task_sumo_docker_name: "{{task_sumo_docker.family}}"
 #    task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
@@ -262,13 +277,27 @@
     region: "{{region}}"
   register: service_backend_output
 
+- name: update sumologic syslog service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-sumo_syslog
+    cluster: bento-{{tier}}
+    task_definition: "{{task_sumo_syslog_name}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_sumo_syslog_output
+
 - name: update sumologic docker service
   ecs_service:
     state: present
     name: bento-{{tier}}-sumo_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_docker_name}}"
-    force_new_deployment: no
+    force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100

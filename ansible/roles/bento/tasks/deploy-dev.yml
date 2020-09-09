@@ -120,10 +120,11 @@
           value: "true"
       mountPoints:
         - containerPath: /var/run/docker.sock
-#          readOnly: true
           sourceVolume: docker-sock
-    volumes:
-      - name: docker-sock
+          readOnly: true
+      volumes:
+        - name: docker-sock
+          sourcePath: /var/run/docker.sock
     network_mode: bridge
     family: bento-{{tier}}-sumo_docker
     state: present

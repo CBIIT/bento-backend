@@ -1,5 +1,11 @@
 ---
-- name: create task definition 
+############################################################################################################################
+
+#     Task Definitions
+
+############################################################################################################################
+
+- name: create task definition - backend
   ecs_taskdefinition:
     containers:
     - name: backend
@@ -9,20 +15,27 @@
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
-          value: "{{ app_name }}"
+          value: "{{ app_name }}-backend"
         - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
           value: true
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
+#        - name: NEW_RELIC_LOG_FILE_NAME
+#          value: "STDOUT"
+#        - name: JAVA_OPTS
+#          value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+#      entryPoint:
+#        - "/bin/ash"
+#        - "-c"
+#        - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
-      # logConfiguration:
-      #   logDriver: sumologic
-      #   options:
-      #     sumo-url: "{{sumo_collector_url}}"
-      #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
-      #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://{{ syslog_host }}:514
+          tag: "{{ app_name }}-backend"
     network_mode: bridge
     family: bento-{{tier}}-backend
     memory: '512'
@@ -31,21 +44,31 @@
     region: "{{region}}"
   register: task_output
 
-- name: create task definition 
+- name: create task definition - frontend
   ecs_taskdefinition:
     containers:
     - name: frontend
       essential: true
       image: "cbiitssrepo/bento-frontend:{{build_number}}"
+      environment:
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}-frontend"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: "true"
       portMappings:
       - containerPort: "80"
         hostPort: "80"
-      # logConfiguration:
-      #   logDriver: sumologic
-      #   options:
-      #     sumo-url: "{{sumo_collector_url}}"
-      #     sumo-source-category: "{{tier}}/{{platform}}/bento/frontend/logs"
-      #     sumo-source-name: "bento-{{platform}}-frontend-docker-{{tier}}"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://{{ syslog_host }}:514
+          tag: "{{ app_name }}-frontend"
     network_mode: bridge
     family: bento-{{tier}}-frontend
     state: present
@@ -54,17 +77,143 @@
     region: "{{region}}"
   register: task_output
 
-- name: query task definition
+- name: create task definition - sumo syslog
+  ecs_taskdefinition:
+    containers:
+    - name: sumologic-syslog
+      essential: true
+      image: "sumologic/collector:latest-syslog"
+      environment:
+        - name: SUMO_COLLECTOR_NAME
+          value: "{{ app_name }}-syslog"
+        - name: SUMO_ACCESS_ID
+          value: "{{ sumo_access_id }}"
+        - name: SUMO_ACCESS_KEY
+          value: "{{ sumo_access_key }}"
+        - name: SUMO_COLLECTOR_NAME_PREFIX
+          value: ""
+        - name: SUMO_CLOBBER
+          value: "true"
+      portMappings:
+      - containerPort: "514"
+        hostPort: "514"
+    network_mode: bridge
+    family: bento-{{tier}}-sumo_syslog
+    state: present
+    memory: '512'
+    cpu: '128'
+    region: "{{region}}"
+  register: task_output
+
+- name: create task definition - sumo docker
+  ecs_taskdefinition:
+    containers:
+    - name: sumologic-docker
+      essential: true
+      image: "sumologic/collector:latest"
+      environment:
+        - name: SUMO_COLLECTOR_NAME
+          value: "{{ app_name }}-docker"
+        - name: SUMO_ACCESS_ID
+          value: "{{ sumo_access_id }}"
+        - name: SUMO_ACCESS_KEY
+          value: "{{ sumo_access_key }}"
+        - name: SUMO_COLLECTOR_NAME_PREFIX
+          value: ""
+        - name: SUMO_CLOBBER
+          value: "true"
+      mountPoints:
+        - containerPath: /var/run/docker.sock
+          sourceVolume: docker-sock
+          readOnly: true
+    volumes:
+    - name: docker-sock
+      host:
+        sourcePath: /var/run/docker.sock
+    network_mode: bridge
+    family: bento-{{tier}}-sumo_docker
+    state: present
+    memory: '512'
+    cpu: '128'
+    region: "{{region}}"
+  register: task_output
+
+- name: create task definition - newrelic docker
+  ecs_taskdefinition:
+    containers:
+    - name: newrelic-docker
+      essential: true
+      image: "newrelic/infrastructure:latest"
+      environment:
+        - name: NRIA_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NRIA_DISPLAY_NAME
+          value: "{{ app_name }}-docker"
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+      mountPoints:
+        - containerPath: /var/run/docker.sock
+          sourceVolume: docker-sock
+          readOnly: true
+        - containerPath: /host
+          sourceVolume: docker-host
+          readOnly: true
+    volumes:
+    - name: docker-sock
+      host:
+        sourcePath: /var/run/docker.sock
+    - name: docker-host
+      host:
+        sourcePath: /
+    network_mode: bridge
+    family: bento-{{tier}}-nr_docker
+    state: present
+    memory: '128'
+    cpu: '128'
+    region: "{{region}}"
+  register: task_output
+
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
+- name: query task definition - bento frontend
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-frontend
     region: "{{region}}" 
   register: task_frontend
 
-- name: query task definition
+- name: query task definition - bento backend
   ecs_taskdefinition_info:
     task_definition: bento-{{tier}}-backend
     region: "{{region}}" 
   register: task_backend
+
+- name: query task definition - sumologic syslog
+  ecs_taskdefinition_info:
+    task_definition: bento-{{tier}}-sumo_syslog
+    region: "{{region}}" 
+  register: task_sumo_syslog
+
+- name: query task definition - sumologic docker
+  ecs_taskdefinition_info:
+    task_definition: bento-{{tier}}-sumo_docker
+    region: "{{region}}" 
+  register: task_sumo_docker
+
+- name: query task definition - newrelic docker
+  ecs_taskdefinition_info:
+    task_definition: bento-{{tier}}-nr_docker
+    region: "{{region}}" 
+  register: task_nr_docker
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
 
 - name: query backend service
   ecs_service_info:
@@ -82,6 +231,31 @@
     region: "{{region}}"
   register: service_frontend
 
+- name: query sumologic syslog service
+  ecs_service_info:
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-sumo_syslog
+    details: true
+    region: "{{region}}"
+  register: service_sumo_syslog
+
+- name: query sumologic docker service
+  ecs_service_info:
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-sumo_docker
+    details: true
+    region: "{{region}}"
+  register: service_sumo_docker
+
+- name: query newrelic docker service
+  ecs_service_info:
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-nr_docker
+    details: true
+    region: "{{region}}"
+  register: service_nr_docker
+
+############################################################################################################################
 
 - name: set facts
   set_fact:
@@ -89,26 +263,60 @@
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
+    task_sumo_syslog_name: "{{task_sumo_syslog.family}}"
+    task_sumo_docker_name: "{{task_sumo_docker.family}}"
+    task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
-- name: update frontend service
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
+
+- name: update sumologic syslog service
   ecs_service:
     state: present
-    name: bento-{{tier}}-frontend
+    name: bento-{{tier}}-sumo_syslog
     cluster: bento-{{tier}}
-    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-    role: "{{role_arn}}"
+    task_definition: "{{task_sumo_syslog_name}}"
     force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"
-  register: service_frontend_output
+  register: service_sumo_syslog_output
 
+- name: update sumologic docker service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-sumo_docker
+    cluster: bento-{{tier}}
+    task_definition: "{{task_sumo_docker_name}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_sumo_docker_output
+
+- name: update newrelic docker service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-nr_docker
+    cluster: bento-{{tier}}
+    task_definition: "{{task_nr_docker_name}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_nr_docker_output
 
 - name: update backend service
   ecs_service:
@@ -126,6 +334,22 @@
     region: "{{region}}"
   register: service_backend_output
 
+- name: update frontend service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-frontend
+    cluster: bento-{{tier}}
+    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_frontend_output
+
 - name: show lb_backend
   debug: 
-    msg: "{{ lb_backend}}"
+    msg: "{{lb_backend}}"

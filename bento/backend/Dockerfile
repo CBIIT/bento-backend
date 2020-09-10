@@ -14,7 +14,7 @@ ENV JAVA_OPTS $JAVA_OPTS -XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=70
 WORKDIR $CATALINA_HOME
 
 RUN apk upgrade --update \
- && apk --no-cache add openjdk11-jdk --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community 
+ && apk --no-cache add openjdk11-jdk tzdata --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community 
 RUN mkdir -p "$CATALINA_HOME" \
  && addgroup -g 3001 -S ${TOMCAT_GROUP} \
  && adduser --disabled-password --ingroup "${TOMCAT_USER}" --uid 3001 ${TOMCAT_USER} \

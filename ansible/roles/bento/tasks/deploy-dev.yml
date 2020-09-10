@@ -169,7 +169,7 @@
     family: bento-{{tier}}-nr_docker
     state: present
     memory: '128'
-    cpu: '64'
+    cpu: '128'
     region: "{{region}}"
   register: task_output
 

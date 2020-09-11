@@ -35,6 +35,7 @@
         logDriver: syslog
         options:
           syslog-address: tcp://{{ syslog_host }}:514
+          syslog-format: rfc5424
           tag: "{{ app_name }}-backend"
     network_mode: bridge
     family: bento-{{tier}}-backend
@@ -68,6 +69,7 @@
         logDriver: syslog
         options:
           syslog-address: tcp://{{ syslog_host }}:514
+          syslog-format: rfc5424
           tag: "{{ app_name }}-frontend"
     network_mode: bridge
     family: bento-{{tier}}-frontend
@@ -158,6 +160,7 @@
         - containerPath: /host
           sourceVolume: docker-host
           readOnly: true
+      capabilities: "SYS_PTRACE"
     volumes:
     - name: docker-sock
       host:

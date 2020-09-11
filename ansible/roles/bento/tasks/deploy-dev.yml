@@ -160,7 +160,7 @@
         - containerPath: /host
           sourceVolume: docker-host
           readOnly: true
-      capabilities: "SYS_PTRACE"
+#      capabilities: "SYS_PTRACE"
     volumes:
     - name: docker-sock
       host:

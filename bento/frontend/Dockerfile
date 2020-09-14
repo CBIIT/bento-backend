@@ -5,5 +5,5 @@ RUN apk upgrade --update \
 
 ENV TZ America/New_York
 
-COPY dist /usr/share/nginx/html
+#COPY dist /usr/share/nginx/html
 

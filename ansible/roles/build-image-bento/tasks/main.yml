@@ -35,40 +35,36 @@
 - name: echo bento Dockerfiles
   debug: var=dockerfiles
 
-- name: debug getting folder name
-  debug: var={{ item | dirname | basename }}
+- name: Log into DockerHub
+  docker_login:
+    username: "{{ item.value.username }}"
+    password: "{{ item.value.password }}"
+    registry: "{{item.value.registry }}"
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    docker_host: "{{docker_host}}"
+  loop: "{{ image_location|dict2items }}"
+
+- name: build all the docker images
+  docker_image:
+    build:
+      path: .
+      dockerfile: "{{ item }}"
+      nocache: yes
+      force: yes
+    name: "{{ image_location.dockerhub.path }}/bento-{{ item | dirname | basename }}"
+    tag: release
+    push: no
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    docker_host: "{{docker_host}}"
+    repository: "{{ image_location.dockerhub.registry }}/{{ image_location.dockerhub.path }}/bento-{{ item | dirname }}"
   loop: "{{ dockerfiles }}"
-
-#- name: Log into DockerHub
-#  docker_login:
-#    username: "{{ item.value.username }}"
-#    password: "{{ item.value.password }}"
-#    registry: "{{item.value.registry }}"
-#    tls: yes
-#    ca_cert: /local/home/commonsdocker/.docker/ca.pem
-#    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
-#    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
-#    docker_host: "{{docker_host}}"
-#  loop: "{{ image_location|dict2items }}"
-
-#- name: build all the docker images
-#  docker_image:
-#    build:
-#      path: .
-#      dockerfile: "{{ item }}"
-#      nocache: yes
-#      force: yes
-#    name: "{{ image_location.dockerhub.path }}/bento-{{ item | dirname }}"
-#    tag: release
-#    push: no
-#    source: build
-#    tls: yes
-#    ca_cert: /local/home/commonsdocker/.docker/ca.pem
-#    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
-#    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
-#    docker_host: "{{docker_host}}"
-#    repository: "{{ image_location.dockerhub.registry }}/{{ image_location.dockerhub.path }}/bento-{{ item | dirname }}"
-#  loop: "{{ dockerfiles }}"
 
 - name: list docker images
   command: >

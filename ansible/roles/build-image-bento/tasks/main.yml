@@ -54,7 +54,7 @@
       dockerfile: "{{ item.1 }}"
       nocache: yes
       force: yes
-    name: "{{ image_location.dockerhub.value.path }}/bento-{{ item.1 | dirname }}"
+    name: "{{ image_location.dockerhub.path }}/bento-{{ item.1 | dirname }}"
     tag: release
     push: no
     source: build
@@ -63,7 +63,7 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     docker_host: "{{docker_host}}"
-    repository: "{{ image_location.dockerhub.value.registry }}/{{ image_location.dockerhub.value.path }}/{{ item.1 | basename }}"
+    repository: "{{ image_location.dockerhub.registry }}/{{ image_location.dockerhub.path }}/bento-{{ item.1 | dirname }}"
   with_nested:
     - "{{ dockerfiles }}"
 

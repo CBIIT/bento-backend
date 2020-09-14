@@ -160,8 +160,8 @@
         - containerPath: /host
           sourceVolume: docker-host
           readOnly: true
-      cap_add: 
-        - SYS_PTRACE
+#      cap_add: 
+#        - SYS_PTRACE
     volumes:
     - name: docker-sock
       host:

@@ -51,10 +51,12 @@
   docker_image:
     build:
       path: "{{ item | dirname }}"
+#      path: "../bento/backend"
       dockerfile: "Dockerfile"
       nocache: yes
       force: yes
     name: "{{ image_location.dockerhub.path }}/bento-{{ item | dirname | basename }}"
+#    name: "{{ image_location.dockerhub.path }}/bento-backend"
     tag: "release"
     push: no
     source: build
@@ -63,7 +65,8 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     docker_host: "{{docker_host}}"
-    repository: "{{ image_location.dockerhub.registry }}/{{ image_location.dockerhub.path }}/bento-{{ item | dirname }}"
+    repository: "{{ image_location.dockerhub.registry }}/{{ image_location.dockerhub.path }}/bento-{{ item | dirname | basename }}"
+#    repository: "{{ image_location.dockerhub.registry }}/{{ image_location.dockerhub.path }}/bento-backend"
   loop: "{{ dockerfiles }}"
 
 - name: list docker images

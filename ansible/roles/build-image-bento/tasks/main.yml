@@ -50,8 +50,8 @@
 - name: build all the docker images
   docker_image:
     build:
-      path: .
-      dockerfile: "{{ item }}"
+      path: "{{ item | dirname }}"
+      dockerfile: "Dockerfile"
       nocache: yes
       force: yes
     name: "{{ image_location.dockerhub.path }}/bento-{{ item | dirname | basename }}"

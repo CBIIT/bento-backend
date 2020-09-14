@@ -14,12 +14,45 @@
     file_type: file
   register: list_file
 
+- name: list all dockerfiles in backend directory
+  find: 
+    path: ../bento/backend
+    file_type: file
+  register: backend_dockerfile
+
+- name: list all dockerfiles in frontend directory
+  find: 
+    path: ../bento/frontend
+    file_type: file
+  register: frontend_dockerfile
+
 - name: set name of dockerfiles
   set_fact:
     dockerfiles: "{{ list_file.files | json_query('[*].path')}}"
 
+- name: set name of backend dockerfiles
+  set_fact:
+    backendfiles: "{{ backend_dockerfile.files | json_query('[*].path')}}"
+
+- name: set name of frontend dockerfiles
+  set_fact:
+    frontendfiles: "{{ frontend_dockerfile.files | json_query('[*].path')}}"
+
+- name: merge file lists
+  set_fact:
+    bentofiles: "{{ backendfiles + frontendfiles }}"
+
 - name: echo Dockerfiles
   debug: var=dockerfiles
+
+- name: echo backend Dockerfiles
+  debug: var=backendfiles
+
+- name: echo frontend Dockerfiles
+  debug: var=frontendfiles
+
+- name: echo bento Dockerfiles
+  debug: var=bentofiles
 
 #- name: Log into DockerHub
 #  docker_login:

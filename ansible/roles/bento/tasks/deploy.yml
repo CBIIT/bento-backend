@@ -73,7 +73,7 @@
     family: bento-{{tier}}-frontend
     state: present
     memory: '512'
-    cpu: '512'
+    cpu: '128'
     region: "{{region}}"
   register: task_output
 

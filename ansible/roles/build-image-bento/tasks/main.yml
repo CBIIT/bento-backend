@@ -55,7 +55,7 @@
       nocache: yes
       force: yes
     name: "{{ image_location.dockerhub.path }}/bento-{{ item | dirname | basename }}"
-    tag: release
+    tag: "release"
     push: no
     source: build
     tls: yes

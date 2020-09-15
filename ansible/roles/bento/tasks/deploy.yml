@@ -36,6 +36,7 @@
         options:
           syslog-address: tcp://{{ syslog_host }}:514
           tag: "{{ app_name }}-backend"
+          syslog-format: "rfc5424micro"
     network_mode: bridge
     family: bento-{{tier}}-backend
     memory: '512'
@@ -69,6 +70,7 @@
         options:
           syslog-address: tcp://{{ syslog_host }}:514
           tag: "{{ app_name }}-frontend"
+          syslog-format: "rfc5424micro"
     network_mode: bridge
     family: bento-{{tier}}-frontend
     state: present

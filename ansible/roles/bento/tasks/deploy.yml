@@ -94,6 +94,8 @@
           value: ""
         - name: SUMO_CLOBBER
           value: "true"
+        - name: TZ
+          value: "America/New_York"
       portMappings:
       - containerPort: "514"
         hostPort: "514"

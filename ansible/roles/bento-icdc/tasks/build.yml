@@ -1,4 +1,10 @@
 ---
+- name: set sandbox environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_SANDBOX_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "sandbox"
+
 - name: set dev environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
@@ -28,7 +34,12 @@
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
 
-- name: copy application.properties file to /src/main/resources/
+- name: copy schema from frontend to resources
+  template:
+    src: "{{workspace}}/icdc-frontend/graphql/{{schema_file}}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{schema_file}}"
+
+- name: set application property values
   template:
     src: "{{workspace}}/src/main/resources/application.properties.j2"
     dest: "{{workspace}}/src/main/resources/application.properties"
@@ -48,23 +59,23 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/bento-backend image
+- name: build cbiitssrepo/icdc-backend image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "./dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-backend
+    name: cbiitssrepo/icdc-backend
     tag: "{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-backend image
+- name: Add tag latest to cbiitssrepo/icdc-backend image
   docker_image:
-    name: "cbiitssrepo/bento-backend:{{build_number}}"
-    repository: cbiitssrepo/bento-backend:latest
+    name: "cbiitssrepo/icdc-backend:{{build_number}}"
+    repository: cbiitssrepo/icdc-backend:latest
     force_tag: yes
     push: yes
     source: local
@@ -74,49 +85,56 @@
     src: env.j2
     dest: "{{workspace}}/bento-frontend/.env"
 
-- name: run npm install in {{workspace}}/bento-frontend/
+- name: run npm install in {{workspace}}/icdc-frontend
   command: "{{item}}"
   args:
-    chdir: "{{workspace}}/bento-frontend"
+    chdir: "{{workspace}}/icdc-frontend"
   loop:
-    - npm install npm@latest -g
+    - npm install 
+    - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
+
+- name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/icdc-frontend/node_modules/mui-custom-datatables"
+  loop:
     - npm install
     - npm run build
+    
+- name: run npm build in frontend
+  command: npm run-script build
+  args:
+    chdir: "{{workspace}}/icdc-frontend"
+
+# - name: run npm install in {{workspace}}/bento-frontend/
+#   command: "{{item}}"
+#   args:
+#     chdir: "{{workspace}}/bento-frontend"
+#   loop:
+#     - npm install npm@latest -g
+#     - npm install
+#     - npm run build
           
-- name: build cbiitssrepo/bento-frontend image
+- name: build cbiitssrepo/icdc-frontend image
   docker_image:
     build:
-      path: "{{workspace}}/bento-frontend"
+      path: "{{workspace}}/icdc-frontend"
       dockerfile: "../dockerfiles/frontend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-frontend
+    name: cbiitssrepo/icdc-frontend
     tag: "{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-frontend image
+- name: Add tag latest to cbiitssrepo/icdc-frontend image
   docker_image:
-    name: "cbiitssrepo/bento-frontend:{{build_number}}"
-    repository: cbiitssrepo/bento-frontend:latest
+    name: "cbiitssrepo/icdc-frontend:{{build_number}}"
+    repository: cbiitssrepo/icdc-frontend:latest
     force_tag: yes
     push: yes
     source: local
-
-# - name: post schemas
-#   uri:
-#     url: http://{{neo4j_ip}}:7474/graphql/idl/
-#     method: POST
-#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
-#     headers:
-#       Accept: "application/json"
-#       Authorization: "{{bearer}}"
-#   register: schema
-
-# - name: post schema
-#   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/bento-backend/src/main/resources/graphql/ctdc.graphql"
-#   register: schema
 
 
 

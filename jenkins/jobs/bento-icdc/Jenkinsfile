@@ -172,7 +172,9 @@ pipeline {
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          file(credentialsId: 'ansible_host_file', variable: 'host_file')
+          ]){
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
@@ -185,14 +187,14 @@ pipeline {
 
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-          withCredentials([file(credentialsId: 'ansible_host_file', variable: 'host_file')]) {
-            sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          
             ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                  credentialsId: 'server_ssh_key',
+                 extras: '-e tier="${params.Environment}"'
                 colorized: true)
-          }
+          
   			}
   		}
   	}

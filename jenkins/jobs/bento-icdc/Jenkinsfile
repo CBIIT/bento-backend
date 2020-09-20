@@ -194,7 +194,7 @@ pipeline {
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                  credentialsId: 'server_ssh_key',
-                 extras: '-e tier="${params.Environment}"',
+                 extras: '-e tier=${params.Environment}',
                 colorized: true)
           
   			}

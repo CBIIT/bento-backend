@@ -28,14 +28,14 @@
     - backend
     - all
 
-- name: start icdc frontend container
-  docker_container:
-    name: frontend
-    image: cbiitssrepo/icdc-frontend:{{build_number}}
-    state: started
-    restart_policy: always
-    ports:
-     - "80:80"
-  tags:
-    - frontend
-    - all
+# - name: start icdc frontend container
+#   docker_container:
+#     name: frontend
+#     image: cbiitssrepo/icdc-frontend:{{build_number}}
+#     state: started
+#     restart_policy: always
+#     ports:
+#      - "80:80"
+#   tags:
+#     - frontend
+#     - all

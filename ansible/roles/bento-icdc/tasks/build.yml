@@ -80,10 +80,10 @@
     push: yes
     source: local
 
-- name: copy environment file to {{workspace}}/bento-frontend
+- name: copy environment file to {{workspace}}/icdc-frontend
   template:
     src: env.j2
-    dest: "{{workspace}}/bento-frontend/.env"
+    dest: "{{workspace}}/icdc-frontend/.env"
 
 - name: run npm install in {{workspace}}/icdc-frontend
   command: "{{item}}"

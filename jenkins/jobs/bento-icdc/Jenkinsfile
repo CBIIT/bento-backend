@@ -153,7 +153,7 @@ pipeline {
                 }
               break
               default:
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
                   string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"

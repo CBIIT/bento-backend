@@ -2,7 +2,7 @@
 - name: Add/Remove alb rules
   hosts: docker-local
   connection: local
-  gather_facts: no
+  gather_facts: yes
     
   tasks:
     - name: remove alb rules

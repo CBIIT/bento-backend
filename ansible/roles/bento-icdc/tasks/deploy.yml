@@ -1,4 +1,8 @@
 ---
+- name: verify host
+  file: 
+    path: /tmp/myworkspace
+    state: directory
 - name: remove frontend container
   docker_container:
     name: frontend

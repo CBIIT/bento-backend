@@ -1,0 +1,11 @@
+---
+- name: Add/Remove alb rules
+  hosts: all
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: remove alb rules
+      include_role:
+        name: alb-ops
+        tasks_from: remove-alb-rules

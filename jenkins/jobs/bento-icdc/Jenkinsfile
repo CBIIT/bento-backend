@@ -198,6 +198,7 @@ pipeline {
                     tier: "${params.Environment}",
                     build_number: '17'],
                 become: true,
+                hostKeyChecking: false
                 colorized: true)
           
   			}

@@ -37,7 +37,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/DataCommons_Automation')
+        useRepository: 'https://github.com/CBIIT/Commons_Automation')
 
     string(defaultValue: "Commons_Automation.prj", 
         description: 'Enter the Katalon Project file (include the path relative to the repo root):', 
@@ -81,7 +81,7 @@ pipeline {
                     doGenerateSubmoduleConfigurations: false,
 					extensions: [],
 					submoduleCfg: [], 
-                    userRemoteConfigs: [[url: 'https://github.com/CBIIT/DataCommons_Automation']]])
+                    userRemoteConfigs: [[url: 'https://github.com/CBIIT/Commons_Automation']]])
 
                 dir('icdc-devops'){
                     git branch: 'master',

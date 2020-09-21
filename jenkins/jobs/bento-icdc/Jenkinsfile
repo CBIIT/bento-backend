@@ -195,7 +195,8 @@ pipeline {
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'server_ssh_key',
                 extraVars: [
-                    tier: "${params.Environment}"],
+                    tier: "${params.Environment}",
+                    build_number: '17',
                 become: true,
                 colorized: true)
           

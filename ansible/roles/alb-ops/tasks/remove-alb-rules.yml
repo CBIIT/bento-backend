@@ -8,4 +8,4 @@
   register: alb_info
 
 - debug:
-    var: alb_info
+    msg: "{{alb_info}}"

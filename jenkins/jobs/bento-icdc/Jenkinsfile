@@ -98,8 +98,7 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "sandbox":
-                withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER'),
-                  string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
+                withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_SANDBOX_IP}"
                   env.BEARER = "${BEARER}"
@@ -111,8 +110,7 @@ pipeline {
                 }
               break
               case "dev":
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
-                  string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
@@ -123,8 +121,7 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER'),
-                  string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
@@ -133,8 +130,7 @@ pipeline {
                 }
               break
               case "stage":
-                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER'),
-                  string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
+                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
                   env.BEARER = "${BEARER}"
@@ -143,8 +139,7 @@ pipeline {
                 }
               break
               case "prod":
-                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER'),
-                  string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
+                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_PROD_IP}"
                   env.BEARER = "${BEARER}"
@@ -153,8 +148,7 @@ pipeline {
                 }
               break
               default:
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
-                  string(credentialsId: 'fence_login_url', variable: 'FENCE_LOGIN_URL')
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
                   ]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
@@ -173,7 +167,8 @@ pipeline {
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-          file(credentialsId: 'ansible_host_file', variable: 'host_file')
+          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
+          string(credentialsId: 'fence-id', variable: 'FENCE_ID')
           ])
         {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
@@ -193,7 +188,7 @@ pipeline {
             ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                credentialsId: 'server_ssh_key',
+                credentialsId: 'commonsdocker',
                 extraVars: [
                     tier: "${params.Environment}"],
                 become: true,

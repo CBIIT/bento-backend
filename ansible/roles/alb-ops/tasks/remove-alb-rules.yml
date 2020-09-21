@@ -1,6 +1,6 @@
 ---
 - name: gather info about alb
-  elb_application_lb_info:
+  elb_application_lb_facts:
     names: 
       - bento-alb-{{tier}}
     region: "{{region}}"

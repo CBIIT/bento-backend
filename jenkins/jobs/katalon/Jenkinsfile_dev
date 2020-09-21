@@ -81,7 +81,7 @@ pipeline {
                     doGenerateSubmoduleConfigurations: false,
 					extensions: [],
 					submoduleCfg: [], 
-                    userRemoteConfigs: [[url: 'https://github.com/CBIIT/Commons_Automation']]])
+                    userRemoteConfigs: [[url: 'https://github.com/CBIIT/DataCommons_Automation']]])
 
                 dir('icdc-devops'){
                     git branch: 'master',

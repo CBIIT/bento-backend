@@ -32,7 +32,7 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-			label 'cicd_microservice'
+			label 'docker-maven'
 		}
 	}
 	parameters {

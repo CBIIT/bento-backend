@@ -22,7 +22,7 @@ def sendSlackMessage() {
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -90,7 +90,7 @@ pipeline {
   	}
     stage('Set Environment'){
       environment {
-        SLACK_URL = "${SLACK_URL}"
+        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
         FE_VERSION = "${params.Frontend_Tag}"
         BE_VERSION = "${params.Backend_Tag}"
       }

@@ -196,7 +196,7 @@ pipeline {
                 credentialsId: 'server_ssh_key',
                 extraVars: [
                     tier: "${params.Environment}",
-                    build_number: '17',
+                    build_number: '17'],
                 become: true,
                 colorized: true)
           

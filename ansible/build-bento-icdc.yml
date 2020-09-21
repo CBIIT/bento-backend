@@ -1,0 +1,11 @@
+---
+- name: icdc cicd pipeline
+  hosts: icdc-local
+  gather_facts: no
+  connection: local
+
+  tasks:
+    - name: build bento-icdc application
+      include_role:
+        name: bento-icdc
+        tasks_from: build

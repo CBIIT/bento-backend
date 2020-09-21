@@ -19,12 +19,6 @@
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
-      # logConfiguration:
-      #   logDriver: sumologic
-      #   options:
-      #     sumo-url: "{{sumo_collector_url}}"
-      #     sumo-source-category: "{{tier}}/{{platform}}/bento/api/logs"
-      #     sumo-source-name: "bento-{{platform}}-api-docker-{{tier}}"
     network_mode: bridge
     family: icdc-{{tier}}-task-definition
     memory: '1024'
@@ -43,7 +37,7 @@
 
 - name: query demo service
   ecs_service_info:
-    cluster: default
+    cluster: nci-cbiit-icdc-dev
     service: icdc-{{tier}}-service
     details: true
     region: "{{region}}"
@@ -63,7 +57,7 @@
   ecs_service:
     state: present
     name: icdc-{{tier}}-service
-    cluster: default
+    cluster: nci-cbiit-icdc-dev
     task_definition: "{{task_icdc_name}}:{{icdc_revision}}"
     role: "{{service_role_arn}}"
     force_new_deployment: yes

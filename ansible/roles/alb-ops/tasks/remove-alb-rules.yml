@@ -1,0 +1,11 @@
+---
+- name: gather info about alb
+  elb_application_lb_info:
+    names: 
+      - bento-alb-{{tier}}
+    region: "{{region}}"
+
+  register: alb_info
+
+- debug:
+    var: alb_info

@@ -1,0 +1,145 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,stage,prod' )
+
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+    stage('Set Environment'){
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "sandbox":
+                withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER')
+                  ]) {
+                  env.TIER  = "sandbox"
+
+                }
+              break
+              case "dev":
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
+                  ]) {
+                  env.TIER  = "dev"
+                 
+                }
+              break
+              case "qa":
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')
+                  ]) {
+                  env.TIER  = "qa"
+                  
+                }
+              break
+              case "stage":
+                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')
+                  ]) {
+                  env.TIER  = "stage"
+                }
+              break
+              case "prod":
+                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')
+                  ]) {
+                  env.TIER  = "prod"
+                }
+              break
+              default:
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
+                  ]) {
+                  env.TIER  = "dev"
+                }
+              break
+            }
+          }
+        }
+    }
+  	stage('build'){
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          file(credentialsId: 'ansible_host_file', variable: 'host_file')
+          ])
+        {
+          sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/alb-ops.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
+ 		}
+  	}
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+    }
+  }
+}

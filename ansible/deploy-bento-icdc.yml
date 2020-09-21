@@ -1,7 +1,6 @@
 ---
 - name: deploy stage of bento pipeline
   hosts: icdc-{{tier}}
-  connection: local
   gather_facts: yes
     
   tasks:

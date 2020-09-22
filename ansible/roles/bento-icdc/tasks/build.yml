@@ -54,10 +54,12 @@
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
-# - name: log into DockerHub
-#   docker_login:
-#     username: "{{docker_user}}"
-#     password: "{{docker_password}}"
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+    registry: registry-1.docker.io
+    
     
 - name: build cbiitssrepo/icdc-backend image
   docker_image:

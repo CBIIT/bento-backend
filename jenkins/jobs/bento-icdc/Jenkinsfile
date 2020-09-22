@@ -118,7 +118,7 @@ pipeline {
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')
                   ]) {
-                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
+                  env.NEO4J_IP    = "${NEO4J_ICDC_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                 }
@@ -126,7 +126,7 @@ pipeline {
               case "stage":
                 withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')
                   ]) {
-                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+                  env.NEO4J_IP    = "${NEO4J_ICDC_STAGE_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
                   
@@ -135,7 +135,7 @@ pipeline {
               case "prod":
                 withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')
                   ]) {
-                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                  env.NEO4J_IP    = "${NEO4J_ICDC_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
                   
@@ -144,7 +144,7 @@ pipeline {
               default:
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
                   ]) {
-                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.NEO4J_IP    = "${NEO4J_ICDC_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   

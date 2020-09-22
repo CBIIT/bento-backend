@@ -7,5 +7,19 @@
 
   register: alb_info
 
+- name: set facts
+  set_fact:
+    - subnets:
+        "{{ alb_info.availability_zones[0].subnet_id }}"
+        "{{ alb_info.availability_zones[1].subnet_id }}"
+    - availability_zones:
+        "{{ alb_info.availability_zones[0].zone_name }}"
+        "{{ alb_info.availability_zones[0].zone_name }}"
+    - alb_sg: - "{{ alb_info.security_groups[0] }}"
+
+
 - debug:
-    msg: "{{alb_info}}"
+    msg: >
+     "{{ subnets}}"
+     "{{availability_zones}}"
+     "{{alb_sg}}"

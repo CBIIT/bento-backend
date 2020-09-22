@@ -58,7 +58,7 @@
   docker_login:
     username: "{{docker_user}}"
     password: "{{docker_password}}"
-    registry: registry-1.docker.io
+    registry: registry.hub.docker.com
     # tls: yes
     # ca_cert: /var/cert/ca.pem
     # client_cert: /var/cert/jenkinscert.pem

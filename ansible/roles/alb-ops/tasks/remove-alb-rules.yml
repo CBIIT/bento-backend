@@ -9,13 +9,13 @@
 
 - name: set facts
   set_fact:
-    - subnets:
+    subnets:
         - id: "{{ alb_info.availability_zones[0].subnet_id }}"
           zone: "{{ alb_info.availability_zones[0].zone_name }}"
         - id: "{{ alb_info.availability_zones[1].subnet_id }}"
           zone: "{{ alb_info.availability_zones[0].zone_name }}"   
         
-    - alb_sg: "{{ alb_info.security_groups[0] }}"
+    alb_sg: "{{ alb_info.security_groups[0] }}"
 
 
 - debug:

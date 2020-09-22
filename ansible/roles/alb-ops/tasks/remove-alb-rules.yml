@@ -9,7 +9,7 @@
 
 - debug:
     msg: >
-     "{{alb_info.load_balancers[0]}}"
+     "{{alb_info.load_balancers[0].rules}}"
 - name: set facts
   set_fact:
     subnets:
@@ -20,7 +20,7 @@
     alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
 
 
-- debug:
-    msg: >
-     "{{ subnets}}"
-     "{{alb_sg}}"
+# - debug:
+#     msg: >
+#      "{{ subnets}}"
+#      "{{alb_sg}}"

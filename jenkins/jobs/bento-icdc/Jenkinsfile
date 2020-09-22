@@ -188,7 +188,7 @@ pipeline {
                     tier: "${params.Environment}"],
                 become: true,
                 hostKeyChecking: false,
-                extras: "-vvv",
+                extras: '-vvv',
                 colorized: true)
           
   			}

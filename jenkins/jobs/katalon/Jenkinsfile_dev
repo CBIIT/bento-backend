@@ -166,7 +166,7 @@ pipeline {
 							# Create the output files directory (required for writing excel files)
 							rm -rf OutputFiles && mkdir OutputFiles
 							
-							echo "katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath=$WORKSPACE/$KATALON_PRJ -retry=0 -testSuitePath=$KATALON_SUITE_PATH -executionProfile=$KATALON_PROFILE -browserType=$KATALON_BROWSER (headless) -reportFolder=$WORKSPACE/results -reportFileName=$reportFile -apiKey=api_key"
+							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE"
 							
 							# Run Katalon Tests
 							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"

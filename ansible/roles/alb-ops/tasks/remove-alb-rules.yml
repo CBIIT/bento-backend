@@ -17,7 +17,7 @@
         zone: "{{ alb_info.load_balancers[0].availability_zones[0].zone_name }}"
         
         
-    alb_sg: "{{ alb_info.security_groups[0] }}"
+    alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
 
 
 - debug:

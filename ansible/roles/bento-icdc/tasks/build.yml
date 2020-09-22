@@ -62,7 +62,7 @@
     ca_cert: /var/cert/ca.pem
     client_cert: /var/cert/jenkinscert.pem
     client_key: /var/cert/jenkinskey.pem
-    tsl_hostname: "{{docker_host}}"
+    tls_hostname: "{{docker_host}}"
 - name: build cbiitssrepo/icdc-backend image
   docker_image:
     build:

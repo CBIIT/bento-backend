@@ -2,6 +2,7 @@
 # vars file for cicd
 tier: "{{ lookup('env','TIER') }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
+docker_host: "{{ lookup('env','DOCKER_HOST') }}"
 fence_id: "{{ lookup('env','FENCE_ID') }}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

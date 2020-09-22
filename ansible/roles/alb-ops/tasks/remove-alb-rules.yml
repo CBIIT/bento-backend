@@ -9,7 +9,7 @@
 
 - debug:
     msg: >
-     "{{alb_info.load_balancers[0].rules}}"
+     "{{alb_info.load_balancers[0].listeners}}"
 - name: set facts
   set_fact:
     subnets:

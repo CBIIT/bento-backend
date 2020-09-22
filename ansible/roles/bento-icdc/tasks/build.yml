@@ -59,7 +59,11 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
     registry: registry-1.docker.io
-    
+    tls: yes
+    ca_cert: /var/cert/ca.pem
+    client_cert: /var/cert/jenkinscert.pem
+    client_key: /var/cert/jenkinskey.pem
+    docker_host: "{{docker_host}}"
     
 - name: build cbiitssrepo/icdc-backend image
   docker_image:

@@ -54,11 +54,13 @@
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
-    registry: registry.hub.docker.com
+- name: docker login
+  shell: docker login registry.hub.docker.com --username {{docker_user}} --password {{docker_password}}
+# - name: log into DockerHub
+#   docker_login:
+#     username: "{{docker_user}}"
+#     password: "{{docker_password}}"
+#     registry: registry.hub.docker.com
     # tls: yes
     # ca_cert: /var/cert/ca.pem
     # client_cert: /var/cert/jenkinscert.pem

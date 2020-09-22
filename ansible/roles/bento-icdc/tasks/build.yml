@@ -48,22 +48,24 @@
   command: mvn package -DskipTests
   args:
     chdir: "{{workspace}}"
-- name: copy Bento-0.0.1.war to api.war
-  copy:
-    remote_src: yes
-    src: "{{workspace}}/target/Bento-0.0.1.war"
-    dest: "{{workspace}}/target/ROOT.war"
+# - name: copy Bento-0.0.1.war to api.war
+#   copy:
+#     remote_src: yes
+#     src: "{{workspace}}/target/Bento-0.0.1.war"
+#     dest: "{{workspace}}/target/ROOT.war"
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
-    registry: ncidockerhub.nci.nih.gov
-    tls: yes
-    ca_cert: /var/cert/ca.pem
-    client_cert: /var/cert/jenkinscert.pem
-    client_key: /var/cert/jenkinskey.pem
-    docker_host: "{{docker_host}}"
+- name: docker login
+  shell: docker login ncidockerhub.nci.nih.gov --username {{docker_user}} --password {{docker_password}}
+# - name: log into DockerHub
+#   docker_login:
+#     username: "{{docker_user}}"
+#     password: "{{docker_password}}"
+#     registry: registry.hub.docker.com
+    # tls: yes
+    # ca_cert: /var/cert/ca.pem
+    # client_cert: /var/cert/jenkinscert.pem
+    # client_key: /var/cert/jenkinskey.pem
+    # docker_host: "{{docker_host}}"
     
 - name: build cbiitssrepo/icdc-backend image
   docker_image:

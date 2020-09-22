@@ -22,13 +22,7 @@
     neo4j_ip: "{{ lookup('env','NEO4J_STAGE_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "stage"
-- name: show dir content
-  shell: ls -a /var/cert
-  register: cert
 
-- debug:
-    msg: "{{cert.stdout_lines}}"
-    
 - name: set prod environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
@@ -64,7 +58,10 @@
   docker_login:
     username: "{{docker_user}}"
     password: "{{docker_password}}"
-
+    tls: yes
+    ca_cert: /var/cert/ca.pem
+    client_cert: /var/cert/jenkinscert.pem
+    client_key: /var/cert/jenkinskey.pem
 - name: build cbiitssrepo/icdc-backend image
   docker_image:
     build:

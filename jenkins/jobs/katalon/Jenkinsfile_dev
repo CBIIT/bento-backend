@@ -170,15 +170,19 @@ pipeline {
 							
 							# Update profile filename
 							profile_file=$(basename $PROFILE_FILE)
+							profile_name="${profile_file%.*}"
 							pwd
-							ls Profiles
-							mv Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
-							ls Profiles
+							ls -la Profiles
+							cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
+							ls -la Profiles
+							cat Profiles/$profile_file
+							ls -la .
+							whoami
 							
-							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filename=$profile_file"
+							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
 							
 							# Run Katalon Tests
-							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_file" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
+							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
 
 							'''
 

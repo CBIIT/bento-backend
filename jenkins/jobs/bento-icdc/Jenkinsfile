@@ -181,8 +181,8 @@ pipeline {
 
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-          
-            ansiblePlaybook( 
+           withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+             ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
@@ -192,6 +192,8 @@ pipeline {
                 become: true,
                 hostKeyChecking: false,
                 colorized: true)
+           }
+           
           
   			}
   		}

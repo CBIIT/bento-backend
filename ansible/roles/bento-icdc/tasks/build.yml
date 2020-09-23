@@ -54,25 +54,18 @@
 #     src: "{{workspace}}/target/Bento-0.0.1.war"
 #     dest: "{{workspace}}/target/ROOT.war"
 
-- shell: ls -l /var/cert
-  register: cert
-
-- debug:
-    msg: >
-      "{{cert.stdout_lines}}"
-      
 - name: log into DockerHub
   docker_login:
     username: "{{docker_user}}"
     password: "{{docker_password}}"
     registry: https://ncidockerhub.nci.nih.gov
     tls: yes
-    ca_cert: /var/cert/ca.pem
-    client_cert: /var/cert/jenkinscert.pem
-    client_key: /var/cert/jenkinskey.pem
-    # ca_cert: /local/home/commonsdocker/.docker/ca.pem
-    # client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
-    # client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    # ca_cert: /var/cert/ca.pem
+    # client_cert: /var/cert/jenkinscert.pem
+    # client_key: /var/cert/jenkinskey.pem
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
     
 - name: build cbiitssrepo/icdc-backend image

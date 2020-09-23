@@ -169,7 +169,7 @@ pipeline {
 							rm -rf OutputFiles && mkdir OutputFiles
 							
 							# Update profile filename
-							profile_file="basename $FILENAME"
+							profile_file=${basename $FILENAME}
 							
 							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filepath=$FILENAME filename=$profile_file"
 							

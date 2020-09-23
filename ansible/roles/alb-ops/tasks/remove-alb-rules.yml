@@ -20,8 +20,8 @@
 
 
 - name: modify application load balancer
-  elb_application_lb: "{{alb_name}}"
-    name: "{{ application_load_balancer.name }}"
+  elb_application_lb: 
+    name: "{{alb_name}}"
     security_groups: "{{ alb_sg }}"
     subnets: "{{ alb_subnets }}"
     listeners: "{{ listeners }}"

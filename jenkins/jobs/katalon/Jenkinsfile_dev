@@ -127,8 +127,9 @@ pipeline {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
-							PROFILE_FILE="${pass_file}"
+                            PROFILE_FILE="${pass_file}"
+							sh "filename=${PROFILE_FILE##*/} && echo ${filename}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
 					case "Katalon_Dev_CTDC":

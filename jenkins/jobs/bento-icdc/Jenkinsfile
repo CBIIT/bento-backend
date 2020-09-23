@@ -169,10 +169,10 @@ pipeline {
           ])
         {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
-          // ansiblePlaybook(  			
-          //         playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
-          //   			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-          //   			colorized: true) 
+          ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
  				}
  			}
  		}

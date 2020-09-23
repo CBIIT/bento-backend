@@ -15,10 +15,10 @@
 
 - name: set facts
   set_fact:
-    subnets: "{{ alb_info.load_balancers[0].availability_zones[0].subnet_id | list}}"
+    subnets: "{{ alb_info.load_balancers[0].availability_zones[0].subnet_id}}"
     alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
 
-- debug: show subnets and alb_sg
+- debug: 
     msg: >
      "{{subnets}}"
      "{{alb_sg}}"

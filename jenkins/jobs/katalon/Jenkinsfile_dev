@@ -129,7 +129,7 @@ pipeline {
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
                             PROFILE_FILE="${pass_file}"
 							//FILENAME=PROFILE_FILE.getName()
-							sh "filename=`basename ${pass_file}` && echo $filename"
+							sh "filename=basename ${pass_file} && echo $filename"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break

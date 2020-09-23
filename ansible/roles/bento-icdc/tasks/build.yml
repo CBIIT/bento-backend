@@ -44,15 +44,15 @@
     src: "{{workspace}}/src/main/resources/application.properties.j2"
     dest: "{{workspace}}/src/main/resources/application.properties"
 
-# - name: build springboot code
-#   command: mvn package -DskipTests
-#   args:
-#     chdir: "{{workspace}}"
-# - name: copy Bento-0.0.1.war to api.war
-#   copy:
-#     remote_src: yes
-#     src: "{{workspace}}/target/Bento-0.0.1.war"
-#     dest: "{{workspace}}/target/ROOT.war"
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+- name: copy Bento-0.0.1.war to api.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
 
 - name: log into DockerHub
   docker_login:

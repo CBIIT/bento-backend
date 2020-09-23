@@ -24,7 +24,9 @@
     subnets: "{{ alb_subnets }}"
     listeners: "{{ listeners }}"
     deletion_protection: yes
+    region: '{{ region }}'
     state: present
+    register: 
 
 # - name: Creates a new set of listeners rules for the ALB
 #   elb_application_lb:

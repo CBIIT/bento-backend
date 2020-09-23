@@ -1,6 +1,5 @@
 ---
 
-
 - name: gather info about alb
   elb_application_lb_info:
     names: 
@@ -16,13 +15,21 @@
 - name: set facts
   set_fact:
     subnets: "{{ alb_info.load_balancers[0].availability_zones| json_query('[*].subnet_id')}}"
-    alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
+    alb_sg: "{{ alb_info.load_balancers[0].security_groups }}"
 
 - debug: 
     msg: >
      "{{subnets}}"
      "{{alb_sg}}"
 
+# - name: modify application load balancer
+#   elb_application_lb:
+#     name: "{{ application_load_balancer.name }}"
+#     security_groups: "{{ alb_sg }}"
+#     subnets: "{{ subnet_id_list }}"
+#     listeners: "{{ application_load_balancer.listeners }}"
+#     deletion_protection: yes
+#     state: present
 
 # - name: Creates a new set of listeners rules for the ALB
 #   elb_application_lb:

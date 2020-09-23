@@ -1,21 +1,5 @@
 ---
-- elb_target_group_info:
-    names:
-      - bento-{{tier}}-backend
-    region: "{{region}}"
-  register: backend_tg
 
-- elb_target_group_facts:
-    names:
-      - bento-{{tier}}-frontend
-    region: "{{region}}"
-  register: frontend_tg
-
-
-- debug:
-    msg: >
-     "{{frontend_tg}}"
-     "{{backend_tg}}"
 
 - name: gather info about alb
   elb_application_lb_info:
@@ -28,14 +12,16 @@
 - debug:
     msg: >
      "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
+
 - name: set facts
   set_fact:
-    subnets:
-      - id: "{{ alb_info.load_balancers[0].availability_zones[0].subnet_id }}"
-        zone: "{{ alb_info.load_balancers[0].availability_zones[0].zone_name }}"
-        
-        
+    subnets: "{{ alb_info.load_balancers[0].availability_zones[0].subnet_id | list}}"
     alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
+
+- debug: show subnets and alb_sg
+    msg: >
+     "{{subnets}}"
+     "{{alb_sg}}"
 
 
 # - name: Creates a new set of listeners rules for the ALB

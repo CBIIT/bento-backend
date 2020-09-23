@@ -1,4 +1,6 @@
-- Protocol: HTTP
+
+listeners:
+  - Protocol: HTTP
     Port: 80
     DefaultActions:
       - Type: redirect
@@ -9,16 +11,74 @@
           Path: "/#{path}"
           Query: "#{query}"
           StatusCode: "HTTP_301"
-
-
-- Protocol: HTTPS
+  - Protocol: HTTPS
     Port: 443
     DefaultActions:
       - Type: fixed-response
         FixedResponseConfig:
           ContentType: "text/plain"
           MessageBody: "This is the page you're looking for"
-          StatusCode: "200"                 
+          StatusCode: "200"   
+    Certificates:
+      - CertificateArn: "{{certificate_arn}}"
+    SslPolicy: "{{ssl_policy}}"
+    Rules:
+      - Conditions:
+          - Field: host-header
+            Values:
+              - '{{tier}}.bento-tools.org'
+          - Field: path-pattern
+            Values:
+              - "/*"
+        Priority: '99'
+        Actions:
+          - TargetGroupName: bento-{{tier}}-frontend
+            Type: forward
+
+      - Conditions:
+          - Field: host-header
+            Values:
+              - api-{{tier}}.bento-tools.org
+          - Field: path-pattern
+            Values:
+              - "/*"
+        Priority: '100'
+        Actions:
+          - TargetGroupName: bento-{{tier}}-backend
+            Type: forward
+
+      - Conditions:
+          - Field: host-header
+            Values:
+              - icdc-sandbox.bento-tools.org
+          - Field: path-pattern
+            Values:
+              - "/*"
+        Priority: '101'
+        Actions:
+          - TargetGroupName: icdc-sandbox-web
+            Type: forward
+
+      - Conditions:
+          - Field: host-header
+            Values:
+              - icdc-sandbox.bento-tools.org
+          - Field: path-pattern
+            Values:
+              - "/v1/graphql/*"
+        Priority: '102'
+        Actions:
+          - TargetGroupName: icdc-sandbox-backend
+            Type: forward
+
+        
+        
+      
+
+
+
+
+
 
 
 
@@ -30,3 +90,22 @@
     listeners: "{{ application_load_balancer.listeners }}"
     deletion_protection: yes
     state: present
+
+
+Rules:
+  - Conditions:
+      - Field: host-header
+        Values:
+          - auth-test.cloud.foo.bar.it
+    Priority: '2'
+    Actions:
+      - TargetGroupName: group-https-test
+        Type: forward
+  - Conditions:
+      - Field: host-header
+        Values:
+          - test.cloud.foo.bar.it
+    Priority: '1'
+    Actions:
+      - TargetGroupName: group-https-dev
+        Type: forward

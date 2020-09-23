@@ -24,7 +24,7 @@ listeners:
           MessageBody: "This is the page you're looking for"
           StatusCode: "200"   
     Certificates:
-      - CertificateArn: "{{"{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"}}"
+      - CertificateArn: "{{ certificate_arn }}"
     SslPolicy: "{{ssl_policy}}"
     Rules:
       - Conditions:

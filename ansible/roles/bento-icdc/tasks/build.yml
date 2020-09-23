@@ -62,9 +62,9 @@
     password: "{{docker_password}}"
     registry: ncidockerhub.nci.nih.gov
     tls: yes
-    ca_cert: /var/cert/ca.pem
-    client_cert: /var/cert/jenkinscert.pem
-    client_key: /var/cert/jenkinskey.pem
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     docker_host: "{{docker_host}}"
     
 - name: build cbiitssrepo/icdc-backend image

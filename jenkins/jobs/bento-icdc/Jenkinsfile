@@ -169,10 +169,10 @@ pipeline {
           ])
         {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
-          // ansiblePlaybook(  			
-          //         playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
-          //   			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-          //   			colorized: true) 
+          ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
  				}
  			}
  		}
@@ -187,8 +187,7 @@ pipeline {
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [
-                    tier: "${params.Environment}",
-                    build_number: '47' ],
+                    tier: "${params.Environment}"],
                 become: true,
                 hostKeyChecking: false,
                 colorized: true)

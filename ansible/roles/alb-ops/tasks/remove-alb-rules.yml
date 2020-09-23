@@ -18,20 +18,15 @@
     alb_sg: "{{ alb_info.load_balancers[0].security_groups |list}}"
     alb_name: "{{ alb_info.load_balancers[0].load_balancer_name }}"
 
-- debug: 
-    msg: >
-     "{{alb_subnets}}"
-     "{{alb_sg}}"
-     "{{alb_name}}"
 
-# - name: modify application load balancer
-#   elb_application_lb:
-#     name: "{{ application_load_balancer.name }}"
-#     security_groups: "{{ alb_sg }}"
-#     subnets: "{{ subnet_id_list }}"
-#     listeners: "{{ application_load_balancer.listeners }}"
-#     deletion_protection: yes
-#     state: present
+- name: modify application load balancer
+  elb_application_lb: "{{alb_name}}"
+    name: "{{ application_load_balancer.name }}"
+    security_groups: "{{ alb_sg }}"
+    subnets: "{{ alb_subnets }}"
+    listeners: "{{ listeners }}"
+    deletion_protection: yes
+    state: present
 
 # - name: Creates a new set of listeners rules for the ALB
 #   elb_application_lb:

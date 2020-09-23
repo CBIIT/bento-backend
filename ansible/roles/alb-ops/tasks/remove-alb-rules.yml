@@ -25,8 +25,11 @@
     listeners: "{{ listeners }}"
     deletion_protection: yes
     region: '{{ region }}'
+    # purge_listeners: no
+    # purge_rules: no
     state: present
-    register: 
+
+   
 
 # - name: Creates a new set of listeners rules for the ALB
 #   elb_application_lb:

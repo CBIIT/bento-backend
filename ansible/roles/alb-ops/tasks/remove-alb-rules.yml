@@ -15,7 +15,7 @@
 
 - name: set facts
   set_fact:
-    subnets: "{{ alb_info.load_balancers[0].availability_zones | selectattr('subnet_id|list')}}"
+    subnets: "{{ alb_info.load_balancers[0].availability_zones| map('extract', 'subnet_id')|list}}"
     alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
 
 - debug: 

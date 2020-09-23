@@ -44,22 +44,15 @@
     src: "{{workspace}}/src/main/resources/application.properties.j2"
     dest: "{{workspace}}/src/main/resources/application.properties"
 
-# - name: build springboot code
-#   command: mvn package -DskipTests
-#   args:
-#     chdir: "{{workspace}}"
-# - name: copy Bento-0.0.1.war to api.war
-#   copy:
-#     remote_src: yes
-#     src: "{{workspace}}/target/Bento-0.0.1.war"
-#     dest: "{{workspace}}/target/ROOT.war"
-
-# - name: docker login
-#   shell: docker login ncidockerhub.nci.nih.gov --username {{docker_user}} --password {{docker_password}}
-- debug:
-    msg: >
-      "{{tls_hostname}}"
-      "{{docker_host}}"
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+- name: copy Bento-0.0.1.war to api.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
 
 - name: log into DockerHub
   docker_login:
@@ -79,19 +72,30 @@
       dockerfile: "./dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/icdc-backend
+    name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
     tag: "{{build_number}}"
     push: yes
     force_source: yes
     source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    # docker_host: "{{docker_host}}"
 
 - name: Add tag latest to cbiitssrepo/icdc-backend image
   docker_image:
-    name: "cbiitssrepo/icdc-backend:{{build_number}}"
-    repository: cbiitssrepo/icdc-backend:latest
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/icdc-backend:latest
     force_tag: yes
     push: yes
     source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
 
 - name: copy environment file to {{workspace}}/icdc-frontend
   template:
@@ -135,19 +139,29 @@
       dockerfile: "../dockerfiles/frontend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/icdc-frontend
+    name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
     tag: "{{build_number}}"
     push: yes
     force_source: yes
     source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
 
 - name: Add tag latest to cbiitssrepo/icdc-frontend image
   docker_image:
-    name: "cbiitssrepo/icdc-frontend:{{build_number}}"
-    repository: cbiitssrepo/icdc-frontend:latest
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{build_number}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:latest
     force_tag: yes
     push: yes
     source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
 
 
 

@@ -155,32 +155,34 @@ pipeline {
             steps {
 
 				script {
-					withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key')]) {
+					withCredentials([string(credentialsId: 'Katalon_Org_ID', variable: 'org_id')]) {
+						withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key')]) {
 
-						sh label: 'Katalon-Tests', script: '''#!/bin/bash
+							sh label: 'Katalon-Tests', script: '''#!/bin/bash
 
-							# Set datestamp for results file
-							dateStamp=$(date +%Y%m%d)
-							reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
+								# Set datestamp for results file
+								dateStamp=$(date +%Y%m%d)
+								reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
 
-							# Recreate the results directory
-							rm -rf results && mkdir results
-							
-							# Create the output files directory (required for writing excel files)
-							rm -rf OutputFiles && mkdir OutputFiles
-							
-							# Update profile filename
-							profile_file=$(basename $PROFILE_FILE)
-							profile_name="${profile_file%.*}"
-							cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
-							
-							#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
-							
-							# Run Katalon Tests
-							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
+								# Recreate the results directory
+								rm -rf results && mkdir results
+								
+								# Create the output files directory (required for writing excel files)
+								rm -rf OutputFiles && mkdir OutputFiles
+								
+								# Update profile filename
+								profile_file=$(basename $PROFILE_FILE)
+								profile_name="${profile_file%.*}"
+								cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
+								
+								#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
+								
+								# Run Katalon Tests
+								katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
 
-							'''
+								'''
 
+							}
 						}
 					}
 

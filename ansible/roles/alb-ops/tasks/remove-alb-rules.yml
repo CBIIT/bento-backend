@@ -3,7 +3,7 @@
 - name: gather info about alb
   elb_application_lb_info:
     names: 
-      - bento-alb-{{tier}}
+      - DEV-A-Appli-Caninedata-8UHLKJYN
     region: "{{region}}"
 
   register: alb_info
@@ -19,6 +19,13 @@
     alb_name: "{{ alb_info.load_balancers[0].load_balancer_name }}"
     certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
 
+
+- debug:
+    msg: >
+      "{{alb_info}}"
+      {{alb_sg}}
+      {{alb_name}}
+      {{certificate_arn}}
 
 # - name: modify application load balancer
 #   elb_application_lb: 

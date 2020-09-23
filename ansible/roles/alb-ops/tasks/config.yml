@@ -85,27 +85,10 @@ listeners:
 - name: create application load balancer
   elb_application_lb:
     name: "{{ application_load_balancer.name }}"
-    security_groups: "{{ security_group_id_list }}"
+    security_groups: "{{ alb_sg }}"
     subnets: "{{ subnet_id_list }}"
     listeners: "{{ application_load_balancer.listeners }}"
     deletion_protection: yes
     state: present
 
 
-Rules:
-  - Conditions:
-      - Field: host-header
-        Values:
-          - auth-test.cloud.foo.bar.it
-    Priority: '2'
-    Actions:
-      - TargetGroupName: group-https-test
-        Type: forward
-  - Conditions:
-      - Field: host-header
-        Values:
-          - test.cloud.foo.bar.it
-    Priority: '1'
-    Actions:
-      - TargetGroupName: group-https-dev
-        Type: forward

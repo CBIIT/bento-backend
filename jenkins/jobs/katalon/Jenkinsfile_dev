@@ -128,6 +128,7 @@ pipeline {
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
                             sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+							PROFILE_FILE=${pass_file}
                             }
                         break
 					case "Katalon_Dev_CTDC":
@@ -148,6 +149,7 @@ pipeline {
 				KATALON_PROFILE     =   "${params.Profile}"
                 KATALON_PRJ         =   "${params.KatalonPrj}"
                 KATALON_SUITE_PATH  =   "${params.KatalonSuite}"
+				FILENAME            =   "${PROFILE_FILE}"
                 }
             steps {
 
@@ -166,7 +168,7 @@ pipeline {
 							# Create the output files directory (required for writing excel files)
 							rm -rf OutputFiles && mkdir OutputFiles
 							
-							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE"
+							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filename=$FILENAME"
 							
 							# Run Katalon Tests
 							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"

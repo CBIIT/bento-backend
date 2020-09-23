@@ -1,6 +1,22 @@
 ---
+- elb_target_group_info:
+    names:
+      - bento-{{tier}}-backend
+  register: backend_tg
+
+- elb_target_group_facts:
+    names:
+      - bento-{{tier}}-frontend
+  register: frontend_tg
+
+
+- debug:
+    msg: >
+     "{{frontend_tg}}"
+     "{{backend_tg}}"
+
 - name: gather info about alb
-  elb_application_lb_facts:
+  elb_application_lb_info:
     names: 
       - bento-alb-{{tier}}
     region: "{{region}}"

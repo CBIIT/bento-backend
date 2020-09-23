@@ -172,7 +172,7 @@ pipeline {
 							profile_file=$(basename $PROFILE_FILE)
 							pwd
 							ls Profiles
-							mv Profiles/${KATALON_PROFILE} Profiles/$profile_file
+							mv Profiles/$KATALON_PROFILE Profiles/$profile_file
 							ls Profiles
 							
 							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filename=$profile_file"

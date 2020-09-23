@@ -127,7 +127,8 @@ pipeline {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
-                            PROFILE_FILE="${pass_file}".getName()
+                            PROFILE_FILE="${pass_file}"
+							FILENAME=PROFILE_FILE.getName()
 							//sh "filename=`basename ${pass_file}` && echo $filename"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
@@ -150,7 +151,8 @@ pipeline {
 				KATALON_PROFILE     =   "${params.Profile}"
                 KATALON_PRJ         =   "${params.KatalonPrj}"
                 KATALON_SUITE_PATH  =   "${params.KatalonSuite}"
-				FILENAME            =   "${PROFILE_FILE}"
+				FILENAME_PATH       =   "${PROFILE_FILE}"
+				FILENAME_FILE       =   "${FILENAME}"
                 }
             steps {
 
@@ -169,7 +171,7 @@ pipeline {
 							# Create the output files directory (required for writing excel files)
 							rm -rf OutputFiles && mkdir OutputFiles
 							
-							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filename=$FILENAME"
+							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filepath=$FILENAME_PATH filename=$FILENAME_FILE"
 							
 							# Run Katalon Tests
 							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"

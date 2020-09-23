@@ -127,7 +127,7 @@ pipeline {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
-                            PROFILE_FILE="${pass_file}"
+                            PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
@@ -149,7 +149,7 @@ pipeline {
 				KATALON_PROFILE     =   "${params.Profile}"
                 KATALON_PRJ         =   "${params.KatalonPrj}"
                 KATALON_SUITE_PATH  =   "${params.KatalonSuite}"
-				FILENAME            =   "${PROFILE_FILE}"
+				PROFILE_FILE        =   "${PROFILE}"
                 }
             steps {
 
@@ -169,9 +169,13 @@ pipeline {
 							rm -rf OutputFiles && mkdir OutputFiles
 							
 							# Update profile filename
-							profile_file=$(basename $FILENAME)
+							profile_file=$(basename $PROFILE_FILE)
+							pwd
+							ls Profiles
+							mv Profiles/${KATALON_PROFILE} Profiles/$profile_file
+							ls Profiles
 							
-							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filepath=$FILENAME filename=$profile_file"
+							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filename=$profile_file"
 							
 							# Run Katalon Tests
 							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"

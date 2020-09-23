@@ -27,7 +27,7 @@
 
 - debug:
     msg: >
-     "{{alb_info.load_balancers[0].listeners}}"
+     "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
 - name: set facts
   set_fact:
     subnets:
@@ -36,6 +36,26 @@
         
         
     alb_sg: "{{ alb_info.load_balancers[0].security_groups[0] }}"
+
+
+# - name: Creates a new set of listeners rules for the ALB
+#   elb_application_lb:
+#     name: '{{ alb_name }}'
+#     state: present
+#     region: '{{ region }}'
+#     security_groups: '{{ alb_security_groups }}'
+#     subnets: '{{ alb_subnets }}'
+#     purge_listeners: '{{ should_purge_listeners }}'
+#     deletion_protection: yes
+#     listeners: '{{ listeners }}'
+#   register: alb_with_new_listeners
+
+
+
+
+
+
+
 
 
 # - debug:

@@ -1,2 +1,3 @@
 ---
 # defaults file for alb-ops
+ssl_policy: ELBSecurityPolicy-2016-08

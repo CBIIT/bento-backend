@@ -171,9 +171,10 @@ pipeline {
 							# Update profile filename
 							profile_file=$(basename $PROFILE_FILE)
 							pwd
-							ls Profiles
-							mv Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
-							ls Profiles
+							ls -la Profiles
+							cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
+							ls -la Profiles
+							cat Profiles/$profile_file
 							
 							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$KATALON_PROFILE filename=$profile_file"
 							

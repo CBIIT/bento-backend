@@ -127,8 +127,7 @@ pipeline {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
-                            PROFILE_FILE="${pass_file}"
-							sh "filename=${PROFILE_FILE##*/} && echo ${filename}"
+                            PROFILE_FILE=pass_file.getName()
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break

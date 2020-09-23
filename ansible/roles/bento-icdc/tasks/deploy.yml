@@ -23,7 +23,7 @@
 - name: start icdc backend container
   docker_container:
     name: backend
-    image: cbiitssrepo/icdc-backend:{{build_number}}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}
     state: started
     restart_policy: always
     ports:
@@ -35,7 +35,7 @@
 - name: start icdc frontend container
   docker_container:
     name: frontend
-    image: cbiitssrepo/icdc-frontend:{{build_number}}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{build_number}}
     state: started
     restart_policy: always
     ports:

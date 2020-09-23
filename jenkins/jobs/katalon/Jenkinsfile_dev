@@ -136,7 +136,8 @@ pipeline {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_CTDC', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+                            PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
                        }
@@ -171,15 +172,9 @@ pipeline {
 							# Update profile filename
 							profile_file=$(basename $PROFILE_FILE)
 							profile_name="${profile_file%.*}"
-							pwd
-							ls -la Profiles
 							cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
-							ls -la Profiles
-							cat Profiles/$profile_file
-							ls -la .
-							whoami
 							
-							echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
+							#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
 							
 							# Run Katalon Tests
 							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"

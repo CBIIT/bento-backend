@@ -2,11 +2,13 @@
 - elb_target_group_info:
     names:
       - bento-{{tier}}-backend
+    region: "{{region}}"
   register: backend_tg
 
 - elb_target_group_facts:
     names:
       - bento-{{tier}}-frontend
+    region: "{{region}}"
   register: frontend_tg
 
 

@@ -17,7 +17,6 @@
     listener_arn: "{{alb_info.load_balancers[0].listeners[0].listener_arn}}"
 
 
-
 - debug:
     msg: >
       "{{listener_arn}}"

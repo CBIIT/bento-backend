@@ -74,3 +74,45 @@ listeners:
         Actions:
           - TargetGroupName: icdc-sandbox-backend
             Type: forward
+
+
+
+
+
+add_listener:
+  - Protocol: HTTP
+    Port: 80
+    DefaultActions:
+      - Type: redirect
+        RedirectConfig:
+          Protocol: HTTPS
+          Port: "443"
+          Host: "#{host}"
+          Path: "/#{path}"
+          Query: "#{query}"
+          StatusCode: "HTTP_301"
+  - Protocol: HTTPS
+    Port: 443
+    DefaultActions:
+      - Type: fixed-response
+        FixedResponseConfig:
+          ContentType: "text/plain"
+          MessageBody: "This is the page you're looking for"
+          StatusCode: "200"   
+    Certificates:
+      - CertificateArn: "{{ certificate_arn }}"
+    SslPolicy: "{{ssl_policy}}"
+    Rules:
+      - Conditions:
+          - Field: host-header
+            Values:
+              - caninecommons-{{tier}}.cancer.gov
+        Priority: '1'
+        Actions:
+          - Type: fixed-response
+            FixedResponseConfig:
+              ContentType: "text/plain"
+              MessageBody: "This is the page you're looking has migrated"
+              StatusCode: "200"  
+
+     

@@ -5,12 +5,11 @@
     names: 
       - DEV-A-Appli-Caninedata-8UHLKJYN
     region: "{{region}}"
-
   register: alb_info
 
-- debug:
-    msg: >
-      "{{alb_info}}"
+# - debug:
+#     msg: >
+#       "{{alb_info}}"
       
 - name: set facts
   set_fact:
@@ -32,12 +31,13 @@
 #     name: "{{alb_name}}"
 #     security_groups: "{{ alb_sg }}"
 #     subnets: "{{ alb_subnets }}"
-#     listeners: "{{ listeners }}"
+#     listeners: "{{ add_listener }}"
 #     deletion_protection: yes
 #     region: '{{ region }}'
-#     # purge_listeners: no
-#     # purge_rules: no
+#     purge_listeners: no
+#     purge_rules: no
 #     state: present
+
 
 # - name: modify application load balancer
 #   elb_application_lb: 

@@ -1,6 +1,7 @@
 ---
 # vars file for alb-ops
 tier: "{{ lookup('env','TIER') }}"
+listener_arn: "{{ lookup('env','LISTENER_ARN') }}"
 region: us-east-1
 
 # listeners:

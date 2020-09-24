@@ -8,18 +8,19 @@
   register: alb_info
 
 
-      
 - name: set facts
   set_fact:
-    alb_subnets: "{{ alb_info.load_balancers[0].availability_zones| json_query('[*].subnet_id')}}"
-    alb_sg: "{{ alb_info.load_balancers[0].security_groups |list}}"
-    alb_name: "{{ alb_info.load_balancers[0].load_balancer_name }}"
-    certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
+    # alb_subnets: "{{ alb_info.load_balancers[0].availability_zones| json_query('[*].subnet_id')}}"
+    # alb_sg: "{{ alb_info.load_balancers[0].security_groups |list}}"
+    # alb_name: "{{ alb_info.load_balancers[0].load_balancer_name }}"
+    # certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
+    listener_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].listener_arn}}"
+
 
 
 - debug:
     msg: >
-      "{{Listeners|to_json}}"
+      "{{}}"
 # - debug:
 #     msg: >
 #       {{alb_sg}}
@@ -27,30 +28,7 @@
 #       {{certificate_arn}}
 #       {{alb_subnets}}
 
-# - name: modify application load balancer
-#   elb_application_lb: 
-#     name: "{{alb_name}}"
-#     security_groups: "{{ alb_sg }}"
-#     subnets: "{{ alb_subnets }}"
-#     listeners: "{{ add_listener }}"
-#     deletion_protection: yes
-#     region: '{{ region }}'
-#     purge_listeners: no
-#     purge_rules: no
-#     state: present
 
-
-# - name: modify application load balancer
-#   elb_application_lb: 
-#     name: "{{alb_name}}"
-#     security_groups: "{{ alb_sg }}"
-#     subnets: "{{ alb_subnets }}"
-#     listeners: "{{ listeners }}"
-#     deletion_protection: yes
-#     region: '{{ region }}'
-#     # purge_listeners: no
-#     # purge_rules: no
-#     state: present
 
    
 

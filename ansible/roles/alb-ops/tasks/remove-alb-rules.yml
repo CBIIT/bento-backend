@@ -7,9 +7,7 @@
     region: "{{region}}"
   register: alb_info
 
-- debug:
-    msg: >
-      "{{Listeners|to_json}}"
+
       
 - name: set facts
   set_fact:
@@ -19,6 +17,9 @@
     certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
 
 
+- debug:
+    msg: >
+      "{{Listeners|to_json}}"
 # - debug:
 #     msg: >
 #       {{alb_sg}}

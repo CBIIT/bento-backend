@@ -21,7 +21,6 @@
 
 - debug:
     msg: >
-      "{{alb_info}}"
       {{alb_sg}}
       {{alb_name}}
       {{certificate_arn}}

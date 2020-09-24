@@ -160,6 +160,10 @@ pipeline {
 
 							sh label: 'Katalon-Tests', script: '''#!/bin/bash
 
+								### TEST - verify plugins
+								plugin=$(ls -la plugins | grep report)
+								echo "report plugin = $plugin"
+								
 								# Set datestamp for results file
 								dateStamp=$(date +%Y%m%d)
 								reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"

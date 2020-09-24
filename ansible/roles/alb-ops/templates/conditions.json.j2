@@ -1,3 +1,13 @@
+{% if tier == "prod"  %}
+[
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons.nci.nih.gov"]
+      }
+  }
+]
+{% else %}
 [
   {
       "Field": "host-header",
@@ -6,3 +16,4 @@
       }
   }
 ]
+{% endif %}

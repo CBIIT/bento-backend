@@ -1,5 +1,5 @@
 ---
 # vars file for alb-ops
 tier: "{{ lookup('env','TIER') }}"
-# listener_arn: "{{ lookup('env','LISTENER_ARN') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
 region: us-east-1

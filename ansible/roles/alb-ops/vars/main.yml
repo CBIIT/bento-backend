@@ -97,7 +97,7 @@ add_listener:
       - Type: fixed-response
         FixedResponseConfig:
           ContentType: "text/html"
-          MessageBody: "{{fixed_response}}"
+          MessageBody: "{{response_text}}"
           StatusCode: "503"   
     Certificates:
       - CertificateArn: "{{ certificate_arn }}"

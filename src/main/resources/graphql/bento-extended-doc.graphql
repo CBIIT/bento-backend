@@ -885,4 +885,6 @@ type QueryType {
     subjectDetail(subject_id: String): SubjectDetail 
 
     armDetail(study_acronym: String): ArmDetail 
+
+    samplesForSubjectId(subject_id: String!): [sample] 
 }

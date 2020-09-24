@@ -407,4 +407,6 @@ type QueryType {
                diagnoses,
                files
     """, passThrough: true)
+
+    samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: "MATCH (ss:study_subject {study_subject_id: $subject_id})<-[*]-(s:sample) RETURN s")
 }

@@ -9,7 +9,7 @@
 
 - debug:
     msg: >
-      "{{Listerns|to_json}}"
+      "{{Listeners|to_json}}"
       
 - name: set facts
   set_fact:

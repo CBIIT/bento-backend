@@ -96,9 +96,9 @@ add_listener:
     DefaultActions:
       - Type: fixed-response
         FixedResponseConfig:
-          ContentType: "text/plain"
-          MessageBody: "This is the page you're looking for"
-          StatusCode: "200"   
+          ContentType: "text/html"
+          MessageBody: "{{fixed_response}}"
+          StatusCode: "503"   
     Certificates:
       - CertificateArn: "{{ certificate_arn }}"
     SslPolicy: "{{ssl_policy}}"

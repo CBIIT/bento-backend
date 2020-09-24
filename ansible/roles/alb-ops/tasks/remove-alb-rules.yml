@@ -24,18 +24,19 @@
       {{alb_sg}}
       {{alb_name}}
       {{certificate_arn}}
+      {{alb_subnets}}
 
-# - name: modify application load balancer
-#   elb_application_lb: 
-#     name: "{{alb_name}}"
-#     security_groups: "{{ alb_sg }}"
-#     subnets: "{{ alb_subnets }}"
-#     listeners: "{{ add_listener }}"
-#     deletion_protection: yes
-#     region: '{{ region }}'
-#     purge_listeners: no
-#     purge_rules: no
-#     state: present
+- name: modify application load balancer
+  elb_application_lb: 
+    name: "{{alb_name}}"
+    security_groups: "{{ alb_sg }}"
+    subnets: "{{ alb_subnets }}"
+    listeners: "{{ add_listener }}"
+    deletion_protection: yes
+    region: '{{ region }}'
+    purge_listeners: no
+    purge_rules: no
+    state: present
 
 
 # - name: modify application load balancer

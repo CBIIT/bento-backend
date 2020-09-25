@@ -1,4 +1,7 @@
 ---
+- name: lookup alb name
+  set_fact:
+    alb_name: "{{lookup('dict',{{project}}.{{tier}})}}"
 
 - name: gather info about alb
   elb_application_lb_info:

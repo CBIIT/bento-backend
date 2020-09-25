@@ -3,7 +3,7 @@
 - name: gather info about alb
   elb_application_lb_info:
     names: 
-      - "{{project}}['{{tier}}']"
+      - "{{project}}.{{tier}}"
     region: "{{region}}"
   register: alb_info
 

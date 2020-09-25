@@ -1,12 +1,20 @@
+- name: get {{tier}}-rule-arn file content
+  command: cat {{workspace}}/{{tier}}-rule-arn.json
+  register: result
+
+- name: retrieve rule-arn
+  set_fact:
+    jsondata: "{{ result.stdout | from_json }}"
+    
 - name: remove alb rule
   command: >
-    aws elbv2 create-rule 
-    --listener-arn {{lookup('file', '{{workspace}}/rule-arn.txt')}}
+    aws elbv2 delete-rule 
+    --rule-arn {{jsondata|json_query('Rules[].RuleArn')}}
     --region {{region}}
-    register: rule
+  register: rule
   
 - name: purge rule-arn.txt file
   file: 
-    path: "{{workspace}}/rule-arn.txt"
+    path: "{{workspace}}/{{tier}}-rule-arn.json"
     state: absent
       

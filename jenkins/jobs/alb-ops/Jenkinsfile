@@ -42,6 +42,12 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
+    extendedChoice( 
+        name: 'Action', 
+        defaultValue: 'create', 
+        description: 'Select ALB Action', 
+        type: 'PT_RADIO',
+        value: 'create,remove' )
 
 
   }

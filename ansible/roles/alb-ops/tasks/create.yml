@@ -20,30 +20,33 @@
     certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
     listener_arn: "{{alb_info.load_balancers[0].listeners[0].listener_arn}}"
 
-- name: copy application.properties file to /src/main/resources/
-  template:
-    src: "{{item.src}}"
-    dest: "{{item.dest}}"
-  loop:
-    - { src: 'actions.json.j2', dest: "{{workspace}}/actions.json" }
-    - { src: 'conditions.json.j2',dest: "{{workspace}}/conditions.json"}
-
-- name: create alb rule
-  command: >
-    aws elbv2 create-rule 
-    --listener-arn {{listener_arn}}
-    --region {{region}}
-    --priority 1
-    --conditions file://{{workspace}}/conditions.json
-    --actions file://{{workspace}}/actions.json
-  register: rule
-
-- name: store rule arn to file
-  copy: 
-    content: "{{ rule.stdout_lines[0].Rules[0].RuleArn }}" 
-    dest: "{{workspace}}/{{tier}}-rule-arn.txt"
-
 - debug:
-    msg: "{{rule.stdout_lines[0].Rules[0].RuleArn}}"
+    msg: "{{alb_info}}"
+
+# - name: copy application.properties file to /src/main/resources/
+#   template:
+#     src: "{{item.src}}"
+#     dest: "{{item.dest}}"
+#   loop:
+#     - { src: 'actions.json.j2', dest: "{{workspace}}/actions.json" }
+#     - { src: 'conditions.json.j2',dest: "{{workspace}}/conditions.json"}
+
+# - name: create alb rule
+#   command: >
+#     aws elbv2 create-rule 
+#     --listener-arn {{listener_arn}}
+#     --region {{region}}
+#     --priority 1
+#     --conditions file://{{workspace}}/conditions.json
+#     --actions file://{{workspace}}/actions.json
+#   register: rule
+
+# - name: store rule arn to file
+#   copy: 
+#     content: "{{ rule.stdout_lines[0].Rules[0].RuleArn }}" 
+#     dest: "{{workspace}}/{{tier}}-rule-arn.txt"
+
+# - debug:
+#     msg: "{{rule.stdout_lines[0].Rules[0].RuleArn}}"
 
 

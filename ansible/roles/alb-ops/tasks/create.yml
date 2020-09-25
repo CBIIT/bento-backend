@@ -45,7 +45,7 @@
     msg: "{{rule.stdout}}"
 
 - debug:
-    msg: "{{rule.stdout|json_query('.Rules[].RuleArn')}}"
+    msg: "{{rule.stdout|json_query('Rules[].RuleArn')}}"
 
 # - name: store rule arn to file
 #   copy: 

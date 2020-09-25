@@ -47,7 +47,7 @@
 #     dest: "{{workspace}}/{{tier}}-rule-arn.txt"
 
 - debug:
-    msg: "{{rule.stdout}}"
+    msg: "{{rule.stdout.Rules}}"
 - debug:
     msg: "{{rule.stdout_lines}}"
 

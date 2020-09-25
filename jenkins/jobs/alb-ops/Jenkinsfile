@@ -37,6 +37,12 @@ pipeline {
 	}
 	parameters {
     extendedChoice( 
+        name: 'Project', 
+        defaultValue: 'dev', 
+        description: 'Select Project', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'icdc,ctdc,bento' )
+    extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
@@ -48,7 +54,6 @@ pipeline {
         description: 'Select ALB Action', 
         type: 'PT_RADIO',
         value: 'create,remove' )
-
 
   }
   options {
@@ -128,6 +133,7 @@ pipeline {
   	stage('build'){
       environment {
         ACTION = "${params.Action}"
+        PROJECT = "${params.Project}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

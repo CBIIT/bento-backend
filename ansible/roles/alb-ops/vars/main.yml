@@ -2,5 +2,13 @@
 # vars file for alb-ops
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
+project: "{{ lookup('env','PROJECT') }}"
 action: "{{ lookup('env','ACTION') }}"
 region: us-east-1
+
+icdc:
+  dev: DEV-A-Appli-Caninedata-8UHLKJYN
+  qa: ""
+  stage: ""
+  prod: ""
+

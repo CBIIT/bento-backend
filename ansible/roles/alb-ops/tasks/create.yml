@@ -42,10 +42,10 @@
   register: rule
 
 - debug:
-    msg: "{{rule.stdout_lines}}"
+    msg: "{{rule.stdout}}"
 
 - debug:
-    msg: "{{rule.stdout_lines|to_json.Rules}}"
+    msg: "{{rule.stdout | json_query('[*]')}}"
 
 # - name: store rule arn to file
 #   copy: 

@@ -9,7 +9,7 @@
 - name: remove alb rule
   command: >
     aws elbv2 delete-rule 
-    --rule-arn {{jsondata|json_query('Rules[].RuleArn')}}
+    --rule-arn {{jsondata|json_query('Rules[].RuleArn')|join('')}}
     --region {{region}}
   register: rule
   

@@ -31,26 +31,28 @@
     - { src: 'actions.json.j2', dest: "{{workspace}}/actions.json" }
     - { src: 'conditions.json.j2',dest: "{{workspace}}/conditions.json"}
 
-- name: create alb rule
-  command: >
-    aws elbv2 create-rule 
-    --listener-arn {{listener_arn}}
-    --region {{region}}
-    --priority 1
-    --conditions file://{{workspace}}/conditions.json
-    --actions file://{{workspace}}/actions.json
-  register: rule
-
-- debug:
-    msg: "{{rule.stdout.RuleArn}}"
-
-- name: store rule arn to file
-  copy: 
-    content: "{{ rule.stdout.RuleArn }}" 
-    dest: "{{workspace}}/{{tier}}-rule-arn.txt"
-
+# - name: create alb rule
+#   command: >
+#     aws elbv2 create-rule 
+#     --listener-arn {{listener_arn}}
+#     --region {{region}}
+#     --priority 1
+#     --conditions file://{{workspace}}/conditions.json
+#     --actions file://{{workspace}}/actions.json
+#   register: rule
 
 - debug:
     msg: "{{rule.stdout_lines}}"
+    
+# - debug:
+#     msg: "{{rule.stdout.RuleArn}}"
+
+# - name: store rule arn to file
+#   copy: 
+#     content: "{{ rule.stdout.RuleArn }}" 
+#     dest: "{{workspace}}/{{tier}}-rule-arn.txt"
+
+
+
 
 

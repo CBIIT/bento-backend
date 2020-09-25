@@ -45,7 +45,7 @@
     msg: "{{rule.stdout_lines}}"
 
 - debug:
-    msg: "{{rule.stdout_lines[0]}}"
+    msg: "{{rule.stdout_lines.RuleArn}}"
 
 # - name: store rule arn to file
 #   copy: 

@@ -32,7 +32,7 @@
     - { src: 'conditions.json.j2',dest: "{{workspace}}/conditions.json"}
 
 - name: create alb rule
-  command: >
+  shell: >
     aws elbv2 create-rule 
     --listener-arn {{listener_arn}}
     --region {{region}}

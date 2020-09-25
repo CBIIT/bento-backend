@@ -1,0 +1,12 @@
+- name: remove alb rule
+  command: >
+    aws elbv2 create-rule 
+    --listener-arn {{lookup('file', '{{workspace}}/rule-arn.txt')}}
+    --region {{region}}
+    register: rule
+  
+- name: purge rule-arn.txt file
+  file: 
+    path: "{{workspace}}/rule-arn.txt"
+    state: absent
+      

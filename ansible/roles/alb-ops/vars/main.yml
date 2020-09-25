@@ -2,4 +2,5 @@
 # vars file for alb-ops
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
+action: "{{ lookup('env','ACTION') }}"
 region: us-east-1

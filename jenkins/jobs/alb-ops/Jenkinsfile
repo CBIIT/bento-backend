@@ -126,6 +126,9 @@ pipeline {
         }
     }
   	stage('build'){
+      environment {
+        ACTION = "${params.Action}"
+      }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),

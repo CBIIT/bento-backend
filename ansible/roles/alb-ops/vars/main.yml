@@ -5,7 +5,7 @@ workspace: "{{ lookup('env','WORKSPACE') }}"
 # project: "{{ lookup('env','PROJECT') }}"
 # action: "{{ lookup('env','ACTION') }}"
 region: us-east-1
-alb_name: "{{project}}.{{tier}}.value"
+# alb_name: "{{project}}.{{tier}}.value"
 icdc:
   dev: DEV-A-Appli-Caninedata-8UHLKJYN
   qa: ""

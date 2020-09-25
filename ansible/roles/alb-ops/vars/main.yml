@@ -6,9 +6,10 @@ workspace: "{{ lookup('env','WORKSPACE') }}"
 # action: "{{ lookup('env','ACTION') }}"
 region: us-east-1
 # alb_name: "{{project}}.{{tier}}.value"
-icdc:
-  dev: DEV-A-Appli-Caninedata-8UHLKJYN
-  qa: ""
-  stage: ""
-  prod: ""
+alb:
+  - project: icdc
+    dev: DEV-A-Appli-Caninedata-8UHLKJYN
+    qa: ""
+    stage: ""
+    prod: ""
 

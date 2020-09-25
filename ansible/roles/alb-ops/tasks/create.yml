@@ -1,13 +1,13 @@
 ---
-- name: lookup alb name
-  set_fact:
-    alb_name: "{{item.{{tier}}}}"
-  loop: "{{lookup('dict', {{project}}) }}"
+# - name: lookup alb name
+#   set_fact:
+#     alb_name: "{{item.{{tier}}}}"
+#   loop: "{{lookup('dict', {{project}}) }}"
      
 - name: gather info about alb
   elb_application_lb_info:
     names: 
-      - "{{alb_name}}"
+      - DEV-A-Appli-Caninedata-8UHLKJYN
     region: "{{region}}"
   register: alb_info
 

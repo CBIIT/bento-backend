@@ -129,7 +129,7 @@
 - name: run npm install in {{workspace}}/bento-frontend/
   command: "{{item}}"
   args:
-    chdir: "{{workspace}}/bento-frontend"
+    chdir: "{{workspace}}/icdc-frontend"
   loop:
     - npm install npm@latest -g
     - npm install

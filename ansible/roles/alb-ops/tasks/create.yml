@@ -41,22 +41,9 @@
     --actions file://{{workspace}}/actions.json
   register: rule
 
-- debug:
-    msg: "{{rule.stdout}}"
-
-
-   
-
 - name: store rule arn to file
   copy: 
     content: "{{ rule.stdout}}" 
-    dest: "{{workspace}}/{{tier}}-rule-arn.txt"
-
-
-- debug:
-    msg: "{{rule.stdout.Rules)}}"
-
-- debug:
-    msg: "{{rule.stdout.Rules[0])}}"
+    dest: "{{workspace}}/{{tier}}-rule-arn.json"
 
 

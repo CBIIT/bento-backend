@@ -45,7 +45,7 @@
     msg: "{{rule.stdout_lines}}"
 
 - debug:
-    msg: "{{rule.stdout_lines.RuleArn}}"
+    msg: "{{rule.stdout_lines|to_json}}"
 
 # - name: store rule arn to file
 #   copy: 

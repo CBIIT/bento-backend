@@ -147,7 +147,9 @@ pipeline {
                   playbook: '${WORKSPACE}/icdc-devops/ansible/alb-ops.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
-                    action: "${params.Action}"],  
+                    action: "${params.Action}",
+                    project: "${params.Project}"
+                    ],  
             			colorized: true) 
  				}
  			}

@@ -39,4 +39,4 @@
       "{{listener_arn}}"
       "{{certificate_arn}}"
 - debug:
-    msg: "{{rule}}"
+    msg: "{{rule.stdout_lines[0].Rules[0].RuleArn}}"

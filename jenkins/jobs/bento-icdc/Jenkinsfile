@@ -92,8 +92,6 @@ pipeline {
     stage('Set Environment'){
       environment {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
-        FE_VERSION = "${params.Frontend_Tag}"
-        BE_VERSION = "${params.Backend_Tag}"
       }
         steps {
           script {
@@ -156,8 +154,9 @@ pipeline {
         }
     }
   	stage('build'){
-      environment {
-       VERSION = "${params.Frontend_Tag}"
+      environment{
+        FE_VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

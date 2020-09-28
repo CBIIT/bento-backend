@@ -5,7 +5,14 @@
   gather_facts: yes
     
   tasks:
-    - name: remove alb rules
+    - name: create alb rule
       include_role:
         name: alb-ops
-        tasks_from: remove-alb-rules
+        tasks_from: create
+      when: action == "create"
+
+    - name: remove alb rule
+      include_role:
+        name: alb-ops
+        tasks_from: remove
+      when: action == "remove"

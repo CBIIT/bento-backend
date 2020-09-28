@@ -7,7 +7,7 @@
 - name: gather info about alb
   elb_application_lb_info:
     names: 
-      - DEV-A-Appli-Caninedata-8UHLKJYN
+      - "{{alb|json_query(jq)}}"
     region: "{{region}}"
   register: alb_info
 

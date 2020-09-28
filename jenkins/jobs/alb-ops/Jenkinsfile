@@ -83,57 +83,58 @@ pipeline {
         }
  
   	}
-    stage('Set Environment'){
-        steps {
-          script {
-            switch("${params.Environment}") {
-              case "sandbox":
-                withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER')
-                  ]) {
-                  env.TIER  = "sandbox"
+    // stage('Set Environment'){
+    //     steps {
+    //       script {
+    //         switch("${params.Environment}") {
+    //           case "sandbox":
+    //             withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER')
+    //               ]) {
+    //               env.TIER  = "sandbox"
 
-                }
-              break
-              case "dev":
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
-                  ]) {
-                  env.TIER  = "dev"
+    //             }
+    //           break
+    //           case "dev":
+    //             withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
+    //               ]) {
+    //               env.TIER  = "dev"
                  
-                }
-              break
-              case "qa":
-                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')
-                  ]) {
-                  env.TIER  = "qa"
+    //             }
+    //           break
+    //           case "qa":
+    //             withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')
+    //               ]) {
+    //               env.TIER  = "qa"
                   
-                }
-              break
-              case "stage":
-                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')
-                  ]) {
-                  env.TIER  = "stage"
-                }
-              break
-              case "prod":
-                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')
-                  ]) {
-                  env.TIER  = "prod"
-                }
-              break
-              default:
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
-                  ]) {
-                  env.TIER  = "dev"
-                }
-              break
-            }
-          }
-        }
-    }
+    //             }
+    //           break
+    //           case "stage":
+    //             withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')
+    //               ]) {
+    //               env.TIER  = "stage"
+    //             }
+    //           break
+    //           case "prod":
+    //             withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')
+    //               ]) {
+    //               env.TIER  = "prod"
+    //             }
+    //           break
+    //           default:
+    //             withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
+    //               ]) {
+    //               env.TIER  = "dev"
+    //             }
+    //           break
+    //         }
+    //       }
+    //     }
+    // }
   	stage('build'){
       environment {
         ACTION = "${params.Action}"
         PROJECT = "${params.Project}"
+        TIER = ${params.Environment}
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

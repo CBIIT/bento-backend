@@ -134,7 +134,7 @@ pipeline {
       environment {
         ACTION = "${params.Action}"
         PROJECT = "${params.Project}"
-        TIER = ${params.Environment}
+        TIER = "${params.Environment}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

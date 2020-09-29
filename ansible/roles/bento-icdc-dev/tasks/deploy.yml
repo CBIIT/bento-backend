@@ -108,7 +108,7 @@
       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
     #entrypoint: ["/bin/ash", "-c", 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run']
-    entrypoint: "/bin/ash -c 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
+    entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
     log_driver: syslog
     log_options:
       syslog-address: tcp://{{ syslog_host }}:514

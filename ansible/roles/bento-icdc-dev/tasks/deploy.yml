@@ -45,7 +45,8 @@
     name: sumologic-syslog
     image: sumologic/collector:latest-syslog
     env:
-      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ docker_host }}"
+      #SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ docker_host }}"
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog"
       SUMO_ACCESS_ID: "{{ sumo_access_id }}"
       SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
       SUMO_COLLECTOR_NAME_PREFIX: ""
@@ -63,7 +64,8 @@
     name: sumologic-docker
     image: sumologic/collector:latest
     env:
-      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ docker_host }}"
+      #SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ docker_host }}"
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker"
       SUMO_ACCESS_ID: "{{ sumo_access_id }}"
       SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
       SUMO_COLLECTOR_NAME_PREFIX: ""
@@ -82,7 +84,8 @@
     image: newrelic/infrastructure:latest
     env:
       NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
-      NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ docker_host }}"
+      #NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ docker_host }}"
+      NRIA_DISPLAY_NAME: "{{ app_name }}-docker"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
     state: started
     restart_policy: always

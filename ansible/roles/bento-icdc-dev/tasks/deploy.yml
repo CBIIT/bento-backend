@@ -45,11 +45,11 @@
     name: sumologic-syslog
     image: sumologic/collector:latest-syslog
     env:
-      - SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ docker_host }}"
-      - SUMO_ACCESS_ID: "{{ sumo_access_id }}"
-      - SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
-      - SUMO_COLLECTOR_NAME_PREFIX: ""
-      - SUMO_CLOBBER: "true"
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ docker_host }}"
+      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
+      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
+      SUMO_COLLECTOR_NAME_PREFIX: ""
+      SUMO_CLOBBER: "true"
     state: started
     restart_policy: always
     ports:

@@ -20,8 +20,7 @@ schema_file: icdc.graphql
 backend_user_info: https://caninecommons.cancer.gov/fence/login/
 backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{fence_id}}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
 backend_fence_logout: https://caninecommons.cancer.gov/fence/logout
-backend_api_url: REACT_APP_BACKEND_API=https://caninecommons.cancer.gov/v1/graphql/
-backend_content_url: REACT_APP_ABOUT_CONTENT_URL=https://raw.githubusercontent.com/CBIIT/icdc-codebase/master/src/main/frontend/src/content/{{tier}}/aboutPagesContent.yaml
-backend_api_version: REACT_APP_BE_VERSION={{backend_version}}
-backend_frontend_version: REACT_APP_FE_VERSION={{frontend_version}}
-backend_google_analytics_id: REACT_APP_GA_TRACKING_ID=UA-154442677-1
+backend_content_url: https://raw.githubusercontent.com/CBIIT/icdc-codebase/master/src/main/frontend/src/content/{{tier}}/aboutPagesContent.yaml
+backend_api_version: "{{backend_version}}"
+backend_frontend_version: "{{frontend_version}}"
+backend_google_analytics_id: UA-154442677-1

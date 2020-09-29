@@ -1,9 +1,7 @@
 ---
 # vars file for cicd
 tier: "{{ lookup('env','TIER') }}"
-##### This is a placeholder for the bento "platform" variable, det to a default of aws
 platform: "aws"
-#####
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 docker_host: "{{ lookup('env','DOCKER_HOST') }}"
 tls_hostname: "{{ lookup('env','TLS_HOSTNAME') }}"

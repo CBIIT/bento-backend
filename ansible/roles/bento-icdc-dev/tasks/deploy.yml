@@ -63,11 +63,11 @@
     name: sumologic-docker
     image: sumologic/collector:latest
     env:
-      - SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ docker_host }}"
-      - SUMO_ACCESS_ID: "{{ sumo_access_id }}"
-      - SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
-      - SUMO_COLLECTOR_NAME_PREFIX: ""
-      - SUMO_CLOBBER: "true"
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ docker_host }}"
+      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
+      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
+      SUMO_COLLECTOR_NAME_PREFIX: ""
+      SUMO_CLOBBER: "true"
     state: started
     restart_policy: always
     volumes:
@@ -81,9 +81,9 @@
     name: newrelic-docker
     image: newrelic/infrastructure:latest
     env:
-      - NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
-      - NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ docker_host }}"
-      - NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ docker_host }}"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
     state: started
     restart_policy: always
     volumes:
@@ -98,12 +98,12 @@
     name: backend
     image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}
     env:
-      - NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-      - NEW_RELIC_APP_NAME: "{{ app_name }}-backend"
-      - NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: true
-      - NEW_RELIC_HOST: "gov-collector.newrelic.com"
-      - NEW_RELIC_LOG_FILE_NAME: "STDOUT"
-      - JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-backend"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: true
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_LOG_FILE_NAME: "STDOUT"
+      JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
     entryPoint: ["/bin/ash", "-c", 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run']
     log_driver: syslog
     log_options:
@@ -123,11 +123,11 @@
     name: frontend
     image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{build_number}}
     env:
-      - NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-      - NEW_RELIC_APP_NAME: "{{ app_name }}-frontend"
-      - NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: true
-      - NEW_RELIC_HOST: "gov-collector.newrelic.com"
-      - NEW_RELIC_NO_CONFIG_FILE: "true"
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: true
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_NO_CONFIG_FILE: "true"
     log_driver: syslog
     log_options:
       syslog-address: tcp://{{ syslog_host }}:514

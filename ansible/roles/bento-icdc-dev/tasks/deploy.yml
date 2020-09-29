@@ -135,9 +135,7 @@
     entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
     log_driver: syslog
     log_options:
-      #syslog-address: tcp://{{ syslog_host }}:514
-      syslog-address: tcp://host.docker.internal:514
-      #syslog-address: tcp://127.0.0.1:514
+      syslog-address: tcp://{{ syslog_host }}:514
       tag: "{{ app_name }}-backend"
       syslog-format: "rfc5424micro"
     state: started
@@ -160,9 +158,7 @@
       NEW_RELIC_NO_CONFIG_FILE: "true"
     log_driver: syslog
     log_options:
-      #syslog-address: tcp://{{ syslog_host }}:514
-      syslog-address: tcp://host.docker.internal:514
-      #syslog-address: tcp://127.0.0.1:514
+      syslog-address: tcp://{{ syslog_host }}:514
       tag: "{{ app_name }}-frontend"
       syslog-format: "rfc5424micro"
     state: started

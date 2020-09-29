@@ -197,10 +197,10 @@ pipeline {
   		}
   	}
   }
-  post {
-    always {
-      
-      //sendSlackMessage()
-    }
-  }
+//  post {
+//    always {
+//      
+//      sendSlackMessage()
+//    }
+//  }
 }

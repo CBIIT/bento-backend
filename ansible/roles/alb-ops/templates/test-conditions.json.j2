@@ -1,0 +1,19 @@
+{% if tier == "prod"  %}
+[
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons.cancer.gov"]
+      }
+  }
+]
+{% else %}
+[
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons-{{tier}}.cancer.gov"]
+      }
+  }
+]
+{% endif %}

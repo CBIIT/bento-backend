@@ -100,7 +100,7 @@
     env:
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-backend"
-      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: true
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
@@ -125,7 +125,7 @@
     env:
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-frontend"
-      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: true
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
     log_driver: syslog

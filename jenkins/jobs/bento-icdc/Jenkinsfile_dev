@@ -185,6 +185,7 @@ pipeline {
 			 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
 			 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
 			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+			 string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
 			 ]){
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc-dev.yml', 

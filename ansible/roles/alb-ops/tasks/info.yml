@@ -22,8 +22,8 @@
     src: "{{item.src}}"
     dest: "{{item.dest}}"
   loop:
-    - { src: 'actions.json.j2', dest: "{{workspace}}/fixed-actions.json" }
-    - { src: 'conditions.json.j2',dest: "{{workspace}}/fixed-conditions.json"}
+    - { src: 'fixed-actions.json.j2', dest: "{{workspace}}/fixed-actions.json" }
+    - { src: 'fixed-conditions.json.j2',dest: "{{workspace}}/fixed-conditions.json"}
     - { src: 'backend-conditions.json.j2',dest: "{{workspace}}/backend-conditions.json"}
     - { src: 'frontend-conditions.json.j2',dest: "{{workspace}}/frontend-conditions.json"}
     - { src: 'backend-actions.json.j2', dest: "{{workspace}}/backend-actions.json" }

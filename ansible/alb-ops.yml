@@ -5,10 +5,19 @@
   gather_facts: yes
     
   tasks:
-    - name: create alb rule
+    - name: get alb info
       include_role:
         name: alb-ops
-        tasks_from: create
+        tasks_from: info
+      when: action == "create"
+    - name: get alb info
+      include_role:
+        name: alb-ops
+        tasks_from: rules
+      loop:
+        - fixed
+        - frontend
+        - backend
       when: action == "create"
 
     - name: remove alb rule

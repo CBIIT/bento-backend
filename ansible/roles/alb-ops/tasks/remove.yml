@@ -1,20 +1,82 @@
-- name: get {{tier}}-rule-arn file content
-  command: cat {{workspace}}/{{tier}}-rule-arn.json
+
+- name: get {{item}} rule file content
+  command: cat {{workspace}}/{{project}}-{{tier}}-{{item}}.json
   register: result
 
-- name: retrieve rule-arn
+- name: retrieve {{item}} rule-arn
   set_fact:
     jsondata: "{{ result.stdout | from_json }}"
     
-- name: remove alb rule
+- name: remove {{item}} alb rule
   command: >
     aws elbv2 delete-rule 
     --rule-arn {{jsondata|json_query('Rules[].RuleArn')|join('')}}
     --region {{region}}
-  register: rule
-  
-- name: purge rule-arn.txt file
+
+- name: purge {{item}} rule-arn.txt file
   file: 
-    path: "{{workspace}}/{{tier}}-rule-arn.json"
+    path: "{{workspace}}/{{project}}-{{tier}}-{{item}}.json"
     state: absent
-      
+
+
+# - name: get backend rule file content
+#   command: cat {{workspace}}/{{project}}-{{tier}}-backend.json
+#   register: backed_result
+
+# - name: retrieve backend rule-arn
+#   set_fact:
+#     jsondata: "{{ backend_result.stdout | from_json }}"
+    
+# - name: remove backend alb rule
+#   command: >
+#     aws elbv2 delete-rule 
+#     --rule-arn {{jsondata|json_query('Rules[].RuleArn')|join('')}}
+#     --region {{region}}
+#   register: rule
+  
+# - name: purge fixed rule-arn.txt file
+#   file: 
+#     path: "{{workspace}}/{{project}}-{{tier}}-backend.json"
+#     state: absent
+    
+
+# - name: get fixed response file content
+#   command: cat {{workspace}}/{{project}}-{{tier}}-fixed.json
+#   register: fixed_result
+
+# - name: retrieve rule-arn
+#   set_fact:
+#     jsondata: "{{ fixed_result.stdout | from_json }}"
+    
+# - name: remove fixed response alb rule
+#   command: >
+#     aws elbv2 delete-rule 
+#     --rule-arn {{jsondata|json_query('Rules[].RuleArn')|join('')}}
+#     --region {{region}}
+  
+# - name: purge rule-arn.txt file
+#   file: 
+#     path: "{{workspace}}/{{project}}-{{tier}}-fixed.json"
+#     state: absent
+
+
+# - name: get frontend {{tier}}-rule-arn file content
+#   command: cat {{workspace}}/{{project}}-{{tier}}-frontend.json
+#   register: frontend_result
+
+
+
+# - name: retrieve frontend rule-arn
+#   set_fact:
+#     jsondata: "{{ frontend_result.stdout | from_json }}"
+    
+# - name: remove frontend alb rule
+#   command: >
+#     aws elbv2 delete-rule 
+#     --rule-arn {{jsondata|json_query('Rules[].RuleArn')|join('')}}
+#     --region {{region}}
+
+# - name: purge frontend rule-arn.txt file
+#   file: 
+#     path: "{{workspace}}/{{project}}-{{tier}}-frontend.json"
+#     state: absent

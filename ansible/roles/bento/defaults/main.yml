@@ -1,5 +1,5 @@
 ---
 # defaults file for cicd
 platform: aws
-redis_host: bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com:6379
+redis_host: bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com
 redis_password: "setthis"

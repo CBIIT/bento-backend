@@ -20,8 +20,8 @@
         - backend
       when: action == "create"
 
-    - name: remove alb rule
-      include_role:
-        name: alb-ops
-        tasks_from: remove
-      when: action == "remove"
+    # - name: remove alb rule
+    #   include_role:
+    #     name: alb-ops
+    #     tasks_from: remove
+    #   when: action == "remove"

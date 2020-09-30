@@ -180,7 +180,13 @@ pipeline {
 
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-           withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+		   withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+		     string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
+			 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+			 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+			 string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+			 ]){
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

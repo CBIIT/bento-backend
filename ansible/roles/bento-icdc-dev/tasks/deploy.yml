@@ -17,29 +17,29 @@
     state: directory
 
 
-- name: remove sumologic syslog container
-  docker_container:
-    name: sumologic-syslog
-    state: absent
-  tags:
-    - sumologic
-    - monitoring
+#- name: remove sumologic syslog container
+#  docker_container:
+#    name: sumologic-syslog
+#    state: absent
+#  tags:
+#    - sumologic
+#    - monitoring
 
-- name: remove sumologic docker container
-  docker_container:
-    name: sumologic-docker
-    state: absent
-  tags:
-    - sumologic
-    - monitoring
+#- name: remove sumologic docker container
+#  docker_container:
+#    name: sumologic-docker
+#    state: absent
+#  tags:
+#    - sumologic
+#    - monitoring
 
-- name: remove newrelic docker container
-  docker_container:
-    name: newrelic-docker
-    state: absent
-  tags:
-    - newrelic
-    - monitoring
+#- name: remove newrelic docker container
+#  docker_container:
+#    name: newrelic-docker
+#    state: absent
+#  tags:
+#    - newrelic
+#    - monitoring
 
 - name: remove frontend container
   docker_container:

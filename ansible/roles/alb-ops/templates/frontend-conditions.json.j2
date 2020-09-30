@@ -1,0 +1,31 @@
+{% if tier == "prod"  %}
+[
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons.cancer.gov"]
+      }
+  },
+  {
+        "Field": "path-pattern",
+        "PathPatternConfig": {
+            "Values": ["/test/*"]
+        }
+    }
+]
+{% else %}
+[
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons-{{tier}}.cancer.gov"]
+      }
+  },
+  {
+        "Field": "path-pattern",
+        "PathPatternConfig": {
+            "Values": ["/test/*"]
+        }
+    }
+]
+{% endif %}

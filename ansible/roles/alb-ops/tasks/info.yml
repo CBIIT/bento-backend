@@ -1,0 +1,79 @@
+---
+
+- name: gather info about alb
+  elb_application_lb_info:
+    names: 
+      - "{{alb|json_query(jq)}}"
+    region: "{{region}}"
+  register: alb_info
+
+- name: set facts
+  set_fact:
+    certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
+    listener_arn: "{{alb_info.load_balancers[0].listeners[0].listener_arn}}"
+    backend_arn: "{{backend_target|json_query(jq)}}"
+    frontend_arn: "{{frontend_target|json_query(jq)}}"
+
+- debug:
+    msg: "{{alb_info}}"
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  loop:
+    - { src: 'actions.json.j2', dest: "{{workspace}}/fixed-actions.json" }
+    - { src: 'conditions.json.j2',dest: "{{workspace}}/fixed-conditions.json"}
+    - { src: 'backend-conditions.json.j2',dest: "{{workspace}}/backend-conditions.json"}
+    - { src: 'frontend-conditions.json.j2',dest: "{{workspace}}/frontend-conditions.json"}
+    - { src: 'backend-actions.json.j2', dest: "{{workspace}}/backend-actions.json" }
+    - { src: 'frontend-actions.json.j2', dest: "{{workspace}}/frontend-actions.json" }
+
+
+# - name: create fixed response rule
+#   shell: >
+#     aws elbv2 create-rule 
+#     --listener-arn {{listener_arn}}
+#     --region {{region}}
+#     --priority 1
+#     --conditions file://{{workspace}}/fixed-conditions.json
+#     --actions file://{{workspace}}/fixed-actions.json
+#   register: fixed_rule
+
+# - name: store rule fixed response arn to file
+#   copy: 
+#     content: "{{ fixed_rule.stdout}}" 
+#     dest: "{{workspace}}/{{project}}-{{tier}}-fixed.json"
+
+# - name: create test frontend rule
+#   shell: >
+#     aws elbv2 create-rule 
+#     --listener-arn {{listener_arn}}
+#     --region {{region}}
+#     --priority 1
+#     --conditions file://{{workspace}}/frontend-conditions.json
+#     --actions file://{{workspace}}/frontend-actions.json
+#   register: frontend_rule
+
+# - name: store frontend test rule arn to file
+#   copy: 
+#     content: "{{ frontend_rule.stdout}}" 
+#     dest: "{{workspace}}/{{project}}-{{tier}}-frontend.json"
+
+# - name: create test backend rule
+#   shell: >
+#     aws elbv2 create-rule 
+#     --listener-arn {{listener_arn}}
+#     --region {{region}}
+#     --priority 1
+#     --conditions file://{{workspace}}/backend-conditions.json
+#     --actions file://{{workspace}}/backend-actions.json
+#   register: backend_rule
+
+# - name: store backend test rule arn to file
+#   copy: 
+#     content: "{{ backend_rule.stdout}}" 
+#     dest: "{{workspace}}/{{project}}-{{tier}}-backend.json"
+
+
+

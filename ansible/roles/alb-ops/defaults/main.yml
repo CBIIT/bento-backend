@@ -1,9 +1,6 @@
 ---
 # defaults file for alb-ops
 
-
-# response_text: >
-#  <html><head><meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="stylesheet" type = "text/css" href="https://canine-demo-data-bucket.s3.amazonaws.com/maintainence-screen-styles.css"> </head><div><img src="https://raw.githubusercontent.com/CBIIT/icdc-codebase/master/src/main/frontend/src/content/dev/header.png"></div><div class="c"><div><div class="z"><div class="t"><span class="s">We'll be right back!</span><br><br><br><span class="d">Sorry, we're down for maintenance activity right now.  Please check back later or contact <a href="mailto:ICDCHelpDesk@mail.nih.gov">ICDCHelpDesk@mail.nih.gov</a></span></div><div><img src="https://raw.githubusercontent.com/CBIIT/icdc-codebase/master/src/main/frontend/src/content/dev/dog.png"></div></div></div></div></html
-
+account_id: 019211168375
 response_text: >
   <html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> <link rel=\"stylesheet\" type = \"text\/css\" href=\"https:\/\/canine-demo-data-bucket.s3.amazonaws.com\/maintainence-screen-styles.css\"> <\/head><div><img src=\"https:\/\/raw.githubusercontent.com\/CBIIT\/icdc-codebase\/master\/src\/main\/frontend\/src\/content\/dev\/header.png\"><\/div><div class=\"c\"><div><div class=\"z\"><div class=\"t\"><span class=\"s\">We'll be right back!<\/span><br><br><br><span class=\"d\">Sorry, we're down for maintenance activity right now.  Please check back later or contact <a href=\"mailto:ICDCHelpDesk@mail.nih.gov\">ICDCHelpDesk@mail.nih.gov<\/a><\/span><\/div><div><img src=\"https:\/\/raw.githubusercontent.com\/CBIIT\/icdc-codebase\/master\/src\/main\/frontend\/src\/content\/dev\/dog.png\"><\/div><\/div><\/div><\/div><\/html>

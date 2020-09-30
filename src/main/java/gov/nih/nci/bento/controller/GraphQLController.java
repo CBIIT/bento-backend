@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.Neo4JGraphQLService;
+import gov.nih.nci.bento.service.RedisService;
 import graphql.language.Document;
 import graphql.language.OperationDefinition;
 import graphql.parser.Parser;
@@ -33,6 +34,8 @@ public class GraphQLController {
 	private ConfigurationDAO config;
 	@Autowired
 	private Neo4JGraphQLService neo4jService;
+	@Autowired
+	private RedisService redisService;
 	
 	public static final Gson GSON = new Gson();
 
@@ -76,8 +79,11 @@ public class GraphQLController {
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
 				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
 			try{
-				String responseText = "";
-				responseText = neo4jService.query(reqBody);
+				String responseText = redisService.getQueryResult(reqBody);
+				if ( null == responseText) {
+					responseText = neo4jService.query(reqBody);
+					redisService.setQueryResult(reqBody, responseText);
+				}
 				return ResponseEntity.ok(responseText);
 			}
 			catch(ApiError e){

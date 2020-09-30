@@ -1,14 +1,14 @@
-- name: create {{item}} response rule
+- name: create {{item.name}} response rule
   shell: >
     aws elbv2 create-rule 
     --listener-arn {{listener_arn}}
     --region {{region}}
-    --priority {{ loop.index }}
-    --conditions file://{{workspace}}/{{item}}-conditions.json
-    --actions file://{{workspace}}/{{item}}-actions.json
+    --priority {{ item.priority }}
+    --conditions file://{{workspace}}/{{item.name}}-conditions.json
+    --actions file://{{workspace}}/{{item.name}}-actions.json
   register: rule
 
-- name: store rule {{item}} response arn to file
+- name: store rule {{item.name}} response arn to file
   copy: 
     content: "{{ rule.stdout}}" 
-    dest: "{{workspace}}/{{project}}-{{tier}}-{{item}}.json"
+    dest: "{{workspace}}/{{project}}-{{tier}}-{{item.name}}.json"

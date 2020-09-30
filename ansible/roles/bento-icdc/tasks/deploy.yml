@@ -59,7 +59,6 @@
     name: sumologic-syslog
     image: sumologic/collector:latest-syslog
     env:
-      # Monitoring configuration
       SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ inventory_hostname }}"
       SUMO_ACCESS_ID: "{{ sumo_access_id }}"
       SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
@@ -78,7 +77,6 @@
     name: sumologic-docker
     image: sumologic/collector:latest
     env:
-      # Monitoring configuration
       SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
       SUMO_ACCESS_ID: "{{ sumo_access_id }}"
       SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
@@ -97,7 +95,6 @@
     name: newrelic-docker
     image: newrelic/infrastructure:latest
     env:
-      # Monitoring configuration
       NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
       NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
@@ -115,7 +112,6 @@
     name: backend
     image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{ build_number }}
     env:
-      # Monitoring configuration
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
@@ -149,7 +145,6 @@
       REACT_APP_BE_VERSION: "{{ backend_api_version }}"
       REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
       REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
-      # Monitoring configuration
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"

@@ -64,23 +64,12 @@
 
 ############################################################################################################################
 
-
-- name: show current hostname
-  debug: 
-    msg: "Current Host is:  {{ inventory_hostname }}"
-
-- name: show current hostname - short
-  debug: 
-    msg: "Current Short Host is:  {{ inventory_hostname_short }}"
-
-
 - name: start sumologic syslog service
   docker_container:
     name: sumologic-syslog
     image: sumologic/collector:latest-syslog
     env:
-      #SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ docker_host }}"
-      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog"
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ inventory_hostname }}"
       SUMO_ACCESS_ID: "{{ sumo_access_id }}"
       SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
       SUMO_COLLECTOR_NAME_PREFIX: ""
@@ -88,7 +77,7 @@
     state: started
     restart_policy: always
     ports:
-     - "6514:6514"
+     - "6514:514"
   tags:
     - sumologic
     - monitoring
@@ -98,8 +87,7 @@
     name: sumologic-docker
     image: sumologic/collector:latest
     env:
-      #SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ docker_host }}"
-      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker"
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
       SUMO_ACCESS_ID: "{{ sumo_access_id }}"
       SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
       SUMO_COLLECTOR_NAME_PREFIX: ""
@@ -118,8 +106,7 @@
     image: newrelic/infrastructure:latest
     env:
       NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
-      #NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ docker_host }}"
-      NRIA_DISPLAY_NAME: "{{ app_name }}-docker"
+      NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
     state: started
     restart_policy: always
@@ -141,7 +128,6 @@
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-    #entrypoint: ["/bin/ash", "-c", 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run']
     entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
     log_driver: syslog
     log_options:

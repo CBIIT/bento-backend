@@ -17,11 +17,11 @@
         tasks_from: rules
       loop:
         - name: fixed
-          priority: 1
-        - name: frontend
           priority: 3
-        - name: backend
+        - name: frontend
           priority: 2
+        - name: backend
+          priority: 1
       when: action == "create"
 
     # - name: remove alb rule

@@ -1,14 +1,28 @@
 ---
 ############################################################################################################################
 
+#     Set URLs
+
+############################################################################################################################
+
+- name: set backend_api_url
+  set_fact:
+    backend_api_url: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/ {% endif %}" 
+
+- name: set test backend_api_url
+  set_fact:
+    backend_api_url_test: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/test/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.cancer.gov/test/v1/graphql/ {% endif %}" 
+
+############################################################################################################################
+
 #     Prepare host for update
 
 ############################################################################################################################
 
 - name: log into DockerHub
   docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
+    username: "{{ docker_user }}"
+    password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
     
 - name: verify host
@@ -16,30 +30,6 @@
     path: /tmp/myworkspace
     state: directory
 
-
-#- name: remove sumologic syslog container
-#  docker_container:
-#    name: sumologic-syslog
-#    state: absent
-#  tags:
-#    - sumologic
-#    - monitoring
-
-#- name: remove sumologic docker container
-#  docker_container:
-#    name: sumologic-docker
-#    state: absent
-#  tags:
-#    - sumologic
-#    - monitoring
-
-#- name: remove newrelic docker container
-#  docker_container:
-#    name: newrelic-docker
-#    state: absent
-#  tags:
-#    - newrelic
-#    - monitoring
 
 - name: remove frontend container
   docker_container:
@@ -120,7 +110,7 @@
 - name: start icdc backend container
   docker_container:
     name: backend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{ build_number }}
     env:
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
@@ -145,8 +135,16 @@
 - name: start icdc frontend container
   docker_container:
     name: frontend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{build_number}}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{ build_number }}
     env:
+      REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
+      REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
+      REACT_APP_USER_LOGOUT_URL: "backend_fence_logout"
+      REACT_APP_BACKEND_API: "{{ backend_api_url }}"
+      REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
+      REACT_APP_BE_VERSION: "{{ backend_api_version }}"
+      REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
+      REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"

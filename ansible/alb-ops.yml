@@ -10,14 +10,18 @@
         name: alb-ops
         tasks_from: info
       when: action == "create"
+    
     - name: get alb info
       include_role:
         name: alb-ops
         tasks_from: rules
       loop:
-        - fixed
-        - frontend
-        - backend
+        - name: fixed
+          priority: 1
+        - name: frontend
+          priority: 3
+        - name: backend
+          priority: 2
       when: action == "create"
 
     # - name: remove alb rule

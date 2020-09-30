@@ -1,11 +1,11 @@
 ---
 - name: set backend_api_url
   set_fact:
-    backend_api_url: "{{ (tier == 'prod') | ternary(https://caninecommons.cancer.gov/v1/graphql/, https://caninecommons-{{tier}}.cancer.gov/v1/graphql/) }}" 
+    backend_api_url: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/v1/graphql/ {% else %} https://caninecommons-{{tier}}.cancer.gov/v1/graphql/ {% endif %}" 
 
 - name: set test backend_api_url
   set_fact:
-    backend_api_url_test: "{{ (tier == 'prod') | ternary(https://caninecommons.cancer.gov/test/v1/graphql/, https://caninecommons-{{tier}}.cancer.gov/test/v1/graphql/) }}" 
+    backend_api_url_test: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/test/v1/graphql/ {% else %} https://caninecommons-{{tier}}.cancer.gov/test/v1/graphql/ {% endif %}" 
 
 - name: log into DockerHub
   docker_login:

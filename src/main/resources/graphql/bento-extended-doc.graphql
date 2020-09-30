@@ -743,6 +743,18 @@ type FileInfo {
     md5sum: String
 }
 
+type FileDetail {
+    study_code: String
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+}
+
 type ProgramInfo {
     program_acronym: String
     program_id: String
@@ -887,4 +899,6 @@ type QueryType {
     armDetail(study_acronym: String): ArmDetail 
 
     samplesForSubjectId(subject_id: String!): [sample] 
+
+    filesInList(file_ids: [String]): [FileDetail] 
 }

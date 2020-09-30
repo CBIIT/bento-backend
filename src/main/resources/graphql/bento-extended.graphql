@@ -743,6 +743,18 @@ type FileInfo {
     md5sum: String
 }
 
+type FileDetail {
+    study_code: String
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+}
+
 type ProgramInfo {
     program_acronym: String
     program_id: String
@@ -1098,4 +1110,21 @@ type QueryType {
     """, passThrough: true)
 
     samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: "MATCH (ss:study_subject {study_subject_id: $subject_id})<-[*]-(s:sample) RETURN s")
+
+    filesInList(file_ids: [String]): [FileDetail] @cypher(statement: """
+        MATCH (f:file)
+            WHERE f.file_id in $file_ids
+        OPTIONAL MATCH (f)-->(parent)
+            WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[*]->(ss:study_subject)-->(s:study)
+        RETURN f.file_name AS file_name,
+               f.file_id AS file_id,
+               f.file_type AS file_type,
+               head(labels(parent)) AS association,
+               f.file_description AS file_description,
+               f.file_format AS file_format,
+               f.file_size AS file_size,
+               ss.study_subject_id AS subject_id,
+               s.study_acronym AS study_code
+        """)
 }

@@ -26,11 +26,13 @@ public class RedisService {
     public boolean connect() {
         try {
             String host = config.getRedisHost();
-            String password = config.getRedisPassword();
-            if (host.isBlank() || password.isBlank()) {
+//            String password = config.getRedisPassword();
+//            if (host.isBlank() || password.isBlank()) {
+            if (host.isBlank()) {
                return false;
             } else {
-                pool = new JedisPool(getJedisConfig(), host, Protocol.DEFAULT_PORT, Protocol.DEFAULT_TIMEOUT, password);
+//                pool = new JedisPool(getJedisConfig(), host, Protocol.DEFAULT_PORT, Protocol.DEFAULT_TIMEOUT, password);
+                pool = new JedisPool(getJedisConfig(), host, Protocol.DEFAULT_PORT, Protocol.DEFAULT_TIMEOUT);
                 return true;
             }
         } catch (JedisException e) {

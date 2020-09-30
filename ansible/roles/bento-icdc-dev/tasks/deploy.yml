@@ -64,6 +64,16 @@
 
 ############################################################################################################################
 
+
+- name: show current hostname
+  debug: 
+    msg: "Current Host is:  {{ inventory_hostname }}"
+
+- name: show current hostname - short
+  debug: 
+    msg: "Current Short Host is:  {{ inventory_hostname_short }}"
+
+
 - name: start sumologic syslog service
   docker_container:
     name: sumologic-syslog
@@ -78,7 +88,7 @@
     state: started
     restart_policy: always
     ports:
-     - "514:514"
+     - "6514:6514"
   tags:
     - sumologic
     - monitoring
@@ -135,7 +145,7 @@
     entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
     log_driver: syslog
     log_options:
-      syslog-address: tcp://{{ syslog_host }}:514
+      syslog-address: tcp://{{ syslog_host }}:6514
       tag: "{{ app_name }}-backend"
       syslog-format: "rfc5424micro"
     state: started
@@ -158,7 +168,7 @@
       NEW_RELIC_NO_CONFIG_FILE: "true"
     log_driver: syslog
     log_options:
-      syslog-address: tcp://{{ syslog_host }}:514
+      syslog-address: tcp://{{ syslog_host }}:6514
       tag: "{{ app_name }}-frontend"
       syslog-format: "rfc5424micro"
     state: started

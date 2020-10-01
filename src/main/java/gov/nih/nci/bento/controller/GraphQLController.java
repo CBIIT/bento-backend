@@ -79,10 +79,15 @@ public class GraphQLController {
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
 				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
 			try{
-				String responseText = redisService.getQueryResult(reqBody);
-				if ( null == responseText) {
+				String responseText;
+				if (config.getRedisEnabled()) {
+					responseText = redisService.getQueryResult(reqBody);
+					if ( null == responseText) {
+						responseText = neo4jService.query(reqBody);
+						redisService.setQueryResult(reqBody, responseText);
+					}
+				} else {
 					responseText = neo4jService.query(reqBody);
-					redisService.setQueryResult(reqBody, responseText);
 				}
 				return ResponseEntity.ok(responseText);
 			}

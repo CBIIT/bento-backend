@@ -10,7 +10,7 @@ RUN sh -c "envsubst '\$PORT'  < /etc/nginx/conf.d/configfile.template > /etc/ngi
 
 COPY ./dist /usr/share/nginx/html
 
-#EXPOSE 80
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
 

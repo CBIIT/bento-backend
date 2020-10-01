@@ -11,25 +11,25 @@
         tasks_from: info
       when: action == "create"
     
-    - name: get alb info
-      include_role:
-        name: alb-ops
-        tasks_from: rules
-      loop:
-        - name: fixed
-          priority: 3
-        - name: frontend
-          priority: 2
-        - name: backend
-          priority: 1
-      when: action == "create"
+    # - name: get alb info
+    #   include_role:
+    #     name: alb-ops
+    #     tasks_from: rules
+    #   loop:
+    #     - name: fixed
+    #       priority: 3
+    #     - name: frontend
+    #       priority: 2
+    #     - name: backend
+    #       priority: 1
+    #   when: action == "create"
 
-    - name: remove alb rule
-      include_role:
-        name: alb-ops
-        tasks_from: remove
-      loop:
-        - fixed
-        - frontend
-        - backend
-      when: action == "remove"
+    # - name: remove alb rule
+    #   include_role:
+    #     name: alb-ops
+    #     tasks_from: remove
+    #   loop:
+    #     - fixed
+    #     - frontend
+    #     - backend
+    #   when: action == "remove"

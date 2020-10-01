@@ -4,8 +4,9 @@ tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 # project: "{{ lookup('env','PROJECT') }}"
 # action: "{{ lookup('env','ACTION') }}"
+prority:
+  
 region: us-east-1
-# alb_name: "{{project}}.{{tier}}.value"
 jq: "{{project}}.{{tier}}"
 alb:
   icdc:

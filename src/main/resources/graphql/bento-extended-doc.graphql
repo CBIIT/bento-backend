@@ -853,6 +853,34 @@ type ArmDetail {
     files: [file]
 }
 
+type SampleOverview {
+    sample_id: String
+    subject_id: String
+    program: String
+    arm: String
+    diagnosis: String
+    tissue_type: String
+    tissue_composition: String
+    sample_anatomic_site: String
+    sample_procurement_method: String
+    platform: String
+    files: [String]
+}
+
+type FileOverview {
+    file_id: String
+    file_name: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    program: String
+    arm: String
+    subject_id: String
+    sample_id: String
+    diagnosis: String
+}
+
 schema {
     query: QueryType
 }
@@ -901,4 +929,9 @@ type QueryType {
     samplesForSubjectId(subject_id: String!): [sample] 
 
     filesInList(file_ids: [String]): [FileDetail] 
+
+    sampleOverview: [SampleOverview] 
+
+    fileOverview: [FileOverview] 
+
 }

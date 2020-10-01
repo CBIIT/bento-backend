@@ -853,6 +853,34 @@ type ArmDetail {
     files: [file]
 }
 
+type SampleOverview {
+    sample_id: String
+    subject_id: String
+    program: String
+    arm: String
+    diagnosis: String
+    tissue_type: String
+    tissue_composition: String
+    sample_anatomic_site: String
+    sample_procurement_method: String
+    platform: String
+    files: [String]
+}
+
+type FileOverview {
+    file_id: String
+    file_name: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    program: String
+    arm: String
+    subject_id: String
+    sample_id: String
+    diagnosis: String
+}
+
 schema {
     query: QueryType
 }
@@ -1127,4 +1155,43 @@ type QueryType {
                ss.study_subject_id AS subject_id,
                s.study_acronym AS study_code
         """)
+
+    sampleOverview: [SampleOverview] @cypher(statement: """
+        MATCH (samp:sample)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
+        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p
+        RETURN samp.sample_id AS sample_id,
+                ss.study_subject_id AS subject_id,
+                p.program_acronym AS program,
+                s.study_acronym AS arm,
+                ss.disease_subtype AS diagnosis,
+                samp.tissue_type AS tissue_type,
+                samp.composition AS tissue_composition,
+                samp.sample_anatomic_site AS sample_anatomic_site,
+                samp.method_of_sample_procurement AS sample_procurement_method,
+                lp.test_name AS platform,
+                files
+    """)
+
+    fileOverview: [FileOverview] @cypher(statement: """
+        MATCH (f:file)
+        OPTIONAL MATCH (f)-->(parent)
+            WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
+        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        RETURN f.file_id AS file_id,
+               f.file_name AS file_name,
+               head(labels(parent)) AS association,
+               f.file_description AS file_description,
+               f.file_format AS file_format,
+               f.file_size AS file_size,
+               p.program_acronym AS program,
+               s.study_acronym AS arm,
+               ss.study_subject_id AS subject_id,
+               samp.sample_id AS sample_id,
+               ss.disease_subtype AS diagnosis
+    """)
+
 }

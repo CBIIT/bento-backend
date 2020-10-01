@@ -43,6 +43,12 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
+    extendedChoice( 
+        name: 'Release', 
+        defaultValue: 'test', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'test,final' )
 
 
   }
@@ -192,7 +198,9 @@ pipeline {
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [
-                    tier: "${params.Environment}"],
+                    tier: "${params.Environment}",
+                    release: "${params.Release}"
+                    ],
                 become: true,
                 hostKeyChecking: false,
                 colorized: true)

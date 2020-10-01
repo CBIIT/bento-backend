@@ -56,10 +56,10 @@ pipeline {
 		
 	extendedChoice( 
         name: 'Profile', 
-        defaultValue: 'Katalon_dev', 
+        defaultValue: 'QA_BENTO', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'Katalon_dev' )
+        value: 'QA_BENTO' )
 
 	string(defaultValue: "", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 

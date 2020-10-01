@@ -255,33 +255,33 @@ pipeline {
 				
                     }
 					
-			//		script {
+					script {
 
-			//			withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
+						withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
 						
-			//				sh label: 'Katalon-Results-Slack', script: '''#!/bin/bash
+							sh label: 'Katalon-Results-Slack', script: '''#!/bin/bash
 
-			//				slackHeaders="\'Content-type: application/json\'"
+							slackHeaders="\'Content-type: application/json\'"
 
-			//				# POST function to send to Slack
-			//				post_message_to_slack(){
-			//						curlCMD="curl --silent --max-time 10 --request POST --header $slackHeaders --data $payload $slack_url"
-			//						slackError=$(eval $curlCMD)
-			//						echo "Slack Error:   $slackError"
-			//						}
+							# POST function to send to Slack
+							post_message_to_slack(){
+									curlCMD="curl --silent --max-time 10 --request POST --header $slackHeaders --data $payload $slack_url"
+									slackError=$(eval $curlCMD)
+									echo "Slack Error:   $slackError"
+									}
 
-			//				errorOutput=''' + ERROR_OUTPUT + '''
-			//				boxUrl=''' + BOX_URL + '''
-			//				resultsFile=$(basename results/*.html)
-			//				errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
-			//				payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
-			//				post_message_to_slack
+							errorOutput=''' + ERROR_OUTPUT + '''
+							boxUrl=''' + BOX_URL + '''
+							resultsFile=$(basename results/*.html)
+							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
+							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
+							post_message_to_slack
 
-			//				'''
+							'''
 						
-			//				}
+							}
 					
-			//			}
+						}
 					
 					script {
 						EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash

@@ -17,12 +17,12 @@ node('docker-katalon-ch') {
 	}
 
 pipeline {
-	//agent {
-    //    node {
-    //        label "${AGENT_LABEL}"
-    //        }
-    //    }
-    node("${AGENT_LABEL}") {
+	agent {
+        node {
+            label "${AGENT_LABEL}"
+            }
+        }
+    //node("${AGENT_LABEL}") {
 
 	environment { 
         katalonVer = '7.2.6'
@@ -351,5 +351,5 @@ pipeline {
 			//	}
 
 			}
-	    }
+	    //}
 	}

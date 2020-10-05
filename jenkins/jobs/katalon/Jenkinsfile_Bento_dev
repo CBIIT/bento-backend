@@ -18,9 +18,9 @@ node('docker-katalon-ch') {
 
 pipeline {
 	agent {
-        //node {
+        node {
             label "${AGENT_LABEL}"
-            //}
+            }
         }
 
 	environment { 

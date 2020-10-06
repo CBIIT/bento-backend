@@ -163,10 +163,10 @@ pipeline {
 					reportName: 'HTML Report',
 					reportTitles: ''])
 
-				emailext(attachmentsPattern: 'results/*.html',
-                    body: 'Katalon Test Results',
-                    subject: 'Katalon Test Results - Box',
-                    to: "${BOX_EMAIL}")
+				##emailext(attachmentsPattern: 'results/*.html',
+                ##    body: 'Katalon Test Results',
+                ##    subject: 'Katalon Test Results - Box',
+                ##    to: "${BOX_EMAIL}")
 				
 				script {
 
@@ -197,14 +197,14 @@ pipeline {
 						pageVer="$((pageVer+1))"
 
 						# update page content
-						curlCMD="curl -u $creds -X PUT -H 'Content-Type: application/json' -d \'{\\\"id\\\":\\\"$pageID\\\",\\\"type\\\":\\\"page\\\",\\\"title\\\":\\\"$pageName\\\",\\\"body\\\":{\\\"storage\\\":{\\\"value\\\":\\\"$pageMessage\\\",\\\"representation\\\":\\\"storage\\\"}},\\\"version\\\":{\\\"number\\\":$pageVer}}\' https://wiki.nci.nih.gov/rest/api/content/$pageID"
+						##curlCMD="curl -u $creds -X PUT -H 'Content-Type: application/json' -d \'{\\\"id\\\":\\\"$pageID\\\",\\\"type\\\":\\\"page\\\",\\\"title\\\":\\\"$pageName\\\",\\\"body\\\":{\\\"storage\\\":{\\\"value\\\":\\\"$pageMessage\\\",\\\"representation\\\":\\\"storage\\\"}},\\\"version\\\":{\\\"number\\\":$pageVer}}\' https://wiki.nci.nih.gov/rest/api/content/$pageID"
 						curlError=$(eval $curlCMD)
 						echo "Confluence Error:   $curlError"
 						
 						# add latest results as attachment
 						resultsURL="https://wiki.nci.nih.gov/rest/api/content/$pageID/child/attachment"
 						resultsFile=$(basename results/*.html)
-						curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
+						##curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
 						curlError=$(eval $curlCMD)
 						echo "Confluence Error:   $curlError"
 
@@ -275,7 +275,7 @@ pipeline {
 							resultsFile=$(basename results/*.html)
 							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
 							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
-							post_message_to_slack
+							##post_message_to_slack
 
 							'''
 						

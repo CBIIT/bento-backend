@@ -9,12 +9,12 @@
     backend_api_url: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/ {% endif %}" 
 
 - name: get info of the previous backend deployment 
-  shell: grep backend  {{workspace}}/previous_image.txt
+  shell: grep backend  ./previous_image.txt
   register: prev_backend
   when: release == 'fail'
 
 - name: get info of the previous frontend deployment 
-  shell: grep frontend  {{workspace}}/previous_image.txt
+  shell: grep frontend  ./previous_image.txt
   register: prev_frontend 
   when: release == 'fail'
 

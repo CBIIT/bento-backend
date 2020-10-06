@@ -242,7 +242,8 @@ pipeline {
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
                     action: 'create',
-                    project: 'icdc'
+                    project: 'icdc',
+                    tier: "${params.Environment}"
                     ],  
                   colorized: true) 
         }
@@ -315,9 +316,9 @@ pipeline {
        }
     }
     stage('disable maintenance page'){
-      when {
-      environment name:'RELEASE', value: 'pass'
-    }
+    //   when {
+    //   environment name:'RELEASE', value: 'pass'
+    // }
       agent {
         node {
          label 'slave-ncias-d2320-c'
@@ -336,7 +337,8 @@ pipeline {
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
                     action: 'remove',
-                    project: 'icdc'
+                    project: 'icdc',
+                    tier: "${params.Environment}" 
                     ],  
                   colorized: true) 
           }

@@ -26,6 +26,8 @@ type aliquot {
   laboratory_procedures: [laboratory_procedure] 
   report: report 
   analyte: analyte 
+  sample: sample 
+  files: [file] 
 }
 
 type analyte {
@@ -306,6 +308,7 @@ type file {
   project: project 
   sample: sample 
   study: study 
+  aliquot: aliquot 
 }
 
 type follow_up {
@@ -580,6 +583,7 @@ type sample {
   files: [file] 
   study_subject: study_subject 
   laboratory_procedures: [laboratory_procedure] 
+  aliquots: [aliquot] 
 }
 
 type stratification_factor {
@@ -696,21 +700,14 @@ type SubjectOverview {
     subject_id: String
     program: String
     program_id: String
-    study_acronym: String
-    study_short_description: String
-    study_info: String
-    diagnosis: String
-    recurrence_score: String
-    tumor_size: String
-    tumor_grade: String
-    er_status: String
-    pr_status: String
-    chemotherapy: String
-    endocrine_therapy: String
-    menopause_status: String
-    age_at_index: Int
-    survival_time: Int
-    survival_time_unit: String
+    project_acronym: String
+    subject_id: String
+    tumor_stage: String
+    gender: String
+    race: String
+    ethnicity: String
+    vital_status: String
+    sample_type: String
     files: [file]
     samples: [String]
     lab_procedures: [String]
@@ -719,16 +716,14 @@ type SubjectOverview {
 type SubjectInfo {
     subject_id: String
     program: String
-    program_id: String
-    study_acronym: String
-    diagnosis: String
-    recurrence_score: String
-    tumor_size: String
-    er_status: String
-    pr_status: String
+    project_acronym: String
+    project_name: String
+    gender: String
+    race: String
+    eithnicity: String
     age_at_index: Int
-    survival_time: Int
-    survival_time_unit: String
+    tumor_stage: String
+    vital_status: String
 }
 
 type FileInfo {
@@ -743,6 +738,18 @@ type FileInfo {
     md5sum: String
 }
 
+type FileDetail {
+    project_code: String
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+}
+
 type ProgramInfo {
     program_acronym: String
     program_id: String
@@ -750,16 +757,16 @@ type ProgramInfo {
     start_date: String
     end_date: String
     pubmed_id: String
-    num_studies: Int
+    num_projects: Int
     num_subjects: Int
 }
 
-type StudyInfo {
-    study_acronym: String
-    study_name: String
-    study_full_description: String
-    study_type: String
-    study_info: String
+type ProjectInfo {
+    project_acronym: String
+    project_name: String
+    project_full_description: String
+    project_type: String
+    project_info: String
     num_subjects: Int
 }
 
@@ -774,42 +781,21 @@ type ProgramDetail {
     num_files: Int
     num_samples: Int
     num_lab_procedures: Int
-    disease_subtypes: [String]
-    studies: [StudyInfo]
+    projects: [ProjectInfo]
 }
 
 type SubjectDetail {
     subject_id: String
     program_acronym: String
     program_id: String
-    study_acronym: String
-    study_name: String
+    project_acronym: String
+    project_name: String
     gender: String
     race: String
     ethnicity: String
     age_at_index: Int
-    menopause_status: String
     vital_status: String
-    cause_of_death: String
-    disease_type: String
-    disease_subtype: String
-    tumor_grade: String
-    tumor_largest_dimension_diameter: Float
-    er_status: String
-    pr_status: String
-    nuclear_grade: String
-    recurrence_score: Int
-    primary_surgical_procedure: String
-    chemotherapy_regimen_group: String
-    chemotherapy_regimen: String
-    endocrine_therapy_type: String
-    dfs_event_indicator: String
-    recurrence_free_indicator: String
-    distant_recurrence_indicator: String
-    dfs_event_type: String
-    first_recurrence_type: String
-    days_to_progression: Int
-    days_to_recurrence: Int
+    tumor_stage: String
     files: [FileInfo]
     num_samples: Int
     num_lab_procedures: Int
@@ -828,17 +814,43 @@ type ProgramArms {
 }
 
 type ArmDetail {
-    study_acronym: String
-    study_name: String
-    study_type: String
-    study_full_description: String
-    study_info: String
+    project_acronym: String
+    project_name: String
+    project_type: String
+    project_full_description: String
+    project_info: String
     num_subjects: Int
     num_files: Int
     num_samples: Int
     num_lab_procedures: Int
-    diagnoses: [GroupCount]
     files: [file]
+}
+
+type SampleOverview {
+    sample_id: String
+    subject_id: String
+    program: String
+    arm: String
+    tissue_type: String
+    tissue_composition: String
+    sample_anatomic_site: String
+    sample_procurement_method: String
+    platform: String
+    files: [String]
+}
+
+type FileOverview {
+    file_id: String
+    file_name: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    program: String
+    arm: String
+    subject_id: String
+    sample_id: String
+    diagnosis: String
 }
 
 schema {
@@ -850,7 +862,7 @@ type QueryType {
 
     "Simple counts"
     numberOfPrograms: Int 
-    numberOfStudies: Int 
+    numberOfProjects: Int 
     numberOfSubjects: Int 
     numberOfSamples: Int 
     numberOfLabProcedures: Int  
@@ -858,16 +870,15 @@ type QueryType {
 
     "Group counts"
     subjectCountByProgram: [GroupCount] 
-    subjectCountByStudy: [GroupCount] 
-    subjectCountByDiagnoses: [GroupCount] 
-    subjectCountByRecurrenceScore: [GroupCount] 
-    subjectCountByTumorSize: [GroupCount] 
-    subjectCountByTumorGrade: [GroupCount] 
-    subjectCountByErStatus: [GroupCount] 
-    subjectCountByPrStatus: [GroupCount] 
-    subjectCountByChemotherapyRegimen: [GroupCount] 
-    subjectCountByEndocrineTherapy: [GroupCount] 
-    subjectCountByMenopauseStatus: [GroupCount] 
+    subjectCountByProject: [GroupCount] 
+    subjectCountByGender: [GroupCount] 
+    subjectCountByRace: [GroupCount] 
+    subjectCountByEthnicity: [GroupCount] 
+    subjectCountByVitalStatus: [GroupCount] 
+    subjectCountByTumorStage: [GroupCount] 
+    subjectCountBySampletype: [GroupCount] 
+
+
 
     armsByPrograms: [ProgramArms] 
 
@@ -884,5 +895,14 @@ type QueryType {
 
     subjectDetail(subject_id: String): SubjectDetail 
 
-    armDetail(study_acronym: String): ArmDetail 
+    armDetail(project_acronym: String): ArmDetail 
+
+    samplesForSubjectId(subject_id: String!): [sample] 
+
+    filesInList(file_ids: [String]): [FileDetail] 
+
+    sampleOverview: [SampleOverview] 
+
+    fileOverview: [FileOverview] 
+
 }

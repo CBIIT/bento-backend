@@ -28,11 +28,11 @@
 
 - name: touch previous_image.txt file
   file:
-    path: "{{workspace}}/previous_image.txt"
+    path: "./previous_image.txt"
     state: touch
-  
+
 - name: save current deployed image
-  shell: docker ps | grep nci* | awk '{print $2}'   > {{workspace}}/previous_image.txt
+  shell: docker ps | grep nci* | awk '{print $2}'  > ./previous_image.txt
 
 - name: remove frontend container
   docker_container:

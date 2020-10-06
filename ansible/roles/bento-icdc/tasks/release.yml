@@ -1,0 +1,100 @@
+- name: log into DockerHub
+  docker_login:
+    username: "{{ docker_user }}"
+    password: "{{ docker_password }}"
+    registry: https://ncidockerhub.nci.nih.gov
+
+- name: set backend api url
+  set_fact:
+    backend_api_url: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/ {% endif %}" 
+
+- name: get info of the previous backend deployment 
+  shell: grep backend  {{workspace}}/previous_image.txt
+  register: prev_backend
+  when: release == 'fail'
+
+- name: get info of the previous frontend deployment 
+  shell: grep frontend  {{workspace}}/previous_image.txt
+  register: prev_frontend 
+  when: release == 'fail'
+
+- name: retrieve backend and frontend image details of the previous deployment
+  set_fact:
+    prev_backend_image: "{{prev_backend.stdout_lines|first}}"
+    prev_frontend_image: "{{prev_frontend.stdout_lines|first}}" 
+  when: release == 'fail'  
+
+- name: get info on current deployed backend image
+  shell: docker ps | grep nci* | awk '{print $2}' | grep backend
+  register: backend_deployment
+
+- name: get info on current deployed frontend image
+  shell: docker ps | grep nci* | awk '{print $2}' | grep frontend
+  register: frontend_deployment
+
+- name: retrieve backend and frontend image details
+  set_fact:
+    backend_image: "{{backend_deployment.stdout_lines|first}}"
+    frontend_image: "{{frontend_deployment.stdout_lines|first}}"
+
+- name: remove frontend container
+  docker_container:
+    name: frontend
+    state: absent
+  
+- name: remove backend container
+  docker_container:
+    name: backend
+    state: absent
+
+
+- name: start icdc backend container
+  docker_container:
+    name: backend
+    image: "{% if release == 'pass' %}{{backend_image}}{% else %}{{prev_backend_image}}{% endif %}"
+    env:
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_LOG_FILE_NAME: "STDOUT"
+      JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+    entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
+    log_driver: syslog
+    log_options:
+      syslog-address: tcp://{{ syslog_host }}:514
+      tag: "{{ app_name }}-backend"
+      syslog-format: "rfc5424micro"
+    state: started
+    restart_policy: always
+    ports:
+     - "8080:8080"
+
+- name: start icdc frontend container
+  docker_container:
+    name: frontend
+    image: "{% if release == 'pass' %}{{frontend_image}}{% else %}{{prev_frontend_image}}{% endif %}"
+    env:
+      REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
+      REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
+      REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
+      REACT_APP_BACKEND_API: "{{ backend_api_url }}"
+      REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
+      REACT_APP_BE_VERSION: "{{ backend_api_version }}"
+      REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
+      REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_NO_CONFIG_FILE: "true"
+    log_driver: syslog
+    log_options:
+      syslog-address: tcp://{{ syslog_host }}:514
+      tag: "{{ app_name }}-frontend"
+      syslog-format: "rfc5424micro"
+    state: started
+    restart_policy: always
+    ports:
+     - "80:80"
+  

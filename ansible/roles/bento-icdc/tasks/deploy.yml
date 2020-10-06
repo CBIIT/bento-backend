@@ -7,11 +7,7 @@
 
 - name: set backend_api_url
   set_fact:
-    backend_api_url: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/ {% endif %}" 
-
-- name: set test backend_api_url
-  set_fact:
-    backend_api_url_test: "{% if tier == 'prod' %} https://caninecommons.cancer.gov/test/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.cancer.gov/test/v1/graphql/ {% endif %}" 
+    backend_api_url: "{% if tier == 'prod' %} https://caninecommons.nci.nih.gov/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.nci.nih.gov/v1/graphql/ {% endif %}" 
 
 ############################################################################################################################
 
@@ -30,22 +26,18 @@
     path: /tmp/myworkspace
     state: directory
 
+- name: save current deployed image
+  command: docker ps | grep nci* | awk '{print $2}' | grep nci* > {{workspace}}/previous_image.txt
 
 - name: remove frontend container
   docker_container:
     name: frontend
     state: absent
-  tags:
-    - frontend
-    - all
 
 - name: remove backend container
   docker_container:
     name: backend
     state: absent
-  tags:
-    - backend
-    - all
 
 
 ############################################################################################################################

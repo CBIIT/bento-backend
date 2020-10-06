@@ -162,3 +162,10 @@
   tags:
     - frontend
     - all
+
+- name: show content of frontend
+  shell: docker inspect frontend
+  register: frontend
+
+- debug:
+    msg: "{{frontend.stdout_lines}}"

@@ -228,10 +228,9 @@ pipeline {
         relativeTargetDir: 'icdc-devops']], 
         submoduleCfg: [], 
         userRemoteConfigs: 
-        [[url: 'https://github.com/CBIIT/icdc-devops.git']]])  
-    }
-    steps {
-      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+        [[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
         withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
           file(credentialsId: 'ansible_host_file', variable: 'host_file'),
           // string(credentialsId: 'listener_arn', variable: 'LISTENER_ARN'),
@@ -247,7 +246,7 @@ pipeline {
                     ],  
                   colorized: true) 
         }
-      }
+      }  
     }
   }
   stage('Approval Step'){

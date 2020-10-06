@@ -26,6 +26,8 @@ type aliquot {
   laboratory_procedures: [laboratory_procedure] 
   report: report 
   analyte: analyte 
+  sample: sample 
+  files: [file] 
 }
 
 type analyte {
@@ -306,6 +308,7 @@ type file {
   project: project 
   sample: sample 
   study: study 
+  aliquot: aliquot 
 }
 
 type follow_up {
@@ -580,6 +583,7 @@ type sample {
   files: [file] 
   study_subject: study_subject 
   laboratory_procedures: [laboratory_procedure] 
+  aliquots: [aliquot] 
 }
 
 type stratification_factor {
@@ -908,6 +912,10 @@ type QueryType {
     subjectCountByChemotherapyRegimen: [GroupCount] 
     subjectCountByEndocrineTherapy: [GroupCount] 
     subjectCountByMenopauseStatus: [GroupCount] 
+    subjectCountByTissueType: [GroupCount] 
+    subjectCountByTissueComposition: [GroupCount] 
+    subjectCountByFileAssociation: [GroupCount] 
+    subjectCountByFileType: [GroupCount] 
 
     armsByPrograms: [ProgramArms] 
 

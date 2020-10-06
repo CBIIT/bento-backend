@@ -26,6 +26,8 @@ type aliquot {
   laboratory_procedures: [laboratory_procedure] @relation(name:"aliquot_processed_by", direction:OUT)
   report: report @relation(name:"report_of_aliquot", direction:IN)
   analyte: analyte @relation(name:"aliquot_of_analyte", direction:OUT)
+  sample: sample @relation(name:"aliquot_of_sample", direction:OUT)
+  files: [file] @relation(name:"file_of_aliquot", direction:IN)
 }
 
 type analyte {
@@ -306,6 +308,7 @@ type file {
   project: project @relation(name:"file_of_project", direction:OUT)
   sample: sample @relation(name:"file_of_sample", direction:OUT)
   study: study @relation(name:"file_of_study", direction:OUT)
+  aliquot: aliquot @relation(name:"file_of_aliquot", direction:OUT)
 }
 
 type follow_up {
@@ -580,6 +583,7 @@ type sample {
   files: [file] @relation(name:"file_of_sample", direction:IN)
   study_subject: study_subject @relation(name:"sample_of_study_subject", direction:OUT)
   laboratory_procedures: [laboratory_procedure] @relation(name:"sample_processed_by", direction:OUT)
+  aliquots: [aliquot] @relation(name:"aliquot_of_sample", direction:IN)
 }
 
 type stratification_factor {
@@ -908,6 +912,10 @@ type QueryType {
     subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(DISTINCT ss) as subjects")
     subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as subjects")
     subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.menopause_status AS group, count(DISTINCT ss) as subjects")
+    subjectCountByTissueType: [GroupCount] @cypher(statement: "MATCH (samp:sample) OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss) RETURN samp.tissue_type AS group, COUNT(DISTINCT ss) as subjects")
+    subjectCountByTissueComposition: [GroupCount] @cypher(statement: "MATCH (samp:sample) OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss) RETURN samp.composition AS group, COUNT(DISTINCT ss) as subjects")
+    subjectCountByFileAssociation: [GroupCount] @cypher(statement: "MATCH (f:file)-->(parent) WHERE NOT (parent:laboratory_procedure) OPTIONAL MATCH (f)-[*..2]->(ss:study_subject) RETURN head(labels(parent)) AS group, COUNT(DISTINCT ss) as subjects")
+    subjectCountByFileType: [GroupCount] @cypher(statement: "MATCH (f:file) OPTIONAL MATCH (f)-[*..2]->(ss:study_subject) RETURN f.file_type AS group, COUNT(DISTINCT ss) as subjects")
 
     armsByPrograms: [ProgramArms] @cypher(statement: """
         MATCH (p:program)

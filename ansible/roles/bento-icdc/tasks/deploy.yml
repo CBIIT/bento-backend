@@ -20,6 +20,9 @@
     username: "{{ docker_user }}"
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
+
+- name: clean up 
+  shell: docker system prune -a -f
     
 - name: verify host
   file: 

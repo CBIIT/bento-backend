@@ -701,6 +701,7 @@ type SubjectOverview {
     program: String
     program_id: String
     project_acronym: String
+    project_info: String
     subject_id: String
     tumor_stage: String
     gender: String

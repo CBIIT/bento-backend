@@ -8,6 +8,7 @@ type SubjectOverview {
     program: String
     program_id: String
     project_acronym: String
+    project_info: String
     subject_id: String
     tumor_stage: String
     gender: String
@@ -214,6 +215,7 @@ type QueryType {
     RETURN  p.program_acronym AS program,
     p.program_id AS program_id,
     pr.project_acronym AS project_acronym,
+    pr.project_acronym + ': ' + pr.project_short_description AS project_info,
     ss.study_subject_id AS subject_id,
     d.tumor_stage AS tumor_stage,
     demo.gender AS gender,
@@ -238,6 +240,7 @@ type QueryType {
     RETURN  p.program_acronym AS program,
     p.program_id AS program_id,
     pr.project_acronym AS project_acronym,
+    pr.project_acronym + ': ' + pr.project_short_description AS project_info,
     ss.study_subject_id AS subject_id,
     d.tumor_stage AS tumor_stage,
     demo.gender AS gender,

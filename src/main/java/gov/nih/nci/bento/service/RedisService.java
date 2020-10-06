@@ -20,6 +20,7 @@ public class RedisService {
     private JedisPool pool;
     private JedisCluster cluster;
     private Boolean useCluster;
+    private int ttl;
 
     @PostConstruct
     public boolean connect() {
@@ -27,6 +28,7 @@ public class RedisService {
             String host = config.getRedisHost();
             int port = config.getRedisPort();
             useCluster = config.getRedisUseCluster();
+            ttl = config.getRedisTTL();
 
             if (host.isBlank()) {
                return false;
@@ -98,7 +100,12 @@ public class RedisService {
                 return false;
             }
             try {
-                String status = cluster.setex(query, config.getRedisTTL(), result);
+                String status;
+                if (ttl > 0) {
+                    status = cluster.setex(query, config.getRedisTTL(), result);
+                } else {
+                    status = cluster.set(query, result);
+                }
                 return status.equals("OK");
             } catch (JedisException e) {
                 logger.error(e);
@@ -112,7 +119,12 @@ public class RedisService {
                 return false;
             }
             try (Jedis jedis = pool.getResource()) {
-                String status = jedis.setex(query, config.getRedisTTL(), result);
+                String status;
+                if (ttl > 0) {
+                    status = jedis.setex(query, config.getRedisTTL(), result);
+                } else {
+                    status = jedis.set(query, result);
+                }
                 return status.equals("OK");
             } catch (JedisException e) {
                 logger.error(e);

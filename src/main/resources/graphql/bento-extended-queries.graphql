@@ -13,6 +13,7 @@ type SubjectOverview {
     gender: String
     race: String
     ethnicity: String
+    age: Int
     vital_status: String
     sample_type: String
     files: [file]
@@ -219,6 +220,7 @@ type QueryType {
     demo.race AS race,
     demo.ethnicity AS ethnicity,
     demo.vital_status AS vital_status,
+    demo.age_at_index AS age,
     sp.sample_type AS sample_type,
     samples,
     files,
@@ -242,6 +244,7 @@ type QueryType {
     demo.race AS race,
     demo.ethnicity AS ethnicity,
     demo.vital_status AS vital_status,
+    demo.age_at_index AS age,
     sp.sample_type AS sample_type,
     samples,
     files,

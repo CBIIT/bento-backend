@@ -180,7 +180,10 @@ pipeline {
       }
     }
     stage('deploy'){
-
+      environment{
+        FE_VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
+      }
       steps{
         wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
        withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
@@ -259,6 +262,7 @@ pipeline {
     }
   }
   stage('release'){
+    
     when {
       environment name:'RELEASE', value: 'pass'
     }

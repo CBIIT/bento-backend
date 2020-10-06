@@ -336,7 +336,7 @@ pipeline {
                   playbook: '${WORKSPACE}/icdc-devops/ansible/alb-ops.yml', 
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
-                    action: 'create',
+                    action: 'remove',
                     project: 'icdc'
                     ],  
                   colorized: true) 

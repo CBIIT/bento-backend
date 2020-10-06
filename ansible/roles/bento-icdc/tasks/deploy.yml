@@ -27,7 +27,7 @@
     state: directory
 
 - name: save current deployed image
-  command: docker ps | grep nci* | awk '{print $2}' | grep nci* > {{workspace}}/previous_image.txt
+  shell: docker ps | grep nci* | awk '{print $2}' | grep nci* > {{workspace}}/previous_image.txt
 
 - name: remove frontend container
   docker_container:

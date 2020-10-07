@@ -97,10 +97,14 @@
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
 
-- name: remove .env
-  file:
-    state: absent
-    path: "{{workspace}}/icdc-frontend/.env"
+# - name: remove .env
+#   file:
+#     state: absent
+#     path: "{{workspace}}/icdc-frontend/.env"
+- name: copy environment file to {{workspace}}/icdc-frontend
+  template:
+    src: env.j2
+    dest: "{{workspace}}/icdc-frontend/.env"
 
 
 - name: run npm install in {{workspace}}/bento-frontend/

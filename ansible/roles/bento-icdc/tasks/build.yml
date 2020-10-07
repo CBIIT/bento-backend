@@ -102,26 +102,6 @@
     state: absent
     path: "{{workspace}}/icdc-frontend/.env"
 
-# - name: run npm install in {{workspace}}/icdc-frontend
-#   command: "{{item}}"
-#   args:
-#     chdir: "{{workspace}}/icdc-frontend"
-#   loop:
-#     - npm install 
-#     - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
-
-# - name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables
-#   command: "{{item}}"
-#   args:
-#     chdir: "{{workspace}}/icdc-frontend/node_modules/mui-custom-datatables"
-#   loop:
-#     - npm install
-#     - npm run build
-    
-# - name: run npm build in frontend
-#   command: npm run-script build
-#   args:
-#     chdir: "{{workspace}}/icdc-frontend"
 
 - name: run npm install in {{workspace}}/bento-frontend/
   command: "{{item}}"

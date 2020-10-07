@@ -878,7 +878,9 @@ type QueryType {
     subjectCountByEthnicity: [GroupCount] 
     subjectCountByVitalStatus: [GroupCount] 
     subjectCountByTumorStage: [GroupCount] 
-    subjectCountBySampletype: [GroupCount] 
+    subjectCountBySampleType: [GroupCount] 
+    subjectCountByFileType: [GroupCount] 
+    subjectCountByFileDescription: [GroupCount] 
 
 
 

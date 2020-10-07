@@ -878,7 +878,9 @@ type QueryType {
     subjectCountByEthnicity: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.ethnicity AS group, count(DISTINCT ss) as subjects")
     subjectCountByVitalStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.vital_status AS group, count(DISTINCT ss) as subjects")
     subjectCountByTumorStage: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.tumor_stage AS group, count(DISTINCT ss) as subjects")
-    subjectCountBySampletype: [GroupCount] @cypher(statement: "MATCH (g:sample) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.sample_type AS group, count(DISTINCT ss) as subjects")
+    subjectCountBySampleType: [GroupCount] @cypher(statement: "MATCH (g:sample) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.sample_type AS group, count(DISTINCT ss) as subjects")
+    subjectCountByFileType: [GroupCount] @cypher(statement: "MATCH (g:file) OPTIONAL MATCH (g)-[*..3]->(ss:study_subject) RETURN g.file_type AS group, count(DISTINCT ss) as subjects")
+    subjectCountByFileDescription: [GroupCount] @cypher(statement: "MATCH (g:file) OPTIONAL MATCH (g)-[*..3]->(ss:study_subject) RETURN g.file_description AS group, count(DISTINCT ss) as subjects")
 
 
 

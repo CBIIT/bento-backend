@@ -134,6 +134,7 @@ type ArmDetail {
     num_files: Int
     num_samples: Int
     num_lab_procedures: Int
+    sample_types: [GroupCount]
     files: [file]
 }
 
@@ -367,11 +368,14 @@ type QueryType {
 
     armDetail(project_acronym: String): ArmDetail @cypher(statement:  """
         MATCH (pr:project {project_acronym: $project_acronym})
+        OPTIONAL MATCH (pr)<-[:study_subject_of_project]-(ss)<-[:sample_of_study_subject]-(sp)
+        WITH pr, sp.sample_type AS group, COUNT(DISTINCT ss) AS subjects
+        WITH pr, COLLECT ({group: group, subjects: subjects}) AS sample_types
         OPTIONAL MATCH (pr)<--(ss:study_subject)
         OPTIONAL MATCH (pr)<--(f:file)
-        WITH pr, COLLECT(DISTINCT f) AS files
+        WITH pr, sample_types, COLLECT(DISTINCT f) AS files
         OPTIONAL MATCH (pr)<-[*..4]-(f:file)-->(lp:laboratory_procedure)
-        WITH pr, files, COUNT(DISTINCT f) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
+        WITH pr, sample_types, files, COUNT(DISTINCT f) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
         OPTIONAL MATCH (pr)<--(ss)
         OPTIONAL MATCH (ss)<--(sp:sample)
         RETURN  pr.project_acronym AS project_acronym,
@@ -379,12 +383,12 @@ type QueryType {
                 pr.project_type AS project_type,
                 pr.project_full_description AS project_full_description,
                 pr.project_acronym + ': ' + pr.project_short_description AS project_info,
+                sample_types,
                 COUNT(DISTINCT ss) AS num_subjects,
                 COUNT(DISTINCT sp) AS num_samples,
                 num_lab_procedures,
                 num_files,
-                files
-    """, passThrough: true)
+                files    """, passThrough: true)
 
     samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: "MATCH (ss:study_subject {study_subject_id: $subject_id})<-[*]-(s:sample) RETURN s")
 

@@ -827,6 +827,7 @@ type ArmDetail {
     num_files: Int
     num_samples: Int
     num_lab_procedures: Int
+    sample_types: [GroupCount]
     files: [file]
 }
 

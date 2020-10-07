@@ -5,7 +5,8 @@ type GroupCount {
 
 type SubjectOverview {
     subject_id: String
-    program: String
+    program_acronym: String
+    program_name: String
     program_id: String
     project_acronym: String
     project_info: String
@@ -193,249 +194,251 @@ type QueryType {
 
 
     armsByPrograms: [ProgramArms] @cypher(statement: """
-    MATCH (p:program)
-    OPTIONAL MATCH (p)<-[:project_of_program]-()<-[:study_subject_of_project]-(ss)
-    WITH p, COUNT(DISTINCT ss) AS caseSize
-    OPTIONAL MATCH (p)<-[:project_of_program]-(pr)
-    OPTIONAL MATCH (pr)<-[:study_subject_of_project]-(ss)
-    WITH p, caseSize, {arm: pr.project_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS pr
-    RETURN  p.program_acronym AS program,
-            caseSize,
-            collect(pr) AS children
+        MATCH (p:program)
+        OPTIONAL MATCH (p)<-[:project_of_program]-()<-[:study_subject_of_project]-(ss)
+        WITH p, COUNT(DISTINCT ss) AS caseSize
+        OPTIONAL MATCH (p)<-[:project_of_program]-(pr)
+        OPTIONAL MATCH (pr)<-[:study_subject_of_project]-(ss)
+        WITH p, caseSize, {arm: pr.project_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS pr
+        RETURN  p.program_acronym AS program,
+                caseSize,
+                collect(pr) AS children
     """, passThrough: true)
 
     subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] @cypher(statement: """
-    MATCH (ss:study_subject)
-    WITH ss ORDER BY ss.study_subject_id
-        skip $offset
-        limit $first
-    OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
-    OPTIONAL MATCH (ss)<-[*..2]-(f:file)-[:file_of_laboratory_procedure]->(lp)
-    WITH ss, collect(DISTINCT sp.sample_id) AS samples, count(distinct sp) AS num_samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
-    OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
-    OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
-    OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
-    OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-    RETURN  p.program_acronym AS program,
-            p.program_id AS program_id,
-            pr.project_acronym AS project_acronym,
-            pr.project_acronym + ': ' + pr.project_short_description AS project_info,
-            ss.study_subject_id AS subject_id,
-            d.tumor_stage AS tumor_stage,
-            demo.gender AS gender,
-            demo.race AS race,
-            demo.ethnicity AS ethnicity,
-            demo.vital_status AS vital_status,
-            demo.age_at_index AS age,
-            collect(distinct sp.sample_type) AS sample_types,
-            samples,
-            num_samples,
-            files,
-            lab_procedures
+        MATCH (ss:study_subject)
+        WITH ss ORDER BY ss.study_subject_id
+            skip $offset
+            limit $first
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
+        OPTIONAL MATCH (ss)<-[*..2]-(f:file)-[:file_of_laboratory_procedure]->(lp)
+        WITH ss, collect(DISTINCT sp.sample_id) AS samples, count(distinct sp) AS num_samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+        RETURN  p.program_acronym AS program_acronym,
+                p.program_id AS program_id,
+                p.program_name AS program_name,
+                pr.project_acronym AS project_acronym,
+                pr.project_acronym + ': ' + pr.project_short_description AS project_info,
+                ss.study_subject_id AS subject_id,
+                d.tumor_stage AS tumor_stage,
+                demo.gender AS gender,
+                demo.race AS race,
+                demo.ethnicity AS ethnicity,
+                demo.vital_status AS vital_status,
+                demo.age_at_index AS age,
+                collect(distinct sp.sample_type) AS sample_types,
+                samples,
+                num_samples,
+                files,
+                lab_procedures
     """, passThrough: true)
 
     subjectOverView: [SubjectOverview] @cypher(statement: """
-    MATCH (ss:study_subject)
-    OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
-    OPTIONAL MATCH (ss)<-[*..2]-(f:file)-[:file_of_laboratory_procedure]->(lp)
-    WITH ss, collect(DISTINCT sp.sample_id) AS samples, count(distinct sp) AS num_samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
-    OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
-    OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
-    OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
-    OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-    RETURN  p.program_acronym AS program,
-            p.program_id AS program_id,
-            pr.project_acronym AS project_acronym,
-            pr.project_acronym + ': ' + pr.project_short_description AS project_info,
-            ss.study_subject_id AS subject_id,
-            d.tumor_stage AS tumor_stage,
-            demo.gender AS gender,
-            demo.race AS race,
-            demo.ethnicity AS ethnicity,
-            demo.vital_status AS vital_status,
-            demo.age_at_index AS age,
-            collect(distinct sp.sample_type) AS sample_types,
-            samples,
-            num_samples,
-            files,
-            lab_procedures
+        MATCH (ss:study_subject)
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
+        OPTIONAL MATCH (ss)<-[*..2]-(f:file)-[:file_of_laboratory_procedure]->(lp)
+        WITH ss, collect(DISTINCT sp.sample_id) AS samples, count(distinct sp) AS num_samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+        RETURN  p.program_acronym AS program_acronym,
+                p.program_id AS program_id,
+                p.program_name AS program_name,
+                pr.project_acronym AS project_acronym,
+                pr.project_acronym + ': ' + pr.project_short_description AS project_info,
+                ss.study_subject_id AS subject_id,
+                d.tumor_stage AS tumor_stage,
+                demo.gender AS gender,
+                demo.race AS race,
+                demo.ethnicity AS ethnicity,
+                demo.vital_status AS vital_status,
+                demo.age_at_index AS age,
+                collect(distinct sp.sample_type) AS sample_types,
+                samples,
+                num_samples,
+                files,
+                lab_procedures
     """, passThrough: true)
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] @cypher(statement: """
-    MATCH (ss:study_subject)
-        WHERE ss.study_subject_id IN $subject_ids
-    OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
-    OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-    OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(diag)
-    RETURN  p.program_acronym AS program,
-            pr.project_acronym AS project_acronym,
-            pr.project_name AS project_name,
-            ss.study_subject_id AS subject_id,
-            demo.gender AS gender,
-            demo.race AS race,
-            demo.ethnicity AS ethnicity,
-            demo.age_at_index AS age_at_index,
-            diag.tumor_stage AS tumor_stage,
-            demo.vital_status AS vital_status
+        MATCH (ss:study_subject)
+            WHERE ss.study_subject_id IN $subject_ids
+        OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(diag)
+        RETURN  p.program_acronym AS program,
+                pr.project_acronym AS project_acronym,
+                pr.project_name AS project_name,
+                ss.study_subject_id AS subject_id,
+                demo.gender AS gender,
+                demo.race AS race,
+                demo.ethnicity AS ethnicity,
+                demo.age_at_index AS age_at_index,
+                diag.tumor_stage AS tumor_stage,
+                demo.vital_status AS vital_status
     """)
 
     filesOfSubjects(subject_ids: [String]=[]): [FileInfo] @cypher(statement:"""
-    MATCH (f:file)-[*]->(ss:study_subject)
-        WHERE ss.study_subject_id IN $subject_ids
-    OPTIONAL MATCH (parent)<--(f)
-        WHERE NOT (parent:laboratory_procedure)
-    RETURN  ss.study_subject_id AS subject_id,
-            f.file_name AS file_name,
-            f.file_type AS file_type,
-            head(labels(parent)) AS association,
-            f.file_description AS file_description,
-            f.file_format AS file_format,
-            f.file_size AS file_size,
-            f.file_id AS file_id,
-            f.md5sum AS md5sum
+        MATCH (f:file)-[*]->(ss:study_subject)
+            WHERE ss.study_subject_id IN $subject_ids
+        OPTIONAL MATCH (parent)<--(f)
+            WHERE NOT (parent:laboratory_procedure)
+        RETURN  ss.study_subject_id AS subject_id,
+                f.file_name AS file_name,
+                f.file_type AS file_type,
+                head(labels(parent)) AS association,
+                f.file_description AS file_description,
+                f.file_format AS file_format,
+                f.file_size AS file_size,
+                f.file_id AS file_id,
+                f.md5sum AS md5sum
     """)
 
     programInfo: [ProgramInfo] @cypher(statement: """
-    MATCH (p:program)
-    OPTIONAL MATCH (p)<--(pr:project)
-    OPTIONAL MATCH (pr)<--(ss:study_subject)
-    RETURN  p.program_acronym AS program_acronym,
-            p.program_id AS program_id,
-            p.program_name AS program_name,
-            p.start_date AS start_date,
-            p.end_date AS end_date,
-            p.pubmed_id AS pubmed_id,
-            COUNT(DISTINCT pr) AS num_projects,
-            COUNT(DISTINCT ss) AS num_subjects
+        MATCH (p:program)
+        OPTIONAL MATCH (p)<--(pr:project)
+        OPTIONAL MATCH (pr)<--(ss:study_subject)
+        RETURN  p.program_acronym AS program_acronym,
+                p.program_id AS program_id,
+                p.program_name AS program_name,
+                p.start_date AS start_date,
+                p.end_date AS end_date,
+                p.pubmed_id AS pubmed_id,
+                COUNT(DISTINCT pr) AS num_projects,
+                COUNT(DISTINCT ss) AS num_subjects
     """)
     programDetail(program_id: String):  ProgramDetail @cypher(statement: """
-    MATCH (p:program {program_id: $program_id})
-    OPTIONAL MATCH (p)<-[:project_of_program]-()<-[:study_subject_of_project]-(ss)
-    OPTIONAL MATCH (ss)<-[sp:sample_of_study_subject]-()<-[:aliquot_of_sample]-()<-[:file_of_aliquot]-(f)
-    WITH p, count(DISTINCT f) AS num_files, count(DISTINCT sp) AS num_samples, count(DISTINCT ss) AS num_subjects
-    MATCH (p)<-[:project_of_program]-(pr)
-    OPTIONAL MATCH (pr)<-[:study_subject_of_project]-(ss)
-    WITH pr {.project_type, .project_acronym, .project_name, .project_full_description, num_subjects:count(DISTINCT ss),
-              project_info: pr.project_acronym + ': ' + pr.project_short_description} AS project, p, num_files,
-              num_subjects, num_samples
-    OPTIONAL MATCH (p)-->(ins:institution)
-    OPTIONAL MATCH (p)<-[:laboratory_procedure_of_program]-(lp)
-    RETURN  p.program_acronym AS program_acronym,
-            p.program_id AS program_id,
-            p.program_name AS program_name,
-            p.program_full_description AS program_full_description,
-            ins.institution_name AS institution_name,
-            p.program_external_url AS program_external_url,
-            num_subjects,
-            num_files,
-            COUNT (DISTINCT lp) as num_lab_procedures,
-            num_samples,
-            collect(DISTINCT project) AS projects
+        MATCH (p:program {program_id: $program_id})
+        OPTIONAL MATCH (p)<-[:project_of_program]-()<-[:study_subject_of_project]-(ss)
+        OPTIONAL MATCH (ss)<-[sp:sample_of_study_subject]-()<-[:aliquot_of_sample]-()<-[:file_of_aliquot]-(f)
+        WITH p, count(DISTINCT f) AS num_files, count(DISTINCT sp) AS num_samples, count(DISTINCT ss) AS num_subjects
+        MATCH (p)<-[:project_of_program]-(pr)
+        OPTIONAL MATCH (pr)<-[:study_subject_of_project]-(ss)
+        WITH pr {.project_type, .project_acronym, .project_name, .project_full_description, num_subjects:count(DISTINCT ss),
+                  project_info: pr.project_acronym + ': ' + pr.project_short_description} AS project, p, num_files,
+                  num_subjects, num_samples
+        OPTIONAL MATCH (p)-->(ins:institution)
+        OPTIONAL MATCH (p)<-[:laboratory_procedure_of_program]-(lp)
+        RETURN  p.program_acronym AS program_acronym,
+                p.program_id AS program_id,
+                p.program_name AS program_name,
+                p.program_full_description AS program_full_description,
+                ins.institution_name AS institution_name,
+                p.program_external_url AS program_external_url,
+                num_subjects,
+                num_files,
+                COUNT (DISTINCT lp) as num_lab_procedures,
+                num_samples,
+                collect(DISTINCT project) AS projects
     """, passThrough:true)
 
     subjectDetail(subject_id: String): SubjectDetail @cypher(statement:  """
-    MATCH (ss:study_subject {study_subject_id: $subject_id})
-    OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)
-    OPTIONAL MATCH (pr)-[:project_of_program]->(p)
-    OPTIONAL MATCH (ss)<-[*..3]-(f:file)
-    OPTIONAL MATCH (parent)<--(f)
-        WHERE NOT (parent:laboratory_procedure)
-    WITH p, pr, ss, collect(f {subject_id:ss.study_subject_id, .file_name, .file_type,
-        association:head(labels(parent)), .file_description, .file_format, .file_size, .file_id, .md5sum}) AS files
-    OPTIONAL MATCH (ss)<--(demo:demographic_data)
-    OPTIONAL MATCH (ss)<--(diag:diagnosis)
-    OPTIONAL MATCH (ss)<--(samp:sample)
-    OPTIONAL MATCH (ss)<-[*..3]-(f:file)-->(lp:laboratory_procedure)
-    RETURN  ss.study_subject_id AS subject_id,
-            p.program_acronym AS program_acronym,
-            p.program_id AS program_id,
-            pr.project_acronym AS project_acronym,
-            pr.project_name AS project_name,
-            demo.gender AS gender,
-            demo.race AS race,
-            demo.ethnicity AS ethnicity,
-            demo.age_at_index AS age_at_index,
-            demo.vital_status AS vital_status,
-            diag.tumor_stage AS tumor_stage,
-            files,
-            COUNT(DISTINCT samp) AS num_samples,
-            COUNT(DISTINCT lp) AS num_lab_procedures
+        MATCH (ss:study_subject {study_subject_id: $subject_id})
+        OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)
+        OPTIONAL MATCH (pr)-[:project_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[*..3]-(f:file)
+        OPTIONAL MATCH (parent)<--(f)
+            WHERE NOT (parent:laboratory_procedure)
+        WITH p, pr, ss, collect(f {subject_id:ss.study_subject_id, .file_name, .file_type,
+            association:head(labels(parent)), .file_description, .file_format, .file_size, .file_id, .md5sum}) AS files
+        OPTIONAL MATCH (ss)<--(demo:demographic_data)
+        OPTIONAL MATCH (ss)<--(diag:diagnosis)
+        OPTIONAL MATCH (ss)<--(samp:sample)
+        OPTIONAL MATCH (ss)<-[*..3]-(f:file)-->(lp:laboratory_procedure)
+        RETURN  ss.study_subject_id AS subject_id,
+                p.program_acronym AS program_acronym,
+                p.program_id AS program_id,
+                pr.project_acronym AS project_acronym,
+                pr.project_name AS project_name,
+                demo.gender AS gender,
+                demo.race AS race,
+                demo.ethnicity AS ethnicity,
+                demo.age_at_index AS age_at_index,
+                demo.vital_status AS vital_status,
+                diag.tumor_stage AS tumor_stage,
+                files,
+                COUNT(DISTINCT samp) AS num_samples,
+                COUNT(DISTINCT lp) AS num_lab_procedures
     """, passThrough: true)
 
     armDetail(project_acronym: String): ArmDetail @cypher(statement:  """
-    MATCH (pr:project {project_acronym: $project_acronym})<--(ss:study_subject)
-    OPTIONAL MATCH (pr)<--(f:file)
-    WITH pr, COLLECT(DISTINCT f) AS files
-    OPTIONAL MATCH (pr)<-[*..4]-(f:file)-->(lp:laboratory_procedure)
-    WITH pr, files, COUNT(DISTINCT f) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
-    OPTIONAL MATCH (pr)<--(ss)
-    OPTIONAL MATCH (ss)<--(sp:sample)
-    RETURN  pr.project_acronym AS project_acronym,
-            pr.project_name AS project_name,
-            pr.project_type AS project_type,
-            pr.project_full_description AS project_full_description,
-            pr.project_acronym + ': ' + pr.project_short_description AS project_info,
-            COUNT(DISTINCT ss) AS num_subjects,
-            COUNT(DISTINCT sp) AS num_samples,
-            num_lab_procedures,
-            num_files,
-            files
+        MATCH (pr:project {project_acronym: $project_acronym})
+        OPTIONAL MATCH (pr)<--(ss:study_subject)
+        OPTIONAL MATCH (pr)<--(f:file)
+        WITH pr, COLLECT(DISTINCT f) AS files
+        OPTIONAL MATCH (pr)<-[*..4]-(f:file)-->(lp:laboratory_procedure)
+        WITH pr, files, COUNT(DISTINCT f) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
+        OPTIONAL MATCH (pr)<--(ss)
+        OPTIONAL MATCH (ss)<--(sp:sample)
+        RETURN  pr.project_acronym AS project_acronym,
+                pr.project_name AS project_name,
+                pr.project_type AS project_type,
+                pr.project_full_description AS project_full_description,
+                pr.project_acronym + ': ' + pr.project_short_description AS project_info,
+                COUNT(DISTINCT ss) AS num_subjects,
+                COUNT(DISTINCT sp) AS num_samples,
+                num_lab_procedures,
+                num_files,
+                files
     """, passThrough: true)
 
     samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: "MATCH (ss:study_subject {study_subject_id: $subject_id})<-[*]-(s:sample) RETURN s")
 
     filesInList(file_ids: [String]): [FileDetail] @cypher(statement: """
-    MATCH (f:file)
-        WHERE f.file_id in $file_ids
-    OPTIONAL MATCH (f)-->(parent)
-        WHERE NOT (parent:laboratory_procedure)
-    OPTIONAL MATCH (f)-[*]->(ss:study_subject)-->(pr:project)
-    RETURN  f.file_name AS file_name,
-            f.file_id AS file_id,
-            f.file_type AS file_type,
-            head(labels(parent)) AS association,
-            f.file_description AS file_description,
-            f.file_format AS file_format,
-            f.file_size AS file_size,
-            ss.study_subject_id AS subject_id,
-            pr.project_acronym AS project_code
+        MATCH (f:file)
+            WHERE f.file_id in $file_ids
+        OPTIONAL MATCH (f)-->(parent)
+            WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[*]->(ss:study_subject)-->(pr:project)
+        RETURN  f.file_name AS file_name,
+                f.file_id AS file_id,
+                f.file_type AS file_type,
+                head(labels(parent)) AS association,
+                f.file_description AS file_description,
+                f.file_format AS file_format,
+                f.file_size AS file_size,
+                ss.study_subject_id AS subject_id,
+                pr.project_acronym AS project_code
     """)
 
     sampleOverview: [SampleOverview] @cypher(statement: """
-    MATCH (samp:sample)
-    OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
-    OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
-    OPTIONAL MATCH (samp)<-[:aliquot_of_sample]-()<-[:file_of_aliquot]-(f)-[:file_of_laboratory_procedure]->(lp)
-    WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, pr, p
-    RETURN  samp.sample_id AS sample_id,
-            ss.study_subject_id AS subject_id,
-            p.program_acronym AS program,
-            pr.project_acronym AS arm,
-            samp.tissue_type AS tissue_type,
-            samp.composition AS tissue_composition,
-            samp.sample_anatomic_site AS sample_anatomic_site,
-            samp.method_of_sample_procurement AS sample_procurement_method,
-            lp.test_name AS platform,
-            files
+        MATCH (samp:sample)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
+        OPTIONAL MATCH (samp)<-[:aliquot_of_sample]-()<-[:file_of_aliquot]-(f)-[:file_of_laboratory_procedure]->(lp)
+        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, pr, p
+        RETURN  samp.sample_id AS sample_id,
+                ss.study_subject_id AS subject_id,
+                p.program_acronym AS program,
+                pr.project_acronym AS arm,
+                samp.tissue_type AS tissue_type,
+                samp.composition AS tissue_composition,
+                samp.sample_anatomic_site AS sample_anatomic_site,
+                samp.method_of_sample_procurement AS sample_procurement_method,
+                lp.test_name AS platform,
+                files
     """)
 
     fileOverview: [FileOverview] @cypher(statement: """
-    MATCH (f:file)
-    OPTIONAL MATCH (f)-->(parent)
-        WHERE NOT (parent:laboratory_procedure)
-    OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
-    OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
-    RETURN  f.file_id AS file_id,
-            f.file_name AS file_name,
-            head(labels(parent)) AS association,
-            f.file_description AS file_description,
-            f.file_format AS file_format,
-            f.file_size AS file_size,
-            p.program_acronym AS program,
-            pr.project_acronym AS arm,
-            ss.study_subject_id AS subject_id,
-            samp.sample_id AS sample_id,
-            ss.disease_subtype AS diagnosis
+        MATCH (f:file)
+        OPTIONAL MATCH (f)-->(parent)
+            WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
+        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
+        RETURN  f.file_id AS file_id,
+                f.file_name AS file_name,
+                head(labels(parent)) AS association,
+                f.file_description AS file_description,
+                f.file_format AS file_format,
+                f.file_size AS file_size,
+                p.program_acronym AS program,
+                pr.project_acronym AS arm,
+                ss.study_subject_id AS subject_id,
+                samp.sample_id AS sample_id,
+                ss.disease_subtype AS diagnosis
     """)
-
 }

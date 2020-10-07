@@ -698,7 +698,8 @@ type GroupCount {
 
 type SubjectOverview {
     subject_id: String
-    program: String
+    program_acronym: String
+    program_name: String
     program_id: String
     project_acronym: String
     project_info: String
@@ -909,5 +910,4 @@ type QueryType {
     sampleOverview: [SampleOverview] 
 
     fileOverview: [FileOverview] 
-
 }

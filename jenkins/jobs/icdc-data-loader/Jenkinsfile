@@ -19,7 +19,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'demo,dev,qa,stage,prod' )
+        value: 'demo,ecs-dev,dev,qa,stage,prod' )
     extendedChoice( 
         name: 'ProjectName', 
         defaultValue: 'icdc', 
@@ -102,7 +102,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                 }
               break
-              case "dev":
+              case "ecs-dev":
                 withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_dev_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   env.NEO4J_IP        = "${NEO4J_ECS_DEV_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"

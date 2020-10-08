@@ -141,7 +141,7 @@
       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
       REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
       # REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.nci.nih.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.nci.nih.gov/v1/graphql/ {% endif %}" 
-      REACT_APP_BACKEND_API: "{{tier}}_alb_dns_name/v1/graphql/"     
+      REACT_APP_BACKEND_API: "{{alb_dns_name|json_query(jq)}}"    
       REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
       REACT_APP_BE_VERSION: "{{ backend_api_version }}"
       REACT_APP_APPLICATION_VERSION: "{{ backend_frontend_version }}"

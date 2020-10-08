@@ -1,3 +1,5 @@
 ---
 # defaults file for cicd
 platform: aws
+dev_alb_dns_name: internal-dev-a-appli-caninedata-8uhlkjyn-1830173970.us-east-1.elb.amazonaws.com
+qa_alb_dns_name: internal-qa-ca-appli-6p2vxovvw4sd-1727805720.us-east-1.elb.amazonaws.com

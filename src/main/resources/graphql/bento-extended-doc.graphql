@@ -785,7 +785,9 @@ type ProgramDetail {
     num_files: Int
     num_samples: Int
     num_lab_procedures: Int
+    num_projects: Int
     projects: [ProjectInfo]
+    sample_types: [GroupCount]
 }
 
 type SubjectDetail {

@@ -127,7 +127,7 @@
 
 - name: copy env to dist
   copy:
-    remote_src: yes
+    # remote_src: yes
     src: inject.template.js
     dest: "{{workspace}}/icdc-frontend/dist/inject.template.js"
     mode: 0755

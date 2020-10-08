@@ -1,15 +1,8 @@
-#!/usr/bin/bash
-#This is adapted from medium publication
+#!/bin/sh
 
 WWW_DIR=/usr/share/nginx/html
-ENV_PREFIX=REACT_APP_
-INJECT_FILE_PATH="${WWW_DIR}/injectEnv.js"
-echo "window.injectedEnv = {" >> "${INJECT_FILE_PATH}"
-for envrow in $(printenv); do
-  IFS='=' read -r key value <<< "${envrow}"
-  if [[ $key == "${ENV_PREFIX}"* ]]; then
-    echo "  ${key}: \"${value}\"," >> "${INJECT_FILE_PATH}"
-  fi
-done
-echo "};" >> "${INJECT_FILE_PATH}"
+INJECT_FILE_SRC="${WWW_DIR}/inject.template.js"
+INJECT_FILE_DST="${WWW_DIR}/injectEnv.js"
+envsubst < "${INJECT_FILE_SRC}" > "${INJECT_FILE_DST}"
+
 [ -z "$@" ] && nginx -g 'daemon off;' || $@

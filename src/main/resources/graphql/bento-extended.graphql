@@ -905,7 +905,7 @@ type QueryType {
             skip $offset
             limit $first
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)-[:file_of_laboratory_procedure]->(lp)
+        OPTIONAL MATCH (ss)<-[*..3]-(f:file)-[:file_of_laboratory_procedure]->(lp)
         WITH ss, collect(DISTINCT sp.sample_id) AS samples, count(distinct sp) AS num_samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
         OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
@@ -933,7 +933,7 @@ type QueryType {
     subjectOverView: [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)-[:file_of_laboratory_procedure]->(lp)
+        OPTIONAL MATCH (ss)<-[*..3]-(f:file)-[:file_of_laboratory_procedure]->(lp)
         WITH ss, collect(DISTINCT sp.sample_id) AS samples, count(distinct sp) AS num_samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
         OPTIONAL MATCH (ss)-[:study_subject_of_project]->(pr)-[:project_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)

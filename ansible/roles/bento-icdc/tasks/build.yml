@@ -97,17 +97,17 @@
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
 
-# - name: remove .env
-#   file:
-#     state: absent
-#     path: "{{workspace}}/icdc-frontend/.env"
-- name: copy environment file to {{workspace}}/icdc-frontend
-  template:
-    src: env.j2
-    dest: "{{workspace}}/icdc-frontend/.env"
+- name: remove .env
+  file:
+    state: absent
+    path: "{{workspace}}/icdc-frontend/.env"
+# - name: copy environment file to {{workspace}}/icdc-frontend
+#   template:
+#     src: env.j2
+#     dest: "{{workspace}}/icdc-frontend/.env"
 
 
-- name: run npm install in {{workspace}}/bento-frontend/
+- name: run npm install in {{workspace}}/icdc-frontend/
   command: "{{item}}"
   args:
     chdir: "{{workspace}}/icdc-frontend"
@@ -120,7 +120,7 @@
   docker_image:
     build:
       path: "{{workspace}}/icdc-frontend"
-      dockerfile: "../dockerfiles/frontend-dockerfile"
+      dockerfile: "../dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend

@@ -1,0 +1,8 @@
+FROM nginx:alpine
+
+RUN apk add --no-cache bash
+COPY nginx-entrypoint.sh /
+COPY ./dist /usr/share/nginx/html
+
+ENTRYPOINT [ "bash", "/nginx-entrypoint.sh" ]
+

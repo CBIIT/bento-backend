@@ -108,6 +108,8 @@
     src: "{{workspace}}/dockerfiles/nginx-entrypoint.sh"
     dest: "{{workspace}}/icdc-frontend/nginx-entrypoint.sh"
     mode: 0755
+
+
 # - name: copy environment file to {{workspace}}/icdc-frontend
 #   template:
 #     src: env.j2
@@ -122,6 +124,13 @@
     - npm install npm@latest -g
     - npm install
     - npm run build
+
+- name: copy env to dist
+  copy:
+    remote_src: yes
+    src: inject.template.js
+    dest: "{{workspace}}/icdc-frontend/dist/inject.template.js"
+    mode: 0755
           
 - name: build cbiitssrepo/icdc-frontend image
   docker_image:

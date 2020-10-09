@@ -828,6 +828,7 @@ type SubjectDetail {
     days_to_progression: Int
     days_to_recurrence: Int
     files: [FileInfo]
+    samples: [sample]
     num_samples: Int
     num_lab_procedures: Int
 }

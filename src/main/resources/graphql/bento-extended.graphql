@@ -828,6 +828,7 @@ type SubjectDetail {
     days_to_progression: Int
     days_to_recurrence: Int
     files: [FileInfo]
+    samples: [sample]
     num_samples: Int
     num_lab_procedures: Int
 }
@@ -1119,6 +1120,7 @@ type QueryType {
                fu.days_to_progression AS days_to_progression,
                fu.days_to_recurrence AS days_to_recurrence,
                files,
+               COLLECT(DISTINCT samp) AS samples,
                COUNT(DISTINCT samp) AS num_samples,
                COUNT(DISTINCT lp) AS num_lab_procedures
     """, passThrough: true)

@@ -19,9 +19,9 @@
         - name: fixed
           priority: 3
         - name: frontend
-          priority: 2
-        - name: backend
           priority: 1
+        - name: backend
+          priority: 2
       when: action == "create"
 
     - name: remove alb rule

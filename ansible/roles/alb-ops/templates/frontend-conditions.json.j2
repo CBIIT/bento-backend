@@ -11,7 +11,13 @@
       "HostHeaderConfig": {
           "Values": ["caninecommons.cancer.gov"]
       }
-  }
+  },
+  {
+        "Field": "path-pattern",
+        "PathPatternConfig": {
+            "Values": ["/*"]
+        }
+    }
 ]
 {% else %}
 [
@@ -26,6 +32,12 @@
       "HostHeaderConfig": {
           "Values": ["caninecommons-{{tier}}.cancer.gov"]
       }
-  }
+  },
+  {
+        "Field": "path-pattern",
+        "PathPatternConfig": {
+            "Values": ["/*"]
+        }
+    }
 ]
 {% endif %}

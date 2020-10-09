@@ -1,6 +1,18 @@
 {% if tier == "prod"  %}
 [
   {
+      "Field": "source-ip",
+      "SourceIpConfig": {
+          "Values": ["10.243.144.0/18"]
+      }
+  },
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons.cancer.gov"]
+      }
+  },
+  {
         "Field": "path-pattern",
         "PathPatternConfig": {
             "Values": ["/v1/graphql/*"]
@@ -10,6 +22,18 @@
 {% else %}
 [
   
+  {
+      "Field": "source-ip",
+      "SourceIpConfig": {
+          "Values": ["10.243.144.0/18"]
+      }
+  },
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons.cancer.gov"]
+      }
+  },
   {
         "Field": "path-pattern",
         "PathPatternConfig": {

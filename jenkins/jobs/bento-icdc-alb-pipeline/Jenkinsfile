@@ -263,7 +263,10 @@ pipeline {
     }
   }
   stage('release'){
-    
+    environment{
+        FE_VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
+    }
     when {
       environment name:'RELEASE', value: 'pass'
     }

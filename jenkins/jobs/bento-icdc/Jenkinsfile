@@ -199,7 +199,8 @@ pipeline {
                 credentialsId: 'commonsdocker',
                 extraVars: [
                     tier: "${params.Environment}",
-                    release: "${params.Release}"
+                    release: "${params.Release}",
+                    project: 'icdc'
                     ],
                 become: true,
                 hostKeyChecking: false,

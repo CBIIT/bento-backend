@@ -1,7 +1,7 @@
 - name: create {{item.name}} response rule
   shell: >
     aws elbv2 create-rule 
-    --listener-arn {{listener_arn}}
+    --listener-arn {{item.listener-arn}}
     --region {{region}}
     --priority {{ item.priority }}
     --conditions file://{{workspace}}/{{item.name}}-conditions.json

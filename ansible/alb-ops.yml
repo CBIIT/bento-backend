@@ -18,6 +18,7 @@
       loop:
         - name: fixed
           priority: 4
+          listener_arn: "{{https_listener_arn}}"
         - name: frontend
           priority: 3
         - name: backend

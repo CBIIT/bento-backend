@@ -19,7 +19,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'demo,dev,qa,stage,prod' )
+        value: 'demo,gdc,dev,qa,stage,prod' )
     extendedChoice( 
         name: 'ProjectName', 
         defaultValue: 'bento', 
@@ -93,6 +93,17 @@ pipeline {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   env.NEO4J_IP        = "${NEO4J_DEV_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
+                }
+              break
+              case "gdc":
+                withCredentials([usernamePassword(credentialsId: 'gdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_GDC_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

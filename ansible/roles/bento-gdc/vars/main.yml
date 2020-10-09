@@ -1,0 +1,16 @@
+---
+# vars file for cicd
+tier: "{{ lookup('env','TIER') }}"
+version: "{{ lookup('env','VERSION') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+region: us-east-1
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
+app_name: bento-{{platform}}-{{tier}}
+schema_file: bento-extended.graphql
+# hostname: "{{ansible_fqdn}}"

@@ -21,8 +21,10 @@
           listener_arn: "{{https_listener_arn}}"
         - name: frontend
           priority: 3
+          listener_arn: "{{http_listener_arn}}"
         - name: backend
           priority: 2
+          listener_arn: "{{http_listener_arn}}"
       when: action == "create"
 
     - name: remove alb rule

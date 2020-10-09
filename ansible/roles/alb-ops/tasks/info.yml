@@ -10,7 +10,7 @@
 - name: set facts
   set_fact:
     certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
-    listener_arn: "{{alb_info.load_balancers[0].listeners[1].listener_arn}}"
+    http_listener_arn: "{{alb_info.load_balancers[0].listeners[1].listener_arn}}"
     https_listener_arn: "{{alb_info.load_balancers[0].listeners[0].listener_arn}}"
     backend_arn: "{{backend_target|json_query(jq)}}"
     frontend_arn: "{{frontend_target|json_query(jq)}}"

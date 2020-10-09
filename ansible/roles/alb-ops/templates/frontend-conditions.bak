@@ -1,0 +1,19 @@
+{% if tier == "prod"  %}
+[
+  {
+        "Field": "path-pattern",
+        "PathPatternConfig": {
+            "Values": ["/*"]
+        }
+    }
+]
+{% else %}
+[
+  {
+        "Field": "path-pattern",
+        "PathPatternConfig": {
+            "Values": ["/*"]
+        }
+    }
+]
+{% endif %}

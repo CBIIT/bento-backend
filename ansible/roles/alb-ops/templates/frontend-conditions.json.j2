@@ -1,19 +1,31 @@
 {% if tier == "prod"  %}
 [
   {
-        "Field": "path-pattern",
-        "PathPatternConfig": {
-            "Values": ["/*"]
-        }
-    }
+      "Field": "source-ip",
+      "SourceIpConfig": {
+          "Values": ["10.243.144.0/18"]
+      }
+  },
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons.cancer.gov"]
+      }
+  }
 ]
 {% else %}
 [
   {
-        "Field": "path-pattern",
-        "PathPatternConfig": {
-            "Values": ["/*"]
-        }
-    }
+      "Field": "source-ip",
+      "SourceIpConfig": {
+          "Values": ["10.243.144.0/18"]
+      }
+  },
+  {
+      "Field": "host-header",
+      "HostHeaderConfig": {
+          "Values": ["caninecommons-{{tier}}.cancer.gov"]
+      }
+  }
 ]
 {% endif %}

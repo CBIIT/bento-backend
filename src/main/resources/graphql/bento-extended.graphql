@@ -827,6 +827,7 @@ type SubjectDetail {
     first_recurrence_type: String
     days_to_progression: Int
     days_to_recurrence: Int
+    test_name: String
     files: [FileInfo]
     samples: [sample]
     num_samples: Int
@@ -1119,6 +1120,7 @@ type QueryType {
                fu.first_recurrence_type AS first_recurrence_type,
                fu.days_to_progression AS days_to_progression,
                fu.days_to_recurrence AS days_to_recurrence,
+               lp.test_name AS test_name,
                files,
                COLLECT(DISTINCT samp) AS samples,
                COUNT(DISTINCT samp) AS num_samples,

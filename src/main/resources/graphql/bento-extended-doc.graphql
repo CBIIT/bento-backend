@@ -827,6 +827,7 @@ type SubjectDetail {
     first_recurrence_type: String
     days_to_progression: Int
     days_to_recurrence: Int
+    test_name: String
     files: [FileInfo]
     samples: [sample]
     num_samples: Int

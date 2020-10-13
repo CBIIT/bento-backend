@@ -156,7 +156,7 @@ pipeline {
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
   				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/bento-backend']]])
+  				[[url: 'https://github.com/CBIIT/bento-demo-backend']]])
 
 //			dir('bento-frontend'){
 //				git branch: "${params.Frontend_Tag}",
@@ -170,7 +170,7 @@ pipeline {
 				relativeTargetDir: 'bento-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-demo-frontend']]])
 
   			checkout( poll: false, 
 				changelog:false,

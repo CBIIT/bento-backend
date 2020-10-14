@@ -1,0 +1,12 @@
+---
+- name: Redis stage of bento pipeline
+  hosts: bento
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: flush redis cache
+      include_role:
+        name: bento
+        tasks_from: redis
+      

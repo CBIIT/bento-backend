@@ -352,6 +352,3 @@
     region: "{{region}}"
   register: service_frontend_output
 
-- name: show lb_backend
-  debug: 
-    msg: "{{lb_backend}}"

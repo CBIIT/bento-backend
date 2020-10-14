@@ -104,8 +104,7 @@
 
 - name: copy entrypoint.sh to workspace
   copy:
-    remote_src: yes
-    src: "{{workspace}}/dockerfiles/nginx-entrypoint.sh"
+    src: "nginx-entrypoint.sh"
     dest: "{{workspace}}/icdc-frontend/nginx-entrypoint.sh"
     mode: 0755
 

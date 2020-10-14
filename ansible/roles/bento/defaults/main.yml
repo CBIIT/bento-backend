@@ -4,6 +4,7 @@ platform: aws
 redis_host: 
   dev: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   qa: "bento-qa-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  stage: "bento-stage-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 redis_password: ""
 redis_port: 6379

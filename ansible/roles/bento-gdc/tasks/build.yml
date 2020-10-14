@@ -81,6 +81,7 @@
   loop:
     - npm install npm@latest -g
     - npm install
+    - npm run lint-fix
     - npm run build
           
 - name: build cbiitssrepo/bento-frontend image

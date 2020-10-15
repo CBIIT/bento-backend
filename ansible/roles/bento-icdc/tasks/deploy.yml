@@ -39,10 +39,10 @@
     name: frontend
   register: frontend
 
-- name: save frontend tag
-  copy: 
-    content: "{{ frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')| first | replace('\"', ' ') | default('master') }}"
-    dest: "./frontend_tag.txt"
+# - name: save frontend tag
+#   copy: 
+#     content: "{{ frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')| first | replace('\"', ' ') | default('master') }}"
+#     dest: "./frontend_tag.txt"
 
 - name: save backend tag
   copy: 

@@ -28,3 +28,4 @@ backend_api_version: "{{ backend_version }}"
 backend_frontend_version: "{{ frontend_version }}"
 backend_google_analytics_id: UA-154442677-1
 dev_alb_dns_name: internal-dev-a-appli-caninedata-8uhlkjyn-1830173970.us-east-1.elb.amazonaws.com
+jq: container.Config.Env[]

@@ -151,7 +151,7 @@
 - name: start icdc frontend container
   docker_container:
     name: frontend
-    image: "{% if release == 'pass' %}{{frontend_image}}{% else %}{{prev_frontend_image}}{% endif %}"
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{ build_number }}
     env:
       REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
@@ -176,10 +176,4 @@
     ports:
      - "80:80"
 
-
-- name: show content of frontend
-  shell: docker inspect frontend
-  register: frontend
-
-- debug:
     msg: "{{frontend.stdout_lines}}"

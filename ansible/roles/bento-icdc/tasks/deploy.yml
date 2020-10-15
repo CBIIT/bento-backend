@@ -34,6 +34,21 @@
     path: "./previous_image.txt"
     state: touch
 
+- name: get info about frontend container
+  docker_container_info:
+    name: frontend
+    register: frontend
+
+- name: save frontend tag
+  copy: 
+    content: "{{ frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')| first | replace('\"', ' ') }}"
+    dest: "./frontend_tag.txt"
+
+- name: save backend tag
+  copy: 
+    content: "{{ frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')| first | replace('\"', ' ') }}"
+    dest: "./backend_tag.txt"
+   
 - name: save current deployed image
   shell: docker ps | grep nci* | awk '{print $2}'  > ./previous_image.txt
 

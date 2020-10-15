@@ -179,12 +179,12 @@ pipeline {
     //     }
     //   }
     // }
-    // stage('set maintenance page'){
-    // agent {
-    //   node {
-    //     label 'slave-ncias-d2320-c'
-    //   }
-    // }
+    stage('set maintenance page'){
+    agent {
+      node {
+        label 'slave-ncias-d2320-c'
+      }
+    }
     steps {
       checkout( poll: false, 
         changelog:false,

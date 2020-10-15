@@ -184,7 +184,7 @@ pipeline {
   	}
   	stage('deploy'){
       environment {
-        FE_VERSION = "${params.Frontend_Tag}",
+        FE_VERSION = "${params.Frontend_Tag}"
         BE_VERSION = "${params.Backend_Tag}"
       }
 

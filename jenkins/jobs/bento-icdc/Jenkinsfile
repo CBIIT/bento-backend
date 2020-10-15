@@ -183,6 +183,10 @@ pipeline {
  		}
   	}
   	stage('deploy'){
+      environment {
+        FE_VERSION = "${params.Frontend_Tag}",
+        BE_VERSION = "${params.Backend_Tag}"
+      }
 
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -202,7 +206,8 @@ pipeline {
                     release: "${params.Release}",
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}",
-                    backend_version: "${params.Backend_Tag}"
+                    backend_version: "${params.Backend_Tag}",
+                    backend_frontend_version: "${params.Frontend_Tag}"
                     ],
                 become: true,
                 hostKeyChecking: false,

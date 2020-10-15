@@ -200,7 +200,9 @@ pipeline {
                 extraVars: [
                     tier: "${params.Environment}",
                     release: "${params.Release}",
-                    project: 'icdc'
+                    project: 'icdc',
+                    frontend_version: "${params.Frontend_Tag}",
+                    backend_version: "${params.Backend_Tag}"
                     ],
                 become: true,
                 hostKeyChecking: false,

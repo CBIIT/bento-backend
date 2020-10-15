@@ -176,4 +176,3 @@
     ports:
      - "80:80"
 
-    msg: "{{frontend.stdout_lines}}"

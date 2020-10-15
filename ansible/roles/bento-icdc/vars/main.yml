@@ -1,5 +1,7 @@
 ---
 # vars file for cicd
+redis_host: ""
+redis_port: ""
 tier: "{{ lookup('env','TIER') }}"
 platform: "aws"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"

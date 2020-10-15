@@ -1,6 +1,6 @@
 ---
 # defaults file for cicd
-build_number: 45
+
 platform: aws
 jq: "{{project}}.{{tier}}"
 alb_dns_name:

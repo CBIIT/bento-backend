@@ -37,7 +37,7 @@
 - name: get info about frontend container
   docker_container_info:
     name: frontend
-    register: frontend
+  register: frontend
 
 - name: save frontend tag
   copy: 

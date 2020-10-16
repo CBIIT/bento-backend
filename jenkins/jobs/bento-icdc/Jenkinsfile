@@ -222,8 +222,8 @@ pipeline {
   }
   post {
     always {
-      
       sendSlackMessage()
+      cleanWs()
     }
   }
 }

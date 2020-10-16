@@ -44,7 +44,7 @@
 - name: echo backend tag
   debug:
     msg: "{{ backend_tag.stdout_lines }}"
-    
+
 - name: echo frontend tag
   debug:
     msg: "{{ frontend_tag.stdout_lines }}"
@@ -84,6 +84,15 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
+
+- name: purge docker volumes and images
+  shell: >
+    docker  
+    --tlsverify 
+    --tlscacert /local/home/commonsdocker/.docker/ca.pem 
+    --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem 
+    --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
+    rmi -f cbiitssrepo/bento-backend:release
 
 - name: purge docker volumes and images
   shell: >

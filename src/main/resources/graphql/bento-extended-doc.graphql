@@ -889,6 +889,12 @@ type FileOverview {
 }
 
 type SearchResult {
+    num_programs: Int
+    num_studies: Int
+    num_subjects: Int
+    num_samples: Int
+    num_lab_procedures: Int
+    num_files: Int
     subjectIds: [String]
     firstPage: [SubjectOverview]
 }

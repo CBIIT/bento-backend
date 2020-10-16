@@ -85,7 +85,7 @@
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
 
-- name: purge docker volumes and images
+- name: purge remove cbiitssrepo/bento-backend
   shell: >
     docker  
     --tlsverify 
@@ -94,7 +94,7 @@
     --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
     rmi -f cbiitssrepo/bento-backend:release
 
-- name: purge docker volumes and images
+- name: purge docker dangling volumes and containers
   shell: >
     docker  
     --tlsverify 

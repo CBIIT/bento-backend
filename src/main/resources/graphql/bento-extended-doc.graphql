@@ -26,6 +26,8 @@ type aliquot {
   laboratory_procedures: [laboratory_procedure] 
   report: report 
   analyte: analyte 
+  sample: sample 
+  files: [file] 
 }
 
 type analyte {
@@ -306,6 +308,7 @@ type file {
   project: project 
   sample: sample 
   study: study 
+  aliquot: aliquot 
 }
 
 type follow_up {
@@ -580,6 +583,7 @@ type sample {
   files: [file] 
   study_subject: study_subject 
   laboratory_procedures: [laboratory_procedure] 
+  aliquots: [aliquot] 
 }
 
 type stratification_factor {
@@ -743,6 +747,19 @@ type FileInfo {
     md5sum: String
 }
 
+type FileDetail {
+    study_code: String
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
 type ProgramInfo {
     program_acronym: String
     program_id: String
@@ -810,7 +827,9 @@ type SubjectDetail {
     first_recurrence_type: String
     days_to_progression: Int
     days_to_recurrence: Int
+    test_name: String
     files: [FileInfo]
+    samples: [sample]
     num_samples: Int
     num_lab_procedures: Int
 }
@@ -841,6 +860,34 @@ type ArmDetail {
     files: [file]
 }
 
+type SampleOverview {
+    sample_id: String
+    subject_id: String
+    program: String
+    arm: String
+    diagnosis: String
+    tissue_type: String
+    tissue_composition: String
+    sample_anatomic_site: String
+    sample_procurement_method: String
+    platform: String
+    files: [String]
+}
+
+type FileOverview {
+    file_id: String
+    file_name: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    program: String
+    arm: String
+    subject_id: String
+    sample_id: String
+    diagnosis: String
+}
+
 schema {
     query: QueryType
 }
@@ -868,6 +915,10 @@ type QueryType {
     subjectCountByChemotherapyRegimen: [GroupCount] 
     subjectCountByEndocrineTherapy: [GroupCount] 
     subjectCountByMenopauseStatus: [GroupCount] 
+    subjectCountByTissueType: [GroupCount] 
+    subjectCountByTissueComposition: [GroupCount] 
+    subjectCountByFileAssociation: [GroupCount] 
+    subjectCountByFileType: [GroupCount] 
 
     armsByPrograms: [ProgramArms] 
 
@@ -885,4 +936,13 @@ type QueryType {
     subjectDetail(subject_id: String): SubjectDetail 
 
     armDetail(study_acronym: String): ArmDetail 
+
+    samplesForSubjectId(subject_id: String!): [sample] 
+
+    filesInList(file_ids: [String]): [FileDetail] 
+
+    sampleOverview: [SampleOverview] 
+
+    fileOverview: [FileOverview] 
+
 }

@@ -33,6 +33,19 @@ public class ConfigurationDAO {
 	
 	@Value("${allow_graphql_mutation}")
 	private boolean allowGraphQLMutation;
+
+
+	@Value("${enable.redis}")
+	private Boolean redisEnabled;
+	@Value("${redis.use_cluster}")
+	private Boolean redisUseCluster;
+	@Value("${redis.host}")
+	private String redisHost;
+	@Value("${redis.port}")
+	private int redisPort;
+	@Value("${redis.ttl}")
+	private int redisTTL;
+
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
@@ -87,4 +100,43 @@ public class ConfigurationDAO {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 
+	public String getRedisHost() {
+		return redisHost;
+	}
+
+	public void setRedisHost(String redisHost) {
+		this.redisHost = redisHost;
+	}
+
+	public int getRedisTTL() {
+		return redisTTL;
+	}
+
+	public void setRedisTTL(int redisTTL) {
+		this.redisTTL = redisTTL;
+	}
+
+	public Boolean getRedisUseCluster() {
+		return redisUseCluster;
+	}
+
+	public void setRedisUseCluster(Boolean redisUseCluster) {
+		this.redisUseCluster = redisUseCluster;
+	}
+
+	public int getRedisPort() {
+		return redisPort;
+	}
+
+	public void setRedisPort(int redisPort) {
+		this.redisPort = redisPort;
+	}
+
+	public Boolean getRedisEnabled() {
+		return redisEnabled;
+	}
+
+	public void setRedisEnabled(Boolean redisEnabled) {
+		this.redisEnabled = redisEnabled;
+	}
 }

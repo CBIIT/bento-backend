@@ -20,9 +20,6 @@
     username: "{{ docker_user }}"
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
-
-- name: clean up 
-  shell: docker system prune -a -f
     
 - name: verify host
   file: 
@@ -78,6 +75,8 @@
     name: backend
     state: absent
 
+- name: clean up 
+  shell: docker system prune -a -f
 
 ############################################################################################################################
 
@@ -141,7 +140,7 @@
 - name: start icdc backend container
   docker_container:
     name: backend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{ build_number }}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}
     env:
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"

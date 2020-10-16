@@ -69,7 +69,7 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "./docker/dockerfiles/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
@@ -135,7 +135,7 @@
   docker_image:
     build:
       path: "{{workspace}}/icdc-frontend"
-      dockerfile: "../docker/dockerfiles/frontend-icdc-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
@@ -161,7 +161,3 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
-
-
-
-    

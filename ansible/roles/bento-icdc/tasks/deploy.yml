@@ -39,27 +39,27 @@
     name: frontend
   register: frontend
 
-- name: set jq
-  set_fact:
-    jq: container.Config.Env[]
-#     frontend_tag: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-#     backend_tag: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+# - name: set jq
+#   set_fact:
+#     jq: container.Config.Env[]
+# #     frontend_tag: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+# #     backend_tag: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
 
 
-# - name: save frontend tag    
-#   shell: echo > {{backend_tag}} > ./frontend_tag.txt
+# # - name: save frontend tag    
+# #   shell: echo > {{backend_tag}} > ./frontend_tag.txt
+
+# # - name: save backend tag
+# #   shell: echo > {{frontend_tag}} > ./backend_tag.txt
+# - name: save frontend tag
+#   copy: 
+#     content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+#     dest: "./frontend_tag.txt"
 
 # - name: save backend tag
-#   shell: echo > {{frontend_tag}} > ./backend_tag.txt
-- name: save frontend tag
-  copy: 
-    content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-    dest: "./frontend_tag.txt"
-
-- name: save backend tag
-  copy: 
-    content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
-    dest: "./backend_tag.txt"
+#   copy: 
+#     content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+#     dest: "./backend_tag.txt"
 
 - name: save current deployed image
   shell: docker ps | grep nci* | awk '{print $2}'  > ./previous_image.txt

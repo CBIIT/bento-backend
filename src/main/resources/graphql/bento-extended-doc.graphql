@@ -888,6 +888,11 @@ type FileOverview {
     diagnosis: String
 }
 
+type SearchResult {
+    subjectIds: [String]
+    firstPage: [SubjectOverview]
+}
+
 schema {
     query: QueryType
 }
@@ -925,6 +930,23 @@ type QueryType {
     subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] 
 
     subjectOverView: [SubjectOverview] 
+
+    searchSubjects (
+          programs: [String] = [],
+          studies: [String] = [],
+          diagnoses: [String] = [],
+          rc_scores: [String] = [],
+          tumor_sizes: [String] = [],
+          chemo_regimen: [String] = [],
+          tumor_grades: [String] = [],
+          er_status: [String] = [],
+          pr_status: [String] = [],
+          endo_therapies: [String] = [],
+          meno_status: [String] = [],
+          offset: Int = 0,
+          first: Int = 100
+    ): SearchResult 
+
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] 
 

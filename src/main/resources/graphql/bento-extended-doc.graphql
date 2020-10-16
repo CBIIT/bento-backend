@@ -933,11 +933,25 @@ type QueryType {
 
     armsByPrograms: [ProgramArms] 
 
-    subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] 
+    subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = []): [SubjectOverview] 
 
     subjectOverView: [SubjectOverview] 
 
     searchSubjects (
+          programs: [String] = [],
+          studies: [String] = [],
+          diagnoses: [String] = [],
+          rc_scores: [String] = [],
+          tumor_sizes: [String] = [],
+          chemo_regimen: [String] = [],
+          tumor_grades: [String] = [],
+          er_status: [String] = [],
+          pr_status: [String] = [],
+          endo_therapies: [String] = [],
+          meno_status: [String] = []
+    ): [String] 
+
+    searchSubjects2 (
           programs: [String] = [],
           studies: [String] = [],
           diagnoses: [String] = [],

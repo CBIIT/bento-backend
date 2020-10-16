@@ -67,11 +67,12 @@
 
 - name: purge docker volumes and images
   shell: >
-    docker system prune -a -f 
-    --tls               
-    --tlscacert /local/home/commonsdocker/.docker/ca.pem
-    --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem
+    docker  
+    --tlsverify 
+    --tlscacert /local/home/commonsdocker/.docker/ca.pem 
+    --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem 
     --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
+    system prune -a -f
 
 - name: build cbiitssrepo/icdc-backend image
   docker_image:

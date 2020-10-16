@@ -37,7 +37,11 @@
 - name: get info about frontend container
   docker_container_info:
     name: frontend
-  register: frontend
+  register: frontend_details
+
+- name: show frontend output
+  debug:
+    msg: "{{frontend_details}}"
 
 # - name: set jq
 #   set_fact:

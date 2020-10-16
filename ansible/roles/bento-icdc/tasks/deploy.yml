@@ -56,6 +56,25 @@
 - name: save backend tag
   shell: echo > {{frontend_tag}} > ./backend_tag.txt
 
+- name: extract frontend tag
+  shell: cut -d '=' -f 2 ./frontend_tag.txt
+  register: frontend_tag
+
+- name: extract backend tag
+  shell: cut -d '=' -f 2 ./backend_tag.txt
+  register: backend_tag
+
+- name: set previous tags
+  set_fact:
+    previous_backend_tag: "{{backend_tag.stdout_lines|first}}"
+    previous_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
+
+- name: show tags
+  debug:
+  msg: |
+    {{previous_backend_tag}}
+    {{previous_frontend_tag}}
+
 # - name: save frontend tag
 #   copy: 
 #     content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"

@@ -71,9 +71,9 @@
 
 - name: show tags
   debug:
-  msg: |
-    {{previous_backend_tag}}
-    {{previous_frontend_tag}}
+    msg: |
+      {{previous_backend_tag}}
+      {{previous_frontend_tag}}
 
 # - name: save frontend tag
 #   copy: 

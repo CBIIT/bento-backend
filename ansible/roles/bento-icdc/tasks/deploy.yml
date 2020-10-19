@@ -210,7 +210,6 @@
     ports:
      - "80:80"
 
-
 - name: create /local/content/docker directory
   file:
     path: "{{env_file_home}}"

@@ -26,29 +26,42 @@
     path: /tmp/myworkspace
     state: directory
 
-# - name: touch previous_image.txt file
-#   file:
-#     path: "./previous_image.txt"
-#     state: touch
+- name: touch previous_image.txt file
+  file:
+    path: "{{home}}/previous_image.txt"
+    state: touch
 
-# - name: get info about frontend container
-#   docker_container_info:
-#     name: frontend
-#   register: frontend_details
+- name: get info about frontend container
+  docker_container_info:
+    name: frontend
+  register: frontend_details
 
 # - name: show frontend output
 #   debug:
 #     msg: "{{frontend_details}}"
 
-# - name: set jq
-#   set_fact:
-#     jq: container.Config.Env[]
+- name: set jq
+  set_fact:
+    jq: container.Config.Env
 
-# - name: get frontend_tag and backend_tag
-#   set_fact:
-#     frontend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-#     backend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+- name: get frontend_tag and backend_tag
+  set_fact:
+    frontend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+    backend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
 
+
+- name: show frontend tag
+  debug:
+    msg: "{{frontend_details | json_query(jq) }}"
+
+
+- name: show frontend tag
+  debug:
+    msg: "{{frontend_tag}}"
+
+- name: show backend tag
+  debug:
+    msg: "{{backend_tag}}"
 
 # - name: save frontend tag    
 #   shell: echo > {{backend_tag}} > ./frontend_tag.txt

@@ -172,7 +172,9 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-frontend']]])
 
-  			checkout([$class: 'GitSCM', 
+  			checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
 				branches: [[name: '*/master']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
@@ -182,8 +184,6 @@ pipeline {
 				submoduleCfg: [], 
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				changelog:false,
-				poll: false
 				])
         
         }

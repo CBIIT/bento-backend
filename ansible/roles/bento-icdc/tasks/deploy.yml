@@ -223,7 +223,7 @@
 - name: check if prev_backend.env exist
   stat:
     path: "{{env_file_home}}/frontend.env"
-  register: prev_backend
+  register: prev_frontend
     
 - name: create prev_backend.env file
   template:

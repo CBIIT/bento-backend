@@ -210,3 +210,53 @@
     ports:
      - "80:80"
 
+
+- name: create /local/content/docker directory
+  file:
+    path: "{{env_file_home}}"
+    state: directory
+
+- name: check if prev_backend.env exist
+  stat:
+    path: "{{env_file_home}}/backend.env"
+  register: prev_backend
+
+- name: check if prev_backend.env exist
+  stat:
+    path: "{{env_file_home}}/frontend.env"
+  register: prev_backend
+    
+- name: create prev_backend.env file
+  template:
+    src:  backend.env.j2
+    dest: "{{env_file_home}}/backend.env"
+  when: not prev_backend.stat.exists or release == "pass"
+
+- name: create prev_frontend.env file
+  template:
+    src:  frontend.env.j2
+    dest: "{{env_file_home}}/frontend.env"
+  when: not prev_frontend.stat.exists release == "pass"
+
+- name: copy backend docker service 
+  template:
+    src:  "{{item.src}}" 
+    dest: "{{item.dest}}"
+  loop: 
+    - { src: docker-container@backend.service.j2, dest: /etc/systemd/system/docker-container@backend.service }
+    - { src: docker-container@frontend.service.j2, dest: /etc/systemd/system/docker-container@frontend.service }
+  when: not prev_backend.stat.exists or release == "pass"
+
+- name: force systemd to reload
+  systemd:
+    daemon_reload: yes
+
+- name: stop and disable backend and frontend docker service
+  service:
+    name: "{{item}}"
+    state: stopped
+    enabled: no
+  loop:
+    - docker-container@backend.service
+    - docker-container@frontend.service
+    

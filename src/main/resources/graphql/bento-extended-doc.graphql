@@ -915,8 +915,8 @@ type QueryType {
     numberOfFiles: Int 
 
     "Group counts"
-    subjectCountByProgram: [GroupCount] 
-    subjectCountByStudy: [GroupCount] 
+    subjectCountByProgram(subject_ids: [String] = []): [GroupCount] 
+    subjectCountByStudy(subject_ids: [String] = []): [GroupCount] 
     subjectCountByDiagnoses: [GroupCount] 
     subjectCountByRecurrenceScore: [GroupCount] 
     subjectCountByTumorSize: [GroupCount] 
@@ -937,7 +937,7 @@ type QueryType {
 
     subjectOverView: [SubjectOverview] 
 
-    searchSubjects (
+    searchSubjects2 (
           programs: [String] = [],
           studies: [String] = [],
           diagnoses: [String] = [],
@@ -951,7 +951,7 @@ type QueryType {
           meno_status: [String] = []
     ): [String] 
 
-    searchSubjects2 (
+    searchSubjects (
           programs: [String] = [],
           studies: [String] = [],
           diagnoses: [String] = [],

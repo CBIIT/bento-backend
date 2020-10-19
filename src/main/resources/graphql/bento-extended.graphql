@@ -915,8 +915,24 @@ type QueryType {
     numberOfFiles: Int @cypher(statement: "MATCH (n:file) return count(n)")
 
     "Group counts"
-    subjectCountByProgram: [GroupCount] @cypher(statement: "MATCH (g:program) OPTIONAL MATCH (g)<--(:study)<--(ss:study_subject) RETURN g.program_acronym AS group, count(DISTINCT ss) as subjects")
-    subjectCountByStudy: [GroupCount] @cypher(statement: "MATCH (g:study) OPTIONAL MATCH (g)<--(ss:study_subject) RETURN g.study_acronym + ': ' + g.study_short_description AS group, count(DISTINCT ss) as subjects")
+    subjectCountByProgram(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:program)
+        OPTIONAL MATCH (g)<--(:study)<--(ss:study_subject)
+          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.program_acronym AS group,
+               count(DISTINCT ss) as subjects
+    """)
+    subjectCountByStudy(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:study)
+        OPTIONAL MATCH (g)<--(ss:study_subject)
+          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.study_acronym + ': ' + g.study_short_description AS group,
+               count(DISTINCT ss) as subjects
+    """)
     subjectCountByDiagnoses: [GroupCount] @cypher(statement: "MATCH (ss:study_subject) RETURN ss.disease_subtype AS group, count(DISTINCT ss) as subjects")
     subjectCountByRecurrenceScore: [GroupCount] @cypher(statement: "MATCH (g:stratification_factor) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.grouped_recurrence_score AS group, count(DISTINCT ss) as subjects")
     subjectCountByTumorSize: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.tumor_size_group AS group, count(DISTINCT ss) as subjects")
@@ -1011,7 +1027,7 @@ type QueryType {
                 lab_procedures
     """, passThrough: true)
 
-    searchSubjects (
+    searchSubjects2 (
           programs: [String] = [],
           studies: [String] = [],
           diagnoses: [String] = [],
@@ -1065,7 +1081,7 @@ type QueryType {
         RETURN DISTINCT ss.study_subject_id
     """)
 
-    searchSubjects2 (
+    searchSubjects (
           programs: [String] = [],
           studies: [String] = [],
           diagnoses: [String] = [],

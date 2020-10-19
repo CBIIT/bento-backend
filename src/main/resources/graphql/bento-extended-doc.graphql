@@ -963,7 +963,6 @@ type QueryType {
           pr_status: [String] = [],
           endo_therapies: [String] = [],
           meno_status: [String] = [],
-          offset: Int = 0,
           first: Int = 100
     ): SearchResult 
 

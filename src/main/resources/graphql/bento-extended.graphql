@@ -1093,7 +1093,6 @@ type QueryType {
           pr_status: [String] = [],
           endo_therapies: [String] = [],
           meno_status: [String] = [],
-          offset: Int = 0,
           first: Int = 100
     ): SearchResult @cypher(statement: """
         // Gathering default parameters
@@ -1178,7 +1177,7 @@ type QueryType {
                           er_status: er_status, pr_status: pr_status, chemotherapy: chemotherapy,
                           endocrine_therapy: endocrine_therapy, menopause_status: menopause_status,
                           age_at_index: age_at_index, survival_time: survival_time, survival_time_unit: survival_time_unit,
-                          files: files, samples: samples, lab_procedures: lab_procedures})[$offset..$first] AS firstPage
+                          files: files, samples: samples, lab_procedures: lab_procedures})[0..$first] AS firstPage
     """, passThrough:true)
 
 

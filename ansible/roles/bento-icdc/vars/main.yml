@@ -1,5 +1,6 @@
 ---
 # vars file for cicd
+env_file_home: /local/content/docker
 redis_host: ""
 redis_port: ""
 tier: "{{ lookup('env','TIER') }}"

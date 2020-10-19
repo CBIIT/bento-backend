@@ -26,19 +26,19 @@
     path: /tmp/myworkspace
     state: directory
 
-- name: touch previous_image.txt file
-  file:
-    path: "./previous_image.txt"
-    state: touch
+# - name: touch previous_image.txt file
+#   file:
+#     path: "./previous_image.txt"
+#     state: touch
 
-- name: get info about frontend container
-  docker_container_info:
-    name: frontend
-  register: frontend_details
+# - name: get info about frontend container
+#   docker_container_info:
+#     name: frontend
+#   register: frontend_details
 
-- name: show frontend output
-  debug:
-    msg: "{{frontend_details}}"
+# - name: show frontend output
+#   debug:
+#     msg: "{{frontend_details}}"
 
 # - name: set jq
 #   set_fact:
@@ -85,8 +85,8 @@
 #     content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
 #     dest: "./backend_tag.txt"
 
-- name: save current deployed image
-  shell: docker ps | grep nci* | awk '{print $2}'  > ./previous_image.txt
+# - name: save current deployed image
+#   shell: docker ps | grep nci* | awk '{print $2}'  > ./previous_image.txt
 
 - name: remove frontend container
   docker_container:
@@ -235,7 +235,7 @@
   template:
     src:  frontend.env.j2
     dest: "{{env_file_home}}/frontend.env"
-  when: not prev_frontend.stat.exists release == "pass"
+  when: not prev_frontend.stat.exists or release == "pass"
 
 - name: copy backend docker service 
   template:

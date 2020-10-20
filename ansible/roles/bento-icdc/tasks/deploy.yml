@@ -49,57 +49,43 @@
     frontend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
     backend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
 
+- name: save frontend tag    
+  command: echo > {{backend_tag}} > {{home}}/frontend_tag.txt
 
-- name: show frontend tag
+- name: save backend tag
+  command: echo > {{frontend_tag}} > {{home}}/backend_tag.txt
+
+- name: extract frontend tag
+  shell: cut -d '=' -f 2 ./frontend_tag.txt
+  register: frontend_tag
+
+- name: extract backend tag
+  shell: cut -d '=' -f 2 ./backend_tag.txt
+  register: backend_tag
+
+- name: set previous tags
+  set_fact:
+    previous_backend_tag: "{{backend_tag.stdout_lines}}"
+    previous_frontend_tag: "{{frontend_tag.stdout_lines}}"
+
+- name: show tags
   debug:
-    msg: "{{frontend_details | json_query(jq) }}"
+    msg: |
+      {{previous_backend_tag}}
+      {{previous_frontend_tag}}
 
+- name: save frontend tag
+  copy: 
+    content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+    dest: "{{home}}/morefrontend_tag.txt"
 
-- name: show frontend tag
-  debug:
-    msg: "{{frontend_tag}}"
+- name: save backend tag
+  copy: 
+    content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+    dest: "{{home}}/morebackend_tag.txt"
 
-- name: show backend tag
-  debug:
-    msg: "{{backend_tag}}"
-
-# - name: save frontend tag    
-#   shell: echo > {{backend_tag}} > ./frontend_tag.txt
-
-# - name: save backend tag
-#   shell: echo > {{frontend_tag}} > ./backend_tag.txt
-
-# - name: extract frontend tag
-#   shell: cut -d '=' -f 2 ./frontend_tag.txt
-#   register: frontend_tag
-
-# - name: extract backend tag
-#   shell: cut -d '=' -f 2 ./backend_tag.txt
-#   register: backend_tag
-
-# - name: set previous tags
-#   set_fact:
-#     previous_backend_tag: "{{backend_tag.stdout_lines}}"
-#     previous_frontend_tag: "{{frontend_tag.stdout_lines}}"
-
-# - name: show tags
-#   debug:
-#     msg: |
-#       {{previous_backend_tag}}
-#       {{previous_frontend_tag}}
-
-# - name: save frontend tag
-#   copy: 
-#     content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-#     dest: "./frontend_tag.txt"
-
-# - name: save backend tag
-#   copy: 
-#     content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
-#     dest: "./backend_tag.txt"
-
-# - name: save current deployed image
-#   shell: docker ps | grep nci* | awk '{print $2}'  > ./previous_image.txt
+- name: save current deployed image
+  shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt
 
 - name: remove frontend container
   docker_container:

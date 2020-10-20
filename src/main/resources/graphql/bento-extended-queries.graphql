@@ -240,19 +240,124 @@ type QueryType {
         RETURN g.study_acronym + ': ' + g.study_short_description AS group,
                count(DISTINCT ss) as subjects
     """)
-    subjectCountByDiagnoses: [GroupCount] @cypher(statement: "MATCH (ss:study_subject) RETURN ss.disease_subtype AS group, count(DISTINCT ss) as subjects")
-    subjectCountByRecurrenceScore: [GroupCount] @cypher(statement: "MATCH (g:stratification_factor) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.grouped_recurrence_score AS group, count(DISTINCT ss) as subjects")
-    subjectCountByTumorSize: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.tumor_size_group AS group, count(DISTINCT ss) as subjects")
-    subjectCountByTumorGrade: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.tumor_grade AS group, count(DISTINCT ss) as subjects")
-    subjectCountByErStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.er_status AS group, count(DISTINCT ss) as subjects")
-    subjectCountByPrStatus: [GroupCount] @cypher(statement: "MATCH (g:diagnosis) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.pr_status AS group, count(DISTINCT ss) as subjects")
-    subjectCountByChemotherapyRegimen: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.chemotherapy_regimen AS group, count(DISTINCT ss) as subjects")
-    subjectCountByEndocrineTherapy: [GroupCount] @cypher(statement: "MATCH (g:therapeutic_procedure) OPTIONAL MATCH (g)-->()-->(ss:study_subject) RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as subjects")
-    subjectCountByMenopauseStatus: [GroupCount] @cypher(statement: "MATCH (g:demographic_data) OPTIONAL MATCH (g)-->(ss:study_subject) RETURN g.menopause_status AS group, count(DISTINCT ss) as subjects")
-    subjectCountByTissueType: [GroupCount] @cypher(statement: "MATCH (samp:sample) OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss) RETURN samp.tissue_type AS group, COUNT(DISTINCT ss) as subjects")
-    subjectCountByTissueComposition: [GroupCount] @cypher(statement: "MATCH (samp:sample) OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss) RETURN samp.composition AS group, COUNT(DISTINCT ss) as subjects")
-    subjectCountByFileAssociation: [GroupCount] @cypher(statement: "MATCH (f:file)-->(parent) WHERE NOT (parent:laboratory_procedure) OPTIONAL MATCH (f)-[*..2]->(ss:study_subject) RETURN head(labels(parent)) AS group, COUNT(DISTINCT ss) as subjects")
-    subjectCountByFileType: [GroupCount] @cypher(statement: "MATCH (f:file) OPTIONAL MATCH (f)-[*..2]->(ss:study_subject) RETURN f.file_type AS group, COUNT(DISTINCT ss) as subjects")
+
+    subjectCountByDiagnoses(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:diagnosis)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+            WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN ss.disease_subtype AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByRecurrenceScore(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:stratification_factor)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+            WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.grouped_recurrence_score AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByTumorSize(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:diagnosis)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+            WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.tumor_size_group AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByTumorGrade(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:diagnosis)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+            WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.tumor_grade AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByErStatus(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:diagnosis)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.er_status AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByPrStatus(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:diagnosis)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.pr_status AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByChemotherapyRegimen(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:therapeutic_procedure)
+        OPTIONAL MATCH (g)-->()-->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.chemotherapy_regimen AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByEndocrineTherapy(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:therapeutic_procedure)
+        OPTIONAL MATCH (g)-->()-->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.endocrine_therapy_type AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByMenopauseStatus(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (g:demographic_data)
+        OPTIONAL MATCH (g)-->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN g.menopause_status AS group, count(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByTissueType(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (samp:sample)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN samp.tissue_type AS group, COUNT(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByTissueComposition(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (samp:sample)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN samp.composition AS group, COUNT(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByFileAssociation(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (f:file)-->(parent)
+        WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[*..2]->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN head(labels(parent)) AS group, COUNT(DISTINCT ss) as subjects
+    """)
+
+    subjectCountByFileType(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (f:file)
+        OPTIONAL MATCH (f)-[*..2]->(ss:study_subject)
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN f.file_type AS group, COUNT(DISTINCT ss) as subjects
+    """)
 
     armsByPrograms: [ProgramArms] @cypher(statement: """
         MATCH (p:program)

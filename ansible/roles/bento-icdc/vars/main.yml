@@ -3,7 +3,7 @@
 env_file_home: /local/content/docker
 redis_host: ""
 redis_port: ""
-home: "{{ lookup('env','HOME') }}"
+home: /local/content/docker
 tier: "{{ lookup('env','TIER') }}"
 platform: "cloudone"
 backend_git_tag: "{{ lookup('env','BACKEND_GIT_TAG') }}"

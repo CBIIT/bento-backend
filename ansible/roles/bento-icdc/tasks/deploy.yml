@@ -82,7 +82,7 @@
 - name: save backend tag
   copy: 
     content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
-    dest: "{{workspace}}/morebackend_tag.txt"
+    dest: "{{home}}/morebackend_tag.txt"
 
 - name: save current deployed image
   shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt

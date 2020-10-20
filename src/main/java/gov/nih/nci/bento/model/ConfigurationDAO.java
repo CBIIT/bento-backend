@@ -27,7 +27,7 @@ public class ConfigurationDAO {
 	@Value("${graphql.schema}")
 	private String schemaFile;
 
-	@Value("${allow_grapqh_query}")
+	@Value("${allow_graphql_query}")
 	private boolean allowGraphQLQuery;
 	
 	

@@ -917,19 +917,32 @@ type QueryType {
     "Group counts"
     subjectCountByProgram(subject_ids: [String] = []): [GroupCount] 
     subjectCountByStudy(subject_ids: [String] = []): [GroupCount] 
-    subjectCountByDiagnoses: [GroupCount] 
-    subjectCountByRecurrenceScore: [GroupCount] 
-    subjectCountByTumorSize: [GroupCount] 
-    subjectCountByTumorGrade: [GroupCount] 
-    subjectCountByErStatus: [GroupCount] 
-    subjectCountByPrStatus: [GroupCount] 
-    subjectCountByChemotherapyRegimen: [GroupCount] 
-    subjectCountByEndocrineTherapy: [GroupCount] 
-    subjectCountByMenopauseStatus: [GroupCount] 
-    subjectCountByTissueType: [GroupCount] 
-    subjectCountByTissueComposition: [GroupCount] 
-    subjectCountByFileAssociation: [GroupCount] 
-    subjectCountByFileType: [GroupCount] 
+
+    subjectCountByDiagnoses(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByRecurrenceScore(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTumorSize(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTumorGrade(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByErStatus(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByPrStatus(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByChemotherapyRegimen(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByEndocrineTherapy(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByMenopauseStatus(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTissueType(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTissueComposition(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByFileAssociation(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByFileType(subject_ids: [String] = []): [GroupCount] 
 
     armsByPrograms: [ProgramArms] 
 

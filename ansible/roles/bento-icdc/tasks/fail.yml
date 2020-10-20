@@ -14,48 +14,47 @@
     name: backend
     state: absent
  
-- name: enable and start backend and frontend containers
-  service:
-    name: "{{item}}"
-    state: started
-    enabled: yes
-  loop:
-    - docker-container@backend.service
-    - docker-container@frontend.service
+# - name: enable and start backend and frontend containers
+#   service:
+#     name: "{{item}}"
+#     state: started
+#     enabled: yes
+#   loop:
+#     - docker-container@backend.service
+#     - docker-container@frontend.service
 
-# - name: set backend api url
-#   set_fact:
-#     backend_api_url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
+- name: set backend api url
+  set_fact:
+    backend_api_url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
 
-# - name: get info of the previous backend image
-#   shell: grep backend  ./previous_image.txt
-#   register: prev_backend
-
-
-# - name: get info of the previous frontend image
-#   shell: grep frontend  ./previous_image.txt
-#   register: prev_frontend 
+- name: get info of the previous backend image
+  shell: grep backend  {{home}}/previous_image.txt
+  register: prev_backend
 
 
-# - name: extract frontend tag
-#   shell: cut -d '=' -f 2 ./frontend_tag.txt
-#   register: frontend_tag
-
-# - name: extract backend tag
-#   shell: cut -d '=' -f 2 ./backend_tag.txt
-#   register: backend_tag
+- name: get info of the previous frontend image
+  shell: grep frontend  {{home}}}/previous_image.txt
+  register: prev_frontend 
 
 
-# - name: set previous tags
-#   set_fact:
-#     prev_backend_tag: "{{backend_tag.stdout_lines|first}}"
-#     prev_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
+- name: extract frontend tag
+  shell: cut -d '=' -f 2 {{home}}/frontend_tag.txt
+  register: frontend_tag
+
+- name: extract backend tag
+  shell: cut -d '=' -f 2 {{home}}/backend_tag.txt
+  register: backend_tag
+
+- name: set previous tags
+  set_fact:
+    previous_backend_tag: "{{backend_tag.stdout_lines|first}}"
+    previous_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
 
 
-# - name: retrieve backend and frontend image details of the previous deployment
-#   set_fact:
-#     prev_backend_image: "{{prev_backend.stdout_lines|first}}"
-#     prev_frontend_image: "{{prev_frontend.stdout_lines|first}}"   
+- name: retrieve backend and frontend image details of the previous deployment
+  set_fact:
+    prev_backend_image: "{{prev_backend.stdout_lines|first}}"
+    prev_frontend_image: "{{prev_frontend.stdout_lines|first}}"   
 
 # - name: get info on current deployed backend image
 #   shell: docker ps | grep nci* | awk '{print $2}' | grep backend
@@ -120,55 +119,55 @@
 #     ports:
 #      - "80:80"
 
-# - name: start icdc backend container
-#   docker_container:
-#     name: backend
-#     image: "{{prev_backend_image}}"
-#     env:
-#       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-#       NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
-#       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
-#       NEW_RELIC_HOST: "gov-collector.newrelic.com"
-#       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
-#       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-#     entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
-#     log_driver: syslog
-#     log_options:
-#       syslog-address: tcp://{{ syslog_host }}:514
-#       tag: "{{ app_name }}-backend"
-#       syslog-format: "rfc5424micro"
-#     state: started
-#     restart_policy: always
-#     ports:
-#      - "8080:8080"
+- name: start icdc backend container
+  docker_container:
+    name: backend
+    image: "{{prev_backend_image}}"
+    env:
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_LOG_FILE_NAME: "STDOUT"
+      JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+    entrypoint: "/bin/ash -c 'wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip && bin/catalina.sh run'"
+    log_driver: syslog
+    log_options:
+      syslog-address: tcp://{{ syslog_host }}:514
+      tag: "{{ app_name }}-backend"
+      syslog-format: "rfc5424micro"
+    state: started
+    restart_policy: always
+    ports:
+     - "8080:8080"
   
 
-# - name: start icdc frontend container
-#   docker_container:
-#     name: frontend
-#     image: "{{prev_frontend_image}}"
-#     env:
-#       REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
-#       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
-#       REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
-#       REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
-#       REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
-#       REACT_APP_BE_VERSION: "{{ prev_backend_tag }}"
-#       REACT_APP_FE_VERSION: "{{ prev_frontend_tag  }}"
-#       REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
-#       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-#       NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
-#       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
-#       NEW_RELIC_HOST: "gov-collector.newrelic.com"
-#       NEW_RELIC_NO_CONFIG_FILE: "true"
-#     log_driver: syslog
-#     log_options:
-#       syslog-address: tcp://{{ syslog_host }}:514
-#       tag: "{{ app_name }}-frontend"
-#       syslog-format: "rfc5424micro"
-#     state: started
-#     restart_policy: always
-#     ports:
-#      - "80:80"
+- name: start icdc frontend container
+  docker_container:
+    name: frontend
+    image: "{{prev_frontend_image}}"
+    env:
+      REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
+      REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
+      REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
+      REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
+      REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
+      REACT_APP_BE_VERSION: "{{ prev_backend_tag }}"
+      REACT_APP_FE_VERSION: "{{ prev_frontend_tag  }}"
+      REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_NO_CONFIG_FILE: "true"
+    log_driver: syslog
+    log_options:
+      syslog-address: tcp://{{ syslog_host }}:514
+      tag: "{{ app_name }}-frontend"
+      syslog-format: "rfc5424micro"
+    state: started
+    restart_policy: always
+    ports:
+     - "80:80"
 
   

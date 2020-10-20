@@ -246,11 +246,6 @@ pipeline {
            }
         }
       }
-      // post {
-      //   always {
-      //     sendSlackMessage()
-      //   }
-      // }
   }
   
   stage('Approval Step'){
@@ -348,6 +343,12 @@ pipeline {
           }
         }
       }
+    }
+  }
+  post {
+    always {
+      // sendSlackMessage()
+      cleanWs()
     }
   }
 }

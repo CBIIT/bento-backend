@@ -265,13 +265,10 @@ type QueryType {
                 collect(s) AS children
     """, passThrough: true)
 
-    subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = []): [SubjectOverview] @cypher(statement: """
+    subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
         WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
           WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-        WITH ss ORDER BY ss.study_subject_id
-        SKIP $offset
-        LIMIT $first
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
@@ -300,6 +297,82 @@ type QueryType {
                 samples,
                 files,
                 lab_procedures
+        ORDER BY CASE $order_by
+                    WHEN 'subject_id' THEN subject_id
+                    WHEN 'program' THEN program
+                    WHEN 'program_id' THEN program_id
+                    WHEN 'study_acronym' THEN study_acronym
+                    WHEN 'study_short_description' THEN study_short_description
+                    WHEN 'study_info' THEN study_info
+                    WHEN 'diagnosis' THEN diagnosis
+                    WHEN 'recurrence_score' THEN recurrence_score
+                    WHEN 'tumor_size' THEN tumor_size
+                    WHEN 'tumor_grade' THEN tumor_grade
+                    WHEN 'er_status' THEN er_status
+                    WHEN 'pr_status' THEN pr_status
+                    WHEN 'chemotherapy' THEN chemotherapy
+                    WHEN 'endocrine_therapy' THEN endocrine_therapy
+                    WHEN 'menopause_status' THEN menopause_status
+                    WHEN 'age_at_index' THEN age_at_index
+                    WHEN 'survival_time' THEN survival_time
+                    ELSE subject_id  END
+        SKIP $offset
+        LIMIT $first
+    """, passThrough: true)
+
+    subjectOverViewPagedDesc(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
+          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
+        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
+        OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
+        OPTIONAL MATCH (d)<-[:tp_of_diagnosis]-(tp)
+        OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+        RETURN  p.program_acronym AS program,
+                p.program_id AS program_id,
+                s.study_acronym AS study_acronym,
+                s.study_short_description AS study_short_description,
+                s.study_acronym + ': ' + s.study_short_description AS study_info,
+                ss.study_subject_id AS subject_id,
+                ss.disease_subtype AS diagnosis,
+                sf.grouped_recurrence_score AS recurrence_score,
+                d.tumor_size_group AS tumor_size,
+                d.tumor_grade AS tumor_grade,
+                d.er_status AS er_status,
+                d.pr_status AS pr_status,
+                tp.chemotherapy_regimen AS chemotherapy,
+                tp.endocrine_therapy_type AS endocrine_therapy,
+                demo.menopause_status AS menopause_status,
+                demo.age_at_index AS age_at_index,
+                demo.survival_time AS survival_time,
+                demo.survival_time_unit AS survival_time_unit,
+                samples,
+                files,
+                lab_procedures
+        ORDER BY CASE $order_by
+                    WHEN 'subject_id' THEN subject_id
+                    WHEN 'program' THEN program
+                    WHEN 'program_id' THEN program_id
+                    WHEN 'study_acronym' THEN study_acronym
+                    WHEN 'study_short_description' THEN study_short_description
+                    WHEN 'study_info' THEN study_info
+                    WHEN 'diagnosis' THEN diagnosis
+                    WHEN 'recurrence_score' THEN recurrence_score
+                    WHEN 'tumor_size' THEN tumor_size
+                    WHEN 'tumor_grade' THEN tumor_grade
+                    WHEN 'er_status' THEN er_status
+                    WHEN 'pr_status' THEN pr_status
+                    WHEN 'chemotherapy' THEN chemotherapy
+                    WHEN 'endocrine_therapy' THEN endocrine_therapy
+                    WHEN 'menopause_status' THEN menopause_status
+                    WHEN 'age_at_index' THEN age_at_index
+                    WHEN 'survival_time' THEN survival_time
+                    ELSE subject_id  END DESC
+        SKIP $offset
+        LIMIT $first
     """, passThrough: true)
 
     subjectOverView: [SubjectOverview] @cypher(statement: """

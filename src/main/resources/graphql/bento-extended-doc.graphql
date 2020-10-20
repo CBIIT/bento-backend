@@ -933,7 +933,9 @@ type QueryType {
 
     armsByPrograms: [ProgramArms] 
 
-    subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = []): [SubjectOverview] 
+    subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] 
+
+    subjectOverViewPagedDesc(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] 
 
     subjectOverView: [SubjectOverview] 
 

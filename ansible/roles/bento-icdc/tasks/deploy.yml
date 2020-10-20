@@ -44,16 +44,25 @@
   set_fact:
     jq: container.Config.Env
 
-- name: get frontend_tag and backend_tag
-  set_fact:
-    frontend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-    backend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+# - name: get frontend_tag and backend_tag
+#   set_fact:
+#     frontend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+#     backend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
 
-- name: save frontend tag    
-  command: echo > {{backend_tag}} > {{home}}/frontend_tag.txt
+
+
+- name: save frontend tag
+  copy: 
+    content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+    dest: "{{home}}/frontend_tag.txt"
 
 - name: save backend tag
-  command: echo > {{frontend_tag}} > {{home}}/backend_tag.txt
+  copy: 
+    content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+    dest: "{{home}}/backend_tag.txt"
+
+- name: save current deployed image
+  shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt
 
 - name: extract frontend tag
   shell: cut -d '=' -f 2 {{home}}/frontend_tag.txt
@@ -65,27 +74,9 @@
 
 - name: set previous tags
   set_fact:
-    previous_backend_tag: "{{backend_tag.stdout_lines}}"
-    previous_frontend_tag: "{{frontend_tag.stdout_lines}}"
+    previous_backend_tag: "{{backend_tag.stdout_lines | first}}"
+    previous_frontend_tag: "{{frontend_tag.stdout_lines | first}}"
 
-- name: show tags
-  debug:
-    msg: |
-      {{previous_backend_tag}}
-      {{previous_frontend_tag}}
-
-- name: save frontend tag
-  copy: 
-    content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-    dest: "{{home}}/morefrontend_tag.txt"
-
-- name: save backend tag
-  copy: 
-    content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
-    dest: "{{home}}/morebackend_tag.txt"
-
-- name: save current deployed image
-  shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt
 
 - name: remove frontend container
   docker_container:

@@ -1,4 +1,4 @@
-node('docker-katalon-ch') {
+node('cicd_microservice') {
 	parameters {
 		extendedChoice( 
 			name: 'Browser', 

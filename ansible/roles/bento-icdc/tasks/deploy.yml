@@ -60,36 +60,36 @@
   copy: 
     content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
     dest: "{{home}}/frontend_tag.txt"
-  when: not prev_backend.stat.exists or release == "pass"
+  when: not prev_frontend.stat.exists or release == "pass"
 
 - name: save backend tag
   copy: 
     content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
     dest: "{{home}}/backend_tag.txt"
-  when: not prev_frontend.stat.exists or release == "pass"
+  when: not prev_backend.stat.exists or release == "pass"
 
 - name: save current deployed image
   shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt
   when: not prev_frontend.stat.exists or release == "pass"
 
-- name: extract frontend tag
-  shell: cut -d '=' -f 2 {{home}}/frontend_tag.txt
-  register: frontend_tag
+# - name: extract frontend tag
+#   shell: cut -d '=' -f 2 {{home}}/frontend_tag.txt
+#   register: frontend_tag
 
-- name: extract backend tag
-  shell: cut -d '=' -f 2 {{home}}/backend_tag.txt
-  register: backend_tag
+# - name: extract backend tag
+#   shell: cut -d '=' -f 2 {{home}}/backend_tag.txt
+#   register: backend_tag
 
-- name: set previous tags
-  set_fact:
-    previous_backend_tag: "{{backend_tag.stdout_lines|first}}"
-    previous_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
+# - name: set previous tags
+#   set_fact:
+#     previous_backend_tag: "{{backend_tag.stdout_lines|first}}"
+#     previous_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
 
-- name: show tags
-  debug:
-    msg: |
-      Backend tag "{{previous_frontend_tag}}"
-      frontend tag "{{previous_backend_tag}}"
+# - name: show tags
+#   debug:
+#     msg: |
+#       Backend tag "{{previous_frontend_tag}}"
+#       frontend tag "{{previous_backend_tag}}"
 
 - name: remove frontend container
   docker_container:

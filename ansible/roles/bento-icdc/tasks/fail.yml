@@ -33,7 +33,7 @@
 
 
 - name: get info of the previous frontend image
-  shell: grep frontend  {{home}}}/previous_image.txt
+  shell: grep frontend  {{home}}/previous_image.txt
   register: prev_frontend 
 
 

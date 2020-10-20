@@ -36,33 +36,41 @@
     name: frontend
   register: frontend_details
 
-# - name: show frontend output
-#   debug:
-#     msg: "{{frontend_details}}"
 
 - name: set jq
   set_fact:
     jq: container.Config.Env
 
-# - name: get frontend_tag and backend_tag
-#   set_fact:
-#     frontend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
-#     backend_tag: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+- name: create /local/content/docker directory
+  file:
+    path: "{{home}}"
+    state: directory
 
+- name: check if backend tag exist
+  stat:
+    path: "{{home}}/backend_tag.txt"
+  register: prev_backend
 
+- name: check if prev_frontend tag exist
+  stat:
+    path: "{{home}}/frontend_tag"
+  register: prev_frontend
 
 - name: save frontend tag
   copy: 
     content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
     dest: "{{home}}/frontend_tag.txt"
+  when: not prev_backend.stat.exists or release == "pass"
 
 - name: save backend tag
   copy: 
     content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
     dest: "{{home}}/backend_tag.txt"
+  when: not prev_frontend.stat.exists or release == "pass"
 
 - name: save current deployed image
   shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt
+  when: not prev_frontend.stat.exists or release == "pass"
 
 - name: extract frontend tag
   shell: cut -d '=' -f 2 {{home}}/frontend_tag.txt
@@ -77,6 +85,11 @@
     previous_backend_tag: "{{backend_tag.stdout_lines | first}}"
     previous_frontend_tag: "{{frontend_tag.stdout_lines | first}}"
 
+- name: show tags
+  debug:
+    msg: |
+      Backend tag "{{previous_frontend_tag}}"
+      frontend tag "{{previous_backend_tag}}"
 
 - name: remove frontend container
   docker_container:
@@ -200,52 +213,38 @@
     ports:
      - "80:80"
 
-- name: create /local/content/docker directory
-  file:
-    path: "{{env_file_home}}"
-    state: directory
-
-- name: check if prev_backend.env exist
-  stat:
-    path: "{{env_file_home}}/backend.env"
-  register: prev_backend
-
-- name: check if prev_backend.env exist
-  stat:
-    path: "{{env_file_home}}/frontend.env"
-  register: prev_frontend
     
-- name: create prev_backend.env file
-  template:
-    src:  backend.env.j2
-    dest: "{{env_file_home}}/backend.env"
-  when: not prev_backend.stat.exists or release == "pass"
+# - name: create prev_backend.env file
+#   template:
+#     src:  backend.env.j2
+#     dest: "{{env_file_home}}/backend.env"
+#   when: not prev_backend.stat.exists or release == "pass"
 
-- name: create prev_frontend.env file
-  template:
-    src:  frontend.env.j2
-    dest: "{{env_file_home}}/frontend.env"
-  when: not prev_frontend.stat.exists or release == "pass"
+# - name: create prev_frontend.env file
+#   template:
+#     src:  frontend.env.j2
+#     dest: "{{env_file_home}}/frontend.env"
+#   when: not prev_frontend.stat.exists or release == "pass"
 
-- name: copy backend docker service 
-  template:
-    src:  "{{item.src}}" 
-    dest: "{{item.dest}}"
-  loop: 
-    - { src: docker-container@backend.service.j2, dest: /etc/systemd/system/docker-container@backend.service }
-    - { src: docker-container@frontend.service.j2, dest: /etc/systemd/system/docker-container@frontend.service }
-  when: not prev_backend.stat.exists or release == "pass"
+# - name: copy backend docker service 
+#   template:
+#     src:  "{{item.src}}" 
+#     dest: "{{item.dest}}"
+#   loop: 
+#     - { src: docker-container@backend.service.j2, dest: /etc/systemd/system/docker-container@backend.service }
+#     - { src: docker-container@frontend.service.j2, dest: /etc/systemd/system/docker-container@frontend.service }
+#   when: not prev_backend.stat.exists or release == "pass"
 
-- name: force systemd to reload
-  systemd:
-    daemon_reload: yes
+# - name: force systemd to reload
+#   systemd:
+#     daemon_reload: yes
 
-- name: stop and disable backend and frontend docker service
-  service:
-    name: "{{item}}"
-    state: stopped
-    enabled: no
-  loop:
-    - docker-container@backend.service
-    - docker-container@frontend.service
+# - name: stop and disable backend and frontend docker service
+#   service:
+#     name: "{{item}}"
+#     state: stopped
+#     enabled: no
+#   loop:
+#     - docker-container@backend.service
+#     - docker-container@frontend.service
     

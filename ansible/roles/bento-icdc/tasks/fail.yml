@@ -47,8 +47,8 @@
 
 - name: set previous tags
   set_fact:
-    previous_backend_tag: "{{backend_tag.stdout_lines|first}}"
-    previous_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
+    prev_backend_tag: "{{backend_tag.stdout_lines|first}}"
+    prev_frontend_tag: "{{frontend_tag.stdout_lines|first}}"
 
 
 - name: retrieve backend and frontend image details of the previous deployment

@@ -56,11 +56,11 @@
   command: echo > {{frontend_tag}} > {{home}}/backend_tag.txt
 
 - name: extract frontend tag
-  shell: cut -d '=' -f 2 ./frontend_tag.txt
+  shell: cut -d '=' -f 2 {{home}}/frontend_tag.txt
   register: frontend_tag
 
 - name: extract backend tag
-  shell: cut -d '=' -f 2 ./backend_tag.txt
+  shell: cut -d '=' -f 2 {{home}}/backend_tag.txt
   register: backend_tag
 
 - name: set previous tags
@@ -76,13 +76,13 @@
 
 - name: save frontend tag
   copy: 
-    content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
+    content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_FE_VERSION')|list|first|replace('\"','')}}"
     dest: "{{home}}/morefrontend_tag.txt"
 
 - name: save backend tag
   copy: 
-    content: "{{frontend | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
-    dest: "{{home}}/morebackend_tag.txt"
+    content: "{{frontend_details | json_query(jq) | select('match', 'REACT_APP_BE_VERSION')|list|first|replace('\"','')}}"
+    dest: "{{workspace}}/morebackend_tag.txt"
 
 - name: save current deployed image
   shell: docker ps | grep nci* | awk '{print $2}'  > {{home}}/previous_image.txt

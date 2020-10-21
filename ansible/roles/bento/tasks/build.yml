@@ -52,7 +52,7 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "./dockerfiles/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-backend
@@ -91,12 +91,19 @@
     - npm install npm@latest -g
     - npm install
     - npm run build
+
+- name: copy env to dist
+  copy:
+    # remote_src: yes
+    src: inject.template.js
+    dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
+    mode: 0755
           
 - name: build cbiitssrepo/bento-frontend image
   docker_image:
     build:
       path: "{{workspace}}/bento-frontend"
-      dockerfile: "../dockerfiles/frontend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-frontend

@@ -254,6 +254,8 @@ pipeline {
   	stage('build'){
       environment {
        VERSION = "${params.Frontend_Tag}"
+       FE_VERSION = "${params.Frontend_Tag}"
+       BE_VERSION = "${params.Backend_Tag}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

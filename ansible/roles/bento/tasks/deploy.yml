@@ -62,6 +62,21 @@
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_NO_CONFIG_FILE
           value: true
+        - name: REACT_APP_BACKEND_API
+          value: "{% if tier == 'prod' %}https://api.bento-tools.org{% else %}https://api-{{ tier }}.bento-tools.org{% endif %}" 
+        - name: REACT_APP_BACKEND_GETUSERINFO_API
+          value: "{{ backend_user_info }}"
+        - name: 
+          value: "{{ backend_api_version }}"
+        - name:
+          value:
+        - name:
+          value:
+        - name:
+          value:
+        - name:
+          value:
+
       portMappings:
       - containerPort: "80"
         hostPort: "80"

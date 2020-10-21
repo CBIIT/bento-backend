@@ -10,6 +10,6 @@ allow_grapqh_query = true
 allow_graphql_mutation =false
 enable.redis=true
 redis.use_cluster=true
-redis.host={{redis_host}}
+redis.host={{redis_host[tier]}}
 redis.port={{redis_port}}
 redis.ttl=-1

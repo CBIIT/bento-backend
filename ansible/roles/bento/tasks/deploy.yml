@@ -61,7 +61,7 @@
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_NO_CONFIG_FILE
-          value: "true"
+          value: true
       portMappings:
       - containerPort: "80"
         hostPort: "80"

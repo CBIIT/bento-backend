@@ -119,7 +119,7 @@
       tag: "{{ app_name }}-backend"
       syslog-format: "rfc5424micro"
     state: started
-    restart_policy: on-failure:20
+    restart_policy: on-failure
     ports:
      - "8080:8080"
 
@@ -147,7 +147,7 @@
       tag: "{{ app_name }}-frontend"
       syslog-format: "rfc5424micro"
     state: started
-    restart_policy: on-failure:20
+    restart_policy: on-failure
     ports:
      - "80:80"
 

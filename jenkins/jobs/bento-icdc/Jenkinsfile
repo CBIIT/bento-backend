@@ -169,7 +169,6 @@ pipeline {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
           file(credentialsId: 'ansible_host_file', variable: 'host_file'),
           string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
-          string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
           string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
           ])
         {
@@ -195,7 +194,7 @@ pipeline {
 			 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
 			 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
 			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
-			 string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+			 string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
 			 ]){
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 

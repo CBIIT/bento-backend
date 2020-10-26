@@ -326,6 +326,19 @@
     region: "{{region}}"
   register: service_nr_docker_output
 
+- name: echo service_nr_docker_output
+  debug:
+    msg: "{{ service_nr_docker_output.stdout_lines }}"
+
+##- name: Create nginx config file
+##  shell: docker cp /etc/kapacitor/kapaci tick_kapacitor:/path/in/the/container/kapaci
+
+##- name: Copy nginx config file to newrelic container
+##  shell: docker cp /etc/kapacitor/kapaci tick_kapacitor:/path/in/the/container/kapaci
+  
+##- name: Restart newrelic container
+##  shell: docker cp /etc/kapacitor/kapaci tick_kapacitor:/path/in/the/container/kapaci
+
 - name: update backend service
   ecs_service:
     state: present

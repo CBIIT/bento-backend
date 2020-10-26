@@ -997,8 +997,13 @@ type QueryType {
 
     filesInList(file_ids: [String]): [FileDetail] 
 
-    sampleOverview: [SampleOverview] 
+    sampleOverview(subject_ids: [String] = [], order_by: String = ""): [SampleOverview] 
 
-    fileOverview: [FileOverview] 
+    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = ""): [SampleOverview] 
+
+
+    fileOverview(subject_ids: [String] = [], order_by: String = ""): [FileOverview] 
+
+    fileOverviewDesc(subject_ids: [String] = [], order_by: String = ""): [FileOverview] 
 
 }

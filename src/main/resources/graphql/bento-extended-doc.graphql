@@ -997,13 +997,13 @@ type QueryType {
 
     filesInList(file_ids: [String]): [FileDetail] 
 
-    sampleOverview(subject_ids: [String] = [], order_by: String = ""): [SampleOverview] 
+    sampleOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
 
-    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = ""): [SampleOverview] 
+    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
 
 
-    fileOverview(subject_ids: [String] = [], order_by: String = ""): [FileOverview] 
+    fileOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
 
-    fileOverviewDesc(subject_ids: [String] = [], order_by: String = ""): [FileOverview] 
+    fileOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
 
 }

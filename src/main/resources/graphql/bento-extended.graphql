@@ -1531,7 +1531,7 @@ type QueryType {
                s.study_acronym AS study_code
         """)
 
-    sampleOverview(subject_ids: [String] = [], order_by: String = ""): [SampleOverview] @cypher(statement: """
+    sampleOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
         MATCH (ss:study_subject)
         WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (samp:sample)
@@ -1564,9 +1564,11 @@ type QueryType {
             WHEN 'sample_procurement_method' THEN sample_procurement_method
             WHEN 'platform' THEN platform
             ELSE subject_id  END
+        SKIP $offset
+        LIMIT $first
     """)
 
-    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = ""): [SampleOverview] @cypher(statement: """
+    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
         MATCH (ss:study_subject)
         WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (samp:sample)
@@ -1598,10 +1600,12 @@ type QueryType {
             WHEN 'sample_procurement_method' THEN sample_procurement_method
             WHEN 'platform' THEN platform
             ELSE subject_id END DESC
+        SKIP $offset
+        LIMIT $first
     """)
 
 
-    fileOverview(subject_ids: [String] = [], order_by: String = ""): [FileOverview] @cypher(statement: """
+    fileOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
         MATCH (ss:study_subject)
         WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (f:file)
@@ -1635,9 +1639,11 @@ type QueryType {
             WHEN 'sample_id' THEN sample_id
             WHEN 'diagnosis' THEN diagnosis
             ELSE subject_id END
+        SKIP $offset
+        LIMIT $first
     """)
 
-    fileOverviewDesc(subject_ids: [String] = [], order_by: String = ""): [FileOverview] @cypher(statement: """
+    fileOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
         MATCH (ss:study_subject)
         WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (f:file)
@@ -1670,6 +1676,8 @@ type QueryType {
         WHEN 'sample_id' THEN sample_id
         WHEN 'diagnosis' THEN diagnosis
         ELSE subject_id END DESC
+        SKIP $offset
+        LIMIT $first
     """)
 
 }

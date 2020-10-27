@@ -838,42 +838,153 @@ type QueryType {
                s.study_acronym AS study_code
         """)
 
-    sampleOverview: [SampleOverview] @cypher(statement: """
+    sampleOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (samp:sample)
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p
-        RETURN samp.sample_id AS sample_id,
-                ss.study_subject_id AS subject_id,
-                p.program_acronym AS program,
-                s.study_acronym AS arm,
-                ss.disease_subtype AS diagnosis,
-                samp.tissue_type AS tissue_type,
-                samp.composition AS tissue_composition,
-                samp.sample_anatomic_site AS sample_anatomic_site,
-                samp.method_of_sample_procurement AS sample_procurement_method,
-                lp.test_name AS platform,
-                files
+        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p, all_subjects
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN
+            samp.sample_id AS sample_id,
+            ss.study_subject_id AS subject_id,
+            p.program_acronym AS program,
+            s.study_acronym AS arm,
+            ss.disease_subtype AS diagnosis,
+            samp.tissue_type AS tissue_type,
+            samp.composition AS tissue_composition,
+            samp.sample_anatomic_site AS sample_anatomic_site,
+            samp.method_of_sample_procurement AS sample_procurement_method,
+            lp.test_name AS platform,
+            files
+        ORDER BY CASE $order_by
+            WHEN 'sample_id' THEN sample_id
+            WHEN 'subject_id' THEN subject_id
+            WHEN 'program' THEN program
+            WHEN 'arm' THEN arm
+            WHEN 'diagnosis' THEN diagnosis
+            WHEN 'tissue_type' THEN tissue_type
+            WHEN 'tissue_composition' THEN tissue_composition
+            WHEN 'sample_anatomic_site' THEN sample_anatomic_site
+            WHEN 'sample_procurement_method' THEN sample_procurement_method
+            WHEN 'platform' THEN platform
+            ELSE subject_id  END
+        SKIP $offset
+        LIMIT $first
     """)
 
-    fileOverview: [FileOverview] @cypher(statement: """
+    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (samp:sample)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
+        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p, all_subjects
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN
+            samp.sample_id AS sample_id,
+            ss.study_subject_id AS subject_id,
+            p.program_acronym AS program,
+            s.study_acronym AS arm,
+            ss.disease_subtype AS diagnosis,
+            samp.tissue_type AS tissue_type,
+            samp.composition AS tissue_composition,
+            samp.sample_anatomic_site AS sample_anatomic_site,
+            samp.method_of_sample_procurement AS sample_procurement_method,
+            lp.test_name AS platform,
+            files
+        ORDER BY CASE $order_by
+            WHEN 'sample_id' THEN sample_id
+            WHEN 'program' THEN program
+            WHEN 'arm' THEN arm
+            WHEN 'diagnosis' THEN diagnosis
+            WHEN 'tissue_type' THEN tissue_type
+            WHEN 'tissue_composition' THEN tissue_composition
+            WHEN 'sample_anatomic_site' THEN sample_anatomic_site
+            WHEN 'sample_procurement_method' THEN sample_procurement_method
+            WHEN 'platform' THEN platform
+            ELSE subject_id END DESC
+        SKIP $offset
+        LIMIT $first
+    """)
+
+
+    fileOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (f:file)
         OPTIONAL MATCH (f)-->(parent)
             WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        WITH f, ss, p, parent, s, samp, all_subjects
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN f.file_id AS file_id,
-               f.file_name AS file_name,
-               head(labels(parent)) AS association,
-               f.file_description AS file_description,
-               f.file_format AS file_format,
-               f.file_size AS file_size,
-               p.program_acronym AS program,
-               s.study_acronym AS arm,
-               ss.study_subject_id AS subject_id,
-               samp.sample_id AS sample_id,
-               ss.disease_subtype AS diagnosis
+            f.file_name AS file_name,
+            head(labels(parent)) AS association,
+            f.file_description AS file_description,
+            f.file_format AS file_format,
+            f.file_size AS file_size,
+            p.program_acronym AS program,
+            s.study_acronym AS arm,
+            ss.study_subject_id AS subject_id,
+            samp.sample_id AS sample_id,
+            ss.disease_subtype AS diagnosis,
+            $order_by as order_by
+        ORDER BY CASE order_by
+            WHEN 'file_id' THEN file_id
+            WHEN 'file_name' THEN file_name
+            WHEN 'association' THEN association
+            WHEN 'file_description' THEN file_description
+            WHEN 'file_format' THEN file_format
+            WHEN 'file_size' THEN file_size
+            WHEN 'program' THEN program
+            WHEN 'arm' THEN arm
+            WHEN 'sample_id' THEN sample_id
+            WHEN 'diagnosis' THEN diagnosis
+            ELSE subject_id END
+        SKIP $offset
+        LIMIT $first
+    """)
+
+    fileOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
+        MATCH (f:file)
+        OPTIONAL MATCH (f)-->(parent)
+        WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
+        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        WITH f, ss, p, parent, s, samp, all_subjects
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+        RETURN f.file_id AS file_id,
+        f.file_name AS file_name,
+        head(labels(parent)) AS association,
+        f.file_description AS file_description,
+        f.file_format AS file_format,
+        f.file_size AS file_size,
+        p.program_acronym AS program,
+        s.study_acronym AS arm,
+        ss.study_subject_id AS subject_id,
+        samp.sample_id AS sample_id,
+        ss.disease_subtype AS diagnosis
+        ORDER BY CASE $order_by
+        WHEN 'file_id' THEN file_id
+        WHEN 'file_name' THEN file_name
+        WHEN 'association' THEN association
+        WHEN 'file_description' THEN file_description
+        WHEN 'file_format' THEN file_format
+        WHEN 'file_size' THEN file_size
+        WHEN 'program' THEN program
+        WHEN 'arm' THEN arm
+        WHEN 'sample_id' THEN sample_id
+        WHEN 'diagnosis' THEN diagnosis
+        ELSE subject_id END DESC
+        SKIP $offset
+        LIMIT $first
     """)
 
 }

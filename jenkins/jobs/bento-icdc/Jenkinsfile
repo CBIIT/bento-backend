@@ -173,6 +173,7 @@ pipeline {
           ])
         {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          sh "echo ${TLS_HOSTNAME}"
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

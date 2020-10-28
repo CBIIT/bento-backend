@@ -9,10 +9,10 @@ prority:
 region: us-east-1
 jq: "{{project}}.{{tier}}"
 alb:
-  icdc:
+  icdc:  
     dev: DEV-A-Appli-Caninedata-8UHLKJYN
     qa: QA-Ca-Appli-6P2VXOVVW4SD
-    stage: ""
+    stage: canin-appli-exxc73anou8b
     prod: ""
   ctdc:
     dev: "test"

@@ -698,7 +698,6 @@ type GroupCount {
 
 type SubjectOverview {
     subject_id: String
-    subject_id_num: Int
     program: String
     program_id: String
     study_acronym: String

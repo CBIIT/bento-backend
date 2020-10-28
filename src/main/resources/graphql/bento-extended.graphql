@@ -698,7 +698,6 @@ type GroupCount {
 
 type SubjectOverview {
     subject_id: String
-    subject_id_num: Int
     program: String
     program_id: String
     study_acronym: String
@@ -1069,7 +1068,12 @@ type QueryType {
         WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
           WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            collect(DISTINCT sp.sample_id) AS samples,
+            collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
+            collect(DISTINCT f) AS files,
+            ss
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
@@ -1082,7 +1086,6 @@ type QueryType {
             s.study_short_description AS study_short_description,
             s.study_acronym + ': ' + s.study_short_description AS study_info,
             ss.study_subject_id AS subject_id,
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
             ss.disease_subtype AS diagnosis,
             sf.grouped_recurrence_score AS recurrence_score,
             d.tumor_size_group AS tumor_size,
@@ -1099,6 +1102,7 @@ type QueryType {
             files,
             lab_procedures
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'program' THEN program
             WHEN 'program_id' THEN program_id
             WHEN 'study_acronym' THEN study_acronym
@@ -1125,7 +1129,12 @@ type QueryType {
         WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
           WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            collect(DISTINCT sp.sample_id) AS samples,
+            collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
+            collect(DISTINCT f) AS files,
+            ss
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
@@ -1155,6 +1164,7 @@ type QueryType {
             files,
             lab_procedures
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'program' THEN program
             WHEN 'program_id' THEN program_id
             WHEN 'study_acronym' THEN study_acronym
@@ -1541,12 +1551,15 @@ type QueryType {
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p, all_subjects
+        WITH
+            distinct lp,
+            toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+            collect(distinct f.file_id) AS files,
+            samp, ss, s, p, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
             p.program_acronym AS program,
             s.study_acronym AS arm,
             ss.disease_subtype AS diagnosis,
@@ -1557,6 +1570,7 @@ type QueryType {
             lp.test_name AS platform,
             files
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'sample_id' THEN sample_id
             WHEN 'program' THEN program
             WHEN 'arm' THEN arm
@@ -1578,12 +1592,15 @@ type QueryType {
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p, all_subjects
+        WITH
+            distinct lp,
+            toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+            collect(distinct f.file_id) AS files,
+            samp, ss, s, p, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
             p.program_acronym AS program,
             s.study_acronym AS arm,
             ss.disease_subtype AS diagnosis,
@@ -1594,6 +1611,7 @@ type QueryType {
             lp.test_name AS platform,
             files
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'sample_id' THEN sample_id
             WHEN 'program' THEN program
             WHEN 'arm' THEN arm
@@ -1617,7 +1635,9 @@ type QueryType {
             WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WITH f, ss, p, parent, s, samp, all_subjects
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN f.file_id AS file_id,
             f.file_name AS file_name,
@@ -1628,11 +1648,11 @@ type QueryType {
             p.program_acronym AS program,
             s.study_acronym AS arm,
             ss.study_subject_id AS subject_id,
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
             samp.sample_id AS sample_id,
             ss.disease_subtype AS diagnosis,
             $order_by as order_by
         ORDER BY CASE order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'file_id' THEN file_id
             WHEN 'file_name' THEN file_name
             WHEN 'association' THEN association
@@ -1656,7 +1676,9 @@ type QueryType {
         WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WITH f, ss, p, parent, s, samp, all_subjects
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN
             f.file_id AS file_id,
@@ -1668,10 +1690,10 @@ type QueryType {
             p.program_acronym AS program,
             s.study_acronym AS arm,
             ss.study_subject_id AS subject_id,
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
             samp.sample_id AS sample_id,
             ss.disease_subtype AS diagnosis
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'file_id' THEN file_id
             WHEN 'file_name' THEN file_name
             WHEN 'association' THEN association

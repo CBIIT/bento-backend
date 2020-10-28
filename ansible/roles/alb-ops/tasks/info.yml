@@ -7,28 +7,28 @@
     region: "{{region}}"
   register: alb_info
 
-# - name: set facts
-#   set_fact:
-#     certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
-#     http_listener_arn: "{{alb_info.load_balancers[0].listeners[1].listener_arn}}"
-#     https_listener_arn: "{{alb_info.load_balancers[0].listeners[0].listener_arn}}"
-#     backend_arn: "{{backend_target|json_query(jq)}}"
-#     frontend_arn: "{{frontend_target|json_query(jq)}}"
+- name: set facts
+  set_fact:
+    certificate_arn: "{{alb_info.load_balancers[0].listeners[0].certificates[0].certificate_arn}}"
+    http_listener_arn: "{{alb_info.load_balancers[0].listeners[1].listener_arn}}"
+    https_listener_arn: "{{alb_info.load_balancers[0].listeners[0].listener_arn}}"
+    backend_arn: "{{backend_target|json_query(jq)}}"
+    frontend_arn: "{{frontend_target|json_query(jq)}}"
 
 - debug:
     msg: "{{alb_info}}"
 
-# - name: copy application.properties file to /src/main/resources/
-#   template:
-#     src: "{{item.src}}"
-#     dest: "{{item.dest}}"
-#   loop:
-#     - { src: 'fixed-actions.json.j2', dest: "{{workspace}}/fixed-actions.json" }
-#     - { src: 'fixed-conditions.json.j2',dest: "{{workspace}}/fixed-conditions.json"}
-#     - { src: 'backend-conditions.json.j2',dest: "{{workspace}}/backend-conditions.json"}
-#     - { src: 'frontend-conditions.json.j2',dest: "{{workspace}}/frontend-conditions.json"}
-#     - { src: 'backend-actions.json.j2', dest: "{{workspace}}/backend-actions.json" }
-#     - { src: 'frontend-actions.json.j2', dest: "{{workspace}}/frontend-actions.json" }
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  loop:
+    - { src: 'fixed-actions.json.j2', dest: "{{workspace}}/fixed-actions.json" }
+    - { src: 'fixed-conditions.json.j2',dest: "{{workspace}}/fixed-conditions.json"}
+    - { src: 'backend-conditions.json.j2',dest: "{{workspace}}/backend-conditions.json"}
+    - { src: 'frontend-conditions.json.j2',dest: "{{workspace}}/frontend-conditions.json"}
+    - { src: 'backend-actions.json.j2', dest: "{{workspace}}/backend-actions.json" }
+    - { src: 'frontend-actions.json.j2', dest: "{{workspace}}/frontend-actions.json" }
 
 
 # - name: create fixed response rule

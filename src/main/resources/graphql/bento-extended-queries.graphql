@@ -196,12 +196,12 @@ type FileOverview {
 }
 
 type SearchResult {
-    num_programs: Int
-    num_studies: Int
-    num_subjects: Int
-    num_samples: Int
-    num_lab_procedures: Int
-    num_files: Int
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfLabProcedures: Int
+    numberOfFilesIs: Int
     subjectIds: [String]
     firstPage: [SubjectOverview]
 }
@@ -359,12 +359,17 @@ type QueryType {
         RETURN f.file_type AS group, COUNT(DISTINCT ss) as subjects
     """)
 
-    armsByPrograms: [ProgramArms] @cypher(statement: """
+    armsByPrograms(subject_ids: [String] = []): [ProgramArms] @cypher(statement: """
+        MATCH (ss:study_subject)
+        WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (p:program)
         OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
-        WITH p, COUNT(DISTINCT ss) AS caseSize
+        WITH p, COUNT(DISTINCT ss) AS caseSize, all_subjects
         OPTIONAL MATCH (p)<-[:study_of_program]-(s)<-[:study_subject_of_study]-(ss)
-        WITH p, caseSize, {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
+        WITH
+            p, ss, all_subjects, caseSize,
+            {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
+        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN  p.program_acronym AS program,
                 caseSize,
                 collect(s) AS children
@@ -650,12 +655,12 @@ type QueryType {
         UNWIND lab_procedures AS lab_procedure_id
         UNWIND files AS file
         RETURN COLLECT(DISTINCT subject_id) AS subjectIds,
-               COUNT(DISTINCT program) AS num_programs,
-               COUNT(DISTINCT study_acronym) AS num_studies,
-               COUNT(DISTINCT subject_id) AS num_subjects,
-               COUNT(DISTINCT lab_procedure_id) AS num_lab_procedures,
-               COUNT(DISTINCT sample_id) AS num_samples,
-               COUNT(DISTINCT file) AS num_files,
+               COUNT(DISTINCT program) AS numberOfPrograms,
+               COUNT(DISTINCT study_acronym) AS numberOfStudies,
+               COUNT(DISTINCT subject_id) AS numberOfSubjects,
+               COUNT(DISTINCT lab_procedure_id) AS numberOfLabProcedures,
+               COUNT(DISTINCT sample_id) AS numberOfSamples,
+               COUNT(DISTINCT file) AS numberOfFilesIs,
                COLLECT( { subject_id: subject_id, program: program, program_id: program_id, study_acronym: study_acronym,
                           study_short_description: study_short_description, study_info: study_info, diagnosis: diagnosis,
                           recurrence_score: recurrence_score, tumor_size: tumor_size, tumor_grade: tumor_grade,

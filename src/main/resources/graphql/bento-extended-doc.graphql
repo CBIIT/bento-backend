@@ -889,12 +889,12 @@ type FileOverview {
 }
 
 type SearchResult {
-    num_programs: Int
-    num_studies: Int
-    num_subjects: Int
-    num_samples: Int
-    num_lab_procedures: Int
-    num_files: Int
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfLabProcedures: Int
+    numberOfFilesIs: Int
     subjectIds: [String]
     firstPage: [SubjectOverview]
 }
@@ -944,7 +944,7 @@ type QueryType {
 
     subjectCountByFileType(subject_ids: [String] = []): [GroupCount] 
 
-    armsByPrograms: [ProgramArms] 
+    armsByPrograms(subject_ids: [String] = []): [ProgramArms] 
 
     subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] 
 

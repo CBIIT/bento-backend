@@ -1,4 +1,0 @@
-FROM newrelic/infrastructure-bundle:latest
-
-# Copy nginx config file
-COPY nginx-config.yml /etc/newrelic-infra/integrations.d/

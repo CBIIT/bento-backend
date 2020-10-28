@@ -146,12 +146,31 @@
     region: "{{region}}"
   register: task_output
 
+#- name: set newrelic nginx values
+#  template:
+#    src: "nginx-config.yml.j2"
+#    dest: "{{workspace}}/nginx-config.yml"
+
+#- name: rebuild newrelic image
+#  docker_image:
+#    build:
+#      path: "{{workspace}}"
+#      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/newrelic"
+#      pull: yes
+#      nocache: yes
+#    name: bento-newrelic
+#    tag: "{{tier}}"
+#    push: no
+#    force_source: yes
+#    source: build
+
 - name: create task definition - newrelic docker
   ecs_taskdefinition:
     containers:
     - name: newrelic-docker
       essential: true
-      image: "newrelic/infrastructure:latest"
+      image: "newrelic/infrastructure-bundle:latest"
+      #image: "bento-newrelic:{{tier}}"
       environment:
         - name: NRIA_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
@@ -159,6 +178,8 @@
           value: "{{ app_name }}-docker"
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
+        - name: STATUS_URL
+          value: "{% if tier == 'prod' %}https://bento-tools.org/nginx_status{% else %}https://{{ tier }}.bento-tools.org/nginx_status{% endif %}"
       mountPoints:
         - containerPath: /var/run/docker.sock
           sourceVolume: docker-sock
@@ -325,19 +346,6 @@
     desired_count: 1
     region: "{{region}}"
   register: service_nr_docker_output
-
-##- name: echo service_nr_docker_output
-##  debug:
-##    msg: "{{ service_nr_docker_output }}"
-
-##- name: Create nginx config file
-##  shell: docker cp /etc/kapacitor/kapaci tick_kapacitor:/path/in/the/container/kapaci
-
-##- name: Copy nginx config file to newrelic container
-##  shell: docker cp /etc/kapacitor/kapaci tick_kapacitor:/path/in/the/container/kapaci
-  
-##- name: Restart newrelic container
-##  shell: docker cp /etc/kapacitor/kapaci tick_kapacitor:/path/in/the/container/kapaci
 
 - name: update backend service
   ecs_service:

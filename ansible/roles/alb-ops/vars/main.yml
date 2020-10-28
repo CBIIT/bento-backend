@@ -12,7 +12,7 @@ alb:
   icdc:  
     dev: DEV-A-Appli-Caninedata-8UHLKJYN
     qa: QA-Ca-Appli-6P2VXOVVW4SD
-    stage: canin-appli-exxc73anou8b
+    stage: canin-Appli-EXXC73ANOU8B
     prod: ""
   ctdc:
     dev: "test"

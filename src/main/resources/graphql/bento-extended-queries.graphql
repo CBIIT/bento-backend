@@ -675,13 +675,13 @@ type QueryType {
                COUNT(DISTINCT lab_procedure_id) AS numberOfLabProcedures,
                COUNT(DISTINCT sample_id) AS numberOfSamples,
                COUNT(DISTINCT file) AS numberOfFilesIs,
-               COLLECT( { subject_id: subject_id, program: program, program_id: program_id, study_acronym: study_acronym,
+               COLLECT( DISTINCT({ subject_id: subject_id, program: program, program_id: program_id, study_acronym: study_acronym,
                           study_short_description: study_short_description, study_info: study_info, diagnosis: diagnosis,
                           recurrence_score: recurrence_score, tumor_size: tumor_size, tumor_grade: tumor_grade,
                           er_status: er_status, pr_status: pr_status, chemotherapy: chemotherapy,
                           endocrine_therapy: endocrine_therapy, menopause_status: menopause_status,
                           age_at_index: age_at_index, survival_time: survival_time, survival_time_unit: survival_time_unit,
-                          files: files, samples: samples, lab_procedures: lab_procedures})[0..$first] AS firstPage
+                          files: files, samples: samples, lab_procedures: lab_procedures}))[0..$first] AS firstPage
     """, passThrough:true)
 
 

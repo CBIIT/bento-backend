@@ -365,16 +365,16 @@
     region: "{{region}}"
   register: service_frontend_output
 
-- name: Pause for 20 seconds to allow updates to take effect
-  pause:
-    seconds: 20
+#- name: Pause for 20 seconds to allow updates to take effect
+#  pause:
+#    seconds: 20
 
-- name: "wait for {{ frontend_url }} to become available"
-  uri:
-   url: "{{ frontend_url }}"
-   follow_redirects: none
-   method: GET
-  register: _result
-  until: ('status' in _result) and (_result.status == 200)
-  retries: 100
-  delay: 10
+#- name: "wait for {{ frontend_url }} to become available"
+#  uri:
+#   url: "{{ frontend_url }}"
+#   follow_redirects: none
+#   method: GET
+#  register: _result
+#  until: ('status' in _result) and (_result.status == 200)
+#  retries: 100
+#  delay: 10

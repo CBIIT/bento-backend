@@ -1068,52 +1068,58 @@ type QueryType {
         WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
           WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            collect(DISTINCT sp.sample_id) AS samples,
+            collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
+            collect(DISTINCT f) AS files,
+            ss
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
         OPTIONAL MATCH (d)<-[:tp_of_diagnosis]-(tp)
         OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-        RETURN  p.program_acronym AS program,
-                p.program_id AS program_id,
-                s.study_acronym AS study_acronym,
-                s.study_short_description AS study_short_description,
-                s.study_acronym + ': ' + s.study_short_description AS study_info,
-                ss.study_subject_id AS subject_id,
-                ss.disease_subtype AS diagnosis,
-                sf.grouped_recurrence_score AS recurrence_score,
-                d.tumor_size_group AS tumor_size,
-                d.tumor_grade AS tumor_grade,
-                d.er_status AS er_status,
-                d.pr_status AS pr_status,
-                tp.chemotherapy_regimen AS chemotherapy,
-                tp.endocrine_therapy_type AS endocrine_therapy,
-                demo.menopause_status AS menopause_status,
-                demo.age_at_index AS age_at_index,
-                demo.survival_time AS survival_time,
-                demo.survival_time_unit AS survival_time_unit,
-                samples,
-                files,
-                lab_procedures
+        RETURN
+            p.program_acronym AS program,
+            p.program_id AS program_id,
+            s.study_acronym AS study_acronym,
+            s.study_short_description AS study_short_description,
+            s.study_acronym + ': ' + s.study_short_description AS study_info,
+            ss.study_subject_id AS subject_id,
+            ss.disease_subtype AS diagnosis,
+            sf.grouped_recurrence_score AS recurrence_score,
+            d.tumor_size_group AS tumor_size,
+            d.tumor_grade AS tumor_grade,
+            d.er_status AS er_status,
+            d.pr_status AS pr_status,
+            tp.chemotherapy_regimen AS chemotherapy,
+            tp.endocrine_therapy_type AS endocrine_therapy,
+            demo.menopause_status AS menopause_status,
+            demo.age_at_index AS age_at_index,
+            demo.survival_time AS survival_time,
+            demo.survival_time_unit AS survival_time_unit,
+            samples,
+            files,
+            lab_procedures
         ORDER BY CASE $order_by
-                    WHEN 'subject_id' THEN subject_id
-                    WHEN 'program' THEN program
-                    WHEN 'program_id' THEN program_id
-                    WHEN 'study_acronym' THEN study_acronym
-                    WHEN 'study_short_description' THEN study_short_description
-                    WHEN 'study_info' THEN study_info
-                    WHEN 'diagnosis' THEN diagnosis
-                    WHEN 'recurrence_score' THEN recurrence_score
-                    WHEN 'tumor_size' THEN tumor_size
-                    WHEN 'tumor_grade' THEN tumor_grade
-                    WHEN 'er_status' THEN er_status
-                    WHEN 'pr_status' THEN pr_status
-                    WHEN 'chemotherapy' THEN chemotherapy
-                    WHEN 'endocrine_therapy' THEN endocrine_therapy
-                    WHEN 'menopause_status' THEN menopause_status
-                    WHEN 'age_at_index' THEN age_at_index
-                    WHEN 'survival_time' THEN survival_time
-                    ELSE subject_id  END
+            WHEN 'subject_id' THEN subject_id_num
+            WHEN 'program' THEN program
+            WHEN 'program_id' THEN program_id
+            WHEN 'study_acronym' THEN study_acronym
+            WHEN 'study_short_description' THEN study_short_description
+            WHEN 'study_info' THEN study_info
+            WHEN 'diagnosis' THEN diagnosis
+            WHEN 'recurrence_score' THEN recurrence_score
+            WHEN 'tumor_size' THEN tumor_size
+            WHEN 'tumor_grade' THEN tumor_grade
+            WHEN 'er_status' THEN er_status
+            WHEN 'pr_status' THEN pr_status
+            WHEN 'chemotherapy' THEN chemotherapy
+            WHEN 'endocrine_therapy' THEN endocrine_therapy
+            WHEN 'menopause_status' THEN menopause_status
+            WHEN 'age_at_index' THEN age_at_index
+            WHEN 'survival_time' THEN survival_time
+            ELSE subject_id_num END
         SKIP $offset
         LIMIT $first
     """, passThrough: true)
@@ -1123,52 +1129,59 @@ type QueryType {
         WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
           WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            collect(DISTINCT sp.sample_id) AS samples,
+            collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
+            collect(DISTINCT f) AS files,
+            ss
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
         OPTIONAL MATCH (d)<-[:tp_of_diagnosis]-(tp)
         OPTIONAL MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-        RETURN  p.program_acronym AS program,
-                p.program_id AS program_id,
-                s.study_acronym AS study_acronym,
-                s.study_short_description AS study_short_description,
-                s.study_acronym + ': ' + s.study_short_description AS study_info,
-                ss.study_subject_id AS subject_id,
-                ss.disease_subtype AS diagnosis,
-                sf.grouped_recurrence_score AS recurrence_score,
-                d.tumor_size_group AS tumor_size,
-                d.tumor_grade AS tumor_grade,
-                d.er_status AS er_status,
-                d.pr_status AS pr_status,
-                tp.chemotherapy_regimen AS chemotherapy,
-                tp.endocrine_therapy_type AS endocrine_therapy,
-                demo.menopause_status AS menopause_status,
-                demo.age_at_index AS age_at_index,
-                demo.survival_time AS survival_time,
-                demo.survival_time_unit AS survival_time_unit,
-                samples,
-                files,
-                lab_procedures
+        RETURN
+            p.program_acronym AS program,
+            p.program_id AS program_id,
+            s.study_acronym AS study_acronym,
+            s.study_short_description AS study_short_description,
+            s.study_acronym + ': ' + s.study_short_description AS study_info,
+            ss.study_subject_id AS subject_id,
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            ss.disease_subtype AS diagnosis,
+            sf.grouped_recurrence_score AS recurrence_score,
+            d.tumor_size_group AS tumor_size,
+            d.tumor_grade AS tumor_grade,
+            d.er_status AS er_status,
+            d.pr_status AS pr_status,
+            tp.chemotherapy_regimen AS chemotherapy,
+            tp.endocrine_therapy_type AS endocrine_therapy,
+            demo.menopause_status AS menopause_status,
+            demo.age_at_index AS age_at_index,
+            demo.survival_time AS survival_time,
+            demo.survival_time_unit AS survival_time_unit,
+            samples,
+            files,
+            lab_procedures
         ORDER BY CASE $order_by
-                    WHEN 'subject_id' THEN subject_id
-                    WHEN 'program' THEN program
-                    WHEN 'program_id' THEN program_id
-                    WHEN 'study_acronym' THEN study_acronym
-                    WHEN 'study_short_description' THEN study_short_description
-                    WHEN 'study_info' THEN study_info
-                    WHEN 'diagnosis' THEN diagnosis
-                    WHEN 'recurrence_score' THEN recurrence_score
-                    WHEN 'tumor_size' THEN tumor_size
-                    WHEN 'tumor_grade' THEN tumor_grade
-                    WHEN 'er_status' THEN er_status
-                    WHEN 'pr_status' THEN pr_status
-                    WHEN 'chemotherapy' THEN chemotherapy
-                    WHEN 'endocrine_therapy' THEN endocrine_therapy
-                    WHEN 'menopause_status' THEN menopause_status
-                    WHEN 'age_at_index' THEN age_at_index
-                    WHEN 'survival_time' THEN survival_time
-                    ELSE subject_id  END DESC
+            WHEN 'subject_id' THEN subject_id_num
+            WHEN 'program' THEN program
+            WHEN 'program_id' THEN program_id
+            WHEN 'study_acronym' THEN study_acronym
+            WHEN 'study_short_description' THEN study_short_description
+            WHEN 'study_info' THEN study_info
+            WHEN 'diagnosis' THEN diagnosis
+            WHEN 'recurrence_score' THEN recurrence_score
+            WHEN 'tumor_size' THEN tumor_size
+            WHEN 'tumor_grade' THEN tumor_grade
+            WHEN 'er_status' THEN er_status
+            WHEN 'pr_status' THEN pr_status
+            WHEN 'chemotherapy' THEN chemotherapy
+            WHEN 'endocrine_therapy' THEN endocrine_therapy
+            WHEN 'menopause_status' THEN menopause_status
+            WHEN 'age_at_index' THEN age_at_index
+            WHEN 'survival_time' THEN survival_time
+            ELSE subject_id_num END DESC
         SKIP $offset
         LIMIT $first
     """, passThrough: true)
@@ -1538,7 +1551,11 @@ type QueryType {
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p, all_subjects
+        WITH
+            distinct lp,
+            toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+            collect(distinct f.file_id) AS files,
+            samp, ss, s, p, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN
             samp.sample_id AS sample_id,
@@ -1553,8 +1570,8 @@ type QueryType {
             lp.test_name AS platform,
             files
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'sample_id' THEN sample_id
-            WHEN 'subject_id' THEN subject_id
             WHEN 'program' THEN program
             WHEN 'arm' THEN arm
             WHEN 'diagnosis' THEN diagnosis
@@ -1563,7 +1580,7 @@ type QueryType {
             WHEN 'sample_anatomic_site' THEN sample_anatomic_site
             WHEN 'sample_procurement_method' THEN sample_procurement_method
             WHEN 'platform' THEN platform
-            ELSE subject_id  END
+            ELSE subject_id_num END
         SKIP $offset
         LIMIT $first
     """)
@@ -1575,7 +1592,11 @@ type QueryType {
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH distinct lp, collect(distinct f.file_id) AS files, samp, ss, s, p, all_subjects
+        WITH
+            distinct lp,
+            toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+            collect(distinct f.file_id) AS files,
+            samp, ss, s, p, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN
             samp.sample_id AS sample_id,
@@ -1590,6 +1611,7 @@ type QueryType {
             lp.test_name AS platform,
             files
         ORDER BY CASE $order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'sample_id' THEN sample_id
             WHEN 'program' THEN program
             WHEN 'arm' THEN arm
@@ -1599,7 +1621,7 @@ type QueryType {
             WHEN 'sample_anatomic_site' THEN sample_anatomic_site
             WHEN 'sample_procurement_method' THEN sample_procurement_method
             WHEN 'platform' THEN platform
-            ELSE subject_id END DESC
+            ELSE subject_id_num END DESC
         SKIP $offset
         LIMIT $first
     """)
@@ -1613,7 +1635,9 @@ type QueryType {
             WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WITH f, ss, p, parent, s, samp, all_subjects
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN f.file_id AS file_id,
             f.file_name AS file_name,
@@ -1628,6 +1652,7 @@ type QueryType {
             ss.disease_subtype AS diagnosis,
             $order_by as order_by
         ORDER BY CASE order_by
+            WHEN 'subject_id' THEN subject_id_num
             WHEN 'file_id' THEN file_id
             WHEN 'file_name' THEN file_name
             WHEN 'association' THEN association
@@ -1638,7 +1663,7 @@ type QueryType {
             WHEN 'arm' THEN arm
             WHEN 'sample_id' THEN sample_id
             WHEN 'diagnosis' THEN diagnosis
-            ELSE subject_id END
+            ELSE subject_id_num END
         SKIP $offset
         LIMIT $first
     """)
@@ -1651,31 +1676,35 @@ type QueryType {
         WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WITH f, ss, p, parent, s, samp, all_subjects
+        WITH
+            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, all_subjects
         WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-        RETURN f.file_id AS file_id,
-        f.file_name AS file_name,
-        head(labels(parent)) AS association,
-        f.file_description AS file_description,
-        f.file_format AS file_format,
-        f.file_size AS file_size,
-        p.program_acronym AS program,
-        s.study_acronym AS arm,
-        ss.study_subject_id AS subject_id,
-        samp.sample_id AS sample_id,
-        ss.disease_subtype AS diagnosis
+        RETURN
+            f.file_id AS file_id,
+            f.file_name AS file_name,
+            head(labels(parent)) AS association,
+            f.file_description AS file_description,
+            f.file_format AS file_format,
+            f.file_size AS file_size,
+            p.program_acronym AS program,
+            s.study_acronym AS arm,
+            ss.study_subject_id AS subject_id,
+            samp.sample_id AS sample_id,
+            ss.disease_subtype AS diagnosis
         ORDER BY CASE $order_by
-        WHEN 'file_id' THEN file_id
-        WHEN 'file_name' THEN file_name
-        WHEN 'association' THEN association
-        WHEN 'file_description' THEN file_description
-        WHEN 'file_format' THEN file_format
-        WHEN 'file_size' THEN file_size
-        WHEN 'program' THEN program
-        WHEN 'arm' THEN arm
-        WHEN 'sample_id' THEN sample_id
-        WHEN 'diagnosis' THEN diagnosis
-        ELSE subject_id END DESC
+            WHEN 'subject_id' THEN subject_id_num
+            WHEN 'file_id' THEN file_id
+            WHEN 'file_name' THEN file_name
+            WHEN 'association' THEN association
+            WHEN 'file_description' THEN file_description
+            WHEN 'file_format' THEN file_format
+            WHEN 'file_size' THEN file_size
+            WHEN 'program' THEN program
+            WHEN 'arm' THEN arm
+            WHEN 'sample_id' THEN sample_id
+            WHEN 'diagnosis' THEN diagnosis
+            ELSE subject_id_num END DESC
         SKIP $offset
         LIMIT $first
     """)

@@ -273,7 +273,7 @@
 
 - name: set facts
   set_fact:
-    frontend_url: "{% if tier == 'prod' %}https://bento-tools.org/{% else %}https://{{ tier }}.bento-tools.org/{% endif %}"
+    #frontend_url: "{% if tier == 'prod' %}https://bento-tools.org/{% else %}https://{{ tier }}.bento-tools.org/{% endif %}"
     frontend_revision: "{{task_frontend.revision}}"
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
@@ -365,16 +365,12 @@
     region: "{{region}}"
   register: service_frontend_output
 
-- name: "wait for {{ frontend_url }} to become available"
-  uri:
-    url: "{{ frontend_url }}"
-    method: GET
-    status: 200
-  register: check_result
-  #until: _result.status == 200
-  #retries: 30
-  #delay: 30
-  
-- name: echo status check
-  debug:
-    msg: "{{ check_result }}"
+#- name: "wait for {{ frontend_url }} to become available"
+#  uri:
+#    url: "{{ frontend_url }}"
+#    method: GET
+#    status: 200
+#  register: check_result
+#  until: _result.status == 200
+#  retries: 30
+#  delay: 30

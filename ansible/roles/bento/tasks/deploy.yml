@@ -273,6 +273,7 @@
 
 - name: set facts
   set_fact:
+    frontend_url: "{% if tier == 'prod' %}https://bento-tools.org/{% else %}https://{{ tier }}.bento-tools.org/{% endif %}"
     frontend_revision: "{{task_frontend.revision}}"
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
@@ -364,3 +365,16 @@
     region: "{{region}}"
   register: service_frontend_output
 
+- name: echo frontend url
+  debug:
+    msg: "{{ frontend_url }}"
+
+- name: "wait for {{ frontend_url }} to come up"
+  uri:
+    url: "{{ frontend_url }}"
+    method: GET
+    status: 200
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 30

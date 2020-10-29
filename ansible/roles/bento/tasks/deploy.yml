@@ -368,8 +368,10 @@
 - name: "wait for {{ frontend_url }} to become available"
   uri:
    url: "{{ frontend_url }}"
+   follow_redirects: none
+   method: GET
+  register: _result
+  until: ('status' in _result) and (_result.status == 200)
   retries: 10
   delay: 5
-  register: result
-  until: ('status' in result) and (result.status == 200)
-  changed_when: false
+  #changed_when: false

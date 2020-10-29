@@ -365,9 +365,9 @@
     region: "{{region}}"
   register: service_frontend_output
 
-- name: Pause for 10 seconds to allow updates to take effect
+- name: Pause for 20 seconds to allow updates to take effect
   pause:
-    seconds: 10
+    seconds: 20
 
 - name: "wait for {{ frontend_url }} to become available"
   uri:

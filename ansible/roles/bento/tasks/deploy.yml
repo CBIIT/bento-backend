@@ -365,16 +365,16 @@
     region: "{{region}}"
   register: service_frontend_output
 
-- name: echo frontend url
-  debug:
-    msg: "{{ frontend_url }}"
-
-- name: "wait for {{ frontend_url }} to come up"
+- name: "wait for {{ frontend_url }} to become available"
   uri:
     url: "{{ frontend_url }}"
     method: GET
     status: 200
-  register: _result
-  until: _result.status == 200
-  retries: 30
-  delay: 30
+  register: check_result
+  #until: _result.status == 200
+  #retries: 30
+  #delay: 30
+  
+- name: echo status check
+  debug:
+    msg: "{{ check_result }}"

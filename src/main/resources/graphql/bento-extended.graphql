@@ -1057,12 +1057,13 @@ type QueryType {
         WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (p:program)
         OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
+          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         WITH p, COUNT(DISTINCT ss) AS caseSize, all_subjects
         OPTIONAL MATCH (p)<-[:study_of_program]-(s)<-[:study_subject_of_study]-(ss)
+          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         WITH
-            p, ss, all_subjects, caseSize,
+            p, all_subjects, caseSize,
             {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
-        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
         RETURN  p.program_acronym AS program,
                 caseSize,
                 collect(s) AS children

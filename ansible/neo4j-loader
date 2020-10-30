@@ -1,0 +1,11 @@
+---
+- name: load data to neo4j db
+  hosts: loader
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: perform data loading
+      include_role:
+        name: neo4j-loader
+        

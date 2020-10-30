@@ -1,0 +1,52 @@
+---
+# tasks file for neo4j-loader
+
+- name: install required packages
+  pip:
+    name:
+      - awscli
+      - boto3
+    state: installed
+
+- name: ensure that remote workspace exists
+  file:
+    path: "{{remote_workspace}}"
+    state: directory
+
+- name: ensure backup directory exists
+  file:
+    path: /backups
+    state: directory
+    owner: neo4j
+    group: neo4j
+
+# - name: download dump files
+#   command: aws s3 cp {{s3_bucket_name}}/{{dump_file_name}} "{{remote_workspace}}"
+
+- name: download dump file
+  s3:
+    bucket: "{{s3_bucket_name}}"
+    object: "{{dump_file_name}}"
+    dest: "{{remote_workspace}}"
+    mode: get
+
+- name: buckup neo4j db
+  command: neo4j-admin backup --backup-dir={{backups_directory}} --name=neo4j-backup-{{timestamp}}
+
+- name: stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+
+- name: load neo4j dumpfile
+  command: neo4j-admin load --from {{remote_workspace}}/{{dump_file_name}} --database graph.db --force
+  register: loader
+
+- name: loader output
+  debug:
+    msg: "{{loader.stdout_lines}}"
+
+- name: start neo4j
+  service:
+    name: neo4j
+    state: started

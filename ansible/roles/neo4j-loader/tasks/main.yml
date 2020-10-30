@@ -45,7 +45,8 @@
     state: stopped
 
 - name: load neo4j dumpfile
-  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+  command: /var/lib/neo4j/bin/neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+  become_user: neo4j
   register: loader
 
 - name: loader output

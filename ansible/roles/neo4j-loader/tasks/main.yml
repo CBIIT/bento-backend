@@ -27,7 +27,7 @@
   aws_s3:
     bucket: "{{s3_bucket_name}}"
     object: "{{dump_file_name}}"
-    dest: "{{remote_workspace}}"
+    dest: "{{remote_workspace}}/neo4j.dump"
     mode: get
 
 - name: stop neo4j
@@ -37,7 +37,7 @@
 
 - name: buckup neo4j db
   command: /var/lib/neo4j/bin/neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
-  become: neo4j
+  become_user: neo4j
 
 - name: stop neo4j
   service:
@@ -45,7 +45,7 @@
     state: stopped
 
 - name: load neo4j dumpfile
-  command: neo4j-admin load --from {{remote_workspace}}/{{dump_file_name}} --database graph.db --force
+  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
   register: loader
 
 - name: loader output

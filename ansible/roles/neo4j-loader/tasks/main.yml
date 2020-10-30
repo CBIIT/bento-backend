@@ -6,7 +6,7 @@
     name:
       - awscli
       - boto3
-    state: installed
+    state: present
 
 - name: ensure that remote workspace exists
   file:
@@ -24,14 +24,20 @@
 #   command: aws s3 cp {{s3_bucket_name}}/{{dump_file_name}} "{{remote_workspace}}"
 
 - name: download dump file
-  s3:
+  aws_s3:
     bucket: "{{s3_bucket_name}}"
     object: "{{dump_file_name}}"
     dest: "{{remote_workspace}}"
     mode: get
 
+- name: stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+
 - name: buckup neo4j db
-  command: neo4j-admin backup --backup-dir={{backups_directory}} --name=neo4j-backup-{{timestamp}}
+  command: /var/lib/neo4j/bin/neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
+  become: neo4j
 
 - name: stop neo4j
   service:

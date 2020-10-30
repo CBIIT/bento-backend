@@ -3,6 +3,10 @@
   hosts: loader
   connection: local
   gather_facts: yes
+  become: yes
+
+  vars:
+
     
   tasks:
     - name: perform data loading

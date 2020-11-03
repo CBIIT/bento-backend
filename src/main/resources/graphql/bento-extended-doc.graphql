@@ -963,7 +963,11 @@ type QueryType {
           er_status: [String] = [],
           pr_status: [String] = [],
           endo_therapies: [String] = [],
-          meno_status: [String] = []
+          meno_status: [String] = [],
+          tissue_type: [String] = [],
+          composition: [String] = [],
+          association: [String] = [],
+          file_type: [String] = []
     ): [String] 
 
     searchSubjects (
@@ -978,6 +982,10 @@ type QueryType {
           pr_status: [String] = [],
           endo_therapies: [String] = [],
           meno_status: [String] = [],
+          tissue_type: [String] = [],
+          composition: [String] = [],
+          association: [String] = [],
+          file_type: [String] = [],
           first: Int = 100
     ): SearchResult 
 

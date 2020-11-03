@@ -894,7 +894,7 @@ type SearchResult {
     numberOfSubjects: Int
     numberOfSamples: Int
     numberOfLabProcedures: Int
-    numberOfFilesIs: Int
+    numberOfFiles: Int
     subjectIds: [String]
     firstPage: [SubjectOverview]
 }

@@ -888,6 +888,17 @@ type FileOverview {
     diagnosis: String
 }
 
+type SearchResult {
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfLabProcedures: Int
+    numberOfFiles: Int
+    subjectIds: [String]
+    firstPage: [SubjectOverview]
+}
+
 schema {
     query: QueryType
 }
@@ -904,27 +915,80 @@ type QueryType {
     numberOfFiles: Int 
 
     "Group counts"
-    subjectCountByProgram: [GroupCount] 
-    subjectCountByStudy: [GroupCount] 
-    subjectCountByDiagnoses: [GroupCount] 
-    subjectCountByRecurrenceScore: [GroupCount] 
-    subjectCountByTumorSize: [GroupCount] 
-    subjectCountByTumorGrade: [GroupCount] 
-    subjectCountByErStatus: [GroupCount] 
-    subjectCountByPrStatus: [GroupCount] 
-    subjectCountByChemotherapyRegimen: [GroupCount] 
-    subjectCountByEndocrineTherapy: [GroupCount] 
-    subjectCountByMenopauseStatus: [GroupCount] 
-    subjectCountByTissueType: [GroupCount] 
-    subjectCountByTissueComposition: [GroupCount] 
-    subjectCountByFileAssociation: [GroupCount] 
-    subjectCountByFileType: [GroupCount] 
+    subjectCountByProgram(subject_ids: [String] = []): [GroupCount] 
+    subjectCountByStudy(subject_ids: [String] = []): [GroupCount] 
 
-    armsByPrograms: [ProgramArms] 
+    subjectCountByDiagnoses(subject_ids: [String] = []): [GroupCount] 
 
-    subjectOverViewPaged(first: Int=100, offset: Int=0): [SubjectOverview] 
+    subjectCountByRecurrenceScore(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTumorSize(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTumorGrade(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByErStatus(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByPrStatus(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByChemotherapyRegimen(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByEndocrineTherapy(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByMenopauseStatus(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTissueType(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByTissueComposition(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByFileAssociation(subject_ids: [String] = []): [GroupCount] 
+
+    subjectCountByFileType(subject_ids: [String] = []): [GroupCount] 
+
+    armsByPrograms(subject_ids: [String] = []): [ProgramArms] 
+
+    subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] 
+
+    subjectOverViewPagedDesc(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] 
 
     subjectOverView: [SubjectOverview] 
+
+    searchSubjects2 (
+          programs: [String] = [],
+          studies: [String] = [],
+          diagnoses: [String] = [],
+          rc_scores: [String] = [],
+          tumor_sizes: [String] = [],
+          chemo_regimen: [String] = [],
+          tumor_grades: [String] = [],
+          er_status: [String] = [],
+          pr_status: [String] = [],
+          endo_therapies: [String] = [],
+          meno_status: [String] = [],
+          tissue_type: [String] = [],
+          composition: [String] = [],
+          association: [String] = [],
+          file_type: [String] = []
+    ): [String] 
+
+    searchSubjects (
+          programs: [String] = [],
+          studies: [String] = [],
+          diagnoses: [String] = [],
+          rc_scores: [String] = [],
+          tumor_sizes: [String] = [],
+          chemo_regimen: [String] = [],
+          tumor_grades: [String] = [],
+          er_status: [String] = [],
+          pr_status: [String] = [],
+          endo_therapies: [String] = [],
+          meno_status: [String] = [],
+          tissue_type: [String] = [],
+          composition: [String] = [],
+          association: [String] = [],
+          file_type: [String] = [],
+          first: Int = 100
+    ): SearchResult 
+
 
     subjectsInList(subject_ids: [String]=[]): [SubjectInfo] 
 
@@ -941,8 +1005,13 @@ type QueryType {
 
     filesInList(file_ids: [String]): [FileDetail] 
 
-    sampleOverview: [SampleOverview] 
+    sampleOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
 
-    fileOverview: [FileOverview] 
+    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
+
+
+    fileOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
+
+    fileOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
 
 }

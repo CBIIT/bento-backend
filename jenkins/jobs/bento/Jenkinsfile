@@ -293,6 +293,7 @@ pipeline {
     always {
       
       sendSlackMessage()
+	  cleanWs()
     }
   }
 }

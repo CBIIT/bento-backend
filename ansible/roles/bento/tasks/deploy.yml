@@ -10,7 +10,7 @@
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/bento-backend:{{build_number}}"
+      image: "cbiitssrepo/bento-backend:{{backend_version}}-{{build_number}}"
       environment:
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
@@ -50,7 +50,7 @@
     containers:
     - name: frontend
       essential: true
-      image: "cbiitssrepo/bento-frontend:{{build_number}}"
+      image: "cbiitssrepo/bento-frontend:{{frontend_version}}-{{build_number}}"
       environment:
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
@@ -65,11 +65,9 @@
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://api.bento-tools.org/v1/graphql/{% else %}https://api-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
         - name: REACT_APP_BE_VERSION
-          #value: "{{ backend_api_version }}"
-          value: "{{ backend_version }}"
+          value: "{{backend_version}}-{{build_number}}"
         - name: REACT_APP_FE_VERSION
-          #value: "{{ backend_frontend_version }}"
-          value: "{{ frontend_version }}"
+          value: "{{frontend_version}}-{{build_number}}"
         - name: REACT_APP_ABOUT_CONTENT_URL
           value: "{{ backend_content_url }}"
       portMappings:

@@ -40,6 +40,15 @@ public class GraphQLController {
 	public static final Gson GSON = new Gson();
 
 	@CrossOrigin
+	@RequestMapping(value = "/version", method = {RequestMethod.GET})
+	public ResponseEntity<String> getVersion(HttpEntity<String> httpEntity, HttpServletResponse response){
+		logger.info("Hit end point:/version");
+		String versionString = "Bento API Version: "+config.getBentoApiVersion();
+		logger.info(versionString);
+		return ResponseEntity.ok(versionString);
+	}
+
+	@CrossOrigin
 	@RequestMapping
 			(value = "/v1/graphql/", method = {
 				RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PUT, RequestMethod.DELETE,

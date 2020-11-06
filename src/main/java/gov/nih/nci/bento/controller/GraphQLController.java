@@ -2,6 +2,7 @@ package gov.nih.nci.bento.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonElement;
 import gov.nih.nci.bento.error.ApiError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,10 +64,16 @@ public class GraphQLController {
 		Gson gson = new Gson();
 		JsonObject jsonObject = gson.fromJson(reqBody, JsonObject.class);
 		String operation;
+		String query_key;
 		try{
 			String sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			Parser parser = new Parser();
 			Document document = parser.parseDocument(sdl);
+			query_key = document.toString();
+			JsonElement rawVar = jsonObject.get("variables");
+			if (null != rawVar) {
+				query_key +=  "::" + rawVar.toString();
+			}
 			OperationDefinition def = (OperationDefinition) document.getDefinitions().get(0);
 			operation = def.getOperation().toString().toLowerCase();
 		}
@@ -81,10 +88,10 @@ public class GraphQLController {
 			try{
 				String responseText;
 				if (config.getRedisEnabled()) {
-					responseText = redisService.getQueryResult(reqBody);
+					responseText = redisService.getQueryResult(query_key);
 					if ( null == responseText) {
 						responseText = neo4jService.query(reqBody);
-						redisService.setQueryResult(reqBody, responseText);
+						redisService.setQueryResult(query_key, responseText);
 					}
 				} else {
 					responseText = neo4jService.query(reqBody);

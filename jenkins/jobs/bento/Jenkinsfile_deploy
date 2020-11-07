@@ -207,6 +207,9 @@ pipeline {
   		}
   	}
     stage('flush_redis'){
+	  environment {
+       TIER = "${params.Environment}"
+      }
       steps{
         wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 

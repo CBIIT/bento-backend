@@ -192,7 +192,8 @@ pipeline {
   	stage('deploy'){
 	  environment {
        SLACK_URL = "${SLACK_URL}"
-       VERSION = "${params.Frontend_Tag}"
+       TIER = "${params.Environment}"
+	   VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
       }

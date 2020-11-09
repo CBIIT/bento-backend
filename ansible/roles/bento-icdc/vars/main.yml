@@ -1,7 +1,13 @@
 ---
 # vars file for cicd
+env_file_home: /local/content/docker
+redis_host: ""
+redis_port: ""
+home: /local/content/docker
 tier: "{{ lookup('env','TIER') }}"
-platform: "aws"
+platform: "cloudone"
+backend_git_tag: "{{ lookup('env','BACKEND_GIT_TAG') }}"
+frontend_git_tag: "{{ lookup('env','FRONTEND_GIT_TAG') }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 docker_host: "{{ lookup('env','DOCKER_HOST') }}"
 tls_hostname: "{{ lookup('env','TLS_HOSTNAME') }}"
@@ -21,8 +27,9 @@ schema_file: icdc.graphql
 backend_user_info: https://caninecommons.cancer.gov/fence/login/
 backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{ fence_id }}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
 backend_fence_logout: https://caninecommons.cancer.gov/fence/logout
-backend_content_url: https://raw.githubusercontent.com/CBIIT/icdc-codebase/master/src/main/frontend/src/content/{{ tier }}/aboutPagesContent.yaml
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-icdc-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
 backend_api_version: "{{ backend_version }}"
-backend_frontend_version: "{{ frontend_version }}"
+backend_frontend_version: "{{frontend_version }}"
 backend_google_analytics_id: UA-154442677-1
 dev_alb_dns_name: internal-dev-a-appli-caninedata-8uhlkjyn-1830173970.us-east-1.elb.amazonaws.com
+frontend_url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/{% else %}https://caninecommons-{{ tier }}.cancer.gov/{% endif %}" 

@@ -9,10 +9,10 @@ prority:
 region: us-east-1
 jq: "{{project}}.{{tier}}"
 alb:
-  icdc:
+  icdc:  
     dev: DEV-A-Appli-Caninedata-8UHLKJYN
     qa: QA-Ca-Appli-6P2VXOVVW4SD
-    stage: ""
+    stage: canin-Appli-EXXC73ANOU8B
     prod: ""
   ctdc:
     dev: "test"
@@ -21,8 +21,10 @@ backend_target:
   icdc:
     dev: arn:aws:elasticloadbalancing:us-east-1:{{account_id}}:targetgroup/DEV-A-Canine-commons-http-tg/654e7fcf56dc13ef
     qa: arn:aws:elasticloadbalancing:us-east-1:{{account_id}}:targetgroup/QA-Ca-Canin-FM2RHRD6VVY/d293b03da689a5bb
+    stage: arn:aws:elasticloadbalancing:us-east-1:{{account_id}}:targetgroup/canin-Canin-1OHVRPX6UZ350/d1b608b3022efd53
 frontend_target:
   icdc:
     dev: arn:aws:elasticloadbalancing:us-east-1:{{account_id}}:targetgroup/DEV-A-Canine-commons-http-80-tg/16b915b2e610fe58
     qa: arn:aws:elasticloadbalancing:us-east-1:{{account_id}}:targetgroup/QA-Da-canine-commons-http-tg/936393a0ff307c71
+    stage: arn:aws:elasticloadbalancing:us-east-1:{{account_id}}:targetgroup/STG-C-Canine-commons-http-80-tg/77be25a563e14fe2
 

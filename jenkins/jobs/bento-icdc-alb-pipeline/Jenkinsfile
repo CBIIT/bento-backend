@@ -179,40 +179,7 @@ pipeline {
         }
       }
     }
-    stage('deploy'){
-      steps{
-        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-       withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-         string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
-       string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
-       string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
-       string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
-       string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
-       ]){
-             ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                credentialsId: 'commonsdocker',
-                extraVars: [
-                    tier: "${params.Environment}",
-                    release: "${params.Release}",
-                    project: 'icdc',
-                    frontend_version: "${params.Frontend_Tag}",
-                    backend_version: "${params.Backend_Tag}"
-                    ],
-                become: true,
-                hostKeyChecking: false,
-                colorized: true)
-           }
-        }
-      }
-      // post {
-      //   always {
-      //     sendSlackMessage()
-      //   }
-      // }
-  }
-  stage('set maintenance page'){
+    stage('set maintenance page'){
     agent {
       node {
         label 'slave-ncias-d2320-c'
@@ -252,6 +219,35 @@ pipeline {
       }  
     }
   }
+    stage('deploy'){
+      steps{
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+       withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+         string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
+       string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+       string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+       string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+       string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+       ]){
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'commonsdocker',
+                extraVars: [
+                    tier: "${params.Environment}",
+                    release: "${params.Release}",
+                    project: 'icdc',
+                    frontend_version: "${params.Frontend_Tag}",
+                    backend_version: "${params.Backend_Tag}"
+                    ],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+           }
+        }
+      }
+  }
+  
   stage('Approval Step'){
     steps{
       script {
@@ -274,7 +270,7 @@ pipeline {
        string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
        ]){
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/release-bento-icdc.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/pass-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [
@@ -289,7 +285,6 @@ pipeline {
            }
         }
       }
-
   }
   stage('rollback'){
     when {
@@ -305,7 +300,7 @@ pipeline {
        string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
        ]){
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/release-bento-icdc.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/fail-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [
@@ -348,6 +343,12 @@ pipeline {
           }
         }
       }
+    }
+  }
+  post {
+    always {
+      // sendSlackMessage()
+      cleanWs()
     }
   }
 }

@@ -13,4 +13,10 @@ sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 app_name: bento-{{platform}}-{{tier}}
 schema_file: bento-extended.graphql
+frontend_version: "{{ lookup('env','FE_VERSION') }}"
+backend_version: "{{ lookup('env','BE_VERSION') }}"
+backend_api_version: "{{ backend_version }}"
+backend_frontend_version: "{{frontend_version }}"
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
+
 # hostname: "{{ansible_fqdn}}"

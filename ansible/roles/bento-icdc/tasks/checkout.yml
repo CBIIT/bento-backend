@@ -1,0 +1,15 @@
+---
+
+- name: clone backend github
+  git:
+    repo: 'https://github.com/CBIIT/bento-backend'
+    dest: "{{workspace}}"
+    force: yes
+    version: master
+
+- name: clone frontend github
+  git:
+    repo: 'https://github.com/CBIIT/bento-icdc-frontend'
+    dest: "{{workspace}}/icdc-frontend"
+    force: yes
+    version: integration

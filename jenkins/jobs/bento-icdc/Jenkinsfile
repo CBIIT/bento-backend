@@ -174,6 +174,7 @@ pipeline {
           ])
         {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          sh "echo ${TLS_HOSTNAME}"
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
@@ -183,6 +184,10 @@ pipeline {
  		}
   	}
   	stage('deploy'){
+      environment {
+        FE_VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
+      }
 
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -191,7 +196,7 @@ pipeline {
 			 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
 			 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
 			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
-			 string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+			 string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
 			 ]){
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
@@ -200,7 +205,11 @@ pipeline {
                 extraVars: [
                     tier: "${params.Environment}",
                     release: "${params.Release}",
-                    project: 'icdc'
+                    project: 'icdc',
+                    frontend_version: "${params.Frontend_Tag}",
+                    backend_version: "${params.Backend_Tag}",
+                    backend_git_tag: "${params.Backend_Tag}",
+                    frontend_git_tag: "${params.Frontend_Tag}"
                     ],
                 become: true,
                 hostKeyChecking: false,
@@ -214,8 +223,8 @@ pipeline {
   }
   post {
     always {
-      
       sendSlackMessage()
+      cleanWs()
     }
   }
 }

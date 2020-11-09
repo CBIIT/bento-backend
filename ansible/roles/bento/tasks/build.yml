@@ -52,28 +52,37 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "./dockerfiles/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-backend
-    tag: "{{build_number}}"
+    tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
 - name: Add tag latest to cbiitssrepo/bento-backend image
   docker_image:
-    name: "cbiitssrepo/bento-backend:{{build_number}}"
+    name: "cbiitssrepo/bento-backend:{{backend_version}}-{{build_number}}"
     repository: cbiitssrepo/bento-backend:latest
     force_tag: yes
     push: yes
     source: local
+###########################################
+- name: remove .env
+  file:
+    state: absent
+    path: "{{workspace}}/bento-frontend/.env"
 
-- name: copy environment file to {{workspace}}/bento-frontend
-  template:
-    src: env.j2
-    dest: "{{workspace}}/bento-frontend/.env"
-
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{workspace}}/bento-frontend/nginx-entrypoint.sh"
+    mode: 0755
+# - name: copy environment file to {{workspace}}/bento-frontend
+#   template:
+#     src: env.j2
+#     dest: "{{workspace}}/bento-frontend/.env"
 - name: run npm install in {{workspace}}/bento-frontend/
   command: "{{item}}"
   args:
@@ -82,23 +91,30 @@
     - npm install npm@latest -g
     - npm install
     - npm run build
+
+- name: copy env to dist
+  copy:
+    # remote_src: yes
+    src: inject.template.js
+    dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
+    mode: 0755
           
 - name: build cbiitssrepo/bento-frontend image
   docker_image:
     build:
       path: "{{workspace}}/bento-frontend"
-      dockerfile: "../dockerfiles/frontend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-frontend
-    tag: "{{build_number}}"
+    tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
 - name: Add tag latest to cbiitssrepo/bento-frontend image
   docker_image:
-    name: "cbiitssrepo/bento-frontend:{{build_number}}"
+    name: "cbiitssrepo/bento-frontend:{{frontend_version}}-{{build_number}}"
     repository: cbiitssrepo/bento-frontend:latest
     force_tag: yes
     push: yes

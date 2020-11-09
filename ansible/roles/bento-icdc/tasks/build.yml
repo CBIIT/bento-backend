@@ -29,6 +29,26 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
+- name: get backend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}"
+  register: backend_tag
+
+- name: get frontend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}/icdc-frontend"
+  register: frontend_tag
+
+- name: echo backend tag
+  debug:
+    msg: "{{ backend_tag.stdout_lines }}"
+
+- name: echo frontend tag
+  debug:
+    msg: "{{ frontend_tag.stdout_lines }}"
+
 - name: remove the application_example.properties file 
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"
@@ -54,7 +74,7 @@
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
-- name: log into DockerHub
+- name: log into ncidockerhub
   docker_login:
     username: "{{docker_user}}"
     password: "{{docker_password}}"
@@ -64,12 +84,40 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
-    
+    docker_host: "{{docker_host}}"
+
+# - name: log into ncidockerhub
+#   shell: >
+#     docker 
+#     --tlsverify 
+#     --tlscacert /local/home/commonsdocker/.docker/ca.pem 
+#     --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem 
+#     --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
+#     login -u {{docker_user}} -p {{docker_password}} https://ncidockerhub.nci.nih.gov
+
+# - name: purge remove cbiitssrepo/bento-backend
+#   shell: >
+#     docker  
+#     --tlsverify 
+#     --tlscacert /local/home/commonsdocker/.docker/ca.pem 
+#     --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem 
+#     --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
+#     rmi -f cbiitssrepo/bento-backend:release
+
+# - name: purge docker dangling volumes and containers
+#   shell: >
+#     docker  
+#     --tlsverify 
+#     --tlscacert /local/home/commonsdocker/.docker/ca.pem 
+#     --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem 
+#     --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
+#     system prune -a -f
+
 - name: build cbiitssrepo/icdc-backend image
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "./dockerfiles/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
@@ -82,7 +130,7 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
-    # docker_host: "{{docker_host}}"
+    docker_host: "{{docker_host}}"
 
 - name: Add tag latest to cbiitssrepo/icdc-backend image
   docker_image:
@@ -96,6 +144,7 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
 
 - name: remove .env
   file:
@@ -135,7 +184,7 @@
   docker_image:
     build:
       path: "{{workspace}}/icdc-frontend"
-      dockerfile: "../dockerfiles/frontend-icdc-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
@@ -148,6 +197,7 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
 
 - name: Add tag latest to cbiitssrepo/icdc-frontend image
   docker_image:
@@ -161,7 +211,4 @@
     client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
-
-
-
-    
+    docker_host: "{{docker_host}}"

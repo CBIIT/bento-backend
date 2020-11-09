@@ -283,16 +283,6 @@ pipeline {
   			}
   		}
   	}
-    stage('flush_redis'){
-      steps{
-        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-          ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                colorized: true)
-        }
-      }
-    }
   }
   post {
     always {

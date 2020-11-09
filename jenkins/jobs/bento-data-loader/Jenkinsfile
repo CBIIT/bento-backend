@@ -165,6 +165,19 @@ pipeline {
             			colorized: true) 
  			}
  		}
-  }
+    }
+    stage('flush_redis'){
+	  environment {
+       TIER = "${params.Environment}"
+      }
+      steps{
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+          ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+        }
+      }
+    }
  }
 }

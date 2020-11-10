@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,test,qa,stage,prod' )
+        value: 'sandbox,dev,test,qa,perf,prod' )
     extendedChoice( 
         name: 'Region', 
         defaultValue: 'us-east-1', 

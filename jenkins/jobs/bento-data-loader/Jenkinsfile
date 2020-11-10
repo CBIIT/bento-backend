@@ -19,7 +19,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'demo,gdc,dev,qa,stage,prod' )
+        value: 'demo,gdc,dev,qa,perf,prod' )
     extendedChoice( 
         name: 'ProjectName', 
         defaultValue: 'bento', 
@@ -136,9 +136,9 @@ pipeline {
                   env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
-              case "stage":
-                withCredentials([usernamePassword(credentialsId: 'stage_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_STAGE_IP}"
+              case "perf":
+                withCredentials([usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_PERF_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

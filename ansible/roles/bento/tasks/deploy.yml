@@ -12,26 +12,10 @@
       essential: true
       image: "cbiitssrepo/bento-backend:{{backend_version}}"
       environment:
-        - name: SPRING_MVC_THROW-EXCEPTION-IF-NO-HANDLER-FOUND
-          value: true
         - name: NEO4J_GRAPHQL_ENDPOINT
           value: http://{{ NEO4J_IP }}:7474/graphql/
-        - name: NEO4J_GRAPHQL_ENDPOINT_SCHEMA_ENDPOINT
-          value: "idl/"
-        - name: GRAPHQL_SCHEMA
-          value: "graphql/bento-extended.graphql"
         - name: NEO4J_AUTHORIZATION
           value: "{{ BEARER }}"
-        - name: SPRING_MVC_VIEW_PREFIX
-          value: "/WEB-INF/"
-        - name: SPRING_MVC_VIEW_SUFFIX
-          value: ".jsp"
-        - name: ERROR_REDIRECT_URL
-          value: "http://localhost/error.html"
-        - name: ALLOW_GRAPQH_QUERY
-          value: true
-        - name: ALLOW_GRAPHQL_MUTATION
-          value: false
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

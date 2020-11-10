@@ -1,0 +1,8 @@
+---
+- name: frontend
+  image: cbiitssrepo/bento-frontend:latest
+  essential: true
+  portMappings:
+    - protocol: tcp
+      containerPort: 80
+      hostPort: 80

@@ -56,14 +56,14 @@
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-backend
-    tag: "{{build_number}}"
+    tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
 - name: Add tag latest to cbiitssrepo/bento-backend image
   docker_image:
-    name: "cbiitssrepo/bento-backend:{{build_number}}"
+    name: "cbiitssrepo/bento-backend:{{backend_version}}-{{build_number}}"
     repository: cbiitssrepo/bento-backend:latest
     force_tag: yes
     push: yes
@@ -107,14 +107,14 @@
       pull: yes
       nocache: yes
     name: cbiitssrepo/bento-frontend
-    tag: "{{build_number}}"
+    tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
 - name: Add tag latest to cbiitssrepo/bento-frontend image
   docker_image:
-    name: "cbiitssrepo/bento-frontend:{{build_number}}"
+    name: "cbiitssrepo/bento-frontend:{{frontend_version}}-{{build_number}}"
     repository: cbiitssrepo/bento-frontend:latest
     force_tag: yes
     push: yes

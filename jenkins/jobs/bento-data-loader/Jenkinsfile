@@ -44,7 +44,15 @@ pipeline {
         quoteValue: false,
         multiSelectDelimiter: ',',
         value: 'no,yes',
-        type: 'PT_RADIO')   
+        type: 'PT_RADIO')
+    extendedChoice( 
+        defaultValue: 'false', 
+        name: 'SplitTransactions', 
+        description: 'Choose true to the Split Transactions',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'false,true',
+        type: 'PT_SINGLE_SELECT')   
   }
   // options {
   // 	ansiColor('xterm')
@@ -88,6 +96,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
               case "dev":
@@ -99,6 +108,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
               case "gdc":
@@ -110,6 +120,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
               case "qa":
@@ -122,6 +133,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
               case "stage":
@@ -133,6 +145,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
               case "prod":
@@ -144,6 +157,7 @@ pipeline {
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
               default:

@@ -12,6 +12,26 @@
       essential: true
       image: "cbiitssrepo/bento-backend:{{backend_version}}"
       environment:
+        - name: SPRING_MVC_THROW-EXCEPTION-IF-NO-HANDLER-FOUND
+          value: true
+        - name: NEO4J_GRAPHQL_ENDPOINT
+          value: http://{{ NEO4J_IP }}:7474/graphql/
+        - name: NEO4J_GRAPHQL_ENDPOINT_SCHEMA_ENDPOINT
+          value: "idl/"
+        - name: GRAPHQL_SCHEMA
+          value: "graphql/bento-extended.graphql"
+        - name: NEO4J_AUTHORIZATION
+          value: "{{ BEARER }}"
+        - name: SPRING_MVC_VIEW_PREFIX
+          value: "/WEB-INF/"
+        - name: SPRING_MVC_VIEW_SUFFIX
+          value: ".jsp"
+        - name: ERROR_REDIRECT_URL
+          value: "http://localhost/error.html"
+        - name: ALLOW_GRAPQH_QUERY
+          value: true
+        - name: ALLOW_GRAPHQL_MUTATION
+          value: false
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
@@ -52,6 +72,14 @@
       essential: true
       image: "cbiitssrepo/bento-frontend:{{frontend_version}}"
       environment:
+        - name: REACT_APP_BACKEND_API
+          value: "{% if tier == 'prod' %}https://api.bento-tools.org/v1/graphql/{% else %}https://api-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
+        - name: REACT_APP_BE_VERSION
+          value: "{{backend_version}}"
+        - name: REACT_APP_FE_VERSION
+          value: "{{frontend_version}}"
+        - name: REACT_APP_ABOUT_CONTENT_URL
+          value: "{{ backend_content_url }}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
@@ -62,14 +90,6 @@
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_NO_CONFIG_FILE
           value: true
-        - name: REACT_APP_BACKEND_API
-          value: "{% if tier == 'prod' %}https://api.bento-tools.org/v1/graphql/{% else %}https://api-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
-        - name: REACT_APP_BE_VERSION
-          value: "{{backend_version}}"
-        - name: REACT_APP_FE_VERSION
-          value: "{{frontend_version}}"
-        - name: REACT_APP_ABOUT_CONTENT_URL
-          value: "{{ backend_content_url }}"
       portMappings:
       - containerPort: "80"
         hostPort: "80"

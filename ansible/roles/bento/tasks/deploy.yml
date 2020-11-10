@@ -13,9 +13,9 @@
       image: "cbiitssrepo/bento-backend:{{backend_version}}"
       environment:
         - name: NEO4J_GRAPHQL_ENDPOINT
-          value: http://{{ NEO4J_IP }}:7474/graphql/
+          value: http://{{ neo4j_ip }}:7474/graphql/
         - name: NEO4J_AUTHORIZATION
-          value: "{{ BEARER }}"
+          value: "{{ neo4j_bearer }}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

@@ -7,6 +7,6 @@
   tasks:
     - name: flush redis cache
       include_role:
-        name: bento
-        tasks_from: redis
+        name: redis
+        
       

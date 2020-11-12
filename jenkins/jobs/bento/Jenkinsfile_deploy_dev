@@ -272,7 +272,7 @@ pipeline {
       }
   		steps{
 		    echo "Recreating inventory file"
-			rm ${WORKSPACE}/icdc-devops/ansible/hosts
+			//rm ${WORKSPACE}/icdc-devops/ansible/hosts
             echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
             echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

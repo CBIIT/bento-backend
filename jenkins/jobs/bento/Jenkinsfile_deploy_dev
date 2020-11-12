@@ -270,10 +270,11 @@ pipeline {
 //  	}
 	  stage('db monitoring agents'){
   		steps{
+		  node('data-loader') {
 		    echo "Recreating inventory file"
 			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
             sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-            sh "echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+            sh "echo ${NEO4J_IP} ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
@@ -286,7 +287,8 @@ pipeline {
                     ],
             		colorized: true)
   			}
-  		}
+  		  }
+		}
   	}
   }
 //  post {

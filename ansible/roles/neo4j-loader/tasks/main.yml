@@ -59,8 +59,8 @@
   debug:
     msg: "{{loader.stdout_lines}}"
 
-- name: flush redis cache
-  shell: echo -e "get abc \nFLUSHALL" | redis-cli -h {{ redis_host[tier]}} -p 6379 -c
+# - name: flush redis cache
+#   shell: echo -e "get abc \nFLUSHALL" | redis-cli -h {{ redis_host[tier]}} -p 6379 -c
 
 - name: start neo4j
   service:

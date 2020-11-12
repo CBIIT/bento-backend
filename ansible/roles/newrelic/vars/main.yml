@@ -3,7 +3,7 @@
 newrelic_license_key: "{{ newrelic_key }}"
 hostname: "{{ hostname }}"
 platform: aws
-collector_name: "${project}-${platform}-${env}-${app_name}"
+collector_name: "{{ project }}-{{ platform }}-{{ env }}-{{ app_name }}"
 newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
 newrelic_collector_url: "https://gov-infra-api.newrelic.com"
 newrelic_identity_url: "https://gov-identity-api.newrelic.com"

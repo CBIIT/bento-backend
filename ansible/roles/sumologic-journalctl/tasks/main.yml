@@ -5,11 +5,11 @@
 #
 #
 
-- name: disable, stop journal_syslog.service
-  systemd:
-    state: stopped
-    name: journal_syslog.service
-    enabled: no
+#- name: disable, stop journal_syslog.service
+#  systemd:
+#    state: stopped
+#    name: journal_syslog.service
+#    enabled: no
 
 - name: update journald configuration
   lineinfile:

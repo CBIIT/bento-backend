@@ -17,13 +17,13 @@
         tasks_from: rules
       loop:
         - name: fixed
-          priority: 4
-          listener_arn: "{{https_listener_arn}}"
-        - name: frontend
           priority: 3
           listener_arn: "{{https_listener_arn}}"
-        - name: backend
+        - name: frontend
           priority: 2
+          listener_arn: "{{https_listener_arn}}"
+        - name: backend
+          priority: 1
           listener_arn: "{{https_listener_arn}}"
       when: action == "create"
 

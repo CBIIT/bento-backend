@@ -271,7 +271,7 @@ pipeline {
 	  stage('db monitoring agents'){
   		steps{
 		    echo "Recreating inventory file"
-			cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak
+			//cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak
             echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
             echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

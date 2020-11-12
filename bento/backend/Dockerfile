@@ -2,7 +2,7 @@ FROM alpine:latest
 MAINTAINER ESI Devops Team
 
 ENV TOMCAT_MAJOR=9
-ENV TOMCAT_VERSION=9.0.35 
+ENV TOMCAT_VERSION=9.0.38 
 ENV CATALINA_HOME=/usr/local/tomcat 
 ENV TOMCAT_URL=https://archive.apache.org/dist/tomcat/tomcat-"$TOMCAT_MAJOR"/v"$TOMCAT_VERSION"/bin/apache-tomcat-"$TOMCAT_VERSION".tar.gz 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk  

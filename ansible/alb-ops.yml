@@ -11,28 +11,28 @@
         tasks_from: info
       when: action == "create"
     
-    # - name: get alb info
-    #   include_role:
-    #     name: alb-ops
-    #     tasks_from: rules
-    #   loop:
-    #     - name: fixed
-    #       priority: 3
-    #       listener_arn: "{{https_listener_arn}}"
-    #     - name: frontend
-    #       priority: 2
-    #       listener_arn: "{{https_listener_arn}}"
-    #     - name: backend
-    #       priority: 1
-    #       listener_arn: "{{https_listener_arn}}"
-    #   when: action == "create"
+    - name: get alb info
+      include_role:
+        name: alb-ops
+        tasks_from: rules
+      loop:
+        - name: fixed
+          priority: 4
+          listener_arn: "{{https_listener_arn}}"
+        - name: frontend
+          priority: 3
+          listener_arn: "{{https_listener_arn}}"
+        - name: backend
+          priority: 2
+          listener_arn: "{{https_listener_arn}}"
+      when: action == "create"
 
-    # - name: remove alb rule
-    #   include_role:
-    #     name: alb-ops
-    #     tasks_from: remove
-    #   loop:
-    #     - fixed
-    #     - frontend
-    #     - backend
-    #   when: action == "remove"
+    - name: remove alb rule
+      include_role:
+        name: alb-ops
+        tasks_from: remove
+      loop:
+        - fixed
+        - frontend
+        - backend
+      when: action == "remove"

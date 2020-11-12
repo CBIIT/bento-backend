@@ -270,10 +270,25 @@ pipeline {
 //  	}
 	  stage('db monitoring agents'){
   		steps{
+		  node('data-loader') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+			
 		    echo "Recreating inventory file"
 			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
             sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-            sh "echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+            sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
@@ -286,7 +301,8 @@ pipeline {
                     ],
             		colorized: true)
   			}
-  		}
+  		  }
+		}
   	}
   }
 //  post {

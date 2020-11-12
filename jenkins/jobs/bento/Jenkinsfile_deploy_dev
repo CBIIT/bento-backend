@@ -289,11 +289,11 @@ pipeline {
   		}
   	}
   }
-  post {
-    always {
-      
-      //sendSlackMessage()
-	  //cleanWs()
-    }
-  }
+//  post {
+//    always {
+//      
+//      sendSlackMessage()
+//	  cleanWs()
+//    }
+//  }
 }

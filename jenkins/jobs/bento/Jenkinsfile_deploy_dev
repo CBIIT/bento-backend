@@ -298,6 +298,7 @@ pipeline {
 					app_type: 'database',
 					app_name: 'Neo4j',
                     project: 'bento',
+					log_path: '/var/log/neo4j/*.log/*"',
                     ],
             		colorized: true)
   			}

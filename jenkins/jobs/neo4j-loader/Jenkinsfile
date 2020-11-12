@@ -1,0 +1,154 @@
+pipeline {
+	agent {
+		node {
+			label 'data-loader'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'demo,gdc,dev,qa,stage,prod' )
+    string(defaultValue: "", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
+    string(defaultValue: "", 
+        description: 'Name of the dump file to use', 
+        name: 'DumpFileName')
+    
+  }
+  // options {
+  // 	ansiColor('xterm')
+  // }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+          recursiveSubmodules: true,
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+          sh 'git submodule update --init'
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+        // dir('bento-model'){
+        //   git branch: 'master',
+        //   url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
+        // }
+  		}
+ 
+  	}
+    stage('set-environment'){
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "demo":
+                withCredentials([usernamePassword(credentialsId: 'demo_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                  
+                }
+              break
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_DEV_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+              break
+              case "gdc":
+                withCredentials([usernamePassword(credentialsId: 'gdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_GDC_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+              break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_QA_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+              break
+              case "stage":
+                withCredentials([usernamePassword(credentialsId: 'stage_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_STAGE_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+              break
+              case "prod":
+                withCredentials([usernamePassword(credentialsId: 'prod_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_PROD_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+  	stage('data-loader'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		steps {
+      sh "echo [neo4j] > ${WORKSPACE}/icdc-devops/ansible/hosts"
+      sh "echo ${env.NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-loader.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 			}
+ 		}
+    }
+    stage('flush_redis'){
+	  environment {
+       TIER = "${params.Environment}"
+      }
+      steps{
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+          ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+        }
+      }
+    }
+  }
+  post {
+    always {
+	  cleanWs()
+    }
+  }
+}

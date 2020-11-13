@@ -131,6 +131,7 @@ pipeline {
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-loader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                  credentialsId: 'server_ssh_key',
             			colorized: true) 
  			}
  		}
@@ -144,6 +145,7 @@ pipeline {
           ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'server_ssh_key',
                 colorized: true)
         }
       }

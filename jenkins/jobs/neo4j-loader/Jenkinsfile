@@ -122,14 +122,10 @@ pipeline {
  			SLACK_URL = "${SLACK_URL}"
  		}
  		steps {
-      sh '''
-      cat <<-EOF> ${WORKSPACE}/icdc-devops/ansible/hosts
-      [neo4j]
-      ${env.NEO4J_IP}
-      [bento]
-      localhost
-      EOF
-      '''
+      sh """
+      echo [neo4j] >> ${WORKSPACE}/icdc-devops/ansible/hosts
+      echo ${env.NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+      """
       sh "cat ${WORKSPACE}/icdc-devops/ansible/hosts"
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  					ansiblePlaybook( 

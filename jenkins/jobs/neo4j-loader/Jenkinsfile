@@ -127,6 +127,7 @@ pipeline {
       ${env.NEO4J_IP}
       [bento]
       localhost
+      EOF
       """
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  					ansiblePlaybook( 

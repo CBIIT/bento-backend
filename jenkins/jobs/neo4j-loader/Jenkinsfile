@@ -96,7 +96,7 @@ pipeline {
               break
               case "perf":
                 withCredentials([usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_STAGE_IP}"
+                  env.NEO4J_IP        = "${NEO4J_PERF_IP}"
                   env.S3_BUCKET       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.DUMP_FILE       = "${params.DumpFileName}"
@@ -123,7 +123,7 @@ pipeline {
  		}
  		steps {
       sh """
-      cat <<EOF >> ${WORKSPACE}/icdc-devops/ansible/hosts
+      cat <<EOF > ${WORKSPACE}/icdc-devops/ansible/hosts
       [neo4j]
       ${env.NEO4J_IP}
       [bento]

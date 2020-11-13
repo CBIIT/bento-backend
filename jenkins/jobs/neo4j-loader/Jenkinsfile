@@ -123,11 +123,11 @@ pipeline {
  		}
  		steps {
       sh """
-      cat <<'EOF' > ${WORKSPACE}/icdc-devops/ansible/hosts
-      [neo4j]
-      ${env.NEO4J_IP}
-      [bento]
-      localhost
+      cat <<EOF > ${WORKSPACE}/icdc-devops/ansible/hosts
+       [neo4j]
+       ${env.NEO4J_IP}
+       [bento]
+       localhost
       EOF
       """
       sh "cat ${WORKSPACE}/icdc-devops/ansible/hosts"

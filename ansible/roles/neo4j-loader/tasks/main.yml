@@ -32,7 +32,7 @@
 - name: download dump file
   aws_s3:
     bucket: "{{s3_bucket_name}}"
-    object: "{{dump_file_name}}"
+    object: "/dump_files/{{dump_file_name}}"
     dest: "{{remote_workspace}}/neo4j.dump"
     mode: get
 

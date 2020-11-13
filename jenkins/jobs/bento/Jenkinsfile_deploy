@@ -51,7 +51,7 @@ pipeline {
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
-//        name: 'Frontend_Tag', 
+//        name: 'Frontend_Image', 
 //        type: 'PT_BRANCH_TAG',
 //        quickFilterEnabled: false, 
 //        selectedValue: 'DEFAULT', 
@@ -59,7 +59,7 @@ pipeline {
 //        tagFilter: '*', 
 //        useRepository: 'https://github.com/CBIIT/bento-frontend')
 //
-//	The Frontend_Tag parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The Frontend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
 //	The GUI definition for this parameter should follow Environment and use the following values:
 //	
 //	Script:
@@ -96,7 +96,7 @@ pipeline {
 
 //    gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'Integration', 
-//        name: 'Backend_Tag', 
+//        name: 'Backend_Image', 
 //        type: 'PT_BRANCH_TAG',
 //        quickFilterEnabled: false, 
 //        selectedValue: 'DEFAULT', 
@@ -104,11 +104,11 @@ pipeline {
 //        tagFilter: '*', 
 //        useRepository: 'https://github.com/CBIIT/bento-backend')
 //
-//	The Backend_Tag parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
-//	The GUI definition for this parameter should follow Frontend_Tag and use the following values:
+//	The Backend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The GUI definition for this parameter should follow Frontend_Image and use the following values:
 //	
 //	Script:
-//		front_tag = Frontend_Tag
+//		front_tag = Frontend_Image
 //		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
 //		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
 //		List tagnames = tags.collect{ '' + it + '' }
@@ -132,10 +132,10 @@ pipeline {
 //	Fallback Script:
 //		return ['Integration']
 //		
-//		NOTE: this sets the default backend branch to "Integration" and is required for builds triggered from SCM polling. The branch defined here should math the default for Frontend_Tag
+//		NOTE: this sets the default backend branch to "Integration" and is required for builds triggered from SCM polling. The branch defined here should math the default for Frontend_Image
 //		
 //	Referenced parameters:
-//		Frontend_Tag
+//		Frontend_Image
 
   }
   options {
@@ -148,23 +148,23 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
-//			git branch: "${params.Backend_Tag}",
+//			git branch: "${params.Backend_Image}",
 //				url: 'https://github.com/CBIIT/bento-backend'
 				
 //  			checkout([$class: 'GitSCM', 
-//  				branches: [[name: "${params.Backend_Tag}"]], 
+//  				branches: [[name: "${params.Backend_Image}"]], 
 //  				doGenerateSubmoduleConfigurations: 
 //  				false, extensions: [], submoduleCfg: [], 
 //  				userRemoteConfigs: 
 //  				[[url: 'https://github.com/CBIIT/bento-backend']]])
 
 //			dir('bento-frontend'){
-//				git branch: "${params.Frontend_Tag}",
+//				git branch: "${params.Frontend_Image}",
 //				url: 'https://github.com/CBIIT/bento-frontend'
 //				}
 
 //			checkout([$class: 'GitSCM',
-//				branches: [[name: "${params.Frontend_Tag}"]],
+//				branches: [[name: "${params.Frontend_Image}"]],
 //				doGenerateSubmoduleConfigurations: false,
 //				extensions: [[$class: 'RelativeTargetDirectory',
 //				relativeTargetDir: 'bento-frontend']],
@@ -192,7 +192,7 @@ pipeline {
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
-        VERSION = "${params.Frontend_Tag}"
+        VERSION = "${params.Frontend_Image}"
       }
         steps {
           script {
@@ -255,9 +255,9 @@ pipeline {
 	  environment {
 	   SLACK_URL = "${SLACK_URL}"
        TIER = "${params.Environment}"
-	   VERSION = "${params.Frontend_Tag}"
-       FE_VERSION = "${params.Frontend_Tag}"
-       BE_VERSION = "${params.Backend_Tag}"
+	   VERSION = "${params.Frontend_Image}"
+       FE_VERSION = "${params.Frontend_Image}"
+       BE_VERSION = "${params.Backend_Image}"
       }
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

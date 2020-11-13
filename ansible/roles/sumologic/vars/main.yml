@@ -2,7 +2,7 @@
 # vars file for sumologic
 config: /opt/SumoCollector/config
 platform: aws
-collector_name: "${project}-${platform}-${env}-${app_name}"
+collector_name: "{{ project }}-{{ platform }}-{{ env }}-{{ app_name }}"
 sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
 sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
 tomcat_logs:

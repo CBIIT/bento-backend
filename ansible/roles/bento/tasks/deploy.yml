@@ -303,7 +303,7 @@
     name: bento-{{tier}}-sumo_syslog
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_syslog_name}}"
-    force_new_deployment: yes
+    force_new_deployment: no
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
@@ -317,7 +317,7 @@
     name: bento-{{tier}}-sumo_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_sumo_docker_name}}"
-    force_new_deployment: yes
+    force_new_deployment: no
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
@@ -331,7 +331,7 @@
     name: bento-{{tier}}-nr_docker
     cluster: bento-{{tier}}
     task_definition: "{{task_nr_docker_name}}"
-    force_new_deployment: yes
+    force_new_deployment: no
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100

@@ -48,6 +48,10 @@ pipeline {
         description: 'Choose aws region to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1,us-west-1' )
+	booleanParam(
+		defaultValue: false,
+		description: 'Flush the Redis cache',
+		name: 'Flush_Redis')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -320,6 +324,25 @@ pipeline {
   		  }
 		}
   	}
+	stage('clear redis cache'){
+		when {
+			expression { params.Flush_Redis }
+			}
+	
+  		environment {
+			TIER = "${params.Environment}"
+			}
+
+		steps{
+        
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+				}
+			}
+		}
   }
   post {
     always {

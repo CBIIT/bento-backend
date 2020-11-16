@@ -1,7 +1,7 @@
 ---
 - name: set demo environment facts
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_DEMO_IP') }}"
+    neo4j_ip: "{{ lookup('env','NEO4J_ECS_DEV_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "ecs-dev"
 

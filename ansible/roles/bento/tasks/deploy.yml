@@ -16,6 +16,8 @@
           value: http://{{ neo4j_ip }}:7474/graphql/
         - name: NEO4J_AUTHORIZATION
           value: "{{ neo4j_bearer }}"
+        - name: BENTO_API_VERSION
+          value: "{{backend_version}}"
         - name: REDIS_HOST
           value: "{{ redis_host[tier] }}"
         - name: NEW_RELIC_LICENSE_KEY

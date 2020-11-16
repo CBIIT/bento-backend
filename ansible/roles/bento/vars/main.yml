@@ -15,7 +15,7 @@ app_name: bento-{{platform}}-{{tier}}
 schema_file: bento-extended.graphql
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
-backend_api_version: "{{ backend_version }}"
+bento_api_version: "{{ backend_version }}"
 backend_frontend_version: "{{frontend_version }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"

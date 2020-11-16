@@ -1587,25 +1587,85 @@ type QueryType {
 
     samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: "MATCH (ss:study_subject {study_subject_id: $subject_id})<-[*]-(s:sample) RETURN s")
 
-    filesInList(file_ids: [String]): [FileDetail] @cypher(statement: """
+    filesInList(file_ids: [String], order_by: String = "", first: Int = 100, offset: Int = 0): [FileDetail] @cypher(statement: """
         MATCH (f:file)
-            WHERE f.file_id in $file_ids
+        WHERE f.file_id in $file_ids
         OPTIONAL MATCH (f)-->(parent)
-            WHERE NOT (parent:laboratory_procedure)
+        WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[*]->(ss:study_subject)-->(s:study)
-        RETURN f.file_name AS file_name,
-               f.file_id AS file_id,
-               f.file_type AS file_type,
-               head(labels(parent)) AS association,
-               f.file_description AS file_description,
-               f.file_format AS file_format,
-               f.file_size AS file_size,
-               f.md5sum AS md5sum,
-               ss.study_subject_id AS subject_id,
-               s.study_acronym AS study_code
+        WITH
+            toInteger(split(f.file_id,'-')[2]) AS file_id_num,
+            toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+            f, parent, ss, s
+        RETURN
+            f.file_name AS file_name,
+            f.file_id AS file_id,
+            f.file_type AS file_type,
+            head(labels(parent)) AS association,
+            f.file_description AS file_description,
+            f.file_format AS file_format,
+            f.file_size AS file_size,
+            f.md5sum AS md5sum,
+            ss.study_subject_id AS subject_id,
+            s.study_acronym AS study_code
+        ORDER BY CASE $order_by
+            WHEN 'file_id' THEN file_id_num
+            WHEN 'file_name' THEN file_name
+            WHEN 'file_type' THEN file_type
+            WHEN 'association' THEN association
+            WHEN 'file_description' THEN file_description
+            WHEN 'file_format' THEN file_format
+            WHEN 'file_size' THEN file_size
+            WHEN 'md5sum' THEN md5sum
+            WHEN 'subject_id' THEN subject_id_num
+            WHEN 'study_code' THEN study_code
+            ELSE file_id_num END
+        SKIP $offset
+        LIMIT $first
         """)
 
+<<<<<<< Updated upstream
     sampleOverview(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
+=======
+    filesInListDesc(file_ids: [String], order_by: String = "", first: Int = 100, offset: Int = 0): [FileDetail] @cypher(statement: """
+        MATCH (f:file)
+        WHERE f.file_id in $file_ids
+        OPTIONAL MATCH (f)-->(parent)
+        WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[*]->(ss:study_subject)-->(s:study)
+        WITH
+            toInteger(split(f.file_id,'-')[2]) AS file_id_num,
+            toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+            f, parent, ss, s
+        RETURN
+            f.file_name AS file_name,
+            f.file_id AS file_id,
+            f.file_type AS file_type,
+            head(labels(parent)) AS association,
+            f.file_description AS file_description,
+            f.file_format AS file_format,
+            f.file_size AS file_size,
+            f.md5sum AS md5sum,
+            ss.study_subject_id AS subject_id,
+            s.study_acronym AS study_code
+        ORDER BY CASE $order_by
+            WHEN 'file_id' THEN file_id_num
+            WHEN 'file_name' THEN file_name
+            WHEN 'file_type' THEN file_type
+            WHEN 'association' THEN association
+            WHEN 'file_description' THEN file_description
+            WHEN 'file_format' THEN file_format
+            WHEN 'file_size' THEN file_size
+            WHEN 'md5sum' THEN md5sum
+            WHEN 'subject_id' THEN subject_id_num
+            WHEN 'study_code' THEN study_code
+            ELSE file_id_num END DESC
+        SKIP $offset
+        LIMIT $first
+    """)
+
+    sampleOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
+>>>>>>> Stashed changes
         MATCH (ss:study_subject)
         WITH COLLECT(DISTINCT ss.study_subject_id) AS all_subjects
         MATCH (samp:sample)

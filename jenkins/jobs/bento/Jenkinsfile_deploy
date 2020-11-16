@@ -300,7 +300,7 @@ pipeline {
 					extraVars: [
                     env: "${params.Environment}",
 					app_type: 'database',
-					app_name: 'Neo4j',
+					app_name: 'neo4j',
                     project: 'bento',
 					log_path: '/var/lib/neo4j/logs/*.log',
                     ],

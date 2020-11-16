@@ -13,7 +13,7 @@ alb:
     dev: DEV-A-Appli-Caninedata-8UHLKJYN
     qa: QA-Ca-Appli-6P2VXOVVW4SD
     stage: canin-Appli-EXXC73ANOU8B
-    prod: prod-appli-88k1y11u2apf-556389648
+    prod: prod-appli-88k1y11u2apf
   ctdc:
     dev: "test"
 

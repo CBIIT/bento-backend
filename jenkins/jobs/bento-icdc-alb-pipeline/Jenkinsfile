@@ -347,7 +347,7 @@ pipeline {
   }
   post {
     always {
-      // sendSlackMessage()
+      sendSlackMessage()
       cleanWs()
     }
   }

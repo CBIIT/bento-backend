@@ -66,8 +66,8 @@
       nocache: yes
     # name: "{{ecr}}:icdc"
     name: cbiitssrepo/icdc
-    # tag: "{{build_number}}"
-    tag: ecs
+    tag: "{{build_number}}"
+    # tag: ecs
     push: yes
     source: build
 

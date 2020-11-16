@@ -1,0 +1,118 @@
+//load shared library for slack notification
+//@Library('shared-library')_
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "ICDC Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "icdc devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+
+  agent {
+    node {
+      label 'slave-ncias-d2320-c'
+    }
+  }
+  parameters {
+    //listGitBranches(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    // gitParameter(branchFilter: '.*', credentialsId: '', defaultValue: 'master', name: 'Tag', quickFilterEnabled: false, remoteURL: 'https://github.com/CBIIT/icdc-codebase', selectedValue: 'DEFAULT', sortMode: 'NONE', tagFilter: '.*', type: 'PT_BRANCH_TAG')
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'Develop', 
+            name: 'Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'NONE', 
+            tagFilter: '*', 
+            useRepository: 'https://github.com/CBIIT/icdc-codebase')
+    extendedChoice( 
+            name: 'CopyFrom', 
+            defaultValue: 'dev', 
+            description: 'Choose the environment to copy from', 
+            type: 'PT_SINGLE_SELECT',
+            value: 'dev,qa,stage' )
+    extendedChoice( 
+            name: 'CopyTo', 
+            defaultValue: 'qa', 
+            description: 'Choose the environment to copy to', 
+            type: 'PT_SINGLE_SELECT',
+            value: 'qa,stage,prod' )
+  }
+   // triggers { 
+   //   pollSCM('H/15 * * * 1-5') 
+   //  }
+  options {
+    timestamps()
+  }
+  tools { 
+    maven 'Default' 
+    jdk 'Default' 
+  }
+  stages {
+    stage('checkout'){
+      steps {
+        checkout([$class: 'GitSCM', 
+          branches: [[name: "${params.Tag}"]], 
+          doGenerateSubmoduleConfigurations: 
+          false, extensions: [], submoduleCfg: [], 
+          userRemoteConfigs: 
+          [[url: 'https://github.com/CBIIT/icdc-codebase']]])
+
+        dir('icdc-devops'){
+          git branch: 'master',
+            url: 'https://github.com/CBIIT/icdc-devops.git'
+        }
+      }
+    }
+    stage('Build') {
+      environment {
+        COPY_FROM = "${params.CopyFrom}"
+        COPY_TO = "${params.CopyTo}"
+        SLACK_URL = "${SLACK_ICDC_URL}"
+      }
+      steps {
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+        withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME'),
+        ]) {
+
+          ansiblePlaybook( 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/git-copy.yml', 
+                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                  colorized: true) 
+        }
+      }
+    }
+    }
+  }
+  post {
+    
+    always {
+      
+      sendSlackMessage()
+    }
+  }
+}

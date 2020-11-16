@@ -46,6 +46,9 @@ public class ConfigurationDAO {
 	@Value("${redis.ttl}")
 	private int redisTTL;
 
+	@Value("${bento.api.version}")
+	private String bentoApiVersion;
+
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
@@ -139,4 +142,8 @@ public class ConfigurationDAO {
 	public void setRedisEnabled(Boolean redisEnabled) {
 		this.redisEnabled = redisEnabled;
 	}
+
+	public String getBentoApiVersion(){ return bentoApiVersion; }
+
+	public void setBentoApiVersion(String bentoApiVersion){ this.bentoApiVersion = bentoApiVersion; }
 }

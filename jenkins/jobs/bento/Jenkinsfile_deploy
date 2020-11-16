@@ -313,25 +313,21 @@ pipeline {
 		when {
 			expression { params.Flush_Redis }
 			}
-		steps {
 	
-  		echo "REDIS FLUSH HERE"
-		
-		//wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  		//	ansiblePlaybook( 
-        //   		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
-        //   		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-		//		extraVars: [
-        //           env: "${params.Environment}",
-		//		app_type: 'database',
-		//		app_name: 'Neo4j',
-        //           project: 'bento',
-		//		log_path: '/var/lib/neo4j/logs/*.log',
-        //           ],
-        //   		colorized: true)
-  		//}
-  	  }
-	}
+  		environment {
+			TIER = "${params.Environment}"
+			}
+
+		steps{
+        
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+				}
+			}
+		}
   }
   post {
     always {

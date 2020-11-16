@@ -48,6 +48,10 @@ pipeline {
         description: 'Choose aws region to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1,us-west-1' )
+	booleanParam(
+		defaultValue: false,
+		description: 'Flush the Redis cache',
+		name: 'Flush_Redis')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -305,6 +309,29 @@ pipeline {
   		  }
 		}
   	}
+	stage('clear redis cache'){
+		when {
+			expression { params.Flush_Redis }
+			}
+		steps {
+	
+  		echo "REDIS FLUSH HERE"
+		
+		//wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  		//	ansiblePlaybook( 
+        //   		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
+        //   		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+		//		extraVars: [
+        //           env: "${params.Environment}",
+		//		app_type: 'database',
+		//		app_name: 'Neo4j',
+        //           project: 'bento',
+		//		log_path: '/var/lib/neo4j/logs/*.log',
+        //           ],
+        //   		colorized: true)
+  		//}
+  	  }
+	}
   }
   post {
     always {

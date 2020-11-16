@@ -1,0 +1,9 @@
+---
+- name: setup icdc_demo server
+  hosts: localhost
+  connection: local
+  become: yes
+
+  roles:
+    - git-copy
+   

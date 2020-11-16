@@ -6,7 +6,7 @@
     - name: icdc
       essential: true
       # image: "{{ecr}}:icdc"
-      image: cbiitssrepo/icdc:ecs
+      image: cbiitssrepo/icdc:{{build_number}}
       environment:
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"

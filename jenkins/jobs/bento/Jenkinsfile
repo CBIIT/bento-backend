@@ -344,13 +344,15 @@ pipeline {
 		}
   }
   post {
-    always {
-      
+
+	always {
+
       sendSlackMessage()
-	  cleanWs()
+
     }
-	
+
 	success {
+
 		script {
 			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
@@ -385,6 +387,12 @@ pipeline {
 			}
 		
 		}
+
+	cleanup {
 	
+	  cleanWs()
+    
+	}
+
   }
 }

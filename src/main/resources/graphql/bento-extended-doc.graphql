@@ -1003,15 +1003,17 @@ type QueryType {
 
     samplesForSubjectId(subject_id: String!): [sample] 
 
-    filesInList(file_ids: [String]): [FileDetail] 
+    filesInList(file_ids: [String], order_by: String = "", first: Int = 100, offset: Int = 0): [FileDetail] 
 
-    sampleOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
+    filesInListDesc(file_ids: [String], order_by: String = "", first: Int = 100, offset: Int = 0): [FileDetail] 
 
-    sampleOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
+    sampleOverview(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
+
+    sampleOverviewDesc(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] 
 
 
-    fileOverview(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
+    fileOverview(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
 
-    fileOverviewDesc(subject_ids: [String] = [], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
+    fileOverviewDesc(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] 
 
 }

@@ -211,7 +211,7 @@ schema {
 }
 
 type QueryType {
-    schemaVersion: String @cypher(statement: "RETURN '0.1.0'")
+    schemaVersion: String @cypher(statement: "RETURN '1.0.0'")
 
     "Simple counts"
     numberOfPrograms: Int @cypher(statement: "MATCH (n:program) return count(n)")

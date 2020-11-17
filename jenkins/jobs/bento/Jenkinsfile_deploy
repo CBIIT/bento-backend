@@ -201,8 +201,7 @@ pipeline {
 		steps {
 
           script {
-            VERSION_NUMBER = "${VERSION} - ${params.Environment}"
-            currentBuild.displayName = "${VERSION_NUMBER}"
+            currentBuild.displayName = "Tag: ${VERSION}, Env: ${params.Environment}"
             }
 		
           script {

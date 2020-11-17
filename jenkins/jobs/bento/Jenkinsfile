@@ -349,5 +349,42 @@ pipeline {
       sendSlackMessage()
 	  cleanWs()
     }
+	
+	success {
+		script {
+			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
+				
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Applying tag $Backend_Tag to URL:  $gitURL"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				git tag --no-sign -a ${Backend_Tag} -m "Jenkins tag: ${Backend_Tag}"
+				git push https://${git_user}:${git_password}@${gitURL} --tags
+				
+				'''
+			
+				}
+			}
+		
+		script {
+			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+				sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
+				
+				cd ${WORKSPACE}/bento-frontend
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Applying tag $Frontend_Tag to URL:  $gitURL"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				git tag --no-sign -a ${Frontend_Tag} -m "Jenkins tag: ${Frontend_Tag}"
+				git push https://${git_user}:${git_password}@${gitURL} --tags
+				
+				'''
+			
+				}
+			}
+		
+		}
+	
   }
 }

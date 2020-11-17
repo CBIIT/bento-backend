@@ -19,14 +19,14 @@
     - npm install --save https://github.com/skiran86/mui-custom-datatables/tarball/master
 
 
-- name: run npm install in {{workspace}}/icdc-frontend/
-  command: "{{item}}"
-  args:
-    chdir: "{{workspace}}/src/main/frontend/"
-  loop:
-    - npm install npm@latest -g
-    - npm install
-    - npm run build
+# - name: run npm install in {{workspace}}/icdc-frontend/
+#   command: "{{item}}"
+#   args:
+#     chdir: "{{workspace}}/src/main/frontend/"
+#   loop:
+#     - npm install npm@latest -g
+#     - npm install
+#     - npm run build
 
 
 - name: run npm install and build in {{workspace}}/src/main/frontend/node_modules/mui-custom-datatables

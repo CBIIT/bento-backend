@@ -199,6 +199,14 @@ pipeline {
         VERSION = "${params.Frontend_Image}"
       }
         steps {
+		
+		steps {
+
+          script {
+            VERSION_NUMBER = "${VERSION} - ${params.Environment}"
+            currentBuild.displayName = "${VERSION_NUMBER}"
+            }
+		
           script {
             switch("${params.Environment}") {
               case "dev":

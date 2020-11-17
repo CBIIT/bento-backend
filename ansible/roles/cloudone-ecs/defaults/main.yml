@@ -1,4 +1,3 @@
 ---
 # defaults file for cicd
 platform: aws
-ecs_url: caninecommons-ecs-dev.nci.nih.gov

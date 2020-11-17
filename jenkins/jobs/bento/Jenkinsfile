@@ -361,7 +361,7 @@ pipeline {
 				echo "Applying tag $Backend_Tag to URL:  $gitURL"
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
-				git tag --no-sign -a ${Backend_Tag} -m "Jenkins tag: ${Backend_Tag}"
+				git tag --no-sign -a ${Backend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
 				git push https://${git_user}:${git_password}@${gitURL} --tags
 				
 				'''
@@ -378,7 +378,7 @@ pipeline {
 				echo "Applying tag $Frontend_Tag to URL:  $gitURL"
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
-				git tag --no-sign -a ${Frontend_Tag} -m "Jenkins tag: ${Frontend_Tag}"
+				git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
 				git push https://${git_user}:${git_password}@${gitURL} --tags
 				
 				'''

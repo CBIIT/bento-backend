@@ -198,8 +198,6 @@ pipeline {
         SLACK_URL = "${SLACK_URL}"
         VERSION = "${params.Frontend_Image}"
       }
-        steps {
-		
 		steps {
 
           script {
@@ -341,7 +339,13 @@ pipeline {
     always {
       
       sendSlackMessage()
-	  cleanWs()
+
     }
+	
+	cleanup {
+	
+		cleanWs()
+    
+	}
   }
 }

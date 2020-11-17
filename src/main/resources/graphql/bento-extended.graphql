@@ -1041,8 +1041,7 @@ type QueryType {
 
     subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
-        WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
-          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+          WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
@@ -1102,8 +1101,7 @@ type QueryType {
 
     subjectOverViewPagedDesc(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
-        WITH ss, COLLECT(ss.study_subject_id) AS all_subjects
-          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+          WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
@@ -1123,7 +1121,6 @@ type QueryType {
             s.study_short_description AS study_short_description,
             s.study_acronym + ': ' + s.study_short_description AS study_info,
             ss.study_subject_id AS subject_id,
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
             ss.disease_subtype AS diagnosis,
             sf.grouped_recurrence_score AS recurrence_score,
             d.tumor_size_group AS tumor_size,
@@ -1211,66 +1208,28 @@ type QueryType {
           association: [String] = [],
           file_type: [String] = []
     ): [String] @cypher(statement: """
-        // Gathering default parameters
-        MATCH (g:program)
-        WITH COLLECT(DISTINCT g.program_acronym) AS all_programs
-        MATCH (g:study)
-        WITH COLLECT(DISTINCT g.study_acronym + ': ' + g.study_short_description)  AS all_studies,
-             all_programs
-        MATCH (g:study_subject)
-        WITH COLLECT(DISTINCT g.disease_subtype)  AS all_diagnoses,
-            all_programs, all_studies
-        MATCH (g:stratification_factor)
-        WITH COLLECT(DISTINCT g.grouped_recurrence_score) AS all_rc_scores,
-            all_programs, all_studies, all_diagnoses
-        MATCH (g:therapeutic_procedure)
-        WITH COLLECT(DISTINCT g.chemotherapy_regimen) AS all_chemo_regimen,
-             COLLECT(DISTINCT g.endocrine_therapy_type) AS all_endo_therapies,
-            all_programs, all_studies, all_diagnoses, all_rc_scores
-        MATCH (g:diagnosis)
-        WITH COLLECT(DISTINCT g.tumor_size_group) AS all_tumor_sizes,
-             COLLECT(DISTINCT g.tumor_grade) AS all_tumor_grades,
-             COLLECT(DISTINCT g.er_status) AS all_er_status,
-             COLLECT(DISTINCT g.pr_status) AS all_pr_status,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies
-        MATCH (g:sample)
-        WITH COLLECT(DISTINCT g.tissue_type) AS all_tissue_types,
-             COLLECT(DISTINCT g.composition) AS all_compositions,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies,
-            all_tumor_sizes, all_tumor_grades, all_er_status, all_pr_status
-        MATCH (g:demographic_data)
-        WITH COLLECT(DISTINCT g.menopause_status) AS all_meno_status,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies,
-            all_tumor_sizes, all_tumor_grades, all_er_status, all_pr_status, all_tissue_types, all_compositions
-        MATCH (g:file)-->(parent)
-        WITH COLLECT(DISTINCT g.file_type) AS all_file_types,
-             COLLECT(DISTINCT head(labels(parent))) AS all_associations,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies,
-            all_tumor_sizes, all_tumor_grades, all_er_status, all_pr_status, all_tissue_types, all_compositions,
-            all_meno_status
-
-    // Filtering subjects
+        // Filtering subjects
         MATCH (ss)<-[:sf_of_study_subject]-(sf)
-          WHERE sf.grouped_recurrence_score IN CASE $rc_scores WHEN [] THEN all_rc_scores ELSE $rc_scores END
+          WHERE size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores
         MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
-          WHERE d.tumor_size_group IN CASE $tumor_sizes WHEN [] THEN all_tumor_sizes ELSE $tumor_sizes END
-            AND d.tumor_grade IN CASE $tumor_grades WHEN [] THEN all_tumor_grades ELSE $ tumor_grades END
-            AND d.er_status IN CASE $er_status WHEN [] THEN all_er_status ELSE $er_status END
-            AND d.pr_status IN CASE $pr_status WHEN [] THEN all_pr_status ELSE $pr_status END
-            AND tp.chemotherapy_regimen IN CASE $chemo_regimen WHEN [] THEN all_chemo_regimen ELSE $chemo_regimen END
-            AND tp.endocrine_therapy_type IN CASE $endo_therapies WHEN [] THEN all_endo_therapies ELSE $endo_therapies END
+          WHERE size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes
+            AND size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades
+            AND size($er_status) = 0 OR d.er_status IN $er_status
+            AND size($pr_status) = 0 OR d.pr_status IN $pr_status
+            AND size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen
+            AND size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies
         MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-          WHERE p.program_acronym IN CASE $programs WHEN [] THEN all_programs ELSE $programs END
-            AND (s.study_acronym + ': ' + s.study_short_description) IN CASE $studies WHEN [] THEN all_studies ELSE $studies END
-            AND ss.disease_subtype IN CASE $diagnoses WHEN [] THEN all_diagnoses ELSE $diagnoses END
+          WHERE size($programs) = 0 OR p.program_acronym IN $programs
+            AND size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies
+            AND size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses
         MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-          WHERE demo.menopause_status IN CASE $meno_status WHEN [] THEN all_meno_status ELSE $meno_status END
+          WHERE size($meno_status) = 0 OR demo.menopause_status IN $meno_status
         MATCH (ss)<-[:sample_of_study_subject]-(samp)
-          WHERE samp.tissue_type IN CASE $tissue_type WHEN [] THEN all_tissue_types ELSE $tissue_type END
-            AND samp.composition IN CASE $composition WHEN [] THEN all_compositions ELSE $composition END
+          WHERE size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type
+            AND size($composition) = 0 OR samp.composition IN $composition
         MATCH (ss)<-[*..2]-(parent)<--(f)
-          WHERE f.file_type IN CASE $file_type WHEN [] THEN all_file_types ELSE $file_type END
-            AND head(labels(parent)) IN CASE $association WHEN [] THEN all_associations ELSE $association END
+          WHERE size($file_type) = 0 OR f.file_type IN $file_type
+            AND size($association) = 0 OR head(labels(parent)) IN $association
         RETURN DISTINCT ss.study_subject_id
     """)
 
@@ -1292,71 +1251,32 @@ type QueryType {
           file_type: [String] = [],
           first: Int = 100
     ): SearchResult @cypher(statement: """
-        // Gathering default parameters
-        MATCH (g:program)
-        WITH COLLECT(DISTINCT g.program_acronym) AS all_programs
-        MATCH (g:study)
-        WITH COLLECT(DISTINCT g.study_acronym + ': ' + g.study_short_description)  AS all_studies,
-             all_programs
-        MATCH (g:study_subject)
-        WITH COLLECT(DISTINCT g.disease_subtype)  AS all_diagnoses,
-            all_programs, all_studies
-        MATCH (g:stratification_factor)
-        WITH COLLECT(DISTINCT g.grouped_recurrence_score) AS all_rc_scores,
-            all_programs, all_studies, all_diagnoses
-        MATCH (g:therapeutic_procedure)
-        WITH COLLECT(DISTINCT g.chemotherapy_regimen) AS all_chemo_regimen,
-             COLLECT(DISTINCT g.endocrine_therapy_type) AS all_endo_therapies,
-            all_programs, all_studies, all_diagnoses, all_rc_scores
-        MATCH (g:diagnosis)
-        WITH COLLECT(DISTINCT g.tumor_size_group) AS all_tumor_sizes,
-             COLLECT(DISTINCT g.tumor_grade) AS all_tumor_grades,
-             COLLECT(DISTINCT g.er_status) AS all_er_status,
-             COLLECT(DISTINCT g.pr_status) AS all_pr_status,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies
-        MATCH (g:sample)
-        WITH COLLECT(DISTINCT g.tissue_type) AS all_tissue_types,
-             COLLECT(DISTINCT g.composition) AS all_compositions,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies,
-            all_tumor_sizes, all_tumor_grades, all_er_status, all_pr_status
-        MATCH (g:demographic_data)
-        WITH COLLECT(DISTINCT g.menopause_status) AS all_meno_status,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies,
-            all_tumor_sizes, all_tumor_grades, all_er_status, all_pr_status, all_tissue_types, all_compositions
-        MATCH (g:file)-->(parent)
-        WITH COLLECT(DISTINCT g.file_type) AS all_file_types,
-             COLLECT(DISTINCT head(labels(parent))) AS all_associations,
-            all_programs, all_studies, all_diagnoses, all_rc_scores, all_chemo_regimen, all_endo_therapies,
-            all_tumor_sizes, all_tumor_grades, all_er_status, all_pr_status, all_tissue_types, all_compositions,
-            all_meno_status
-
-    // Filtering subjects
+        // Filtering subjects
         MATCH (ss)<-[:sf_of_study_subject]-(sf)
-          WHERE sf.grouped_recurrence_score IN CASE $rc_scores WHEN [] THEN all_rc_scores ELSE $rc_scores END
+          WHERE size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores
         MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
-          WHERE d.tumor_size_group IN CASE $tumor_sizes WHEN [] THEN all_tumor_sizes ELSE $tumor_sizes END
-            AND d.tumor_grade IN CASE $tumor_grades WHEN [] THEN all_tumor_grades ELSE $ tumor_grades END
-            AND d.er_status IN CASE $er_status WHEN [] THEN all_er_status ELSE $er_status END
-            AND d.pr_status IN CASE $pr_status WHEN [] THEN all_pr_status ELSE $pr_status END
-            AND tp.chemotherapy_regimen IN CASE $chemo_regimen WHEN [] THEN all_chemo_regimen ELSE $chemo_regimen END
-            AND tp.endocrine_therapy_type IN CASE $endo_therapies WHEN [] THEN all_endo_therapies ELSE $endo_therapies END
+          WHERE size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes
+            AND size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades
+            AND size($er_status) = 0 OR d.er_status IN $er_status
+            AND size($pr_status) = 0 OR d.pr_status IN $pr_status
+            AND size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen
+            AND size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies
         MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-          WHERE p.program_acronym IN CASE $programs WHEN [] THEN all_programs ELSE $programs END
-            AND (s.study_acronym + ': ' + s.study_short_description) IN CASE $studies WHEN [] THEN all_studies ELSE $studies END
-            AND ss.disease_subtype IN CASE $diagnoses WHEN [] THEN all_diagnoses ELSE $diagnoses END
+          WHERE size($programs) = 0 OR p.program_acronym IN $programs
+            AND size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies
+            AND size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses
         MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-          WHERE demo.menopause_status IN CASE $meno_status WHEN [] THEN all_meno_status ELSE $meno_status END
+          WHERE size($meno_status) = 0 OR demo.menopause_status IN $meno_status
         MATCH (ss)<-[:sample_of_study_subject]-(samp)
-          WHERE samp.tissue_type IN CASE $tissue_type WHEN [] THEN all_tissue_types ELSE $tissue_type END
-            AND samp.composition IN CASE $composition WHEN [] THEN all_compositions ELSE $composition END
+          WHERE size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type
+            AND size($composition) = 0 OR samp.composition IN $composition
         MATCH (ss)<-[*..2]-(parent)<--(f)
-          WHERE f.file_type IN CASE $file_type WHEN [] THEN all_file_types ELSE $file_type END
-            AND head(labels(parent)) IN CASE $association WHEN [] THEN all_associations ELSE $association END
-        WITH ss
+          WHERE size($file_type) = 0 OR f.file_type IN $file_type
+            AND size($association) = 0 OR head(labels(parent)) IN $association
 
         // Preparing return values
-        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
-        WITH ss, collect(DISTINCT sp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
+        OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+        WITH ss, collect(DISTINCT samp.sample_id) AS samples, collect(DISTINCT lp.laboratory_procedure_id) AS lab_procedures, collect(DISTINCT f) AS files
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (ss)<-[:sf_of_study_subject]-(sf)
         OPTIONAL MATCH (ss)<-[:diagnosis_of_study_subject]-(d)
@@ -1632,19 +1552,17 @@ type QueryType {
     """)
 
     sampleOverview(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
-        MATCH (ss:study_subject)
-        WITH COLLECT(DISTINCT ss.study_subject_id) AS all_subjects
         MATCH (samp:sample)
+        WHERE size($sample_ids) = 0 OR samp.sample_id IN $sample_ids
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             distinct lp,
             toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
             collect(distinct f.file_id) AS files,
-            samp, ss, s, p, all_subjects, COLLECT(DISTINCT samp.sample_id) AS all_sample_ids
-        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-          AND samp.sample_id IN CASE $sample_ids WHEN [] THEN all_sample_ids ELSE $sample_ids END
+            samp, ss, s, p
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
@@ -1674,19 +1592,17 @@ type QueryType {
     """)
 
     sampleOverviewDesc(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
-        MATCH (ss:study_subject)
-        WITH COLLECT(DISTINCT ss.study_subject_id) AS all_subjects
         MATCH (samp:sample)
+        WHERE size($sample_ids) = 0 OR samp.sample_id IN $sample_ids
         OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
+        WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             distinct lp,
             toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
             collect(distinct f.file_id) AS files,
-            samp, ss, s, p, all_subjects, COLLECT(DISTINCT samp.sample_id) AS all_sample_ids
-        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-          AND samp.sample_id IN CASE $sample_ids WHEN [] THEN all_sample_ids ELSE $sample_ids END
+            samp, ss, s, p
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
@@ -1717,18 +1633,16 @@ type QueryType {
 
 
     fileOverview(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
-        MATCH (ss:study_subject)
-        WITH COLLECT(DISTINCT ss.study_subject_id) AS all_subjects
         MATCH (f:file)
+        WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
         OPTIONAL MATCH (f)-->(parent)
         WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         WITH
             toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
-            f, ss, p, parent, s, samp, all_subjects, COLLECT(DISTINCT f.file_id) AS all_file_ids
-        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-          AND f.file_id IN CASE $file_ids WHEN [] THEN all_file_ids ELSE $file_ids END
+            f, ss, p, parent, s, samp
         RETURN
             f.file_id AS file_id,
             f.file_name AS file_name,
@@ -1759,18 +1673,16 @@ type QueryType {
     """)
 
     fileOverviewDesc(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
-        MATCH (ss:study_subject)
-        WITH COLLECT(DISTINCT ss.study_subject_id) AS all_subjects
         MATCH (f:file)
+        WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
         OPTIONAL MATCH (f)-->(parent)
         WHERE NOT (parent:laboratory_procedure)
         OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
         OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         WITH
             toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
-            f, ss, p, parent, s, samp, all_subjects, COLLECT(DISTINCT f.file_id) AS all_file_ids
-        WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-          AND f.file_id IN CASE $file_ids WHEN [] THEN all_file_ids ELSE $file_ids END
+            f, ss, p, parent, s, samp
         RETURN
             f.file_id AS file_id,
             f.file_name AS file_name,

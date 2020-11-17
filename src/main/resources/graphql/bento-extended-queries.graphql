@@ -330,16 +330,14 @@ type QueryType {
     """)
 
     armsByPrograms(subject_ids: [String] = []): [ProgramArms] @cypher(statement: """
-        MATCH (ss:study_subject)
-        WITH COLLECT(ss.study_subject_id) AS all_subjects
         MATCH (p:program)
         OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
-          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
-        WITH p, COUNT(DISTINCT ss) AS caseSize, all_subjects
+          WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
+        WITH p, COUNT(DISTINCT ss) AS caseSize
         OPTIONAL MATCH (p)<-[:study_of_program]-(s)<-[:study_subject_of_study]-(ss)
-          WHERE ss.study_subject_id IN CASE $subject_ids WHEN [] THEN all_subjects ELSE $subject_ids END
+          WHERE size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids
         WITH
-            p, all_subjects, caseSize,
+            p, caseSize,
             {arm: s.study_acronym, caseSize: COUNT(DISTINCT ss), size: COUNT(DISTINCT ss)} AS s
         RETURN  p.program_acronym AS program,
                 caseSize,

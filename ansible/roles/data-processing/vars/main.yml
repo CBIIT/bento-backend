@@ -10,6 +10,7 @@ wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
 split_transactions:  "{{ lookup('env','SPLIT')}}"
 project:  "{{lookup('env','PROJECT')}}"
+region: us-east-1
 
 
 

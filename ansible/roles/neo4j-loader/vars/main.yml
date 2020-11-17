@@ -5,3 +5,6 @@ remote_workspace: /tmp/neo4j
 s3_bucket_name: "{{ lookup('env','S3_BUCKET') }}"
 dump_file_name: "{{ lookup('env','DUMP_FILE') }}"
 timestamp: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+
+tier: "{{ lookup('env','TIER') }}"
+region: us-east-1

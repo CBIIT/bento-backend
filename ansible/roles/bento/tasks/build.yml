@@ -32,7 +32,7 @@
 - name: get frontend commit ID
   shell: git rev-parse HEAD
   args:
-    chdir: "{{workspace}}/icdc-frontend"
+    chdir: "{{workspace}}/bento-frontend"
   register: frontend_tag
 
 - name: echo backend tag

@@ -23,6 +23,26 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
+- name: get backend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}"
+  register: backend_tag
+
+- name: get frontend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}/icdc-frontend"
+  register: frontend_tag
+
+- name: echo backend tag
+  debug:
+    msg: "{{ backend_tag.stdout_lines }}"
+
+- name: echo frontend tag
+  debug:
+    msg: "{{ frontend_tag.stdout_lines }}"
+
 - name: remove the application_example.properties file 
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"

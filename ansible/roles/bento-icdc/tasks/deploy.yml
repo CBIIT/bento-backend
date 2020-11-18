@@ -115,11 +115,11 @@
     entrypoint: "/bin/ash -c 'if [ ! -f /usr/local/tomcat/newrelic/newrelic.jar ]; then wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip; fi && bin/catalina.sh run'"
     log_driver: syslog
     log_options:
-      syslog-address: udp://{{ syslog_host }}:514
+      syslog-address: tcp://{{ syslog_host }}:514
       tag: "{{ app_name }}-backend"
       syslog-format: "rfc5424micro"
     state: started
-    restart_policy: on-failure
+    restart_policy: always
     ports:
       - "8080:8080"
 
@@ -143,11 +143,11 @@
       NEW_RELIC_NO_CONFIG_FILE: "true"
     log_driver: syslog
     log_options:
-      syslog-address: udp://{{ syslog_host }}:514
+      syslog-address: tcp://{{ syslog_host }}:514
       tag: "{{ app_name }}-frontend"
       syslog-format: "rfc5424micro"
     state: started
-    restart_policy: on-failure
+    restart_policy: always
     ports:
       - "80:80"
 

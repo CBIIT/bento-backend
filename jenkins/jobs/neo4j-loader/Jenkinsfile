@@ -102,6 +102,14 @@ pipeline {
                   env.DUMP_FILE       = "${params.DumpFileName}"
                 }
               break
+              case "icdc":
+                withCredentials([usernamePassword(credentialsId: 'icdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_ICDC_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+			  break
               case "prod":
                 withCredentials([usernamePassword(credentialsId: 'prod_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   env.NEO4J_IP        = "${NEO4J_PROD_IP}"

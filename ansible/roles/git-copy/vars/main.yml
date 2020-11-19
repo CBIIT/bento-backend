@@ -1,9 +1,9 @@
 ---
 # vars file for roles/git-tag
-#git_tag: "daily_tag.{{ lookup('pipe','date +%Y%m%d%H%M') }}"
+git_date: "{{ lookup('pipe','date +%Y%m%d%H%M') }}"
 username: "{{ lookup('env','GIT_USERNAME') }}"
 password: "{{ lookup('env','GIT_PASSWORD') }}"
 copy_from: "{{ lookup('env','COPY_FROM') }}"
 copy_to: "{{ lookup('env','COPY_TO') }}"
 git_home: /tmp/work
-git_base: https://{{username}}:{{password}}@github.com/CBIIT/
+git_base: https://{{username}}:{{password}}@github.com/CBIIT

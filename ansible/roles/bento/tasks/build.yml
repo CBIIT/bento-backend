@@ -13,9 +13,9 @@
 
 - name: set stage environment facts
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_STAGE_IP') }}"
+    neo4j_ip: "{{ lookup('env','NEO4J_PERF_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "stage"
+  when: tier == "perf"
 
 - name: set prod environment facts
   set_fact:

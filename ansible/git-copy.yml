@@ -1,8 +1,8 @@
 ---
-- name: setup icdc_demo server
+- name: copy git contents
   hosts: localhost
   connection: local
-  become: yes
+  gather_facts: no
 
   roles:
     - git-copy

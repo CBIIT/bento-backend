@@ -4,6 +4,16 @@
     path: "{{ git_home }}"
     state: absent
 
+- name: set icdc git_url
+  set_fact:
+    git_url: "{{git_base}}/bento-icdc-frontend"
+  when: project == "icdc"
+
+- name: set fact
+  set_fact:
+    git_url: "{{git_base}}/bento-frontend"
+  when: project == "bento"
+
 - name: checkout commons codebase
   git:
     repo: "{{git_url}}"
@@ -11,43 +21,32 @@
     update: yes
     version: master
 
-- name: tag the repo
-  command: git tag "{{git_tag}}"
+- name: copy content {{copy_from}} to {{copy_to}}
+  command: rsync -rcCivh {{copy_from}}/ {{copy_to}}/ --delete
+  args:
+    chdir: "{{ git_home }}/src/content"
+  register: git_copy
+
+- debug:
+    msg: "{{git_copy.stdout_lines}}"
+
+- name: git add contents
+  command: git add -A .
   args:
     chdir: "{{ git_home }}"
     warn: false
 
-- name: push the new tag
-  command: git push --tags
+- name: commit changes 
+  command: git commit -m "copy content from {{copy_from}} to {{copy_to}} on {{git_date}}"
   args:
     chdir: "{{ git_home }}"
     warn: false
 
-- name: count the current tags
-  shell: git tag 
+  
+- name: 
+  command: git push 
   args:
     chdir: "{{ git_home }}"
     warn: false
-  register: tag_list
+  
 
-- name: list git daily tags
-  set_fact:
-    tags: "{{ tag_list.stdout_lines | map('regex_search',date_regex) | select('string') | list }}"
-
-- name: tags to be deleted
-  set_fact:
-    tags_to_remove: "{{ tags[:-retention] }}"
-
-- name: delete excess tags remote
-  command: git push --delete origin {{ item }}
-  args:
-    chdir: "{{ git_home }}"
-    warn: false
-  loop: "{{ tags_to_remove }}"
-
-- name: delete excess tags local
-  command: git tag --delete {{ item }}
-  args:
-    chdir: "{{ git_home }}"
-    warn: false
-  loop: "{{ tags_to_remove }}"

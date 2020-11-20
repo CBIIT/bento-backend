@@ -12,7 +12,11 @@ sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
 sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 app_name: bento-{{platform}}-{{tier}}
-schema_file: bento-extended.graphql
+
+#### bento-icdc changes #########################################################################################################
+schema_file: "{% if tier == 'icdc' %}icdc.graphql{% else %}bento-extended.graphql{% endif %}"
+#################################################################################################################################
+
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 bento_api_version: "{{ backend_version }}"

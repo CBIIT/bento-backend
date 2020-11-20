@@ -23,6 +23,14 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
+#### bento-icdc changes #########################################################################################################
+- name: set icdc environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "icdc"
+#################################################################################################################################
+
 - name: get backend commit ID
   shell: git rev-parse HEAD
   args:
@@ -43,6 +51,14 @@
   debug:
     msg: "{{ frontend_tag.stdout_lines }}"
 
+#### bento-icdc changes #########################################################################################################
+- name: copy schema from frontend to resources for icdc environment
+  template:
+    src: "{{workspace}}/bento-frontend/graphql/{{schema_file}}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{schema_file}}"
+  when: tier == "icdc"
+#################################################################################################################################
+
 - name: remove the application_example.properties file 
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"
@@ -57,6 +73,7 @@
   command: mvn package -DskipTests
   args:
     chdir: "{{workspace}}"
+
 - name: copy Bento-0.0.1.war to api.war
   copy:
     remote_src: yes

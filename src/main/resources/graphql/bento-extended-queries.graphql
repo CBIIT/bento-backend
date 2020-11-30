@@ -972,7 +972,7 @@ type QueryType {
             WHEN 'arm' THEN arm
             WHEN 'sample_id' THEN sample_id
             WHEN 'diagnosis' THEN diagnosis
-            ELSE subject_id_num END
+            ELSE file_name END
         SKIP $offset
         LIMIT $first
     """)
@@ -1012,7 +1012,7 @@ type QueryType {
             WHEN 'arm' THEN arm
             WHEN 'sample_id' THEN sample_id
             WHEN 'diagnosis' THEN diagnosis
-            ELSE subject_id_num END DESC
+            ELSE file_name END DESC
         SKIP $offset
         LIMIT $first
     """)

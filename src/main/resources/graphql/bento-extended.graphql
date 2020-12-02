@@ -846,6 +846,17 @@ type ProgramArms {
     children: [ArmInfo]
 }
 
+type ArmFile {
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
 type ArmDetail {
     study_acronym: String
     study_name: String
@@ -857,7 +868,7 @@ type ArmDetail {
     num_samples: Int
     num_lab_procedures: Int
     diagnoses: [GroupCount]
-    files: [file]
+    files: [ArmFile]
 }
 
 type SampleOverview {
@@ -1454,8 +1465,8 @@ type QueryType {
         MATCH (s:study {study_acronym: $study_acronym})<--(ss:study_subject)
         WITH s, ss.disease_subtype AS group, COUNT(DISTINCT ss) AS subjects
         WITH s, COLLECT ({group: group, subjects:  subjects}) AS diagnoses
-        OPTIONAL MATCH (s)<--(f:file)
-        WITH s, diagnoses, COLLECT(DISTINCT f) AS files
+        OPTIONAL MATCH (s)<-[:file_of_study]-(f)
+        WITH s, diagnoses, COLLECT(DISTINCT f {.file_name, .file_type, .file_description, .file_format, .file_size, .file_id, .md5sum, association: "study"}) AS files
         OPTIONAL MATCH (s)<-[*..3]-(f:file)-->(lp:laboratory_procedure)
         WITH s, diagnoses, files, COUNT(DISTINCT f) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
         OPTIONAL MATCH (s)<--(ss)

@@ -14,7 +14,7 @@ target/
 .sts4-cache/*
 src/main/resources/application.properties
 logs/
-src/main/resources/application_dev.properties
-src/main/resources/application_local.properties
+src/main/resources/application-bento.properties
+src/main/resources/application-icdc.properties
 
 

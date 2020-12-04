@@ -1562,16 +1562,15 @@ type QueryType {
 
     sampleOverview(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
         MATCH (samp:sample)
-        WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
-        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
-        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             distinct lp,
             toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
             collect(distinct f.file_id) AS files,
             samp, ss, s, p
+          WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
@@ -1602,16 +1601,15 @@ type QueryType {
 
     sampleOverviewDesc(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
         MATCH (samp:sample)
-        WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
-        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
-        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             distinct lp,
             toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
             collect(distinct f.file_id) AS files,
             samp, ss, s, p
+          WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,

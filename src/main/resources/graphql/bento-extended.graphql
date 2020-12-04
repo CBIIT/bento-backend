@@ -1643,15 +1643,15 @@ type QueryType {
 
     fileOverview(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
         MATCH (f:file)
-        WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
-        OPTIONAL MATCH (f)-->(parent)
-        WHERE NOT (parent:laboratory_procedure)
-        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
-        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
+          WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
+        MATCH (f)-->(parent)
+          WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (f)-[:file_of_study]->(s1)-[:study_of_program]-(p1)
         WITH
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
-            f, ss, p, parent, s, samp
+            ss.study_subject_id AS subject_id, toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, s1, p1
+          WHERE (size($subject_ids) = 0 OR subject_id IN $subject_ids)
         RETURN
             f.file_id AS file_id,
             f.file_name AS file_name,
@@ -1659,8 +1659,8 @@ type QueryType {
             f.file_description AS file_description,
             f.file_format AS file_format,
             f.file_size AS file_size,
-            p.program_acronym AS program,
-            s.study_acronym AS arm,
+            CASE p WHEN null THEN p1.program_acronym ELSE p.program_acronym END AS program,
+            CASE s WHEN null THEN s1.study_acronym ELSE s.study_acronym END AS arm,
             ss.study_subject_id AS subject_id,
             samp.sample_id AS sample_id,
             ss.disease_subtype AS diagnosis
@@ -1683,15 +1683,15 @@ type QueryType {
 
     fileOverviewDesc(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
         MATCH (f:file)
-        WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
-        OPTIONAL MATCH (f)-->(parent)
-        WHERE NOT (parent:laboratory_procedure)
-        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
-        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
+          WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
+        MATCH (f)-->(parent)
+          WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (f)-[:file_of_study]->(s1)-[:study_of_program]-(p1)
         WITH
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
-            f, ss, p, parent, s, samp
+            ss.study_subject_id AS subject_id, toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, s1, p1
+          WHERE (size($subject_ids) = 0 OR subject_id IN $subject_ids)
         RETURN
             f.file_id AS file_id,
             f.file_name AS file_name,
@@ -1699,8 +1699,8 @@ type QueryType {
             f.file_description AS file_description,
             f.file_format AS file_format,
             f.file_size AS file_size,
-            p.program_acronym AS program,
-            s.study_acronym AS arm,
+            CASE p WHEN null THEN p1.program_acronym ELSE p.program_acronym END AS program,
+            CASE s WHEN null THEN s1.study_acronym ELSE s.study_acronym END AS arm,
             ss.study_subject_id AS subject_id,
             samp.sample_id AS sample_id,
             ss.disease_subtype AS diagnosis

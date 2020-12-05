@@ -543,7 +543,7 @@ type QueryType {
         MATCH (ss)<-[:sample_of_study_subject]-(samp)
           WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
             AND (size($composition) = 0 OR samp.composition IN $composition)
-        MATCH (ss)<-[*..2]-(parent)<--(f)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
           WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
             AND (size($association) = 0 OR head(labels(parent)) IN $association)
         RETURN DISTINCT ss.study_subject_id
@@ -586,7 +586,7 @@ type QueryType {
         MATCH (ss)<-[:sample_of_study_subject]-(samp)
           WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
             AND (size($composition) = 0 OR samp.composition IN $composition)
-        MATCH (ss)<-[*..2]-(parent)<--(f)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
           WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
             AND (size($association) = 0 OR head(labels(parent)) IN $association)
 

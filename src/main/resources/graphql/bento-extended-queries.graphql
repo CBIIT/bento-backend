@@ -543,7 +543,7 @@ type QueryType {
         MATCH (ss)<-[:sample_of_study_subject]-(samp)
           WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
             AND (size($composition) = 0 OR samp.composition IN $composition)
-        MATCH (ss)<-[*..2]-(parent)<--(f)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
           WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
             AND (size($association) = 0 OR head(labels(parent)) IN $association)
         RETURN DISTINCT ss.study_subject_id
@@ -586,7 +586,7 @@ type QueryType {
         MATCH (ss)<-[:sample_of_study_subject]-(samp)
           WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
             AND (size($composition) = 0 OR samp.composition IN $composition)
-        MATCH (ss)<-[*..2]-(parent)<--(f)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
           WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
             AND (size($association) = 0 OR head(labels(parent)) IN $association)
 
@@ -869,16 +869,15 @@ type QueryType {
 
     sampleOverview(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
         MATCH (samp:sample)
-        WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
-        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
-        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             distinct lp,
             toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
             collect(distinct f.file_id) AS files,
             samp, ss, s, p
+          WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
@@ -909,16 +908,15 @@ type QueryType {
 
     sampleOverviewDesc(subject_ids: [String] = [], sample_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [SampleOverview] @cypher(statement: """
         MATCH (samp:sample)
-        WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
-        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
-        OPTIONAL MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($sample_ids) = 0 OR samp.sample_id IN $sample_ids)
+        OPTIONAL MATCH (samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
         OPTIONAL MATCH (samp)<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
         WITH
             distinct lp,
             toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
             collect(distinct f.file_id) AS files,
             samp, ss, s, p
+          WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
         RETURN
             samp.sample_id AS sample_id,
             ss.study_subject_id AS subject_id,
@@ -950,15 +948,15 @@ type QueryType {
 
     fileOverview(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
         MATCH (f:file)
-        WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
-        OPTIONAL MATCH (f)-->(parent)
-        WHERE NOT (parent:laboratory_procedure)
-        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
-        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
+          WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
+        MATCH (f)-->(parent)
+          WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (f)-[:file_of_study]->(s1)-[:study_of_program]-(p1)
         WITH
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
-            f, ss, p, parent, s, samp
+            ss.study_subject_id AS subject_id, toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, s1, p1
+          WHERE (size($subject_ids) = 0 OR subject_id IN $subject_ids)
         RETURN
             f.file_id AS file_id,
             f.file_name AS file_name,
@@ -966,8 +964,8 @@ type QueryType {
             f.file_description AS file_description,
             f.file_format AS file_format,
             f.file_size AS file_size,
-            p.program_acronym AS program,
-            s.study_acronym AS arm,
+            CASE p WHEN null THEN p1.program_acronym ELSE p.program_acronym END AS program,
+            CASE s WHEN null THEN s1.study_acronym ELSE s.study_acronym END AS arm,
             ss.study_subject_id AS subject_id,
             samp.sample_id AS sample_id,
             ss.disease_subtype AS diagnosis
@@ -990,15 +988,15 @@ type QueryType {
 
     fileOverviewDesc(subject_ids: [String] = [], file_ids: [String]=[], order_by: String = "", first: Int = 100, offset: Int = 0): [FileOverview] @cypher(statement: """
         MATCH (f:file)
-        WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
-        OPTIONAL MATCH (f)-->(parent)
-        WHERE NOT (parent:laboratory_procedure)
-        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)
-        OPTIONAL MATCH (f)-[*..2]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-        WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
+          WHERE size($file_ids) = 0 OR f.file_id IN $file_ids
+        MATCH (f)-->(parent)
+          WHERE NOT (parent:laboratory_procedure)
+        OPTIONAL MATCH (f)-[:file_of_sample]->(samp)-[:sample_of_study_subject]->(ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+        OPTIONAL MATCH (f)-[:file_of_study]->(s1)-[:study_of_program]-(p1)
         WITH
-            toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
-            f, ss, p, parent, s, samp
+            ss.study_subject_id AS subject_id, toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+            f, ss, p, parent, s, samp, s1, p1
+          WHERE (size($subject_ids) = 0 OR subject_id IN $subject_ids)
         RETURN
             f.file_id AS file_id,
             f.file_name AS file_name,
@@ -1006,8 +1004,8 @@ type QueryType {
             f.file_description AS file_description,
             f.file_format AS file_format,
             f.file_size AS file_size,
-            p.program_acronym AS program,
-            s.study_acronym AS arm,
+            CASE p WHEN null THEN p1.program_acronym ELSE p.program_acronym END AS program,
+            CASE s WHEN null THEN s1.study_acronym ELSE s.study_acronym END AS arm,
             ss.study_subject_id AS subject_id,
             samp.sample_id AS sample_id,
             ss.disease_subtype AS diagnosis

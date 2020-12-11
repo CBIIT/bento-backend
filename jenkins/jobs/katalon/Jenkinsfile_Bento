@@ -2,7 +2,7 @@ node('cicd_microservice') {
 	parameters {
 		extendedChoice( 
 			name: 'Browser', 
-			defaultValue: 'Chrome', 
+			defaultValue: 'Firefox', 
 			description: 'Choose the browser (headless) to use', 
 			type: 'PT_SINGLE_SELECT',
 			value: 'Chrome,Firefox' )

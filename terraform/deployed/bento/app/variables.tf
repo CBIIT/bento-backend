@@ -217,3 +217,12 @@ variable "redis_node_group" {
   description = "number of redis nodes"
   type = string
 }
+variable "shutdown_schedule" {
+  type    = "string"
+  default = "0 5 * * *"
+}
+
+variable "startup_schedule" {
+  type    = "string"
+  default = "0 12 * * MON-FRI"
+}

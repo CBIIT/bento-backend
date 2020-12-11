@@ -44,6 +44,22 @@ resource "aws_autoscaling_group" "asg_frontend" {
   }
 }
 
+resource "aws_autoscaling_schedule" "shutdown" {
+  autoscaling_group_name = aws_autoscaling_group.asg_frontend.name
+  scheduled_action_name  = "bento-auto-stop"
+  recurrence             = var.shutdown_schedule
+  desired_capacity       = 0
+}
+
+resource "aws_autoscaling_schedule" "startup" {
+  autoscaling_group_name = aws_autoscaling_group.asg_frontend.name
+  scheduled_action_name  = "bento-auto-start"
+  recurrence             = var.startup_schedule
+  desired_capacity       = var.desired_ec2_instance_capacity
+  min_size               = var.min_size
+  max_size               = var.max_size
+}
+
 resource "aws_security_group" "frontend_sg" {
   name = "${var.stack_name}-${var.env}-frontend-sg"
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id

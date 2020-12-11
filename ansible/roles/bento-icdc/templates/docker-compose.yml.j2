@@ -56,8 +56,8 @@ services:
         syslog-address: tcp://{{ syslog_host }}:514
         tag: "{{ app_name }}-frontend"
     restart: always
-      ports:
-        - "80:80"
+    ports:
+      - "80:80"
     depends_on:
         - sumologic-syslog
 

@@ -13,15 +13,15 @@
 
 ###################################################################
 
-# - name: remove frontend container
-#   docker_container:
-#     name: frontend
-#     state: absent
+- name: remove frontend container
+  docker_container:
+    name: frontend
+    state: absent
 
-# - name: remove backend container
-#   docker_container:
-#     name: backend
-#     state: absent
+- name: remove backend container
+  docker_container:
+    name: backend
+    state: absent
 
 - name: clean up 
   shell: docker system prune -a -f

@@ -1,0 +1,116 @@
+
+version: '3.4'
+services:
+
+################################################
+# backend container
+################################################
+  bento-backend:
+    container_name: backend
+    environment:
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_LOG_FILE_NAME: "STDOUT"
+      JAVA_OPTS        : "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+      entrypoint: "/bin/ash -c 'if [ ! -f /usr/local/tomcat/newrelic/newrelic.jar ]; then wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip; fi && bin/catalina.sh run'"
+      ports:
+        - "8080:8080"
+      depends_on:
+        - sumologic-syslog
+      logging:
+        driver: syslog
+        options:
+          syslog-format: "rfc5424micro"
+          syslog-address: tcp://{{ syslog_host }}:514
+          tag: "{{ app_name }}-backend"
+      restart: always
+
+##########################################################
+# frontend container
+##########################################################   
+
+  bento-frontend:
+    container_name: frontend
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{ build_number }}
+    environment:
+      REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
+      REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
+      REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
+      REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
+      REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
+      REACT_APP_BE_VERSION: "{{ backend_api_version }}"
+      REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
+      REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_NO_CONFIG_FILE: "true"        
+      
+    logging:
+      driver: syslog
+      options:
+        syslog-format: "rfc5424micro"
+        syslog-address: tcp://{{ syslog_host }}:514
+        tag: "{{ app_name }}-frontend"
+    restart: always
+      ports:
+        - "80:80"
+    depends_on:
+        - sumologic-syslog
+
+#################################################################
+# syslog container
+################################################################
+
+  sumologic-syslog:
+    container_name: sumologic-syslog
+    image: sumologic/collector:latest-syslog
+    environment:
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ inventory_hostname }}"
+      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
+      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
+      SUMO_COLLECTOR_NAME_PREFIX: ""
+      SUMO_CLOBBER: "true"
+    restart: always
+    ports:
+    - "514:514"
+
+######################################################################
+# sumologic container
+######################################################################
+
+  sumologic-docker:
+    container_name: sumologic-docker
+    image: sumologic/collector:latest
+    environment:
+      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
+      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
+      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
+      SUMO_COLLECTOR_NAME_PREFIX: ""
+      SUMO_CLOBBER: "true"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"      
+########################################################################
+# new relic container
+#########################################################################
+
+  newrelic-docker:
+    container_name: newrelic-docker
+    image: newrelic/infrastructure:latest
+    environment:
+      NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/:/host"
+      
+
+
+
+

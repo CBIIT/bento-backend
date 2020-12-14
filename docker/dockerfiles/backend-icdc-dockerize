@@ -1,4 +1,4 @@
-FROM cbiitssrepo/ncidockerhub.nci.nih.gov/icdc/icdc-backend:dockerize
+FROM cbiitssrepo/ncidockerhub.nci.nih.gov/icdc/bento-icdc-backend:release
 
 MAINTAINER icdc devops team
 

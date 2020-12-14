@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b55c5103-23dd-4bb3-8793-dba9f9d232fb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/asg.tf" beforeDir="false" afterPath="$PROJECT_DIR$/asg.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../ansible/deploy-bento-icdc.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../ansible/deploy-bento-icdc.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/variables.tf" beforeDir="false" afterPath="$PROJECT_DIR$/variables.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

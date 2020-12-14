@@ -117,7 +117,8 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+      # dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-icdc-dockerize"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
@@ -184,7 +185,8 @@
   docker_image:
     build:
       path: "{{workspace}}/icdc-frontend"
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
+      # dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerize"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend

@@ -1,0 +1,14 @@
+FROM nginx:alpine
+
+ENV DOCKERIZE_VERSION v0.6.1
+
+RUN apk upgrade --update \
+ && apk --no-cache add tzdata --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+ && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+ && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+ && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+ENV TZ America/New_York
+
+#COPY dist /usr/share/nginx/html
+

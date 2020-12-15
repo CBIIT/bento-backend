@@ -15,12 +15,8 @@ services:
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-    
-    command: sh -c "dockerize -wait tcp://sumologic-syslog:514 -timeout 300s -wait-retry-interval 30s /bin/catalina.sh run"
     ports:
       - "8080:8080"
-    depends_on:
-      - sumologic-syslog
     logging:
       driver: syslog
       options:
@@ -50,7 +46,6 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"        
-    command: sh -c "dockerize -wait tcp://sumologic-syslog:514 -timeout 300s -wait-retry-interval 30s /nginx-entrypoint.sh"
     logging:
       driver: syslog
       options:
@@ -60,8 +55,7 @@ services:
     restart: always
     ports:
       - "80:80"
-    depends_on:
-      - sumologic-syslog
+    
 
 
       

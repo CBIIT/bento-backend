@@ -190,6 +190,7 @@ type SampleOverview {
     sample_procurement_method: String
     platform: String
     files: [String]
+    program_id: String
 }
 
 type FileOverview {
@@ -204,6 +205,7 @@ type FileOverview {
     subject_id: String
     sample_id: String
     diagnosis: String
+    program_id: String
 }
 
 type SearchResult {
@@ -222,7 +224,7 @@ schema {
 }
 
 type QueryType {
-    schemaVersion: String @cypher(statement: "RETURN '1.0.1'")
+    schemaVersion: String @cypher(statement: "RETURN '1.0.2'")
 
     "Simple counts"
     numberOfPrograms: Int @cypher(statement: "MATCH (n:program) return count(n)")
@@ -889,7 +891,8 @@ type QueryType {
             samp.sample_anatomic_site AS sample_anatomic_site,
             samp.method_of_sample_procurement AS sample_procurement_method,
             lp.test_name AS platform,
-            files
+            files,
+            p.program_id as program_id
         ORDER BY CASE $order_by
             WHEN 'subject_id' THEN subject_id_num
             WHEN 'sample_id' THEN sample_id
@@ -928,7 +931,8 @@ type QueryType {
             samp.sample_anatomic_site AS sample_anatomic_site,
             samp.method_of_sample_procurement AS sample_procurement_method,
             lp.test_name AS platform,
-            files
+            files,
+            p.program_id as program_id
         ORDER BY CASE $order_by
             WHEN 'subject_id' THEN subject_id_num
             WHEN 'sample_id' THEN sample_id
@@ -968,7 +972,8 @@ type QueryType {
             CASE s WHEN null THEN s1.study_acronym ELSE s.study_acronym END AS arm,
             ss.study_subject_id AS subject_id,
             samp.sample_id AS sample_id,
-            ss.disease_subtype AS diagnosis
+            ss.disease_subtype AS diagnosis,
+            p.program_id as program_id
         ORDER BY CASE $order_by
             WHEN 'subject_id' THEN subject_id_num
             WHEN 'file_id' THEN file_id
@@ -1008,7 +1013,8 @@ type QueryType {
             CASE s WHEN null THEN s1.study_acronym ELSE s.study_acronym END AS arm,
             ss.study_subject_id AS subject_id,
             samp.sample_id AS sample_id,
-            ss.disease_subtype AS diagnosis
+            ss.disease_subtype AS diagnosis,
+            p.program_id as program_id
         ORDER BY CASE $order_by
             WHEN 'subject_id' THEN subject_id_num
             WHEN 'file_id' THEN file_id

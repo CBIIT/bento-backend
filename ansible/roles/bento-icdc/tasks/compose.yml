@@ -38,7 +38,7 @@
   loop:
     - {src: 'log-agents.yml.j2',dest: '/local/content/docker/log-agents.yml'}
     - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
-    - {src: 'app.serivce.j2',dest: '/etc/systemd/system/app.service'}
+    - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
     - {src: 'log-agents.service.j2',dest: '/etc/systemd/system/log-agents.service'}
     - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
 

@@ -224,7 +224,7 @@ schema {
 }
 
 type QueryType {
-    schemaVersion: String @cypher(statement: "RETURN '1.0.2'")
+    schemaVersion: String @cypher(statement: "RETURN '1.0.3'")
 
     "Simple counts"
     numberOfPrograms: Int @cypher(statement: "MATCH (n:program) return count(n)")
@@ -773,15 +773,15 @@ type QueryType {
     """, passThrough: true)
 
     armDetail(study_acronym: String): ArmDetail @cypher(statement:  """
-        MATCH (s:study {study_acronym: $study_acronym})<--(ss:study_subject)
+        MATCH (s:study {study_acronym: $study_acronym})<-[:study_subject_of_study]-(ss)
         WITH s, ss.disease_subtype AS group, COUNT(DISTINCT ss) AS subjects
         WITH s, COLLECT ({group: group, subjects:  subjects}) AS diagnoses
         OPTIONAL MATCH (s)<-[:file_of_study]-(f)
         WITH s, diagnoses, COLLECT(DISTINCT f {.file_name, .file_type, .file_description, .file_format, .file_size, .file_id, .md5sum, association: "study"}) AS files
-        OPTIONAL MATCH (s)<-[*..3]-(f:file)-->(lp:laboratory_procedure)
-        WITH s, diagnoses, files, COUNT(DISTINCT f) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
-        OPTIONAL MATCH (s)<--(ss)
-        OPTIONAL MATCH (ss)<--(sp:sample)
+        OPTIONAL MATCH (s)<-[:study_subject_of_study]-()<-[:sample_of_study_subject]-()<-[:file_of_sample]-(f)-[:file_of_laboratory_procedure]->(lp)
+        WITH s, diagnoses, files, COUNT(DISTINCT f) + size(files) AS num_files, COUNT(DISTINCT lp) AS num_lab_procedures
+        OPTIONAL MATCH (s)<-[:study_subject_of_study]-(ss)
+        OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(sp)
         RETURN s.study_acronym AS study_acronym,
                s.study_name AS study_name,
                s.study_type AS study_type,

@@ -883,6 +883,7 @@ type SampleOverview {
     sample_procurement_method: String
     platform: String
     files: [String]
+    program_id: String
 }
 
 type FileOverview {
@@ -897,6 +898,7 @@ type FileOverview {
     subject_id: String
     sample_id: String
     diagnosis: String
+    program_id: String
 }
 
 type SearchResult {

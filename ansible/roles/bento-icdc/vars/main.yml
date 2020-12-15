@@ -21,7 +21,8 @@ region: us-east-1
 newrelic_license_key: "{{ lookup('env','NEWRELIC_LIC_KEY')}}"
 sumo_access_id: "{{ lookup('env','SUMO_ACCESS_ID')}}"
 sumo_access_key: "{{ lookup('env','SUMO_ACCESS_KEY')}}"
-syslog_host: "{{ lookup('env','SYSLOG_HOST')}}"
+# syslog_host: "{{ lookup('env','SYSLOG_HOST')}}"
+syslog_host: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
 app_name: icdc-{{ platform }}-{{ tier }}
 schema_file: icdc.graphql
 backend_user_info: https://caninecommons.cancer.gov/fence/login/

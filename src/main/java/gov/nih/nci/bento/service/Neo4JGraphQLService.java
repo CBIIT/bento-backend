@@ -38,6 +38,9 @@ public class Neo4JGraphQLService {
 
 	@PostConstruct
 	public void loadSchema(){
+		// Set socket timeout value here, to only set it once
+		// connection timeout set to 10s, and socket timeout set to 300s
+		Unirest.setTimeouts(10000, 300000);;
 		logger.info("Loading schema into Neo4j");
 		HttpResponse<JsonNode> jsonResponse;
 		try {

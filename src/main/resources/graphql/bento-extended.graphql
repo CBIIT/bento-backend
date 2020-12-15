@@ -1391,6 +1391,8 @@ type QueryType {
         OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:study_subject_of_study]-(ss)
         OPTIONAL MATCH (ss)<-[sp:sample_of_study_subject]-()<-[:file_of_sample]-(f)
         WITH p, count(DISTINCT f) AS num_files, count(DISTINCT sp) AS num_samples, count(DISTINCT ss) AS num_subjects, collect(DISTINCT ss.disease_subtype) AS disease_subtypes
+        OPTIONAL MATCH (p)<-[:study_of_program]-()<-[:file_of_study]-(fs)
+        WITH p, count(DISTINCT fs) + num_files AS num_files, num_samples, num_subjects, disease_subtypes
         MATCH (p)<-[:study_of_program]-(s)<-[:study_subject_of_study]-(ss)
         WITH s {.study_type, .study_acronym, .study_name, .study_full_description, num_subjects:count(DISTINCT ss),
         study_info: s.study_acronym + ': ' + s.study_short_description} AS study, p, num_files, num_subjects, disease_subtypes, num_samples

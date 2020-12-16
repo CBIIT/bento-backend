@@ -117,8 +117,7 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      # dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-icdc-dockerize"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
@@ -158,13 +157,6 @@
     dest: "{{workspace}}/icdc-frontend/nginx-entrypoint.sh"
     mode: 0755
 
-
-# - name: copy environment file to {{workspace}}/icdc-frontend
-#   template:
-#     src: env.j2
-#     dest: "{{workspace}}/icdc-frontend/.env"
-
-
 - name: run npm install in {{workspace}}/icdc-frontend/
   command: "{{item}}"
   args:
@@ -186,7 +178,7 @@
     build:
       path: "{{workspace}}/icdc-frontend"
       # dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerize"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend

@@ -1,20 +1,4 @@
 ---
-############################################################################################################################
-
-#     Set URLs
-
-############################################################################################################################
-
-# - name: set backend_api_url
-#   set_fact:
-#     backend_api_url: "{% if tier == 'prod' %} https://caninecommons.nci.nih.gov/v1/graphql/ {% else %} https://caninecommons-{{ tier }}.nci.nih.gov/v1/graphql/ {% endif %}" 
-
-############################################################################################################################
-
-#     Prepare host for update
-
-############################################################################################################################
-
 - name: log into DockerHub
   docker_login:
     username: "{{ docker_user }}"
@@ -29,128 +13,71 @@
 
 ###################################################################
 
-- name: remove frontend container
-  docker_container:
-    name: frontend
-    state: absent
+# - name: remove frontend container
+#   docker_container:
+#     name: frontend
+#     state: absent
 
-- name: remove backend container
-  docker_container:
-    name: backend
-    state: absent
+# - name: remove backend container
+#   docker_container:
+#     name: backend
+#     state: absent
 
 - name: clean up 
   shell: docker system prune -a -f
 
-############################################################################################################################
+- name: ensure /local/content/docker exists
+  file: 
+    path: /local/content/docker
+    state: directory
 
-#     Update containers
+- name: update serivces and compose files
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  loop:
+    - {src: 'log-agents.yml.j2',dest: '/local/content/docker/log-agents.yml'}
+    - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
+    - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
+    - {src: 'log-agents.service.j2',dest: '/etc/systemd/system/log-agents.service'}
+    - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
 
-############################################################################################################################
+- name: start log agents
+  docker_compose:
+    project_src: /local/content/docker
+    files: log-agents.yml
+    state: present
 
-- name: start sumologic syslog service
-  docker_container:
-    name: sumologic-syslog
-    image: sumologic/collector:latest-syslog
-    env:
-      SUMO_COLLECTOR_NAME: "{{ app_name }}-syslog-{{ inventory_hostname }}"
-      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
-      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
-      SUMO_COLLECTOR_NAME_PREFIX: ""
-      SUMO_CLOBBER: "true"
+- name: Waits for port 514 
+  wait_for:
+    host: 0.0.0.0
+    port: 514
+    delay: 5
     state: started
-    restart_policy: always
-    ports:
-     - "514:514"
-  tags:
-    - sumologic
-    - all
 
-- name: start sumologic docker service
-  docker_container:
-    name: sumologic-docker
-    image: sumologic/collector:latest
-    env:
-      SUMO_COLLECTOR_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
-      SUMO_ACCESS_ID: "{{ sumo_access_id }}"
-      SUMO_ACCESS_KEY: "{{ sumo_access_key }}"
-      SUMO_COLLECTOR_NAME_PREFIX: ""
-      SUMO_CLOBBER: "true"
-    state: started
-    restart_policy: always
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-  tags:
-    - sumologic
-    - all
+- name: start frontend and backend containers
+  docker_compose:
+    project_src: /local/content/docker
+    files: app.yml
+    state: present
 
-- name: start newrelic docker service
-  docker_container:
-    name: newrelic-docker
-    image: newrelic/infrastructure:latest
-    env:
-      NRIA_LICENSE_KEY: "{{ newrelic_license_key }}"
-      NRIA_DISPLAY_NAME: "{{ app_name }}-docker-{{ inventory_hostname }}"
-      NEW_RELIC_HOST: "gov-collector.newrelic.com"
-    state: started
-    restart_policy: always
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/:/host"
-  tags:
-    - newrelic
-    - all
+- name: reload systemd 
+  systemd:
+    daemon_reload: yes
 
-- name: start icdc backend container
-  docker_container:
-    name: backend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}
-    env:
-      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-      NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
-      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
-      NEW_RELIC_HOST: "gov-collector.newrelic.com"
-      NEW_RELIC_LOG_FILE_NAME: "STDOUT"
-      JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-    entrypoint: "/bin/ash -c 'if [ ! -f /usr/local/tomcat/newrelic/newrelic.jar ]; then wget https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip -O newrelic-java.zip && unzip newrelic-java.zip; fi && bin/catalina.sh run'"
-    log_driver: syslog
-    log_options:
-      syslog-address: tcp://{{ syslog_host }}:514
-      tag: "{{ app_name }}-backend"
-      syslog-format: "rfc5424micro"
-    state: started
-    restart_policy: always
-    ports:
-      - "8080:8080"
+- name: enable log-agents and app.timer services
+  service:
+    name: "{{item}}"
+    enabled: yes
+  loop:
+    - log-agents.service
+    - app.timer
 
-- name: start icdc frontend container
-  docker_container:
-    name: frontend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{ build_number }}
-    env:
-      REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
-      REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
-      REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
-      REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
-      REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
-      REACT_APP_BE_VERSION: "{{ backend_api_version }}"
-      REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
-      REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
-      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
-      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
-      NEW_RELIC_HOST: "gov-collector.newrelic.com"
-      NEW_RELIC_NO_CONFIG_FILE: "true"
-    log_driver: syslog
-    log_options:
-      syslog-address: tcp://{{ syslog_host }}:514
-      tag: "{{ app_name }}-frontend"
-      syslog-format: "rfc5424micro"
-    state: started
-    restart_policy: always
-    ports:
-      - "80:80"
-
+- name: ensure app.service is diabled
+  service:
+    name: app.service
+    enabled: no
+  
 - name: Pause to allow updates to process
   pause:
     seconds: 15
@@ -164,5 +91,6 @@
   until: ('status' in _result) and (_result.status == 200)
   retries: 100
   delay: 10
+
 
 

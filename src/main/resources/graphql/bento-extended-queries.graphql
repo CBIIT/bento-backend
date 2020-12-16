@@ -357,6 +357,666 @@ type QueryType {
                 collect(s) AS children
     """, passThrough: true)
 
+    "Facet search counts"
+    filterSubjectCountByProgram(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, p
+        RETURN p.program_acronym AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByStudy(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            //AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, s
+        RETURN s.study_acronym + ': ' + s.study_short_description AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByDiagnoses(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            //AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss
+        RETURN ss.disease_subtype AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByRecurrenceScore(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          //WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, sf
+        RETURN sf.grouped_recurrence_score AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByTumorSize(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE //(size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, d
+        RETURN d.tumor_size_group AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByTumorGrade(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            //AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, d
+        RETURN d.tumor_grade AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByErStatus(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            //AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, d
+        RETURN d.er_status AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByPrStatus(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            //AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, d
+        RETURN d.pr_status AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByChemotherapyRegimen(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            //AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, tp
+        RETURN tp.chemotherapy_regimen AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByEndocrineTherapy(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            //AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, tp
+        RETURN tp.endocrine_therapy_type AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByMenopauseStatus(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          //WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT ss, demo
+        RETURN demo.menopause_status AS group,
+               count(ss) as subjects
+    """)
+
+    filterSubjectCountByTissueType(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE //(size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT samp
+        RETURN samp.tissue_type AS group,
+               count(samp) as subjects
+    """)
+
+    filterSubjectCountByTissueComposition(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            //AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT samp
+        RETURN samp.composition AS group,
+               count(samp) as subjects
+    """)
+
+    filterSubjectCountByFileAssociation(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE (size($file_type) = 0 OR f.file_type IN $file_type)
+            //AND (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT f, parent
+        RETURN head(labels(parent)) AS group,
+               count(f) as subjects
+    """)
+
+    filterSubjectCountByFileType(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [GroupCount] @cypher(statement: """
+        // Filtering subjects
+        MATCH (ss)<-[:sf_of_study_subject]-(sf)
+          WHERE (size($rc_scores) = 0 OR sf.grouped_recurrence_score IN $rc_scores)
+        MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+          WHERE (size($tumor_sizes) = 0 OR d.tumor_size_group IN $tumor_sizes)
+            AND (size($tumor_grades) = 0 OR d.tumor_grade IN $tumor_grades)
+            AND (size($er_status) = 0 OR d.er_status IN $er_status)
+            AND (size($pr_status) = 0 OR d.pr_status IN $pr_status)
+            AND (size($chemo_regimen) = 0 OR tp.chemotherapy_regimen IN $chemo_regimen)
+            AND (size($endo_therapies) = 0 OR tp.endocrine_therapy_type IN $endo_therapies)
+        MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+          WHERE (size($programs) = 0 OR p.program_acronym IN $programs)
+            AND (size($studies) = 0 OR (s.study_acronym + ': ' + s.study_short_description) IN $studies)
+            AND (size($diagnoses) = 0 OR ss.disease_subtype IN $diagnoses)
+        MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+          WHERE (size($meno_status) = 0 OR demo.menopause_status IN $meno_status)
+        MATCH (ss)<-[:sample_of_study_subject]-(samp)
+          WHERE (size($tissue_type) = 0 OR samp.tissue_type IN $tissue_type)
+            AND (size($composition) = 0 OR samp.composition IN $composition)
+        MATCH (ss)<-[*..2]-(parent)<--(f:file)
+          WHERE //(size($file_type) = 0 OR f.file_type IN $file_type)
+            (size($association) = 0 OR head(labels(parent)) IN $association)
+        WITH DISTINCT f
+        RETURN f.file_type AS group,
+               count(f) as subjects
+    """)
+
     subjectOverViewPaged(first: Int = 100, offset: Int = 0, subject_ids: [String] = [], order_by: String = ""): [SubjectOverview] @cypher(statement: """
         MATCH (ss:study_subject)
           WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)

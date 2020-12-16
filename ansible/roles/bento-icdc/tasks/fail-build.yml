@@ -4,17 +4,17 @@
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
 
-- name: remove old deployment
-  docker_compose:
-    project_src: /local/content/docker
-    files: log-agents.yml
-    state: absent
+# - name: remove old deployment
+#   docker_compose:
+#     project_src: /local/content/docker
+#     files: log-agents.yml
+#     state: absent
 
-- name: remove old deployment
-  docker_compose:
-    project_src: /local/content/docker
-    files: app.yml
-    state: absent
+# - name: remove old deployment
+#   docker_compose:
+#     project_src: /local/content/docker
+#     files: app.yml
+#     state: absent
 
 - name: check if prev_app.yml exist
   stat:
@@ -29,21 +29,23 @@
     remote_src: yes
   when: prev_app.stat.exists or release == "fail"
 
-- name: start log agents
-  docker_compose:
-    project_src: /local/content/docker
-    files: log-agents.yml
-    state: present
-
-- name: Waits for port 514 
-  wait_for:
-    host: 0.0.0.0
-    port: 514
-    delay: 5
-    state: started
-  
 - name: start frontend and backend containers
   docker_compose:
     project_src: /local/content/docker
     files: app.yml
     state: present
+
+- name: Pause to allow updates to process
+  pause:
+    seconds: 15
+
+- name: "wait for {{ frontend_url }} to become available"
+  uri:
+   url: "{{ frontend_url }}"
+   follow_redirects: none
+   method: GET
+  register: _result
+  until: ('status' in _result) and (_result.status == 200)
+  retries: 100
+  delay: 10
+  

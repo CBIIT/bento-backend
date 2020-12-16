@@ -7,6 +7,12 @@
 - name: remove old deployment
   docker_compose:
     project_src: /local/content/docker
+    files: log-agents.yml
+    state: absent
+
+- name: remove old deployment
+  docker_compose:
+    project_src: /local/content/docker
     files: app.yml
     state: absent
 
@@ -15,10 +21,6 @@
     path: "/local/content/docker/prev_app.yml"
   register: prev_app
 
-- name: check if prev_log-agents.yml exist
-  stat:
-    path: "/local/content/docker/prev_log-agents.yml"
-  register: prev_agents
 
 - name: rename prev_app.yml app.yml file
   copy: 
@@ -27,12 +29,18 @@
     remote_src: yes
   when: prev_app.stat.exists or release == "fail"
 
-- name: rename prev_log-agents.yml log-agents.yml file
-  copy: 
-    src: "/local/content/docker/prev_log-agents.yml"
-    dest: "/local/content/docker/log-agents.yml"
-    remote_src: yes
-  when: prev_agents.stat.exists or release == "fail"
+- name: start log agents
+  docker_compose:
+    project_src: /local/content/docker
+    files: log-agents.yml
+    state: present
+
+- name: Waits for port 514 
+  wait_for:
+    host: 0.0.0.0
+    port: 514
+    delay: 5
+    state: started
   
 - name: start frontend and backend containers
   docker_compose:

@@ -1,0 +1,41 @@
+- name: log into DockerHub
+  docker_login:
+    username: "{{ docker_user }}"
+    password: "{{ docker_password }}"
+    registry: https://ncidockerhub.nci.nih.gov
+
+- name: remove old deployment
+  docker_compose:
+    project_src: /local/content/docker
+    files: app.yml
+    state: absent
+
+- name: check if prev_app.yml exist
+  stat:
+    path: "/local/content/docker/prev_app.yml"
+  register: prev_app
+
+- name: check if prev_log-agents.yml exist
+  stat:
+    path: "/local/content/docker/prev_log-agents.yml"
+  register: prev_agents
+
+- name: rename prev_app.yml app.yml file
+  copy: 
+    src: "/local/content/docker/prev_app.yml"
+    dest: "/local/content/docker/app.yml"
+    remote_src: yes
+  when: prev_app.stat.exists or release == "fail"
+
+- name: rename prev_log-agents.yml log-agents.yml file
+  copy: 
+    src: "/local/content/docker/prev_log-agents.yml"
+    dest: "/local/content/docker/log-agents.yml"
+    remote_src: yes
+  when: prev_agents.stat.exists or release == "fail"
+  
+- name: start frontend and backend containers
+  docker_compose:
+    project_src: /local/content/docker
+    files: app.yml
+    state: present

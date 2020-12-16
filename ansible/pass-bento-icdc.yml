@@ -7,5 +7,5 @@
     - name: fail bento-icdc deployment
       include_role:
         name: bento-icdc
-        tasks_from: pass
+        tasks_from: pass-build
   

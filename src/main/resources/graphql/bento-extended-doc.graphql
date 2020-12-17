@@ -793,6 +793,7 @@ type ProgramDetail {
     num_lab_procedures: Int
     disease_subtypes: [String]
     studies: [StudyInfo]
+    diagnoses: [GroupCount]
 }
 
 type SubjectDetail {

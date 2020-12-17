@@ -16,5 +16,6 @@ src/main/resources/application.properties
 logs/
 src/main/resources/application-bento.properties
 src/main/resources/application-icdc.properties
+src/main/resources/graphql/icdc.graphql
 
 

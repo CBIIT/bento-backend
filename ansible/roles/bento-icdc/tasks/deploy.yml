@@ -48,12 +48,16 @@
     files: log-agents.yml
     state: present
 
-- name: Waits for port 514 
-  wait_for:
-    host: 0.0.0.0
-    port: 514
-    delay: 5
-    state: started
+# - name: Waits for port 514 
+#   wait_for:
+#     host: 0.0.0.0
+#     port: 514
+#     delay: 5
+#     state: started
+
+- name: Pause to allow updates to process
+  pause:
+    seconds: 45
 
 - name: start frontend and backend containers
   docker_compose:

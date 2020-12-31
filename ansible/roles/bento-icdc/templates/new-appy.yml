@@ -1,0 +1,65 @@
+
+version: '3.4'
+services:
+
+################################################
+# backend container
+################################################
+  bento-backend:
+    container_name: backend
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{backend_version}}
+    environment:
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_LOG_FILE_NAME: "STDOUT"
+      JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+    ports:
+      - "8080:8080"
+    logging:
+      driver: syslog
+      options:
+        syslog-format: "rfc5424micro"
+        syslog-address: tcp://{{ syslog_host }}:514
+        tag: "{{ app_name }}-backend"
+    restart: always
+
+##########################################################
+# frontend container
+##########################################################   
+
+  bento-frontend:
+    container_name: frontend
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{frontend_version}}
+    environment:
+      REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
+      REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
+      REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
+      REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" 
+      REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
+      REACT_APP_BE_VERSION: "{{ backend_api_version }}"
+      REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
+      REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
+      NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
+      NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
+      NEW_RELIC_HOST: "gov-collector.newrelic.com"
+      NEW_RELIC_NO_CONFIG_FILE: "true"        
+    logging:
+      driver: syslog
+      options:
+        syslog-format: "rfc5424micro"
+        syslog-address: tcp://{{ syslog_host }}:514
+        tag: "{{ app_name }}-frontend"
+    restart: always
+    ports:
+      - "80:80"
+    
+
+
+      
+
+
+
+

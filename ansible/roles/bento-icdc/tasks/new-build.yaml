@@ -1,0 +1,191 @@
+---
+#############################################################################
+- name: set sandbox environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_SANDBOX_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "sandbox"
+
+- name: set dev environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_DEV_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "dev"
+
+- name: set qa environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_QA_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "qa"
+
+- name: set stage environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_STAGE_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "stage"
+
+- name: set prod environment facts
+  set_fact:
+    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_PROD_IP') }}"
+    bearer: "{{ lookup('env','BEARER') }}"
+  when: tier == "prod"
+#############################################################################
+
+#Get git variables
+##############################################################################
+
+- name: get backend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}"
+  register: backend_tag
+
+- name: get frontend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}/bento-frontend"
+  register: frontend_tag
+
+- name: echo backend tag
+  debug:
+    msg: "{{ backend_tag.stdout_lines }}"
+
+- name: echo frontend tag
+  debug:
+    msg: "{{ frontend_tag.stdout_lines }}"
+
+#### bento-icdc changes #########################################################################################################
+- name: copy schema from frontend to resources
+  template:
+    src: "{{workspace}}/icdc-frontend/graphql/{{schema_file}}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{schema_file}}"
+
+#################################################################################################################################
+
+- name: set application property values
+  template:
+    src: "{{workspace}}/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+
+- name: copy Bento-0.0.1.war to api.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+
+- name: log into ncidockerhub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+    registry: https://ncidockerhub.nci.nih.gov
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+
+- name: build cbiitssrepo/icdc-backend image
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-icdc-dockerfile"
+      pull: yes
+      nocache: yes
+    name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
+    tag: "{{backend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+- name: Add tag latest to cbiitssrepo/icdc-backend image
+  docker_image:
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{backend_version}}-{{build_number}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/icdc-backend:latest
+    force_tag: yes
+    push: yes
+    source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+###########################################
+- name: remove .env
+  file:
+    state: absent
+    path: "{{workspace}}/icdc-frontend/.env"
+
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{workspace}}/icdc-frontend/nginx-entrypoint.sh"
+    mode: 0755
+
+- name: run npm install in {{workspace}}/icdc-frontend/
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/icdc-frontend"
+  loop:
+    - npm install npm@latest -g
+    - npm install
+    - npm run build
+
+
+- name: copy env to dist
+  copy:
+    # remote_src: yes
+    src: inject.template.js
+    dest: "{{workspace}}/icdc-frontend/dist/inject.template.js"
+    mode: 0755
+
+
+- name: build cbiitssrepo/icdc-frontend image
+  docker_image:
+    build:
+      path: "{{workspace}}/icdc-frontend"
+      # dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
+      pull: yes
+      nocache: yes
+    name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
+    tag: "{{frontend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+
+- name: Add tag latest to cbiitssrepo/icdc-frontend image
+  docker_image:
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{frontend_version}}-{{build_number}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:latest
+    force_tag: yes
+    push: yes
+    source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"

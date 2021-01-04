@@ -2,6 +2,7 @@ package gov.nih.nci.bento.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonElement;
 import gov.nih.nci.bento.error.ApiError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +21,7 @@ import com.google.gson.JsonObject;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.Neo4JGraphQLService;
+import gov.nih.nci.bento.service.RedisService;
 import graphql.language.Document;
 import graphql.language.OperationDefinition;
 import graphql.parser.Parser;
@@ -33,8 +35,19 @@ public class GraphQLController {
 	private ConfigurationDAO config;
 	@Autowired
 	private Neo4JGraphQLService neo4jService;
+	@Autowired
+	private RedisService redisService;
 	
 	public static final Gson GSON = new Gson();
+
+	@CrossOrigin
+	@RequestMapping(value = "/version", method = {RequestMethod.GET})
+	public ResponseEntity<String> getVersion(HttpEntity<String> httpEntity, HttpServletResponse response){
+		logger.info("Hit end point:/version");
+		String versionString = "Bento API Version: "+config.getBentoApiVersion();
+		logger.info(versionString);
+		return ResponseEntity.ok(versionString);
+	}
 
 	@CrossOrigin
 	@RequestMapping
@@ -60,10 +73,16 @@ public class GraphQLController {
 		Gson gson = new Gson();
 		JsonObject jsonObject = gson.fromJson(reqBody, JsonObject.class);
 		String operation;
+		String query_key;
 		try{
 			String sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			Parser parser = new Parser();
 			Document document = parser.parseDocument(sdl);
+			query_key = document.toString();
+			JsonElement rawVar = jsonObject.get("variables");
+			if (null != rawVar) {
+				query_key +=  "::" + rawVar.toString();
+			}
 			OperationDefinition def = (OperationDefinition) document.getDefinitions().get(0);
 			operation = def.getOperation().toString().toLowerCase();
 		}
@@ -76,8 +95,16 @@ public class GraphQLController {
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
 				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
 			try{
-				String responseText = "";
-				responseText = neo4jService.query(reqBody);
+				String responseText;
+				if (config.getRedisEnabled()) {
+					responseText = redisService.getQueryResult(query_key);
+					if ( null == responseText) {
+						responseText = neo4jService.query(reqBody);
+						redisService.setQueryResult(query_key, responseText);
+					}
+				} else {
+					responseText = neo4jService.query(reqBody);
+				}
 				return ResponseEntity.ok(responseText);
 			}
 			catch(ApiError e){

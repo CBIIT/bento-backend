@@ -38,6 +38,9 @@ public class Neo4JGraphQLService {
 
 	@PostConstruct
 	public void loadSchema(){
+		// Set socket timeout value here, to only set it once
+		// connection timeout set to 10s, and socket timeout set to 300s
+		Unirest.setTimeouts(10000, 300000);;
 		logger.info("Loading schema into Neo4j");
 		HttpResponse<JsonNode> jsonResponse;
 		try {
@@ -85,6 +88,9 @@ public class Neo4JGraphQLService {
 					()).header("Content-Type", "application/json")
 					.header("Authorization", config.getNeo4jHttpHeaderAuthorization()).header("accept", "application/json")
 					.body(graphQLQuery).asJson();
+			if (jsonResponse.getStatus() != 200) {
+				throw new ApiError(HttpStatus.resolve(jsonResponse.getStatus()), "Exception occurred while querying database service", jsonResponse.getStatusText());
+			}
 		} catch (UnirestException e) {
 			logger.error("Exception in function query() "+e.toString());
 			throw new ApiError(HttpStatus.SERVICE_UNAVAILABLE, "Exception occurred while querying database service", e.getMessage());

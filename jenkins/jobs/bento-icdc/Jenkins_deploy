@@ -230,22 +230,43 @@ pipeline {
         }
     }
   	stage('deploy'){
-	  environment {
-	   SLACK_URL = "${SLACK_URL}"
-       TIER = "${params.Environment}"
-	     VERSION = "${params.Frontend_Image}"
-       FE_VERSION = "${params.Frontend_Image}"
-       BE_VERSION = "${params.Backend_Image}"
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+        TIER = "${params.Environment}"
+        VERSION = "${params.Frontend_Image}"
+        FE_VERSION = "${params.Frontend_Image}"
+        BE_VERSION = "${params.Backend_Image}"
       }
-  		steps{
-  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            		colorized: true)
-  			}
-  		}
-  	}
+
+      steps{
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+       withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+       string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
+       ]){
+             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+             sh "echo ${TLS_HOSTNAME}"
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'commonsdocker',
+                extraVars: [
+                    tier: "${params.Environment}",
+                    release: "${params.Release}",
+                    project: 'icdc',
+                    frontend_version: "${params.Frontend_Image}",
+                    backend_version: "${params.Backend_Image}",
+                    backend_git_tag: "${params.Backend_Image}",
+                    frontend_git_tag: "${params.Frontend_Image}"
+                    ],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+           }
+           
+          
+        }
+      }
+    }
   }
   post {
     always {

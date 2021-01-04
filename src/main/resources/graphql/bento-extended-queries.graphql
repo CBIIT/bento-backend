@@ -342,18 +342,15 @@ type QueryType {
     """)
 
     subjectCountByFileAssociation(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
-        MATCH (f:file)-->(parent)
+        MATCH (f:file)-[*..3]->(ss:study_subject)
+        MATCH (f)-->(parent)
             WHERE NOT (parent:laboratory_procedure)
-        OPTIONAL MATCH (f)-[*..2]->(ss:study_subject)
-        WITH DISTINCT f, ss, parent
-            WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
+                  AND (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
         RETURN head(labels(parent)) AS group, COUNT(f) as subjects
     """)
 
     subjectCountByFileType(subject_ids: [String] = []): [GroupCount] @cypher(statement: """
-        MATCH (f:file)
-        OPTIONAL MATCH (f)-[*..2]->(ss:study_subject)
-        WITH distinct f, ss
+        MATCH (f:file)-[*..3]->(ss:study_subject)
             WHERE (size($subject_ids) = 0 OR ss.study_subject_id IN $subject_ids)
         RETURN f.file_type AS group, COUNT(DISTINCT f) as subjects
     """)
@@ -1342,7 +1339,7 @@ type QueryType {
     filesOfSubjects(subject_ids: [String]=[]): [FileInfo] @cypher(statement:"""
         MATCH (ss:study_subject)
           WHERE ss.study_subject_id IN $subject_ids
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
+        OPTIONAL MATCH (ss)<-[*..3]-(f:file)
         OPTIONAL MATCH (parent)<--(f)
           WHERE NOT (parent:laboratory_procedure)
         RETURN ss.study_subject_id AS subject_id,
@@ -1409,7 +1406,7 @@ type QueryType {
         MATCH (ss:study_subject {study_subject_id: $subject_id})
         OPTIONAL MATCH (ss)-->(s:study)
         OPTIONAL MATCH (s)-->(p:program)
-        OPTIONAL MATCH (ss)<-[*..2]-(f:file)
+        OPTIONAL MATCH (ss)<-[*..3]-(f:file)
         OPTIONAL MATCH (parent)<--(f)
           WHERE NOT (parent:laboratory_procedure)
         WITH p, s, ss, collect(f {subject_id:ss.study_subject_id, .file_name, .file_type,

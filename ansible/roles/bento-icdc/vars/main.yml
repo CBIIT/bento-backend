@@ -30,7 +30,7 @@ backend_user_info: https://caninecommons.cancer.gov/fence/login/
 backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{ fence_id }}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
 backend_fence_logout: https://caninecommons.cancer.gov/fence/logout
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-icdc-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
-backend_api_version: "{{ backend_version }}"
+bento_api_version: "{{ backend_version }}"
 backend_frontend_version: "{{frontend_version }}"
 backend_google_analytics_id: UA-154442677-1
 dev_alb_dns_name: internal-dev-a-appli-caninedata-8uhlkjyn-1830173970.us-east-1.elb.amazonaws.com

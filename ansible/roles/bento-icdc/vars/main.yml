@@ -1,9 +1,9 @@
 ---
 # vars file for cicd
 env_file_home: /local/content/docker
-redis_host: ""
-redis_port: ""
-enable_redis: false
+#redis_host: ""
+#redis_port: ""
+#enable_redis: false
 home: /local/content/docker
 tier: "{{ lookup('env','TIER') }}"
 platform: "cloudone"

@@ -1,0 +1,38 @@
+---
+# vars file for sumologic
+config: /opt/SumoCollector/config
+platform: aws
+collector_name: "{{ project }}-{{ platform }}-{{ env }}-{{ app_name }}"
+sumo_access_id: "{{ sumo_access_id }}"
+sumo_access_key: "{{ sumo_access_key }}"
+tomcat_logs:
+  - name: "{{ env }} {{ app_name }} Access Logs"
+    description: "{{ env }} {{ app_name}} Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}/Access"
+    path: "{{ log_path }}/localhost_access_log.*"
+    filters: ""
+  - name: "{{ env }} {{ app_name }} Catalina Logs"
+    description: "{{ env }} {{ app_name }} Catalina Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}/Catalina"
+    path: "{{ log_path }}/catalina.*"
+    filters: ""
+  - name: "{{ env }} {{ app_name }} Localhost Logs"
+    description: "{{ env }} {{ app_name }} Localhost Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}/Localhost"
+    path: "{{ log_path }}/localhost.*"
+    filters: ""
+docker_logs:
+  - name: "{{ env }} Docker Logs"
+    description: "{{ env }} Docker Logs"
+    category: "{{ env }}/Docker/Logs"
+  - name: "{{ env }} Docker Stats"
+    description: "{{ env }} Docker Stats"
+    category: "{{ env }}/Docker/Stats"
+neo4j_logs:
+  - name: "{{ env }} {{ app_name }} Logs"
+    description: "{{ env }} {{ app_name}} Logs"
+    category: "{{ env }}/{{ app_type }}/{{ app_name }}"
+    path: "{{ log_path }}/*"
+    filters: ""
+additional_logs: "{{ tomcat_logs if app_name == 'Tomcat' else neo4j_logs }}"
+additional_logs_docker: "{{ docker_logs if app_name == 'Tomcat' else '' }}"

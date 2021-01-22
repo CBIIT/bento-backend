@@ -1,0 +1,6 @@
+---
+# vars file for sumologic
+accessid: "{{ access_id }}"
+accesskey: "{{ access_key }}"
+config: /opt/SumoCollector/config
+

@@ -1,0 +1,68 @@
+{
+  "api.version": "v1",
+  "sources": [
+    {
+      "name": "Linux Secure Log",
+      "description": "Security events and user logins",
+      "category": "{{env}}/OS/Linux",
+      "automaticDateParsing": false,
+      "multilineProcessingEnabled": false,
+      "useAutolineMatching": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "filters": [],
+      "encoding": "UTF-8",
+      "pathExpression": "/var/log/secure*",
+      "blacklist": [],
+      "sourceType": "LocalFile"
+    },
+    {
+      "name": "Linux Message Log",
+      "description": "System events, such as user creation, deletion, system start, shutdown, etc",
+      "category": "{{env}}/OS/Linux",
+      "automaticDateParsing": false,
+      "multilineProcessingEnabled": false,
+      "useAutolineMatching": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "filters": [],
+      "encoding": "UTF-8",
+      "pathExpression": "/var/log/messages*",
+      "blacklist": [],
+      "sourceType": "LocalFile"
+    },
+    {
+      "name": "Linux dmesg",
+      "description": "Kernel messages",
+      "category": "{{env}}/OS/Linux",
+      "automaticDateParsing": false,
+      "multilineProcessingEnabled": true,
+      "useAutolineMatching": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "filters": [],
+      "encoding": "UTF-8",
+      "pathExpression": "/var/log/dmesg",
+      "blacklist": [],
+      "sourceType": "LocalFile"
+    }
+{% for log in additional_logs %}
+    ,
+    {
+      "name": "{{ log.name }}",
+      "description": "{{ log.description }}",
+      "category": "{{ log.category }}",
+      "automaticDateParsing": false,
+      "multilineProcessingEnabled": false,
+      "useAutolineMatching": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "filters": [{{ log.filters }}],
+      "encoding": "UTF-8",
+      "pathExpression": "{{ log.path }}",
+      "blacklist": [],
+      "sourceType": "LocalFile"
+    }
+{% endfor %}
+  ]
+}

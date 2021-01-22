@@ -1,7 +1,7 @@
 ---
 # vars file for sumologic
 config: /opt/SumoCollector/config
-platform: aws
+platform: cloudone
 collector_name: "{{ project }}-{{ platform }}-{{ env }}-{{ app_name }}"
 sumo_access_id: "{{ sumo_access_id }}"
 sumo_access_key: "{{ sumo_access_key }}"

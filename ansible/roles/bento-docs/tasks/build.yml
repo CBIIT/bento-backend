@@ -1,6 +1,8 @@
 ---
 - name: clone docs repo
   shell: git clone https://github.com/CBIIT/bento-docs.git
+  args:
+    chdir: "{{ workspace }}"
 
 - name: get repo commit ID
   shell: git rev-parse HEAD

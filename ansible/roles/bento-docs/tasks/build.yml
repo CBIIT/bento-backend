@@ -17,4 +17,4 @@
 - name: build latest docs
   shell: "sphinx-multiversion source docs"
   args:
-    chdir: "{{ workspace }}/bento-docs/docs"
+    chdir: "{{ workspace }}/bento-docs"

@@ -1,0 +1,20 @@
+---
+- name: get repo commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{ workspace }}/bento-docs"
+  register: repo_commit
+
+- name: echo repo commit
+  debug:
+    msg: "{{ repo_commit.stdout_lines }}"
+
+- name: get python requirements
+  shell: "pip3 install -r requirements.txt"
+  args:
+    chdir: "{{ workspace }}/bento-docs"
+
+- name: build latest docs
+  shell: "sphinx-multiversion source docs"
+  args:
+    chdir: "{{ workspace }}/bento-docs/docs"

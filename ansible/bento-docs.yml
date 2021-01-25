@@ -1,0 +1,11 @@
+---
+- name: deploy latest vwersion of Bento documentation
+  hosts: bento
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: deploy docs
+      include_role:
+        name: bento-docs
+        tasks_from: build

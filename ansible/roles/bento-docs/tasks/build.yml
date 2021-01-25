@@ -1,6 +1,6 @@
 ---
 - name: update python version
-  shell: "apk add --no-cache python3 py3-pip"
+  shell: "yum upgrade python3"
   args:
     chdir: "{{ workspace }}"
 

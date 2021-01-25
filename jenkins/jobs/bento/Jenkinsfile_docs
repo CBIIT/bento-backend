@@ -103,7 +103,29 @@ pipeline {
 //      sendSlackMessage()
 //
 //    }
-	
+
+	success {
+
+		script {
+			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+				sh label: 'GIT Commit Doc Changes', script: '''#!/bin/bash
+				
+				#echo "this is a comment"
+				cd ./bento-docs
+				gitCommit=$(git rev-parse HEAD)
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Committing documentation changes to URL:  $gitURL"
+				echo "Commit triggered by change:  $gitCommit"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				
+				'''
+			
+				}
+			}
+
+	}
+
 	cleanup {
 	
 		cleanWs()

@@ -23,3 +23,8 @@
   shell: "sphinx-multiversion source docs"
   args:
     chdir: "{{ workspace }}/bento-docs"
+  register: sphinx_out
+
+- name: echo sphinx output
+  debug:
+    msg: "{{ sphinx_out.stdout_lines }}"

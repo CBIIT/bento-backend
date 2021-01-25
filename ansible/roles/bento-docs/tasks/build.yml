@@ -38,3 +38,13 @@
 - name: echo sphinx output
   debug:
     msg: "{{ sphinx_out.stdout_lines }}"
+
+- name: show changes in git status
+  shell: "git diff --name-only"
+  args:
+    chdir: "{{ workspace }}"
+  register: git_status
+
+- name: echo git status
+  debug:
+    msg: "{{ git_status.stdout_lines }}"

@@ -42,7 +42,7 @@
 - name: show changes in git status
   shell: "git status -s"
   args:
-    chdir: "{{ workspace }}"
+    chdir: "{{ workspace }}/bento-docs/docs"
   register: git_status
 
 - name: echo git status

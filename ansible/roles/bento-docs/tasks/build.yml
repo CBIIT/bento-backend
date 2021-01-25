@@ -1,6 +1,6 @@
 ---
 - name: update python version
-  shell: "yum upgrade python3"
+  shell: "yum upgrade -y python3"
   args:
     chdir: "{{ workspace }}"
 

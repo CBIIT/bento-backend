@@ -40,7 +40,7 @@
     msg: "{{ sphinx_out.stdout_lines }}"
 
 - name: show changes in git status
-  shell: "git diff --name-only"
+  shell: "git status -s"
   args:
     chdir: "{{ workspace }}"
   register: git_status

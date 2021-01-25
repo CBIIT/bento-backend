@@ -1,6 +1,6 @@
 ---
 - name: get python version
-  shell: "python --version"
+  shell: "python3 --version"
   args:
     chdir: "{{ workspace }}"
   register: python_ver

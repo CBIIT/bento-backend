@@ -53,19 +53,19 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
-  			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '**']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'bento-docs']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-docs.git']]
-				])
+//  			checkout( changelog:false,
+//				poll: false,
+//				scm: [$class: 'GitSCM', 
+//				branches: [[name: '**']], 
+//				doGenerateSubmoduleConfigurations: false, 
+//				extensions: [[$class: 'DisableRemotePoll'],
+//				[$class: 'PathRestriction', excludedRegions: '*'], 
+//				[$class: 'RelativeTargetDirectory', 
+//				relativeTargetDir: 'bento-docs']], 
+//				submoduleCfg: [], 
+//				userRemoteConfigs: 
+//				[[url: 'https://github.com/CBIIT/bento-docs.git']]
+//				])
 
   			checkout( changelog:false,
 				poll: false,

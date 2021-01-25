@@ -118,6 +118,9 @@ pipeline {
 				echo "Commit triggered by change:  $gitCommit"
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
+				git add docs
+				git commit -m "Documentation changes added by Jenkins: triggered by commit ${gitCommit}"
+				git show
 				
 				'''
 			

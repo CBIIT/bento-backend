@@ -1,4 +1,14 @@
 ---
+- name: get python version
+  shell: "python --version"
+  args:
+    chdir: "{{ workspace }}"
+  register: python_ver
+
+- name: echo python version
+  debug:
+    msg: "{{ python_ver.stdout_lines }}"
+
 - name: clone docs repo
   shell: git clone https://github.com/CBIIT/bento-docs.git
   args:

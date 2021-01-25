@@ -1,4 +1,7 @@
 ---
+- name: clone docs repo
+  shell: git clone https://github.com/CBIIT/bento-docs.git
+
 - name: get repo commit ID
   shell: git rev-parse HEAD
   args:

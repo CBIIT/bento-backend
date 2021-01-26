@@ -37,35 +37,13 @@ pipeline {
 		}
 	}
 
-//	parameters {
-//
-//  }
-
   options {
   	ansiColor('xterm')
   }
 
-//  tools {
-//  	maven 'Default' 
-//    jdk 'Default' 
-//  }
-
   stages{
   	stage('checkout'){
   		steps {
-//  			checkout( changelog:false,
-//				poll: false,
-//				scm: [$class: 'GitSCM', 
-//				branches: [[name: '**']], 
-//				doGenerateSubmoduleConfigurations: false, 
-//				extensions: [[$class: 'DisableRemotePoll'],
-//				[$class: 'PathRestriction', excludedRegions: '*'], 
-//				[$class: 'RelativeTargetDirectory', 
-//				relativeTargetDir: 'bento-docs']], 
-//				submoduleCfg: [], 
-//				userRemoteConfigs: 
-//				[[url: 'https://github.com/CBIIT/bento-docs.git']]
-//				])
 
   			checkout( changelog:false,
 				poll: false,
@@ -98,11 +76,11 @@ pipeline {
   	}
   }
   post {
-//    always {
-//      
-//      sendSlackMessage()
-//
-//    }
+    always {
+      
+      sendSlackMessage()
+
+    }
 
 	success {
 
@@ -110,7 +88,6 @@ pipeline {
 			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 				sh label: 'GIT Commit Doc Changes', script: '''#!/bin/bash
 				
-				#echo "this is a comment"
 				cd ./bento-docs
 				gitCommit=$(git rev-parse HEAD)
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
@@ -120,7 +97,7 @@ pipeline {
 				git config user.name "Bento Jenkins"
 				git add docs
 				git commit -m "Documentation changes added by Jenkins: triggered by commit ${gitCommit}"
-				git show
+				git push https://${git_user}:${git_password}@${gitURL} --all
 				
 				'''
 			

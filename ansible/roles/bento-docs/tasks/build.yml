@@ -34,16 +34,6 @@
   args:
     chdir: "{{ workspace }}/bento-docs"
 
-- name: get branch list
-  shell: git branch
-  args:
-    chdir: "{{ workspace }}/bento-docs"
-  register: repo_list
-
-- name: echo repo list
-  debug:
-    msg: "{{ repo_list.stdout_lines }}"
-
 - name: get python requirements
   shell: "pip3 install -r requirements.txt"
   args:

@@ -106,7 +106,7 @@ pipeline {
 				git config user.name "Bento Jenkins"
 				git add docs
 				git commit -m "Documentation changes added by Jenkins: triggered by commit ${gitCommit}"
-//				git push https://${git_user}:${git_password}@${gitURL} --all
+				#git push https://${git_user}:${git_password}@${gitURL} --all
 				
 				'''
 			

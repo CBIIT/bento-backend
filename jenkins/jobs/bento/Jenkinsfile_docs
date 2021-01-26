@@ -52,7 +52,7 @@ pipeline {
 				relativeTargetDir: 'docrepo']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-docs.git']]])
 
   			checkout( changelog:false,
 				poll: false,

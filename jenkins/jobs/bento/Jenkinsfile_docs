@@ -45,14 +45,14 @@ pipeline {
   	stage('checkout'){
   		steps {
 
-//			checkout([$class: 'GitSCM',
-//				branches: [[name: '**/source/**']],
-//				doGenerateSubmoduleConfigurations: false,
-//				extensions: [[$class: 'RelativeTargetDirectory',
-//				relativeTargetDir: 'docrepo']],
-//				submoduleCfg: [],
-//				userRemoteConfigs: 
-//				[[url: 'https://github.com/CBIIT/bento-docs.git']]])
+			checkout([$class: 'GitSCM',
+				branches: [[name: '**']],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'docrepo']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-docs.git']]])
 
   			checkout( changelog:false,
 				poll: false,
@@ -85,11 +85,11 @@ pipeline {
   	}
   }
   post {
-    always {
-      
-      sendSlackMessage()
-
-    }
+//    always {
+//      
+//      sendSlackMessage()
+//
+//    }
 
 	success {
 
@@ -106,7 +106,7 @@ pipeline {
 				git config user.name "Bento Jenkins"
 				git add docs
 				git commit -m "Documentation changes added by Jenkins: triggered by commit ${gitCommit}"
-				git push https://${git_user}:${git_password}@${gitURL} --all
+//				git push https://${git_user}:${git_password}@${gitURL} --all
 				
 				'''
 			

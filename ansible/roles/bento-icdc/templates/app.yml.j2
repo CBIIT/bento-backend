@@ -17,9 +17,9 @@ services:
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
     volumes:
       - /local/content/k9dc/logs:/usr/local/tomcat/logs
-	ports:
+    ports:
       - "8080:8080"
-	#logging:
+    #logging:
     #  driver: syslog
     #  options:
     #    syslog-format: "rfc5424micro"
@@ -48,20 +48,12 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"        
-	ports:
+    ports:
       - "80:80"
-	#logging:
+    #logging:
     #  driver: syslog
     #  options:
     #    syslog-format: "rfc5424micro"
     #    syslog-address: tcp://{{ syslog_host }}:514
     #    tag: "{{ app_name }}-frontend"
-	restart: always
-    
-
-
-      
-
-
-
-
+    restart: always

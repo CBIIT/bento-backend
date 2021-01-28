@@ -15,14 +15,16 @@ services:
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-    ports:
+    volumes:
+      - /local/content/k9dc/logs:/usr/local/tomcat/logs
+	ports:
       - "8080:8080"
-    logging:
-      driver: syslog
-      options:
-        syslog-format: "rfc5424micro"
-        syslog-address: tcp://{{ syslog_host }}:514
-        tag: "{{ app_name }}-backend"
+	#logging:
+    #  driver: syslog
+    #  options:
+    #    syslog-format: "rfc5424micro"
+    #    syslog-address: tcp://{{ syslog_host }}:514
+    #    tag: "{{ app_name }}-backend"
     restart: always
 
 ##########################################################
@@ -46,15 +48,15 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"        
-    logging:
-      driver: syslog
-      options:
-        syslog-format: "rfc5424micro"
-        syslog-address: tcp://{{ syslog_host }}:514
-        tag: "{{ app_name }}-frontend"
-    restart: always
-    ports:
+	ports:
       - "80:80"
+	#logging:
+    #  driver: syslog
+    #  options:
+    #    syslog-format: "rfc5424micro"
+    #    syslog-address: tcp://{{ syslog_host }}:514
+    #    tag: "{{ app_name }}-frontend"
+	restart: always
     
 
 

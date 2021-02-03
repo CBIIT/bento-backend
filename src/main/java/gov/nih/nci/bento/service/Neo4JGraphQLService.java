@@ -1,13 +1,17 @@
 package gov.nih.nci.bento.service;
 
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.service.Neo4jRequest;
+import gov.nih.nci.bento.service.TranslationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.neo4j.graphql.Cypher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -32,11 +36,17 @@ public class Neo4JGraphQLService {
 	private static final String APPLICATION_JSON = "application/json";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String ACCEPT = "accept";
-	
+
+	private Gson gson = new Gson();
+
 	@Autowired
 	private ConfigurationDAO config;
 
-	@PostConstruct
+	@Autowired
+	private TranslationProvider translationProvider;
+
+
+//	@PostConstruct
 	public void loadSchema(){
 		// Set socket timeout value here, to only set it once
 		// connection timeout set to 10s, and socket timeout set to 300s
@@ -81,13 +91,18 @@ public class Neo4JGraphQLService {
 
 	public String query(String graphQLQuery) throws ApiError {
 		logger.info("Query neo4j:  "+graphQLQuery);
+		Cypher cypher = translationProvider.translateToCypher(graphQLQuery);
+		//Store the cypher in a serializable format
+		Neo4jRequest request = new Neo4jRequest(cypher);
+		logger.info("Cypher: "+request.getQuery());
+
 
 		HttpResponse<JsonNode> jsonResponse;
 		try {
-			jsonResponse = Unirest.post(config.getNeo4jGraphQLEndPoint
-					()).header("Content-Type", "application/json")
+			jsonResponse = Unirest.post(config.getNeo4jGraphQLEndPoint())
+					.header("Content-Type", "application/json")
 					.header("Authorization", config.getNeo4jHttpHeaderAuthorization()).header("accept", "application/json")
-					.body(graphQLQuery).asJson();
+					.body(gson.toJson(request)).asJson();
 			if (jsonResponse.getStatus() != 200) {
 				throw new ApiError(HttpStatus.resolve(jsonResponse.getStatus()), "Exception occurred while querying database service", jsonResponse.getStatusText());
 			}

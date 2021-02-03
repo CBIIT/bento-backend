@@ -50,19 +50,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Spring data with Neo4j -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-neo4j</artifactId>
-		</dependency>
-
-	
-
-		<!-- Spring data for rest -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-rest</artifactId>
-		</dependency>
 
 		<!-- Spring exclude tomcat -->
 		<dependency>
@@ -105,7 +92,7 @@
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java</artifactId>
-			<version>11.0</version>
+			<version>15.0</version>
 		</dependency>
 
 		<dependency>
@@ -120,20 +107,20 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-graphql-java</artifactId>
-			<version>1.0.0-M01</version>
+			<version>1.2.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.neo4j/neo4j-jdbc-driver -->
-		<dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-jdbc-driver</artifactId>
-			<version>3.4.0</version>
-			<scope>runtime</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.neo4j</groupId>-->
+<!--			<artifactId>neo4j-jdbc-driver</artifactId>-->
+<!--			<version>3.4.0</version>-->
+<!--			<scope>runtime</scope>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.neo4j.driver</groupId>
 			<artifactId>neo4j-java-driver</artifactId>
-			<version>1.7.2</version>
+			<version>4.2.0</version>
 		</dependency>
 
 

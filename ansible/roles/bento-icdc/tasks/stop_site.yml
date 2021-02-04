@@ -1,0 +1,41 @@
+---
+   
+- name: verify host
+  file: 
+    path: /tmp/myworkspace
+    state: directory
+
+- name: clean up 
+  shell: docker system prune -a -f
+
+- name: ensure /local/content/docker exists
+  file: 
+    path: /local/content/docker
+    state: directory
+
+
+##### UPDATED TO REMOVE ALL CONTAINERS #####
+#- name: start log agents
+- name: stop log agents
+  docker_compose:
+    project_src: /local/content/docker
+    files: log-agents.yml
+    #state: present
+    state: absent
+
+
+#- name: start frontend and backend containers
+- name: stop frontend and backend containers
+  docker_compose:
+    project_src: /local/content/docker
+    files: app.yml
+    #state: present
+    state: absent
+
+- name: get docker output
+  shell: docker ps -a
+  register: docker_out
+
+- name: echo docker output
+  debug:
+    msg: "{{ docker_out.stdout_lines }}"

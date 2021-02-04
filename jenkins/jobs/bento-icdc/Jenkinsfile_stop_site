@@ -54,6 +54,26 @@ pipeline {
   }
   stages{
 
+  	stage('checkout'){
+  		steps {
+				
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+
   	stage('stop site'){
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

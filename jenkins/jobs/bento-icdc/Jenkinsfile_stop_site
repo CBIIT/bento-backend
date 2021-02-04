@@ -1,0 +1,96 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+      // label 'docker-maven'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,stage,prod' )
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+
+  	stage('stop site'){
+  		steps{
+  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+		   withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+		     string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
+			 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+			 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+			 string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
+			 ]){
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/stop-bento-icdc.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'commonsdocker',
+                extraVars: [
+                    tier: "${params.Environment}",
+                    release: "${params.Release}",
+                    project: 'icdc',
+                    frontend_version: "${params.Frontend_Tag}",
+                    backend_version: "${params.Backend_Tag}",
+                    backend_git_tag: "${params.Backend_Tag}",
+                    frontend_git_tag: "${params.Frontend_Tag}"
+                    ],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+           }
+           
+          
+  			}
+  		}
+  	}
+  }
+  post {
+    always {
+//      sendSlackMessage()
+      cleanWs()
+    }
+  }
+}

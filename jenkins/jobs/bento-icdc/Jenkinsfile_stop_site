@@ -84,7 +84,9 @@ pipeline {
 			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
 			 string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
 			 ]){
-             ansiblePlaybook( 
+             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+             sh "echo ${TLS_HOSTNAME}"
+			 ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/stop-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',

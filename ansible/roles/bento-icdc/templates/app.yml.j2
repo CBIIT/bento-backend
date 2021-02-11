@@ -48,7 +48,9 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"        
-    ports:
+    volumes:
+      - /local/content/k9dc/nginx/logs:/var/log/nginx
+	ports:
       - "80:80"
     #logging:
     #  driver: syslog

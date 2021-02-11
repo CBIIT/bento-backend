@@ -67,6 +67,7 @@
 - name: install docker
   yum:
     name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    skip_broken: yes
     state: installed
     
 - name: enable and start docker

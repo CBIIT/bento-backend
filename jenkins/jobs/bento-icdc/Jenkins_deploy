@@ -234,8 +234,8 @@ pipeline {
         SLACK_URL = "${SLACK_URL}"
         TIER = "${params.Environment}"
         VERSION = "${params.Frontend_Image}"
-        FE_VERSION = "${params.Frontend_Image}"
-        BE_VERSION = "${params.Backend_Image}"
+        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
 
       steps{
@@ -252,9 +252,7 @@ pipeline {
                 extraVars: [
                     tier: "${params.Environment}",
                     release: "${params.Release}",
-                    project: 'icdc',
-                    frontend_version: "${params.Frontend_Image}",
-                    backend_version: "${params.Backend_Image}",
+                    project: 'icdc'
                     backend_git_tag: "${params.Backend_Image}",
                     frontend_git_tag: "${params.Frontend_Image}"
                     ],

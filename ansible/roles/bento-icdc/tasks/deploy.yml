@@ -84,7 +84,7 @@
   service:
     name: "{{item}}"
     enabled: no
-    loop:
+  loop:
     - log-agents.service
     - app.service
 

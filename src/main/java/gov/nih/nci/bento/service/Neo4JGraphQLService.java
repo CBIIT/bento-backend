@@ -9,6 +9,7 @@ import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.Neo4jRequest;
 import gov.nih.nci.bento.service.TranslationProvider;
+import gov.nih.nci.bento.service.Neo4jService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.neo4j.graphql.Cypher;
@@ -45,6 +46,8 @@ public class Neo4JGraphQLService {
 	@Autowired
 	private TranslationProvider translationProvider;
 
+	@Autowired
+	private Neo4jService neo4jService;
 
 //	@PostConstruct
 	public void loadSchema(){
@@ -96,6 +99,7 @@ public class Neo4JGraphQLService {
 		Neo4jRequest request = new Neo4jRequest(cypher);
 		logger.info("Cypher: "+request.getQuery());
 
+//		neo4jService.printGreeting("Ming");
 
 		HttpResponse<JsonNode> jsonResponse;
 		try {

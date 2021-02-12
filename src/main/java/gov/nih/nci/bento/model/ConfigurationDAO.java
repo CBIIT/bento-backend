@@ -49,6 +49,41 @@ public class ConfigurationDAO {
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;
 
+	@Value("${neo4j.url}")
+	private String neo4jUrl;
+
+	@Value("${neo4j.user}")
+	private String neo4jUser;
+
+	@Value("${neo4j.password}")
+	private String neo4jPassword;
+
+	public void setNeo4jUrl(String neo4jUrl) {
+		this.neo4jUrl = neo4jUrl;
+	}
+
+	public void setNeo4jUser(String neo4jUser) {
+		this.neo4jUser = neo4jUser;
+	}
+
+	public void setNeo4jPassword(String neo4jPassword) {
+		this.neo4jPassword = neo4jPassword;
+	}
+
+
+	public String getNeo4jUrl() {
+		return neo4jUrl;
+	}
+
+	public String getNeo4jUser() {
+		return neo4jUser;
+	}
+
+	public String getNeo4jPassword() {
+		return neo4jPassword;
+	}
+
+
 	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;

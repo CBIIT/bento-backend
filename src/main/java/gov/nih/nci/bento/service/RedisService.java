@@ -1,6 +1,5 @@
 package gov.nih.nci.bento.service;
 
-import gov.nih.nci.bento.controller.GraphQLController;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 @Service
 public class RedisService {
-    private static final Logger logger = LogManager.getLogger(GraphQLController.class);
+    private static final Logger logger = LogManager.getLogger(RedisService.class);
 
     @Autowired
     private ConfigurationDAO config;

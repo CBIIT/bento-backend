@@ -74,8 +74,9 @@ public class GraphQLController {
 		JsonObject jsonObject = gson.fromJson(reqBody, JsonObject.class);
 		String operation;
 		String query_key;
+		String sdl;
 		try{
-			String sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
+			sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			Parser parser = new Parser();
 			Document document = parser.parseDocument(sdl);
 			query_key = document.toString();
@@ -99,11 +100,11 @@ public class GraphQLController {
 				if (config.getRedisEnabled()) {
 					responseText = redisService.getQueryResult(query_key);
 					if ( null == responseText) {
-						responseText = neo4jService.query(reqBody);
+						responseText = neo4jService.query(sdl);
 						redisService.setQueryResult(query_key, responseText);
 					}
 				} else {
-					responseText = neo4jService.query(reqBody);
+					responseText = neo4jService.query(sdl);
 				}
 				return ResponseEntity.ok(responseText);
 			}

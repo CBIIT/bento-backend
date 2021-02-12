@@ -80,11 +80,14 @@
     #- log-agents.service
     - app.timer
 
-- name: ensure app.service is diabled
+- name: ensure app.service is disabled
   service:
-    name: app.service
+    name: "{{item}}"
     enabled: no
-  
+    loop:
+    - log-agents.service
+    - app.service
+
 - name: Pause to allow updates to process
   pause:
     seconds: 15

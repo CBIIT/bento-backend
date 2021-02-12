@@ -1,3 +1,4 @@
+
 version: '3.4'
 services:
 
@@ -47,8 +48,6 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"        
-    volumes:
-      - "/local/content/k9dc/nginx:/var/log/nginx"
     ports:
       - "80:80"
     #logging:

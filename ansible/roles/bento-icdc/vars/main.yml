@@ -3,9 +3,10 @@
 env_file_home: /local/content/docker
 # redis config
 enable_redis: 'true'
+use_cluster: 'false'
 redis_host: 
-  dev: "ncias-d2224-c"
-  qa: "localhost"
+  dev: "10.208.2.75"
+  qa: "10.208.10.169"
   stage: "localhost"
   prod: "localhost"
 redis_password: ""

@@ -9,12 +9,4 @@ release: fail
 #     dev: internal-dev-a-appli-caninedata-8uhlkjyn-1830173970.us-east-1.elb.amazonaws.com
 #     qa: internal-qa-ca-appli-6p2vxovvw4sd-1727805720.us-east-1.elb.amazonaws.com
 
-# redis config
-enable_redis: true
-redis_host: 
-  dev: "localhost"
-  qa: "localhost"
-  stage: "localhost"
-  prod: "localhost"
-redis_password: ""
-redis_port: 6379
+

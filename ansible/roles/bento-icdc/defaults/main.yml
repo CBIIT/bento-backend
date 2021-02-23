@@ -10,7 +10,7 @@ release: fail
 #     qa: internal-qa-ca-appli-6p2vxovvw4sd-1727805720.us-east-1.elb.amazonaws.com
 
 # redis config
-enable_redis: false
+enable_redis: true
 redis_host: 
   dev: "localhost"
   qa: "localhost"

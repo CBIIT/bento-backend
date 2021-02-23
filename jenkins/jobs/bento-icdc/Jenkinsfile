@@ -49,6 +49,10 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'test,final' )
+    booleanParam(
+    defaultValue: false,
+    description: 'Flush the Redis cache',
+    name: 'Flush_Redis')
 
 
   }
@@ -220,6 +224,39 @@ pipeline {
   			}
   		}
   	}
+    // stage('clear redis cache'){
+    // agent { label 'data-loader' }
+    // when {
+    //   expression { params.Flush_Redis }
+    //   }
+  
+    //   environment {
+    //   TIER = "${params.Environment}"
+    //   }
+
+    // steps{
+    //   checkout( changelog:false,
+    //     poll: false,
+    //     scm: [$class: 'GitSCM', 
+    //     branches: [[name: '*/master']], 
+    //     doGenerateSubmoduleConfigurations: false, 
+    //     extensions: [[$class: 'DisableRemotePoll'],
+    //     [$class: 'PathRestriction', excludedRegions: '*'], 
+    //     [$class: 'RelativeTargetDirectory', 
+    //     relativeTargetDir: 'icdc-devops']], 
+    //     submoduleCfg: [], 
+    //     userRemoteConfigs: 
+    //     [[url: 'https://github.com/CBIIT/icdc-devops.git']]
+    //     ])
+        
+    //   wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+    //     ansiblePlaybook( 
+    //             playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+    //             inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+    //             colorized: true)
+    //     }
+    //   }
+    // }
   }
   post {
     always {

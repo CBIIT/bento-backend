@@ -1,9 +1,15 @@
 ---
 # vars file for cicd
 env_file_home: /local/content/docker
-#redis_host: ""
-#redis_port: ""
-#enable_redis: false
+# redis config
+enable_redis: true
+redis_host: 
+  dev: "localhost"
+  qa: "localhost"
+  stage: "localhost"
+  prod: "localhost"
+redis_password: ""
+redis_port: 6379
 home: /local/content/docker
 tier: "{{ lookup('env','TIER') }}"
 platform: "cloudone"

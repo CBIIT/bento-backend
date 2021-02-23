@@ -9,7 +9,6 @@ import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -54,16 +53,12 @@ public class TranslationProvider {
      * @return The Cypher object containing the translation
      * @throws ApiError
      */
-    public Cypher translateToCypher(String graphQL) throws ApiError {
-        Cypher cypher;
+    public List<Cypher> translateToCypher(String graphQL) throws ApiError {
         try{
-            List<Cypher> cypherList = translator.translate(graphQL);
-            cypher = cypherList.get(0);
-            logger.info(cypher.toString());
+            return translator.translate(graphQL);
         }
         catch (Exception e){
             throw new ApiError(HttpStatus.BAD_REQUEST, "Exception occurred while translating query", e.toString());
         }
-        return cypher;
     }
 }

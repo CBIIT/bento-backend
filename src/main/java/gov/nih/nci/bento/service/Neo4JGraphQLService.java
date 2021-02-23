@@ -7,11 +7,11 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.service.Neo4jRequest;
 import gov.nih.nci.bento.service.TranslationProvider;
 import gov.nih.nci.bento.service.Neo4jService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.neo4j.driver.exceptions.ServiceUnavailableException;
 import org.neo4j.graphql.Cypher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class Neo4JGraphQLService {
@@ -93,36 +96,21 @@ public class Neo4JGraphQLService {
 	}
 
 	public String query(String graphQLQuery) throws ApiError {
-		logger.info("Query neo4j:  "+graphQLQuery);
-		Cypher cypher = translationProvider.translateToCypher(graphQLQuery);
-		//Store the cypher in a serializable format
-		Neo4jRequest request = new Neo4jRequest(cypher);
-		logger.info("Cypher: "+request.getQuery());
-
-//		neo4jService.printGreeting("Ming");
-
-		HttpResponse<JsonNode> jsonResponse;
+		logger.info("Query neo4j:  " + graphQLQuery);
 		try {
-			jsonResponse = Unirest.post(config.getNeo4jGraphQLEndPoint())
-					.header("Content-Type", "application/json")
-					.header("Authorization", config.getNeo4jHttpHeaderAuthorization()).header("accept", "application/json")
-					.body(gson.toJson(request)).asJson();
-			if (jsonResponse.getStatus() != 200) {
-				throw new ApiError(HttpStatus.resolve(jsonResponse.getStatus()), "Exception occurred while querying database service", jsonResponse.getStatusText());
+			List<Cypher> cypherList = translationProvider.translateToCypher(graphQLQuery);
+			Map<String, Object> data = new HashMap<>();
+			Map<String, Object> values = new HashMap<>();
+			data.put("data", values);
+		    for (Cypher cypher: cypherList) {
+		    	logger.info("Cypher: " + cypher);
+		    	GraphQLResult result = neo4jService.query(cypher);
+		    	values.put(result.getQueryName(), result.getValues());
 			}
-		} catch (UnirestException e) {
-			logger.error("Exception in function query() "+e.toString());
+			return gson.toJson(data);
+		} catch (ServiceUnavailableException e) {
+			logger.error("Exception in function query() " + e.toString());
 			throw new ApiError(HttpStatus.SERVICE_UNAVAILABLE, "Exception occurred while querying database service", e.getMessage());
 		}
-
-		JsonNode neo4jResponse = jsonResponse.getBody();
-		if (neo4jResponse.getObject().has("errors")) {
-			String errors = neo4jResponse.getObject().get("errors").toString();
-			logger.error("Exception in function query() "+errors);
-			throw new ApiError(HttpStatus.BAD_REQUEST, "Request resulted in response containing errors", errors);
-		}
-		return neo4jResponse.toString();
 	}
-	
-
 }

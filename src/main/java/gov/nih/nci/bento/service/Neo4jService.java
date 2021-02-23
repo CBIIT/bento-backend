@@ -1,22 +1,20 @@
 package gov.nih.nci.bento.service;
 
-import gov.nih.nci.bento.controller.GraphQLController;
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import graphql.schema.GraphQLNonNull;
+import graphql.schema.GraphQLType;
+import graphql.schema.GraphQLList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.neo4j.driver.AuthTokens;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.GraphDatabase;
-import org.neo4j.driver.Result;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.Transaction;
-import org.neo4j.driver.TransactionWork;
+import org.neo4j.driver.*;
+import org.neo4j.graphql.Cypher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-import static org.neo4j.driver.Values.parameters;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class Neo4jService implements AutoCloseable {
@@ -41,24 +39,38 @@ public class Neo4jService implements AutoCloseable {
         driver.close();
     }
 
-    public String query(final String cypherQuery)
+    public GraphQLResult query(final Cypher cypher)
     {
         try ( Session session = driver.session() )
         {
-            String result = session.writeTransaction( new TransactionWork<String>()
-            {
-                @Override
-                public String execute( Transaction tx )
-                {
-                    Result result = tx.run(cypherQuery,
-                            parameters( "message", message ) );
-                    return result.single().get( 0 ).asString();
+            Result result = session.run(cypher.getQuery(), cypher.getParams());
+            String key = result.keys().get(0);
+            Object values = null;
+            if (isList(cypher.getType())) {
+                List<Object> list = new ArrayList<>();
+                values = list;
+                while (result.hasNext()) {
+                    Record rec = result.next();
+                    list.add(rec.get(key).asObject());
                 }
-            } );
-            return result;
-        } catch (Exception e) {
-            logger.error(e);
+            } else {
+                if (result.hasNext()) {
+                    Record rec = result.next();
+                    values = rec.get(key).asObject();
+                }
+            }
+            return new GraphQLResult(key, values);
         }
-    }
+   }
+
+   private boolean isList(GraphQLType type) {
+        if (type instanceof GraphQLList) {
+            return true;
+        } else if (type instanceof GraphQLNonNull) {
+            return isList(((GraphQLNonNull)type).getWrappedType());
+        } else {
+            return false;
+        }
+   }
 }
 

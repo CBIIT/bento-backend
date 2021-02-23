@@ -12,9 +12,9 @@ release: fail
 # redis config
 enable_redis: false
 redis_host: 
-  dev: ""
-  qa: ""
-  stage: ""
-  prod: ""
+  dev: "localhost"
+  qa: "localhost"
+  stage: "localhost"
+  prod: "localhost"
 redis_password: ""
 redis_port: 6379

@@ -2,9 +2,9 @@
 # vars file for cicd
 env_file_home: /local/content/docker
 # redis config
-enable_redis: true
+enable_redis: 'true'
 redis_host: 
-  dev: "localhost"
+  dev: "ncias-d2224-c"
   qa: "localhost"
   stage: "localhost"
   prod: "localhost"

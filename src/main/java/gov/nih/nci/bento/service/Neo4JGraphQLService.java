@@ -1,6 +1,7 @@
 package gov.nih.nci.bento.service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -95,7 +96,7 @@ public class Neo4JGraphQLService {
 		}
 	}
 
-	public String query(String graphQLQuery) throws ApiError {
+	public String query(String graphQLQuery, Map<String, Object> variables) throws ApiError {
 		logger.info("Query neo4j:  " + graphQLQuery);
 		try {
 			List<Cypher> cypherList = translationProvider.translateToCypher(graphQLQuery);
@@ -104,7 +105,7 @@ public class Neo4JGraphQLService {
 			data.put("data", values);
 		    for (Cypher cypher: cypherList) {
 		    	logger.info("Cypher: " + cypher);
-		    	GraphQLResult result = neo4jService.query(cypher);
+		    	GraphQLResult result = neo4jService.query(cypher, variables);
 		    	values.put(result.getQueryName(), result.getValues());
 			}
 			return gson.toJson(data);

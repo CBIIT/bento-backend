@@ -26,6 +26,8 @@ import graphql.language.Document;
 import graphql.language.OperationDefinition;
 import graphql.parser.Parser;
 
+import java.util.Map;
+
 @RestController
 public class GraphQLController {
 
@@ -75,12 +77,14 @@ public class GraphQLController {
 		String operation;
 		String query_key;
 		String sdl;
+		Map<String, Object> variables;
 		try{
 			sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			Parser parser = new Parser();
 			Document document = parser.parseDocument(sdl);
 			query_key = document.toString();
 			JsonElement rawVar = jsonObject.get("variables");
+			variables = gson.fromJson(rawVar, Map.class);
 			if (null != rawVar) {
 				query_key +=  "::" + rawVar.toString();
 			}
@@ -100,11 +104,11 @@ public class GraphQLController {
 				if (config.getRedisEnabled()) {
 					responseText = redisService.getQueryResult(query_key);
 					if ( null == responseText) {
-						responseText = neo4jService.query(sdl);
+						responseText = neo4jService.query(sdl, variables);
 						redisService.setQueryResult(query_key, responseText);
 					}
 				} else {
-					responseText = neo4jService.query(sdl);
+					responseText = neo4jService.query(sdl, variables);
 				}
 				return ResponseEntity.ok(responseText);
 			}

@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class Neo4jService implements AutoCloseable {
@@ -39,11 +40,11 @@ public class Neo4jService implements AutoCloseable {
         driver.close();
     }
 
-    public GraphQLResult query(final Cypher cypher)
+    public GraphQLResult query(final Cypher cypher, Map<String, Object> variables)
     {
         try ( Session session = driver.session() )
         {
-            Result result = session.run(cypher.getQuery(), cypher.getParams());
+            Result result = session.run(cypher.getQuery(), variables);
             String key = result.keys().get(0);
             Object values = null;
             if (isList(cypher.getType())) {

@@ -8,4 +8,4 @@
     - name: build bento-icdc application
       include_role:
         name: bento-icdc
-        tasks_from: build
+        tasks_from: new-build

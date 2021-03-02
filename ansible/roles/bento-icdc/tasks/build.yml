@@ -122,7 +122,7 @@
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
     # tag: "{{build_number}}"
-    tag: "{{backend_version}}-{{build_number}}"
+    tag: "{{backend_version}"
     push: yes
     force_source: yes
     source: build
@@ -135,7 +135,7 @@
 
 - name: Add tag latest to cbiitssrepo/icdc-backend image
   docker_image:
-    name: "ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}"
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{backend_version}}"
     repository: ncidockerhub.nci.nih.gov/icdc/icdc-backend:latest
     force_tag: yes
     push: yes
@@ -184,7 +184,7 @@
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
     # tag: "{{build_number}}"
-    tag: "{{frontend_version}}-{{build_number}}"
+    tag: "{{frontend_version}}"
     push: yes
     force_source: yes
     source: build
@@ -197,7 +197,7 @@
 
 - name: Add tag latest to cbiitssrepo/icdc-frontend image
   docker_image:
-    name: "ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{build_number}}"
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{frontend_version}}"
     repository: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:latest
     force_tag: yes
     push: yes

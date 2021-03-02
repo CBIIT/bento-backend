@@ -104,11 +104,7 @@ pipeline {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
       }
         steps {
-          steps {
-
-          script {
-            currentBuild.displayName = "Tag: ${VERSION}  Environment: ${params.Environment}"
-            }
+          
           script {
             switch("${params.Environment}") {
               case "sandbox":

@@ -44,7 +44,8 @@ public class Neo4jService implements AutoCloseable {
     {
         try ( Session session = driver.session() )
         {
-            Result result = session.run(cypher.getQuery(), variables);
+            Map<String, Object> params = cypher.getParams();
+            Result result = session.run(cypher.getQuery(), getVariables(params, variables));
             String key = result.keys().get(0);
             Object values = null;
             if (isList(cypher.getType())) {
@@ -62,6 +63,18 @@ public class Neo4jService implements AutoCloseable {
             }
             return new GraphQLResult(key, values);
         }
+   }
+
+   private Map<String, Object> getVariables(Map<String, Object> params, Map<String, Object> variables) {
+        if (params == null || params.size() == 0) {
+            return variables;
+        }
+        for (String key: params.keySet()) {
+            if (params.get(key) == null) {
+                return variables;
+            }
+        }
+        return params;
    }
 
    private boolean isList(GraphQLType type) {

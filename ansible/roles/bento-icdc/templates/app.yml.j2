@@ -6,7 +6,7 @@ services:
 ################################################
   bento-backend:
     container_name: backend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{build_number}}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{backend_version}}
     environment:
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
@@ -32,7 +32,7 @@ services:
 
   bento-frontend:
     container_name: frontend
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{ build_number }}
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-frontend:{{frontend_version}}
     environment:
       REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"

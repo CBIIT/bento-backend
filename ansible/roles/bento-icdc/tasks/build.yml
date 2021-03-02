@@ -121,7 +121,8 @@
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
-    tag: "{{build_number}}"
+    # tag: "{{build_number}}"
+    tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
@@ -182,7 +183,8 @@
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
-    tag: "{{build_number}}"
+    # tag: "{{build_number}}"
+    tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build

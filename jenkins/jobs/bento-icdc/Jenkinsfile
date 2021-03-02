@@ -215,8 +215,8 @@ pipeline {
                     tier: "${params.Environment}",
                     release: "${params.Release}",
                     project: 'icdc',
-                    frontend_version: "${params.Frontend_Tag}",
-                    backend_version: "${params.Backend_Tag}",
+                    // frontend_version: "${params.Frontend_Tag}",
+                    // backend_version: "${params.Backend_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}"
                     ],

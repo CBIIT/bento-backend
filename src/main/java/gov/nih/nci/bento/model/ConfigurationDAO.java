@@ -1,7 +1,9 @@
 package gov.nih.nci.bento.model;
+import gov.nih.nci.bento.BentoApplication;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -58,7 +60,7 @@ public class ConfigurationDAO {
 	private final String neo4jGraphQLEndPointEnvKey = "NEO4J_GRAPHQL_ENDPOINT";
 
 	@PostConstruct
-	private void readSystemVariables(){
+	public void readSystemVariables(){
 		neo4jGraphQLEndPoint = System.getenv(neo4jGraphQLEndPointEnvKey);
 		neo4jHttpHeaderAuthorization = System.getenv(neo4jHttpHeaderAuthorizationEnvKey);
 		if (neo4jGraphQLEndPoint == null || neo4jHttpHeaderAuthorization == null){

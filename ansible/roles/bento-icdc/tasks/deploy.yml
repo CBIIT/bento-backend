@@ -44,12 +44,12 @@
 
 ##### UPDATED TO REMOVE LOGGING AGENTS - ALL AGENTS WILL USE AGENTS INSTALLED TO THE DOCKER HOST #####
 #- name: start log agents
-- name: stop log agents
-  docker_compose:
-    project_src: /local/content/docker
-    files: log-agents.yml
-    #state: present
-    state: absent
+# - name: stop log agents
+#   docker_compose:
+#     project_src: /local/content/docker
+#     files: log-agents.yml
+#     #state: present
+#     state: absent
 
 # - name: Waits for port 514 
 #   wait_for:

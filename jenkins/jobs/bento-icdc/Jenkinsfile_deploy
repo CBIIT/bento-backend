@@ -22,7 +22,7 @@ def sendSlackMessage() {
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -241,7 +241,8 @@ pipeline {
       steps{
         wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
        withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-       string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
+       string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME'),
+       file(credentialsId: 'ansible_host_file', variable: 'host_file'),
        ]){
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
              sh "echo ${TLS_HOSTNAME}"

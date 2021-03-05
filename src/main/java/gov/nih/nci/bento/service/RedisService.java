@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 
 @Service
 public class RedisService {
-    private static final Logger logger = LogManager.getLogger(GraphQLController.class);
+    private static final Logger logger = LogManager.getLogger(RedisService.class);
 
     @Autowired
     private ConfigurationDAO config;
@@ -24,32 +24,37 @@ public class RedisService {
 
     @PostConstruct
     public boolean connect() {
-        try {
-            String host = config.getRedisHost();
-            int port = config.getRedisPort();
-            useCluster = config.getRedisUseCluster();
-            ttl = config.getRedisTTL();
+        if (config.getRedisEnabled()) {
+            try {
+                String host = config.getRedisHost();
+                int port = config.getRedisPort();
+                useCluster = config.getRedisUseCluster();
+                ttl = config.getRedisTTL();
 
-            if (host.isBlank()) {
-               return false;
-            }
+                if (host.isBlank()) {
+                    return false;
+                }
 
-            if (useCluster) {
-                cluster = new JedisCluster(new HostAndPort(host, port));
-            } else {
-                pool = new JedisPool(host, port);
+                if (useCluster) {
+                    cluster = new JedisCluster(new HostAndPort(host, port));
+                } else {
+                    pool = new JedisPool(host, port);
+                }
+                return true;
+            } catch (JedisException e) {
+                logger.error(e);
+                if (null != pool) {
+                    pool.close();
+                    pool = null;
+                }
+                if (null != cluster) {
+                    cluster.close();
+                    cluster = null;
+                }
+                return false;
             }
-            return true;
-        } catch (JedisException e) {
-            logger.error(e);
-            if (null != pool) {
-                pool.close();
-                pool = null;
-            }
-            if (null != cluster) {
-                cluster.close();
-                cluster = null;
-            }
+        }
+        else{
             return false;
         }
     }

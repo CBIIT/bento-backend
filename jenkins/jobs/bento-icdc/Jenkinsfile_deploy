@@ -234,8 +234,8 @@ pipeline {
         SLACK_URL = "${SLACK_URL}"
         TIER = "${params.Environment}"
         VERSION = "${params.Frontend_Image}"
-        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
-        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+        FE_VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
       }
 
       steps{
@@ -254,8 +254,8 @@ pipeline {
                     tier: "${params.Environment}",
                     release: "${params.Release}",
                     project: 'icdc',
-                    frontend_version: "${params.Frontend_Tag}-${BUILD_NUMBER}",
-                    backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
+                    frontend_version: "${params.Frontend_Tag}",
+                    backend_version: "${params.Backend_Tag}",
                     backend_git_tag: "${params.Backend_Image}",
                     frontend_git_tag: "${params.Frontend_Image}"
                     ],

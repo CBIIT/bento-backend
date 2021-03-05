@@ -1,9 +1,13 @@
 package gov.nih.nci.bento.model;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+
+import javax.annotation.PostConstruct;
 
 /**
  * A Configuration bean read configuration setting from
@@ -14,12 +18,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @PropertySource("classpath:application.properties")
 public class ConfigurationDAO {
 
-	
-	@Value("${neo4j.authorization}")
-	private String neo4jHttpHeaderAuthorization;
-
-	@Value("${neo4j.graphql.endpoint}")
-	private String neo4jGraphQLEndPoint;
+	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 
 	@Value("${neo4j.graphql.endpoint.schema_endpoint}")
 	private String neo4jGraphQLSchemaEndpoint;
@@ -29,25 +28,63 @@ public class ConfigurationDAO {
 
 	@Value("${allow_graphql_query}")
 	private boolean allowGraphQLQuery;
-	
-	
+
 	@Value("${allow_graphql_mutation}")
 	private boolean allowGraphQLMutation;
 
-
 	@Value("${enable.redis}")
 	private Boolean redisEnabled;
+
 	@Value("${redis.use_cluster}")
 	private Boolean redisUseCluster;
-	@Value("${redis.host}")
-	private String redisHost;
+
 	@Value("${redis.port}")
 	private int redisPort;
+
 	@Value("${redis.ttl}")
 	private int redisTTL;
 
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;
+
+	//Variables from environment
+	private String redisHost;
+	private final String redisHostEnvKey = "REDIS_HOST";
+
+	private String neo4jHttpHeaderAuthorization;
+	private final String neo4jHttpHeaderAuthorizationEnvKey = "NEO4J_AUTHORIZATION";
+
+	private String neo4jGraphQLEndPoint;
+	private final String neo4jGraphQLEndPointEnvKey = "NEO4J_GRAPHQL_ENDPOINT";
+
+	@PostConstruct
+	private void readSystemVariables(){
+		neo4jGraphQLEndPoint = System.getenv(neo4jGraphQLEndPointEnvKey);
+		neo4jHttpHeaderAuthorization = System.getenv(neo4jHttpHeaderAuthorizationEnvKey);
+		if (neo4jGraphQLEndPoint == null || neo4jHttpHeaderAuthorization == null){
+			logger.error("An essential environment variable was unable to be read, please verify both" +
+					String.format(
+							" %s and %s are properly set",
+							neo4jGraphQLEndPointEnvKey,
+							neo4jHttpHeaderAuthorizationEnvKey
+					)
+			);
+			System.exit(1);
+		}
+		if (redisEnabled){
+			redisHost = System.getenv(redisHostEnvKey);
+			if (redisHost == null){
+				logger.warn(
+						String.format(
+								"The %s environment variable could not be read, " +
+								"Redis caching functionality will be disabled",
+								redisHostEnvKey)
+				);
+				redisEnabled = false;
+			}
+		}
+
+	}
 
 	
 	public String getNeo4jGraphQLEndPoint() {

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,15 +67,15 @@ public class Neo4jService implements AutoCloseable {
    }
 
    private Map<String, Object> getVariables(Map<String, Object> params, Map<String, Object> variables) {
-        if (params == null || params.size() == 0) {
-            return variables;
-        }
-        for (String key: params.keySet()) {
-            if (params.get(key) == null) {
-                return variables;
+        Map<String, Object> result = new HashMap<>(params);
+        if (variables != null) {
+            for (String key : variables.keySet()) {
+                if (result.containsKey(key)) {
+                    result.put(key, variables.get(key));
+                }
             }
         }
-        return params;
+        return result;
    }
 
    private boolean isList(GraphQLType type) {

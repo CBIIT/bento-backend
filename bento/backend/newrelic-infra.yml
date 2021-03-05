@@ -1,0 +1,6 @@
+license_key: 0cfbfc0eeb64c861e7ab29794d8facbe0a2b2d7d
+log_file: /var/log/newrelic-infra/newrelic-infra.log
+display_name: nciws-d1092-c.nci.nih.gov
+collector_url: https://gov-infra-api.newrelic.com
+identity_url: https://gov-identity-api.newrelic.com
+command_channel_url: https://gov-infrastructure-command-api.newrelic.com

@@ -170,7 +170,12 @@ pipeline {
         VERSION = "${params.Frontend_Image}"
       }
         steps {
-          script {
+          
+		  script {
+            currentBuild.displayName = "Tag: ${VERSION}  Environment: ${params.Environment}"
+            }
+		  
+		  script {
             switch("${params.Environment}") {
               case "sandbox":
                 withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER')

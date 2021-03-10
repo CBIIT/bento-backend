@@ -1,0 +1,75 @@
+---
+# tasks file for newrelic-apm-config
+- name: add newrelic-infra gpg key
+  rpm_key:
+    state: present
+    key: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+
+- name: setup newrelic repo
+  yum_repository:
+    name: newrelic-infra
+    description: Newrelic infrastruture repository
+    baseurl: https://download.newrelic.com/infrastructure_agent/linux/yum/el/7/x86_64/
+
+- name: install newrelic apm packages
+  package:
+    name:
+      - nri-ngix
+    state: installed
+  when: host is webserver
+
+- name: set url fact
+  set_fact:
+    app_url: "{% if tier == 'prod' %}caninecommons.cancer.gov{% else %}caninecommons-{{ tier }}.cancer.gov{% endif %}"
+
+
+- name: create nginx-config.yml file
+  copy:
+    dest: /etc/newrelic-infra/integrations.d/nginx-config.yml
+    content: |
+      instances:
+        - name: nginx-server-metrics
+          command: metrics
+            arguments:
+            status_url: 'http://{{app_url}}/nginx_status'
+            status_module: discover
+            remote_monitoring: true
+          labels:
+            env: '{{tier}}'
+            role: frontend
+  when: host is webserver
+
+- name: install newrelic apm packages
+  package:
+    name:
+      - nri-redis
+    state: installed
+  when: host is neo4j
+
+- name: create redis-config.yml
+  copy:
+    dest: /etc/newrelic-infra/integrations.d/redis-config.yml
+    content: |
+      instances:
+        - name: redis-metrics
+          command: metrics
+          arguments:
+            hostname: {{ansible_fqdn}}
+            port: 6379
+            keys: '{"0":["<KEY_1>"],"1":["<KEY_2>"]}'
+            remote_monitoring: true
+            use_unix_socket: true
+          labels:
+            environment: "{{tier}}"
+
+        - name: redis-inventory
+          command: inventory
+          arguments:
+            hostname: {{ansible_fqdn}}
+            port: 6379
+            remote_monitoring: true
+            use_unix_socket: true
+          labels:
+            environment: {{tier}}
+
+

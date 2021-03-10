@@ -167,7 +167,7 @@ pipeline {
     stage('Set Environment'){
       environment {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
-        VERSION = "${params.Frontend_Image}"
+        VERSION = "${params.Frontend_Tag}"
       }
         steps {
           
@@ -238,7 +238,7 @@ pipeline {
       environment {
         SLACK_URL = "${SLACK_URL}"
         TIER = "${params.Environment}"
-        VERSION = "${params.Frontend_Image}"
+        VERSION = "${params.Frontend_Tag}"
         FE_VERSION = "${params.Frontend_Tag}"
         BE_VERSION = "${params.Backend_Tag}"
       }
@@ -261,8 +261,8 @@ pipeline {
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}",
                     backend_version: "${params.Backend_Tag}",
-                    backend_git_tag: "${params.Backend_Image}",
-                    frontend_git_tag: "${params.Frontend_Image}"
+                    backend_git_tag: "${params.Backend_Tag}",
+                    frontend_git_tag: "${params.Frontend_Tag}"
                     ],
                 become: true,
                 hostKeyChecking: false,

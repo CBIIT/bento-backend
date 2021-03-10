@@ -1,0 +1,10 @@
+instances:
+  - name: nginx-server-metrics
+    command: metrics
+    arguments:
+      status_url: 'http://{{url}}/nginx_status'
+      status_module: discover
+      remote_monitoring: true
+    labels:
+      env: '{{tier}}'
+      role: frontend

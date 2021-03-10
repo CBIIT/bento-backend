@@ -25,6 +25,8 @@ workspace: "{{ lookup('env','WORKSPACE') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"
 docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+neo4j_bearer: "{{ lookup('env','BEARER') }}"
 region: us-east-1
 newrelic_license_key: "{{ lookup('env','NEWRELIC_LIC_KEY')}}"
 sumo_access_id: "{{ lookup('env','SUMO_ACCESS_ID')}}"

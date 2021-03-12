@@ -1,0 +1,10 @@
+---
+- name: deploy stage of bento pipeline
+  hosts: "{{tier}}"
+  gather_facts: yes
+    
+  tasks:
+    - name: deploy new relic apm integrations
+      include_role:
+        name: newrelic-apm-integration
+  

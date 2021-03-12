@@ -1,0 +1,114 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'demo,dev,qa,stage,prod' )
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+
+  			checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+        
+        }
+ 
+  	}
+  	stage('deploy'){
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+        TIER = "${params.Environment}"
+      }
+
+      steps{
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+       withCredentials([file(credentialsId: 'ansible_inventory', variable: 'hosts')])
+       {
+             sh "cp ${hosts} ${WORKSPACE}/icdc-devops/ansible/inventory.yml"
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/apm-integrations.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/inventory.yml', 
+                credentialsId: 'commonsdocker',
+                extraVars: [tier: "${params.Environment}"],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+        }
+           
+          
+        }
+      }
+    }
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+
+    }
+	
+	cleanup {
+	
+		cleanWs()
+    
+	}
+  }
+}

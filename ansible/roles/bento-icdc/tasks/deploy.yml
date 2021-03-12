@@ -36,31 +36,9 @@
     src: "{{item.src}}"
     dest: "{{item.dest}}"
   loop:
-    - {src: 'log-agents.yml.j2',dest: '/local/content/docker/log-agents.yml'}
     - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
     - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
-    - {src: 'log-agents.service.j2',dest: '/etc/systemd/system/log-agents.service'}
     - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
-
-##### UPDATED TO REMOVE LOGGING AGENTS - ALL AGENTS WILL USE AGENTS INSTALLED TO THE DOCKER HOST #####
-#- name: start log agents
-# - name: stop log agents
-#   docker_compose:
-#     project_src: /local/content/docker
-#     files: log-agents.yml
-#     #state: present
-#     state: absent
-
-# - name: Waits for port 514 
-#   wait_for:
-#     host: 0.0.0.0
-#     port: 514
-#     delay: 5
-#     state: started
-
-#- name: Pause to allow updates to process
-#  pause:
-#    seconds: 45
 
 - name: start frontend and backend containers
   docker_compose:
@@ -74,23 +52,14 @@
 
 - name: enable log-agents and app.timer services
   service:
-    name: "{{item}}"
+    name: app.timer
     enabled: yes
-  loop:
-    #- log-agents.service
-    - app.timer
 
 - name: ensure app.service is disabled
   service:
-    name: "{{item}}"
+    name: app.service
     enabled: no
-  loop:
-    - log-agents.service
-    - app.service
 
-- name: Pause to allow updates to process
-  pause:
-    seconds: 15
 
 - name: "wait for {{ frontend_url }} to become available"
   uri:

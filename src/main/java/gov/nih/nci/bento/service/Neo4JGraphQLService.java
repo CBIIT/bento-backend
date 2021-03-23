@@ -89,6 +89,7 @@ public class Neo4JGraphQLService {
 					.header("Authorization", config.getNeo4jHttpHeaderAuthorization()).header("accept", "application/json")
 					.body(graphQLQuery).asJson();
 			if (jsonResponse.getStatus() != 200) {
+				System.out.println(jsonResponse.getRawBody().toString());
 				throw new ApiError(HttpStatus.resolve(jsonResponse.getStatus()), "Exception occurred while querying database service", jsonResponse.getStatusText());
 			}
 		} catch (UnirestException e) {

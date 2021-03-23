@@ -1,13 +1,9 @@
 package gov.nih.nci.bento.model;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-
-import javax.annotation.PostConstruct;
 
 /**
  * A Configuration bean read configuration setting from
@@ -18,7 +14,11 @@ import javax.annotation.PostConstruct;
 @PropertySource("classpath:application.properties")
 public class ConfigurationDAO {
 
-	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
+	@Value("${NEO4J_AUTHORIZATION}")
+	private String neo4jHttpHeaderAuthorization;
+
+	@Value("${NEO4J_GRAPHQL_ENDPOINT}")
+	private String neo4jGraphQLEndPoint;
 
 	@Value("${neo4j.graphql.endpoint.schema_endpoint}")
 	private String neo4jGraphQLSchemaEndpoint;
@@ -38,6 +38,9 @@ public class ConfigurationDAO {
 	@Value("${redis.use_cluster}")
 	private Boolean redisUseCluster;
 
+	@Value("${REDIS_HOST}")
+	private String redisHost;
+
 	@Value("${redis.port}")
 	private int redisPort;
 
@@ -47,46 +50,20 @@ public class ConfigurationDAO {
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;
 
-	//Variables from environment
-	private String redisHost;
-	private final String redisHostEnvKey = "REDIS_HOST";
+	@Value("${redis.filter.enable}")
+	private Boolean redisFilterEnabled;
 
-	private String neo4jHttpHeaderAuthorization;
-	private final String neo4jHttpHeaderAuthorizationEnvKey = "NEO4J_AUTHORIZATION";
+	@Value("${redis.init.queries}")
+	private String redisInitQueries;
 
-	private String neo4jGraphQLEndPoint;
-	private final String neo4jGraphQLEndPointEnvKey = "NEO4J_GRAPHQL_ENDPOINT";
+	@Value("${redis.filter.queries}")
+	private String redisFilterQueries;
 
-	@PostConstruct
-	public void readSystemVariables(){
-		neo4jGraphQLEndPoint = System.getenv(neo4jGraphQLEndPointEnvKey);
-		neo4jHttpHeaderAuthorization = System.getenv(neo4jHttpHeaderAuthorizationEnvKey);
-		if (neo4jGraphQLEndPoint == null || neo4jHttpHeaderAuthorization == null){
-			logger.error("An essential environment variable was unable to be read, please verify both" +
-					String.format(
-							" %s and %s are properly set",
-							neo4jGraphQLEndPointEnvKey,
-							neo4jHttpHeaderAuthorizationEnvKey
-					)
-			);
-			System.exit(1);
-		}
-		if (redisEnabled){
-			redisHost = System.getenv(redisHostEnvKey);
-			if (redisHost == null){
-				logger.warn(
-						String.format(
-								"The %s environment variable could not be read, " +
-								"Redis caching functionality will be disabled",
-								redisHostEnvKey)
-				);
-				redisEnabled = false;
-			}
-		}
-
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+		return new PropertySourcesPlaceholderConfigurer();
 	}
 
-	
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
 	}
@@ -135,11 +112,6 @@ public class ConfigurationDAO {
 		this.allowGraphQLMutation = allowGraphQLMutation;
 	}
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
-
 	public String getRedisHost() {
 		return redisHost;
 	}
@@ -180,7 +152,35 @@ public class ConfigurationDAO {
 		this.redisEnabled = redisEnabled;
 	}
 
-	public String getBentoApiVersion(){ return bentoApiVersion; }
+	public String getBentoApiVersion() {
+		return bentoApiVersion;
+	}
 
-	public void setBentoApiVersion(String bentoApiVersion){ this.bentoApiVersion = bentoApiVersion; }
+	public void setBentoApiVersion(String bentoApiVersion) {
+		this.bentoApiVersion = bentoApiVersion;
+	}
+
+	public Boolean getRedisFilterEnabled() {
+		return redisFilterEnabled;
+	}
+
+	public void setRedisFilterEnabled(Boolean redisFilterEnabled) {
+		this.redisFilterEnabled = redisFilterEnabled;
+	}
+
+	public String getRedisInitQueries() {
+		return redisInitQueries;
+	}
+
+	public void setRedisInitQueries(String redisInitQueries) {
+		this.redisInitQueries = redisInitQueries;
+	}
+
+	public String getRedisFilterQueries() {
+		return redisFilterQueries;
+	}
+
+	public void setRedisFilterQueries(String redisFilterQueries) {
+		this.redisFilterQueries = redisFilterQueries;
+	}
 }

@@ -31,6 +31,7 @@ public class RedisService {
     private Boolean useCluster;
     private int ttl;
     private boolean isInitialized;
+    private boolean groupListsInitialized;
     private HashSet<String> groups = new HashSet<>();
 
     @PostConstruct
@@ -147,6 +148,14 @@ public class RedisService {
             logger.info("Intersection stored: "+newKey);
         }
         return output;
+    }
+
+    public boolean isGroupListsInitialized() {
+        return groupListsInitialized;
+    }
+
+    public void setGroupListsInitialized(boolean groupListsInitialized) {
+        this.groupListsInitialized = groupListsInitialized;
     }
 
     private Set<String> getFromCache(String[] keys, RETURN_TYPE operation){

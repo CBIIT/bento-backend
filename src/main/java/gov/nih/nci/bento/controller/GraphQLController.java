@@ -115,8 +115,8 @@ public class GraphQLController {
 				}
 				//Execute service request
 				String serviceResponse = null;
-				//Check if the request contains service queries
-				if (graphQLWrapper.hasServiceQueries()) {
+				//Check if the request contains service queries and filter lists have been initialized
+				if (graphQLWrapper.hasServiceQueries() && redisService.isGroupListsInitialized()) {
 					//Get maps of filter parameters for each service query
 					HashMap<String, HashMap<String, String[]>> filterParamsMap = graphQLWrapper.getFilterParameters();
 					//Initialize data JSON object to hold query results

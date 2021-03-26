@@ -1,0 +1,19 @@
+# This list contains the names of the queries that will be run to initialize the filter sets in redis
+# Each of these queries must have a GroupList return type
+queries:
+  - subjectList
+  - subjectListByProgram
+  - subjectListByStudy
+  - subjectListByDiagnoses
+  - subjectListByRecurrenceScore
+  - subjectListByTumorSize
+  - subjectListByTumorGrade
+  - subjectListByErStatus
+  - subjectListByPrStatus
+  - subjectListByChemotherapyRegimen
+  - subjectListByEndocrineTherapy
+  - subjectListByMenopauseStatus
+  - subjectListByTissueType
+  - subjectListByTissueComposition
+  - subjectListByFileAssociation
+  - subjectListByFileType

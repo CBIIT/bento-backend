@@ -14,7 +14,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 @PropertySource("classpath:application.properties")
 public class ConfigurationDAO {
 
-	
 	@Value("${neo4j.authorization}")
 	private String neo4jHttpHeaderAuthorization;
 
@@ -29,27 +28,42 @@ public class ConfigurationDAO {
 
 	@Value("${allow_graphql_query}")
 	private boolean allowGraphQLQuery;
-	
-	
+
 	@Value("${allow_graphql_mutation}")
 	private boolean allowGraphQLMutation;
 
-
 	@Value("${enable.redis}")
 	private Boolean redisEnabled;
+
 	@Value("${redis.use_cluster}")
 	private Boolean redisUseCluster;
+
 	@Value("${redis.host}")
 	private String redisHost;
+
 	@Value("${redis.port}")
 	private int redisPort;
+
 	@Value("${redis.ttl}")
 	private int redisTTL;
 
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;
 
-	
+	@Value("${redis.filter.enable}")
+	private Boolean redisFilterEnabled;
+
+	@Value("${redis.init.queries}")
+	private String redisInitQueries;
+
+	@Value("${redis.filter.queries}")
+	private String redisFilterQueries;
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
+
 	public String getNeo4jGraphQLEndPoint() {
 		return neo4jGraphQLEndPoint;
 	}
@@ -98,11 +112,6 @@ public class ConfigurationDAO {
 		this.allowGraphQLMutation = allowGraphQLMutation;
 	}
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
-
 	public String getRedisHost() {
 		return redisHost;
 	}
@@ -143,7 +152,35 @@ public class ConfigurationDAO {
 		this.redisEnabled = redisEnabled;
 	}
 
-	public String getBentoApiVersion(){ return bentoApiVersion; }
+	public String getBentoApiVersion() {
+		return bentoApiVersion;
+	}
 
-	public void setBentoApiVersion(String bentoApiVersion){ this.bentoApiVersion = bentoApiVersion; }
+	public void setBentoApiVersion(String bentoApiVersion) {
+		this.bentoApiVersion = bentoApiVersion;
+	}
+
+	public Boolean getRedisFilterEnabled() {
+		return redisFilterEnabled;
+	}
+
+	public void setRedisFilterEnabled(Boolean redisFilterEnabled) {
+		this.redisFilterEnabled = redisFilterEnabled;
+	}
+
+	public String getRedisInitQueries() {
+		return redisInitQueries;
+	}
+
+	public void setRedisInitQueries(String redisInitQueries) {
+		this.redisInitQueries = redisInitQueries;
+	}
+
+	public String getRedisFilterQueries() {
+		return redisFilterQueries;
+	}
+
+	public void setRedisFilterQueries(String redisFilterQueries) {
+		this.redisFilterQueries = redisFilterQueries;
+	}
 }

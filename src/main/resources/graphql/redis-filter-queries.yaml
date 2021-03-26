@@ -1,0 +1,3 @@
+# This list contains the names of the queries that will be recognized as redis filter queries
+queries:
+  - redisFilter

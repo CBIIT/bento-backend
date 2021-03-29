@@ -1,9 +1,0 @@
----
-- name: setup sumologic and newrelic agents
-  hosts: agent_setup
-  become: yes
-
-  roles:
-    - sumologic-icdc
-    - sumologic-journalctl
-    - newrelic-icdc

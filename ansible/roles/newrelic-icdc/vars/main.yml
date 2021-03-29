@@ -1,9 +1,7 @@
 ---
 # vars file for roles/newrelic
-newrelic_license_key: "{{ newrelic_key }}"
 hostname: "{{ hostname }}"
-platform: cloudone
-collector_name: "{{ project }}-{{ platform }}-{{ env }}-{{ app_name }}"
+collector_name: "{{ project }}-{{ env }}-{{ hostname }}"
 newrelic_license_key: "{{ newrelic_license_key }}"
 newrelic_collector_url: "https://gov-infra-api.newrelic.com"
 newrelic_identity_url: "https://gov-identity-api.newrelic.com"

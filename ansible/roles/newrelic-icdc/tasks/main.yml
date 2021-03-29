@@ -24,11 +24,11 @@
     src: newrelic-infra.yml.j2
     dest: /etc/newrelic-infra.yml
 
-#- name: add nri-agent to docker group
-#  user: 
-#    name: nri-agent
-#    groups: docker
-#    append: yes
+- name: add nri-agent to docker group
+  user: 
+    name: nri-agent
+    groups: docker
+    append: yes
 
 - name: enable and start newrelic-infra service
   service:

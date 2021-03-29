@@ -64,5 +64,26 @@
       "sourceType": "LocalFile"
     }
 {% endfor %}
+{% for log in container_logs %}
+    ,
+    {
+      "name": "{{ log.name }}",
+      "description": "{{ log.description }}",
+      "category": "{{ log.category }}",
+      "multilineProcessingEnabled": false,
+      "forceTimeZone": true,
+      "timeZone": "{{ timezone }}",
+      "uri": "unix:///var/run/docker.sock",
+      "sourceType": "{{ }}"
+      "specifiedContainers": [],
+      "allContainers": true,
+      "certPath": "",
+	  "collectEvents": true,
+      "pollInterval": "{{ }}"
+      "automaticDateParsing": true,
+      "cutoffTimestamp": 0
+
+    }
+{% endfor %}
   ]
 }

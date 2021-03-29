@@ -1,0 +1,235 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'docker-ansible'
+		}
+	}
+
+	parameters {
+
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa' )
+
+//	The UI_Instances parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The GUI definition for this parameter should follow Environment and use the following values:
+//	
+//	Script:
+//        if (env.equals("dev"))
+//        {
+//            return ["nciws-d1092-c,nciws-d2001-c"]
+//        }
+//        else if (env.equals("qa"))
+//        {
+//            return ["nciws-q2024-c,nciws-q2025-c"]
+//        }
+//    else
+//        {
+//          return ["You must select a valid environment"]
+//        }
+//		
+//	Fallback Script:
+//		None
+//
+//	Choice Type:
+//		Check Boxes
+//
+//	Referenced parameters:
+//		Environment
+
+//	The DB_Instances parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The GUI definition for this parameter should follow Environment and use the following values:
+//	
+//	Script:
+//        if (env.equals("dev"))
+//        {
+//            return ["ncias-d2224-c"]
+//        }
+//        else if (env.equals("qa"))
+//        {
+//            return ["ncias-q2251-c"]
+//        }
+//    else
+//        {
+//          return ["You must select a valid environment"]
+//        }
+//		
+//	Fallback Script:
+//		None
+//		
+//	Choice Type:
+//		Check Boxes
+//
+//	Referenced parameters:
+//		Environment
+
+  }
+  
+  options {
+  	ansiColor('xterm')
+  }
+  
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  
+  stages{
+  	stage('checkout'){
+  		steps {
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+
+  	stage('DB Agents'){
+      environment {
+        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+        }
+ 		steps {
+ 		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+
+		  withCredentials([string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+          string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+          string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LICENSE_KEY')
+          ])
+          {
+
+          script {
+            sh label: 'database-hosts', script: '''#!/bin/bash
+              echo "Creating inventory file"
+              echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+              if [[ $(wc -l < ${DB_Instances} | cut -d ',' -f2 ) -ge 0 ]];then
+                echo ${DB_Instances} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                echo ${DB_Instances} | cut -d ',' -f2 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              else
+                echo ${DB_Instances} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              fi
+
+              '''
+
+		  }
+
+          ansiblePlaybook(  			
+            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
+              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+			    extraVars: [
+                    env: "${params.Environment}",
+					app_type: 'db',
+                    project: 'icdc',
+					log_path: '/var/lib/neo4j/logs',
+					sumo_access_id: "${SUMO_ACCESS_ID}",
+					sumo_access_key: "${SUMO_ACCESS_KEY}",
+					newrelic_license_key: "${NEWRELIC_LICENSE_KEY}"
+                    ],
+            	colorized: true)
+		  }	
+
+ 		  }
+ 		}
+  	}
+
+  	stage('UI Agents'){
+      environment {
+        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+        }
+ 		steps {
+ 		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+
+          withCredentials([string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+          string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+          string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LICENSE_KEY')
+          ])
+          {
+		  
+		  script {
+            sh label: 'ui-hosts', script: '''#!/bin/bash
+              echo "Creating inventory file"
+              echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+              if [[ $(wc -l < ${UI_Instances} | cut -d ',' -f2 ) -ge 0 ]];then
+                echo ${UI_Instances} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                echo ${UI_Instances} | cut -d ',' -f2 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              else
+                echo ${UI_Instances} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              fi
+
+              '''
+
+		  }
+
+          ansiblePlaybook(  			
+            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
+              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                extraVars: [
+                  env: "${params.Environment}",
+				  app_type: 'app',
+                  project: 'icdc',
+				  log_path: '/local/content/k9dc',
+				  sumo_access_id: "${SUMO_ACCESS_ID}",
+				  sumo_access_key: "${SUMO_ACCESS_KEY}",
+				  newrelic_license_key: "${NEWRELIC_LICENSE_KEY}"
+                  ],
+            	colorized: true)
+		  }
+
+ 		  }
+ 		}
+  	}
+
+  }
+  post {
+    always {
+      sendSlackMessage()
+      cleanWs()
+    }
+  }
+}

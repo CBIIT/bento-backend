@@ -130,6 +130,9 @@ pipeline {
   	}
 
   	stage('DB Agents'){
+      when {
+        expression { params.DB_Instances }
+        }
       environment {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
         }
@@ -178,6 +181,9 @@ pipeline {
   	}
 
   	stage('UI Agents'){
+      when {
+        expression { params.UI_Instances }
+        }
       environment {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
         }

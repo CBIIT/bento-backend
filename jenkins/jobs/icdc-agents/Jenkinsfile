@@ -135,7 +135,7 @@ pipeline {
         }
       environment {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
-		ANSIBLE_HOST_KEY_CHECKING=False
+        ANSIBLE_HOST_KEY_CHECKING = 'False'
         }
  		steps {
 		  node('docker-ansible') {

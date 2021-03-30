@@ -135,63 +135,48 @@ pipeline {
         }
       environment {
         ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
-        ANSIBLE_HOST_KEY_CHECKING = 'False'
         }
  		steps {
-		  node('docker-ansible') {
-		    checkout( poll: false, 
-				changelog:false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
-				
- 		    wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+          wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 
-            withCredentials([string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
-            string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
-            string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LICENSE_KEY')
-            ])
-            {
+          withCredentials([string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+          string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+          string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LICENSE_KEY')
+          ])
+          {
 
-            script {
-              sh label: 'database-hosts', script: '''#!/bin/bash
-                echo "Creating inventory file"
-                echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+          script {
+            sh label: 'database-hosts', script: '''#!/bin/bash
+              echo "Creating inventory file"
+              echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
 
-                if [[ $(wc -l < ${DB_Instances} | cut -d ',' -f2 ) -ge 0 ]];then
-                  echo ${DB_Instances} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
-                  echo ${DB_Instances} | cut -d ',' -f2 >> ${WORKSPACE}/icdc-devops/ansible/hosts
-                else
-                  echo ${DB_Instances} >> ${WORKSPACE}/icdc-devops/ansible/hosts
-                fi
+              if [[ $(wc -l < ${DB_Instances} | cut -d ',' -f2 ) -ge 0 ]];then
+                echo ${DB_Instances} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                echo ${DB_Instances} | cut -d ',' -f2 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              else
+                echo ${DB_Instances} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              fi
 
-                '''
+              '''
 
-            }
+          }
 
-            ansiblePlaybook(  			
-              playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup-icdc.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-                  extraVars: [
-                    env: "${params.Environment}",
-					app_type: 'db',
-                    project: 'icdc',
-					log_path: '/var/log/neo4j/logs',
-					sumo_access_id: "${SUMO_ACCESS_ID}",
-					sumo_access_key: "${SUMO_ACCESS_KEY}",
-					newrelic_license_key: "${NEWRELIC_LICENSE_KEY}"
-                    ],
-            	  colorized: true)
-		    }	
+          ansiblePlaybook(  			
+            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup-icdc.yml', 
+              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+              credentialsId: 'commonsdocker',
+                extraVars: [
+                  env: "${params.Environment}",
+                  app_type: 'db',
+                  project: 'icdc',
+                  log_path: '/var/log/neo4j/logs',
+                  sumo_access_id: "${SUMO_ACCESS_ID}",
+                  sumo_access_key: "${SUMO_ACCESS_KEY}",
+                  newrelic_license_key: "${NEWRELIC_LICENSE_KEY}"
+                  ],
+            	colorized: true)
 
- 		    }
+ 		  }
  		  }
 		}
   	}
@@ -230,7 +215,8 @@ pipeline {
 
           ansiblePlaybook(  			
             playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup-icdc.yml', 
-              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+              credentialsId: 'commonsdocker',			  
                 extraVars: [
                   env: "${params.Environment}",
 				  app_type: 'app',

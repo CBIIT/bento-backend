@@ -2,7 +2,7 @@
 # vars file for sumologic
 config: /opt/SumoCollector/config
 platform: cloudone
-collector_name: "{{ project }}-{{ env }}-{{ hostname }}"
+collector_name: "{{ project }}-{{ env }}-{{ inventory_hostname }}"
 sumo_access_id: "{{ sumo_access_id }}"
 sumo_access_key: "{{ sumo_access_key }}"
 tomcat_logs:

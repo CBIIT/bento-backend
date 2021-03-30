@@ -1,7 +1,7 @@
 ---
 # vars file for roles/newrelic
-hostname: "{{ hostname }}"
-collector_name: "{{ project }}-{{ env }}-{{ hostname }}"
+hostname: "{{ inventory_hostname }}"
+collector_name: "{{ project }}-{{ env }}-{{ inventory_hostname }}"
 newrelic_license_key: "{{ newrelic_license_key }}"
 newrelic_collector_url: "https://gov-infra-api.newrelic.com"
 newrelic_identity_url: "https://gov-identity-api.newrelic.com"

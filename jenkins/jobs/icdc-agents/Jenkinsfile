@@ -159,7 +159,7 @@ pipeline {
 		  }
 
           ansiblePlaybook(  			
-            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
+            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup-icdc.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 			    extraVars: [
                     env: "${params.Environment}",
@@ -207,7 +207,7 @@ pipeline {
 		  }
 
           ansiblePlaybook(  			
-            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
+            playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup-icdc.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
                   env: "${params.Environment}",

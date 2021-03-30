@@ -74,12 +74,12 @@
       "forceTimeZone": true,
       "timeZone": "{{ timezone }}",
       "uri": "unix:///var/run/docker.sock",
-      "sourceType": "{{ }}"
+      "sourceType": "{{ log.source }}"
       "specifiedContainers": [],
       "allContainers": true,
       "certPath": "",
 	  "collectEvents": true,
-      "pollInterval": "{{ }}"
+      "pollInterval": "{{ log.poll }}"
       "automaticDateParsing": true,
       "cutoffTimestamp": 0
 

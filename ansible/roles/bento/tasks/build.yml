@@ -69,6 +69,12 @@
     src: "{{workspace}}/src/main/resources/application.properties.j2"
     dest: "{{workspace}}/src/main/resources/application.properties"
 
+- name: copy graphql schema file
+  copy:
+    #remote_src: yes
+    src: "{{workspace}}/bento-frontend/graphql/bento-extended.graphql"
+    dest: "{{workspace}}/src/main/resources/graphql/bento-extended.graphql"
+
 - name: build springboot code
   command: mvn package -DskipTests
   args:

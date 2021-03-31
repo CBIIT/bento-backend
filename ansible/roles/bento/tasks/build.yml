@@ -51,14 +51,6 @@
   debug:
     msg: "{{ frontend_tag.stdout_lines }}"
 
-#### bento-icdc changes #########################################################################################################
-- name: copy schema from frontend to resources for icdc environment
-  template:
-    src: "{{workspace}}/bento-frontend/graphql/{{schema_file}}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{schema_file}}"
-  when: tier == "icdc"
-#################################################################################################################################
-
 - name: remove the application_example.properties file 
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"
@@ -69,11 +61,10 @@
     src: "{{workspace}}/src/main/resources/application.properties.j2"
     dest: "{{workspace}}/src/main/resources/application.properties"
 
-- name: copy graphql schema file
-  copy:
-    #remote_src: yes
-    src: "{{workspace}}/bento-frontend/graphql/bento-extended.graphql"
-    dest: "{{workspace}}/src/main/resources/graphql/bento-extended.graphql"
+- name: copy schema from frontend to resources
+  template:
+    src: "{{workspace}}/bento-frontend/graphql/{{schema_file}}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{schema_file}}"
 
 - name: build springboot code
   command: mvn package -DskipTests

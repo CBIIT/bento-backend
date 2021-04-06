@@ -23,14 +23,6 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
-#### bento-icdc changes #########################################################################################################
-- name: set icdc environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "icdc"
-#################################################################################################################################
-
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"

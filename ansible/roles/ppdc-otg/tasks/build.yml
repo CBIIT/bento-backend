@@ -29,17 +29,6 @@
     dest: "{{workspace}}/ppdc-otg-frontend/nginx-entrypoint.sh"
     mode: 0755
 
-
-- name: show {{workspace}}/ppdc-otg-frontend
-  command: ls -l
-  args:
-    chdir: "{{workspace}}"
-  register: workspace
-
-- name: show workspace
-  debug:
-    msg: "{{workspace}}"
-
 - name: run yarn install in {{workspace}}/ppdc-otg-frontend
   command: yarn install
   args:

@@ -170,7 +170,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
           ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/ppdc-otg-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             			colorized: true) 
  				}

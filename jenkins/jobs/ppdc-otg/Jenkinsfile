@@ -1,0 +1,211 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'master', 
+       name: 'Frontend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/ppdc-otg-frontend.git')
+
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {				
+  		
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'ppdc-otg-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/ppdc-otg-frontend.git']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+    stage('Set Environment'){
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+        VERSION = "${params.Frontend_Tag}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "dev"
+                  
+                  
+                 
+                }
+              break
+              case "qa":
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "qa"
+                  
+                 
+                  
+                }
+              break
+              case "perf":
+                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_PERF_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "perf"
+                  
+                  
+                  
+                }
+              break
+              case "prod":
+                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "prod"
+                  
+                  
+                  
+                }
+              break
+              case "icdc":
+                withCredentials([string(credentialsId: 'icdc_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_ICDC_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "icdc"
+            
+                  
+                  
+                }
+			  break
+              default:
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "dev"
+            
+                  
+                  
+                }
+              break
+            }
+          }
+        }
+    }
+  	stage('build'){
+      environment {
+       VERSION = "${params.Branch_Tag}"
+      }
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+          ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
+ 		}
+  	}
+  	// stage('deploy'){
+	  // environment {
+   //     VERSION = "${params.Frontend_Tag}"
+   //     FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+   //     BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+   //    }
+  	// 	steps{
+  	// 		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  	// 			ansiblePlaybook( 
+   //          		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
+   //          		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+   //          		colorized: true)
+  	// 		}
+  	// 	}
+  	// }
+  }
+  post {
+
+	always {
+
+      sendSlackMessage()
+
+    }
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

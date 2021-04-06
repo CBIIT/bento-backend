@@ -1,0 +1,274 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,stage,prod' )
+	extendedChoice(
+        name: 'Region', 
+        defaultValue: 'us-east-1', 
+        description: 'Choose aws region to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'us-east-1,us-west-1' )
+
+//	gitParameter(branchFilter: 'origin/(.*)', 
+//        defaultValue: 'integration', 
+//        name: 'Frontend_Tag', 
+//        type: 'PT_BRANCH_TAG',
+//        quickFilterEnabled: false, 
+//        selectedValue: 'DEFAULT', 
+//        sortMode: 'ASCENDING_SMART', 
+//        tagFilter: '*', 
+//        useRepository: 'https://github.com/CBIIT/bento-frontend')
+//
+//	The Frontend_Tag parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The GUI definition for this parameter should follow Environment and use the following values:
+//	
+//	Script:
+//		env_value = Environment
+//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
+//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
+//		List tagnames = tags.collect{ '' + it + '' }
+//
+//		if(env_value.equalsIgnoreCase("dev")) {
+//		  for(int i=0; i < tagnames.size(); i++) {
+//			if(tagnames.get(i).equalsIgnoreCase("integration")) {
+//			  new_value = tagnames[i] + ':selected'
+//			  tagnames.set(i, new_value);
+//			  }
+//			}
+//		  } else {
+//			for(int i=0; i < tagnames.size(); i++) {
+//			  if(tagnames.get(i).equalsIgnoreCase("master")) {
+//				new_value = tagnames[i] + ':selected'
+//				tagnames.set(i, new_value);
+//				}
+//			  }
+//			}
+//
+//		return tagnames
+//		
+//	Fallback Script:
+//		return ['integration']
+//		
+//		NOTE: this sets the default frontend branch to "integration" and is required for builds triggered from SCM polling.
+//		
+//	Referenced parameters:
+//		Environment
+
+//    gitParameter(branchFilter: 'origin/(.*)', 
+//        defaultValue: 'Integration', 
+//        name: 'Backend_Tag', 
+//        type: 'PT_BRANCH_TAG',
+//        quickFilterEnabled: false, 
+//        selectedValue: 'DEFAULT', 
+//        sortMode: 'ASCENDING_SMART', 
+//        tagFilter: '*', 
+//        useRepository: 'https://github.com/CBIIT/bento-backend')
+//
+//	The Backend_Tag parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
+//	The GUI definition for this parameter should follow Frontend_Tag and use the following values:
+//	
+//	Script:
+//		front_tag = Frontend_Tag
+//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
+//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
+//		List tagnames = tags.collect{ '' + it + '' }
+//
+//		for(int i=0; i < tagnames.size(); i++) {
+//		  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
+//			new_value = tagnames[i] + ':selected'
+//			tagnames.set(i, new_value);
+//			}
+//		  }
+//
+//		for(int i=0; i < tagnames.size(); i++) {
+//		  if(tagnames.get(i).equalsIgnoreCase("Integration")) {
+//			new_value = tagnames[i] + ':selected'
+//			tagnames.set(i, new_value);
+//			}
+//		  }
+//
+//		return tagnames
+//		
+//	Fallback Script:
+//		return ['Integration']
+//		
+//		NOTE: this sets the default backend branch to "Integration" and is required for builds triggered from SCM polling. The branch defined here should math the default for Frontend_Tag
+//		
+//	Referenced parameters:
+//		Frontend_Tag
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+//			git branch: "${params.Backend_Tag}",
+//				url: 'https://github.com/CBIIT/bento-backend'
+				
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Backend_Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/bento-backend']]])
+
+//			dir('bento-frontend'){
+//				git branch: "${params.Frontend_Tag}",
+//				url: 'https://github.com/CBIIT/bento-frontend'
+//				}
+
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+    stage('Set Environment'){
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "dev"
+                 
+                }
+              break
+              case "qa":
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "qa"
+                  
+                }
+              break
+              case "stage":
+                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_STAGE_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "stage"
+                  
+                }
+              break
+              case "prod":
+                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "prod"
+                  
+                }
+              break
+              default:
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.NEO4J_IP    = "${NEO4J_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "dev"
+                  
+                }
+              break
+            }
+          }
+        }
+    }
+  	stage('build'){
+      environment {
+        TAG = "${params.Backend_Tag}"
+      }
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+          ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 				}
+ 			}
+ 		}
+  	}
+  	stage('deploy'){
+  		steps{
+  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy-dev.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		colorized: true)
+  			}
+  		}
+  	}
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+    }
+  }
+}

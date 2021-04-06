@@ -34,31 +34,31 @@
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/ppdc-otg/nginx-entrypoint.sh"
+    dest: "{{workspace}}/ppdc-otg-frontend/nginx-entrypoint.sh"
     mode: 0755
 
-- name: run yarn install in {{workspace}}/ppdc-otg
+- name: run yarn install in {{workspace}}/ppdc-otg-frontend
   command: yarn install
   args:
-    chdir: "{{workspace}}/ppdc-otg"
+    chdir: "{{workspace}}/ppdc-otg-frontend"
 
-- name: run yarn install in {{workspace}}/ppdc-otg
+- name: run yarn install in {{workspace}}/ppdc-otg-frontend
   command: yarn install
   args:
-    chdir: "{{workspace}}/ppdc-otg"
-    
-- name: run yarn build in {{workspace}}/ppdc-otg
+    chdir: "{{workspace}}/ppdc-otg-frontend"
+
+- name: run yarn build in {{workspace}}/ppdc-otg-frontend
   command: yarn install
   args:
-    chdir: "{{workspace}}/ppdc-otg"
+    chdir: "{{workspace}}/ppdc-otg-frontend"
 
 - name: copy env to dist
   copy:
     src: inject.template.js
-    dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
+    dest: "{{workspace}}/ppdc-otg-frontend/build/inject.template.js"
     mode: 0755
           
-- name: build cbiitssrepo/ppdc-otg image
+- name: build cbiitssrepo/ppdc-otg-frontend image
   docker_image:
     build:
       path: "{{workspace}}/ppdc-otg-frontend"
@@ -71,7 +71,7 @@
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-frontend image
+- name: Add tag latest to cbiitssrepo/ppdc-otg-frontend image
   docker_image:
     name: "cbiitssrepo/ppdc-otg-frontend:{{frontend_version}}-{{build_number}}"
     repository: cbiitssrepo/ppdc-otg-frontend:latest

@@ -7,6 +7,9 @@ localhost
 [bento]
 localhost
 
+[ppdc-otg]
+localhost
+
 [gke]
 localhost
 
@@ -14,6 +17,10 @@ localhost
 localhost
 
 [bento:vars]
+ansible_python_interpreter=/usr/bin/python3
+
+
+[ppdc-otg:vars]
 ansible_python_interpreter=/usr/bin/python3
 
 [loader:vars]

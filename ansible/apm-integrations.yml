@@ -4,6 +4,8 @@
   gather_facts: yes
     
   tasks:
+    - debug:
+        msg: "{{groups}}"
     - name: deploy new relic apm integrations
       include_role:
         name: newrelic-apm-integration

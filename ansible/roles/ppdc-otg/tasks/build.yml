@@ -40,7 +40,7 @@
     chdir: "{{workspace}}/ppdc-otg-frontend"
 
 - name: run yarn build in {{workspace}}/ppdc-otg-frontend
-  command: yarn install
+  command: yarn build
   args:
     chdir: "{{workspace}}/ppdc-otg-frontend"
 

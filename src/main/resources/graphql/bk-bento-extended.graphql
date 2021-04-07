@@ -991,9 +991,9 @@ type QueryType {
     """)
     studyCountByStudy(study_ids: [String] = []): [GroupCount] @cypher(statement: """
         MATCH (g:study)
-        OPTIONAL MATCH (g)-[:study_of_program]-(ss)
+        OPTIONAL MATCH (g)-->(ss:study_id)
             WHERE (size($study_ids) = 0 OR ss.study_id IN $study_ids)
-        RETURN g.study_id AS group,
+        RETURN g.study_acronym + ': ' + g.study_short_description AS group,
                count(DISTINCT ss) as studies
     """)
 
@@ -1117,10 +1117,10 @@ type QueryType {
     """)
 
     studyCountBySampleType(study_ids: [String] = []): [GroupCount] @cypher(statement: """
-        MATCH (g:sample) WHERE g.sample_name IS NOT NULL
+        MATCH (g:sample) WHERE g.sample_composition IS NOT NULL
         OPTIONAL MATCH (g)-[:sample_in_study]-(ss)
             WHERE (size($study_ids) = 0 OR ss.study_id IN $study_ids)
-        RETURN g.sample_name AS group, count(DISTINCT ss) as studies
+        RETURN g.sample_composition AS group, count(DISTINCT ss) as studies
     """)
 
     studyCountBySerum(study_ids: [String] = []): [GroupCount] @cypher(statement: """
@@ -1159,10 +1159,10 @@ type QueryType {
     """)
 
     studyCountByAntigens(study_ids: [String] = []): [GroupCount] @cypher(statement: """
-        MATCH (g:antigen) WHERE g.antigen_name IS NOT NULL
+        MATCH (g:antigen) WHERE g.sample_composition IS NOT NULL
         OPTIONAL MATCH (g)-[:antigen_in_study]-(ss)
             WHERE (size($study_ids) = 0 OR ss.study_id IN $study_ids)
-        RETURN g.antigen_name AS group, count(DISTINCT ss) as studies
+        RETURN g.sample_composition AS group, count(DISTINCT ss) as studies
     """)
 
     studyCountByRDB(study_ids: [String] = []): [GroupCount] @cypher(statement: """

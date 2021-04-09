@@ -49,7 +49,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1,us-west-1' )
 	booleanParam(
-		defaultValue: false,
+		defaultValue: true,
 		description: 'Flush the Redis cache',
 		name: 'Flush_Redis')
 

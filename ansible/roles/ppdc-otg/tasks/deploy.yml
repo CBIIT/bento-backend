@@ -1,0 +1,57 @@
+---
+- name: log into DockerHub
+  docker_login:
+    username: "{{ docker_user }}"
+    password: "{{ docker_password }}"
+    # registry: https://ncidockerhub.nci.nih.gov
+  
+- name: remove frontend container
+  docker_container:
+    name: ppdc-otg
+    state: absent
+
+- name: clean up 
+  command: docker system prune -a -f
+
+- name: ensure /local/content/docker exists
+  file: 
+    path: /local/content/docker
+    state: directory
+
+- name: launch the new ppdc-otg
+  docker_container:
+    name: ppdc-otg
+    image: cbiitssrepo/ppdc-otg-frontend:{{frontend_version}}-{{build_number}}
+    restart_policy: always
+    restart_retries: 10
+    ports:
+     - "80:80"
+
+# - name: update serivces and compose files
+#   template:
+#     src: "{{item.src}}"
+#     dest: "{{item.dest}}"
+#   loop:
+#     - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
+#     - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
+#     - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
+
+# - name: start frontend and backend containers
+#   docker_compose:
+#     project_src: /local/content/docker
+#     files: app.yml
+#     state: present
+
+
+# - name: "wait for {{ frontend_url }} to become available"
+#   uri:
+#    url: "{{ frontend_url }}"
+#    follow_redirects: none
+#    method: GET
+#   register: _result
+#   until: ('status' in _result) and (_result.status == 200)
+#   retries: 100
+#   delay: 10
+
+
+

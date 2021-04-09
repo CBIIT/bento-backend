@@ -42,10 +42,10 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'demo,dev,qa,stage,prod' )
-//	booleanParam(
-//		defaultValue: false,
-//		description: 'Flush the Redis cache',
-//		name: 'Flush_Redis')
+	  booleanParam(
+   		defaultValue: true,
+		  description: 'Flush the Redis cache',
+		  name: 'Flush_Redis')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -259,7 +259,6 @@ pipeline {
        file(credentialsId: 'ansible_host_file', variable: 'host_file'),
        ]){
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
-             sh "echo ${TLS_HOSTNAME}"
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

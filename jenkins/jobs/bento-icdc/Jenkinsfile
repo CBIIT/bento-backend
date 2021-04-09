@@ -50,7 +50,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'test,final' )
     booleanParam(
-    defaultValue: false,
+    defaultValue: true,
     description: 'Flush the Redis cache',
     name: 'Flush_Redis')
 

@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+  cdktf:
+    container_name: terraform
+    build:
+      context: .
+      dockerfile: ./dockerfiles/cdktf_python
+    volumes:
+      - ./bento:/bento

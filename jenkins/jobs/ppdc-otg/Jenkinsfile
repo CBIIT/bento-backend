@@ -172,7 +172,11 @@ pipeline {
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-ppdc-otg.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-                  frontend_version: "${params.Frontend_Tag}", 
+                  extraVars: [
+                    tier: "${params.Environment}",
+                    frontend_version: "${params.Frontend_Tag}"
+                    ], 
+                  hostKeyChecking: false,
             			colorized: true) 
  				}
  			}

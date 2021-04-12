@@ -23,7 +23,6 @@
     name: ppdc-otg
     image: cbiitssrepo/ppdc-otg-frontend:{{frontend_version}}-{{build_number}}
     restart_policy: always
-    restart_retries: 10
     ports:
      - "80:80"
 

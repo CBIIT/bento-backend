@@ -24,6 +24,6 @@ RUN terraform --version
 
 # install cdktf-cli and set its log level to debug
 RUN npm install -g cdktf-cli
-RUN export CDKTF_LOG_LEVEL=debug
+ENV CDKTF_LOG_LEVEL=debug
 
 WORKDIR /bento

@@ -9,13 +9,13 @@ The project can be built using the included docker-compose file to install prere
 
 ### Using docker-compose
 
-Once the repo has been cloned a dev container can be started using the following command:
+Once the repo has been cloned a dev container can be started from the cdktf folder using the following command:
 
 ```bash
 docker-compose run cdktf sh
 ```
 
-This will start a container with all required applications installed and map the cdktf bento folder as its workspace.
+This will start a container with all required applications installed and map the cdktf/bento folder as its workspace.
 
 ## Initialize the bento cdktf project
 
@@ -39,4 +39,4 @@ After modules are installed you can build terraform scripts from cdktf:
 cdktf synth -a "python3 awsApp.py -t <tier>"
 ```
 
-* Note that an appropriate tier must be specified to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes
+* Note: an appropriate tier must be specified to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes

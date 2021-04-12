@@ -194,7 +194,7 @@ pipeline {
        withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
        file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file'),
        ]){
-             sh "ls - ${WORKSPACE}"
+             sh "ls -l ${WORKSPACE}"
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/ansible/deploy-ppdc-otg.yml', 

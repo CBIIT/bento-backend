@@ -3,73 +3,54 @@
   docker_login:
     username: "{{ docker_user }}"
     password: "{{ docker_password }}"
-    registry: https://ncidockerhub.nci.nih.gov
-    
-- name: verify host
-  file: 
-    path: /tmp/myworkspace
-    state: directory
-
-
-###################################################################
-
-# - name: remove frontend container
-#   docker_container:
-#     name: frontend
-#     state: absent
-
-# - name: remove backend container
-#   docker_container:
-#     name: backend
-#     state: absent
+    # registry: https://ncidockerhub.nci.nih.gov
+  
+- name: remove frontend container
+  docker_container:
+    name: ppdc-otp
+    state: absent
 
 - name: clean up 
-  shell: docker system prune -a -f
+  command: docker system prune -a -f
 
 - name: ensure /local/content/docker exists
   file: 
     path: /local/content/docker
     state: directory
 
-- name: update serivces and compose files
-  template:
-    src: "{{item.src}}"
-    dest: "{{item.dest}}"
-  loop:
-    - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
-    - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
-    - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
+- name: launch the new ppdc-otp
+  docker_container:
+    name: ppdc-otp
+    image: cbiitssrepo/ppdc-otp-frontend:{{frontend_version}}-{{build_number}}
+    restart_policy: always
+    ports:
+     - "80:80"
 
-- name: start frontend and backend containers
-  docker_compose:
-    project_src: /local/content/docker
-    files: app.yml
-    state: present
+# - name: update serivces and compose files
+#   template:
+#     src: "{{item.src}}"
+#     dest: "{{item.dest}}"
+#   loop:
+#     - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
+#     - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
+#     - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
 
-- name: reload systemd 
-  systemd:
-    daemon_reload: yes
-
-- name: enable log-agents and app.timer services
-  service:
-    name: app.timer
-    enabled: yes
-
-- name: ensure app.service is disabled
-  service:
-    name: app.service
-    enabled: no
+# - name: start frontend and backend containers
+#   docker_compose:
+#     project_src: /local/content/docker
+#     files: app.yml
+#     state: present
 
 
-- name: "wait for {{ frontend_url }} to become available"
-  uri:
-   url: "{{ frontend_url }}"
-   follow_redirects: none
-   method: GET
-  register: _result
-  until: ('status' in _result) and (_result.status == 200)
-  retries: 100
-  delay: 10
+# - name: "wait for {{ frontend_url }} to become available"
+#   uri:
+#    url: "{{ frontend_url }}"
+#    follow_redirects: none
+#    method: GET
+#   register: _result
+#   until: ('status' in _result) and (_result.status == 200)
+#   retries: 100
+#   delay: 10
 
 
 

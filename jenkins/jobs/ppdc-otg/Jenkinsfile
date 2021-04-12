@@ -182,6 +182,7 @@ pipeline {
       node {
         label 'neo4j-dataloader'
       }
+    }
       environment {
         SLACK_URL = "${SLACK_URL}"
         TIER = "${params.Environment}"

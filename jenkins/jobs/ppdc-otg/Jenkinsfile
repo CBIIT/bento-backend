@@ -177,21 +177,38 @@ pipeline {
  			}
  		}
   	}
-  	// stage('deploy'){
-	  // environment {
-   //     VERSION = "${params.Frontend_Tag}"
-   //     FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
-   //     BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
-   //    }
-  	// 	steps{
-  	// 		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  	// 			ansiblePlaybook( 
-   //          		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
-   //          		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-   //          		colorized: true)
-  	// 		}
-  	// 	}
-  	// }
+    stage('deploy'){
+      agent {
+      node {
+        label 'neo4j-dataloader'
+      }
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+        TIER = "${params.Environment}"
+        VERSION = "${params.Frontend_Tag}"
+      }
+
+      steps{
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+       withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+       file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file'),
+       ]){
+             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-ppdc-otg.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'server_ssh_key',
+                extraVars: [
+                    tier: "${params.Environment}",
+                    frontend_version: "${params.Frontend_Tag}"
+                    ],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+           }
+        }
+      }
+    }
   }
   post {
 

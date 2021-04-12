@@ -1,11 +1,11 @@
 ---
-- name: deploy stage of bento pipeline
+- name: deploy stage of ppdc otg
   hosts: icdc-{{tier}}
   gather_facts: yes
     
   tasks:
-    - name: deploy bento-icdc
+    - name: deploy ppdc-otg
       include_role:
-        name: bento-icdc
+        name: ppdc-otg
         tasks_from: deploy
   

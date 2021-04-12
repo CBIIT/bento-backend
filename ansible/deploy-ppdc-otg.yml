@@ -1,6 +1,6 @@
 ---
 - name: deploy stage of ppdc otg
-  hosts: icdc-{{tier}}
+  hosts: ppdc-otg-{{tier}}
   gather_facts: yes
     
   tasks:

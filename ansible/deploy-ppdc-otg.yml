@@ -1,7 +1,8 @@
 ---
 - name: deploy stage of ppdc otg
   hosts: ppdc-otg-{{tier}}
-  gather_facts: yes
+  gather_facts: no
+  become: yes
     
   tasks:
     - name: deploy ppdc-otg

@@ -23,52 +23,52 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
-# - name: copy entrypoint.sh to workspace
-#   copy:
-#     src: "nginx-entrypoint.sh"
-#     dest: "{{workspace}}/ppdc-otg-frontend/nginx-entrypoint.sh"
-#     mode: 0755
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{workspace}}/ppdc-otg-frontend/nginx-entrypoint.sh"
+    mode: 0755
 
-# - name: run yarn install in {{workspace}}/ppdc-otg-frontend
-#   command: yarn install
-#   args:
-#     chdir: "{{workspace}}/ppdc-otg-frontend"
+- name: run yarn install in {{workspace}}/ppdc-otg-frontend
+  command: yarn install
+  args:
+    chdir: "{{workspace}}/ppdc-otg-frontend"
 
-# - name: run yarn build in {{workspace}}/ppdc-otg-frontend
-#   command: yarn build
-#   args:
-#     chdir: "{{workspace}}/ppdc-otg-frontend"
+- name: run yarn build in {{workspace}}/ppdc-otg-frontend
+  command: yarn build
+  args:
+    chdir: "{{workspace}}/ppdc-otg-frontend"
 
-# - name: copy env to dist
-#   copy:
-#     src: inject.template.js
-#     dest: "{{workspace}}/ppdc-otg-frontend/build/inject.template.js"
-#     mode: 0755
+- name: copy env to dist
+  copy:
+    src: inject.template.js
+    dest: "{{workspace}}/ppdc-otg-frontend/build/inject.template.js"
+    mode: 0755
           
-# - name: log into DockerHub
-#   docker_login:
-#     username: "{{docker_user}}"
-#     password: "{{docker_password}}"
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
 
-# - name: build cbiitssrepo/ppdc-otg-frontend image
-#   docker_image:
-#     build:
-#       path: "{{workspace}}/ppdc-otg-frontend"
-#       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
-#       pull: yes
-#       nocache: yes
-#     name: cbiitssrepo/ppdc-otg-frontend
-#     tag: "{{frontend_version}}-{{build_number}}"
-#     push: yes
-#     force_source: yes
-#     source: build
+- name: build cbiitssrepo/ppdc-otg-frontend image
+  docker_image:
+    build:
+      path: "{{workspace}}/ppdc-otg-frontend"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/ppdc-otg-frontend
+    tag: "{{frontend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
 
-# - name: Add tag latest to cbiitssrepo/ppdc-otg-frontend image
-#   docker_image:
-#     name: "cbiitssrepo/ppdc-otg-frontend:{{frontend_version}}-{{build_number}}"
-#     repository: cbiitssrepo/ppdc-otg-frontend:latest
-#     force_tag: yes
-#     push: yes
-#     source: local
+- name: Add tag latest to cbiitssrepo/ppdc-otg-frontend image
+  docker_image:
+    name: "cbiitssrepo/ppdc-otg-frontend:{{frontend_version}}-{{build_number}}"
+    repository: cbiitssrepo/ppdc-otg-frontend:latest
+    force_tag: yes
+    push: yes
+    source: local
 
     

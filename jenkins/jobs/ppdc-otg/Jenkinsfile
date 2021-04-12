@@ -171,7 +171,8 @@ pipeline {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-ppdc-otg.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                  frontend_version: "${params.Frontend_Tag}" 
             			colorized: true) 
  				}
  			}

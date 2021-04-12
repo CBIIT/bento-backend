@@ -22,7 +22,8 @@ RUN mv terraform /usr/local/bin/
 # Check that it's installed
 RUN terraform --version 
 
-# install terraform and cdktf-cli
+# install cdktf-cli and set its log level to debug
 RUN npm install -g cdktf-cli
+RUN export CDKTF_LOG_LEVEL=debug
 
 WORKDIR /bento

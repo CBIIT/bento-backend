@@ -180,7 +180,7 @@ pipeline {
     stage('deploy'){
       agent {
       node {
-        label 'neo4j-dataloader'
+        label 'bastion-host'
       }
     }
       environment {

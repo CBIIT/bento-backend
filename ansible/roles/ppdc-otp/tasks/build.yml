@@ -26,23 +26,23 @@
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/ppdc-otg-frontend/nginx-entrypoint.sh"
+    dest: "{{workspace}}/ppdc-otp-frontend/nginx-entrypoint.sh"
     mode: 0755
 
-- name: run yarn install in {{workspace}}/ppdc-otg-frontend
+- name: run yarn install in {{workspace}}/ppdc-otp-frontend
   command: yarn install
   args:
-    chdir: "{{workspace}}/ppdc-otg-frontend"
+    chdir: "{{workspace}}/ppdc-otp-frontend"
 
-- name: run yarn build in {{workspace}}/ppdc-otg-frontend
+- name: run yarn build in {{workspace}}/ppdc-otp-frontend
   command: yarn build
   args:
-    chdir: "{{workspace}}/ppdc-otg-frontend"
+    chdir: "{{workspace}}/ppdc-otp-frontend"
 
 - name: copy env to dist
   copy:
     src: inject.template.js
-    dest: "{{workspace}}/ppdc-otg-frontend/build/inject.template.js"
+    dest: "{{workspace}}/ppdc-otp-frontend/build/inject.template.js"
     mode: 0755
           
 - name: log into DockerHub
@@ -50,23 +50,23 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/ppdc-otg-frontend image
+- name: build cbiitssrepo/ppdc-otp-frontend image
   docker_image:
     build:
-      path: "{{workspace}}/ppdc-otg-frontend"
+      path: "{{workspace}}/ppdc-otp-frontend"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/ppdc-otg-frontend
+    name: cbiitssrepo/ppdc-otp-frontend
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/ppdc-otg-frontend image
+- name: Add tag latest to cbiitssrepo/ppdc-otp-frontend image
   docker_image:
-    name: "cbiitssrepo/ppdc-otg-frontend:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/ppdc-otg-frontend:latest
+    name: "cbiitssrepo/ppdc-otp-frontend:{{frontend_version}}-{{build_number}}"
+    repository: cbiitssrepo/ppdc-otp-frontend:latest
     force_tag: yes
     push: yes
     source: local

@@ -48,7 +48,7 @@
 - name: rename build to dist to avoid .dockerignore problem with build directory
   command: mv build dist
   args:
-    chdir: "{{workspace}}/ppdc-otp-frontend"
+    chdir: "{{workspace}}/ppdc-otg-frontend"
           
 - name: log into DockerHub
   docker_login:

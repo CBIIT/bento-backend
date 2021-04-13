@@ -39,7 +39,7 @@
   args:
     chdir: "{{workspace}}/ppdc-otp-frontend"
 
-- name: copy env to dist
+- name: copy env to build
   copy:
     src: inject.template.js
     dest: "{{workspace}}/ppdc-otp-frontend/build/inject.template.js"
@@ -50,25 +50,41 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/ppdc-otp-frontend image
-  docker_image:
-    build:
-      path: "{{workspace}}/ppdc-otp-frontend"
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
-      pull: yes
-      nocache: yes
-    name: cbiitssrepo/ppdc-otp-frontend
-    tag: "{{frontend_version}}-{{build_number}}"
-    push: yes
-    force_source: yes
-    source: build
+- name: show workspace
+  command: ls -l "{{workspace}}"
+  register: work
 
-- name: Add tag latest to cbiitssrepo/ppdc-otp-frontend image
-  docker_image:
-    name: "cbiitssrepo/ppdc-otp-frontend:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/ppdc-otp-frontend:latest
-    force_tag: yes
-    push: yes
-    source: local
+- name: show workspace
+  command: ls -l "{{workspace}}/ppdc-otp-frontend"
+  register: front
+
+- name: show workspace
+  debug:
+    msg: "{{work.stdout_lines}}"
+
+- name: show workspace
+  debug:
+    msg: "{{front.stdout_lines}}"
+
+# - name: build cbiitssrepo/ppdc-otp-frontend image
+#   docker_image:
+#     build:
+#       path: "{{workspace}}/ppdc-otp-frontend"
+#       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
+#       pull: yes
+#       nocache: yes
+#     name: cbiitssrepo/ppdc-otp-frontend
+#     tag: "{{frontend_version}}-{{build_number}}"
+#     push: yes
+#     force_source: yes
+#     source: build
+
+# - name: Add tag latest to cbiitssrepo/ppdc-otp-frontend image
+#   docker_image:
+#     name: "cbiitssrepo/ppdc-otp-frontend:{{frontend_version}}-{{build_number}}"
+#     repository: cbiitssrepo/ppdc-otp-frontend:latest
+#     force_tag: yes
+#     push: yes
+#     source: local
 
     

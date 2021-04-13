@@ -4,7 +4,7 @@ ENV DOCKERIZE_VERSION v0.6.1
 
 RUN apk add --no-cache gettext
 COPY nginx-entrypoint.sh /
-COPY ./build /usr/share/nginx/html
+COPY ./dist /usr/share/nginx/html
 
  
 # Enable nginx stub_status

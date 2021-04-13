@@ -39,11 +39,16 @@
   args:
     chdir: "{{workspace}}/ppdc-otg-frontend"
 
-- name: copy env to dist
+- name: copy env to build
   copy:
     src: inject.template.js
     dest: "{{workspace}}/ppdc-otg-frontend/build/inject.template.js"
     mode: 0755
+
+- name: rename build to dist to avoid .dockerignore problem with build directory
+  command: mv build dist
+  args:
+    chdir: "{{workspace}}/ppdc-otp-frontend"
           
 - name: log into DockerHub
   docker_login:

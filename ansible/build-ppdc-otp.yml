@@ -1,6 +1,6 @@
 ---
-- name: bento cicd pipeline
-  hosts: ppdc-otp-{{tier}}
+- name: ppdc cicd pipeline
+  hosts: ppdc-otp
   connection: local
   gather_facts: no
     

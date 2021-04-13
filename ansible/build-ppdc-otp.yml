@@ -1,11 +1,11 @@
 ---
 - name: bento cicd pipeline
-  hosts: ppdc-otg
+  hosts: ppdc-otp-{{tier}}
   connection: local
   gather_facts: no
     
   tasks:
     - name: This is a build stage
       include_role:
-        name: ppdc-otg
+        name: ppdc-otp
         tasks_from: build

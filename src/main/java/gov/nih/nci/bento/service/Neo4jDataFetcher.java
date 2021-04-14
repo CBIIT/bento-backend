@@ -1,13 +1,17 @@
 package gov.nih.nci.bento.service;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import graphql.schema.GraphQLNonNull;
-import graphql.schema.GraphQLType;
-import graphql.schema.GraphQLList;
+import graphql.schema.*;
+import graphql.language.VariableReference;
+import java.math.BigInteger;
+import java.math.BigDecimal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.neo4j.driver.*;
 import org.neo4j.graphql.Cypher;
+import org.neo4j.graphql.DataFetchingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class Neo4jService implements AutoCloseable {
-    private static final Logger logger = LogManager.getLogger(Neo4jService.class);
+public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
+    private static final Logger logger = LogManager.getLogger(Neo4jDataFetcher.class);
 
     private Driver driver;
     @Autowired
@@ -41,12 +45,14 @@ public class Neo4jService implements AutoCloseable {
         driver.close();
     }
 
-    public GraphQLResult query(final Cypher cypher, Map<String, Object> variables)
-    {
-        try ( Session session = driver.session() )
-        {
+    @Nullable
+    @Override
+    public Object fetchData(@NotNull DataFetchingEnvironment dataFetchingEnvironment, @NotNull DataFetcher<Cypher> dataFetcher) throws Exception {
+        try ( Session session = driver.session() ) {
+            Cypher cypher = dataFetcher.get(dataFetchingEnvironment);
+
             Map<String, Object> params = cypher.getParams();
-            Result result = session.run(cypher.getQuery(), getVariables(params, variables));
+            Result result = session.run(cypher.getQuery(), transformParams(params, dataFetchingEnvironment.getVariables()));
             String key = result.keys().get(0);
             Object values = null;
             if (isList(cypher.getType())) {
@@ -62,23 +68,29 @@ public class Neo4jService implements AutoCloseable {
                     values = rec.get(key).asObject();
                 }
             }
-            return new GraphQLResult(key, values);
+            return values;
         }
-   }
+    }
 
-   private Map<String, Object> getVariables(Map<String, Object> params, Map<String, Object> variables) {
-        Map<String, Object> result = new HashMap<>(params);
-        if (variables != null) {
-            for (String key : variables.keySet()) {
-                if (result.containsKey(key)) {
-                    result.put(key, variables.get(key));
-                }
+    private Map<String, Object> transformParams(Map<String, Object> param, Map<String, Object> variables) {
+        Map<String, Object> result = new HashMap<>();
+
+        for (String key: param.keySet()) {
+            Object value = param.get(key);
+            if (value.getClass() == VariableReference.class) {
+                result.put(key, variables.get(((VariableReference) value).getName()));
+            } else if (value.getClass() == BigInteger.class) {
+                result.put(key, ((BigInteger) value).longValueExact());
+            } else if (value.getClass() == BigDecimal.class) {
+                result.put(key, ((BigDecimal) value).doubleValue());
+            }  else {
+                result.put(key, value);
             }
         }
         return result;
-   }
+    }
 
-   private boolean isList(GraphQLType type) {
+    private boolean isList(GraphQLType type) {
         if (type instanceof GraphQLList) {
             return true;
         } else if (type instanceof GraphQLNonNull) {
@@ -86,6 +98,6 @@ public class Neo4jService implements AutoCloseable {
         } else {
             return false;
         }
-   }
+    }
 }
 

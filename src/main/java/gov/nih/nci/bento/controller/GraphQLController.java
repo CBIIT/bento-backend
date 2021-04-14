@@ -1,12 +1,23 @@
 package gov.nih.nci.bento.controller;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonElement;
 import gov.nih.nci.bento.error.ApiError;
+import gov.nih.nci.bento.service.Neo4jDataFetcher;
+import graphql.ExecutionResult;
+import graphql.GraphQL;
+import graphql.ExecutionInput;
+import graphql.schema.GraphQLSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.neo4j.graphql.SchemaBuilder;
+import org.neo4j.graphql.SchemaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +31,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.service.Neo4JGraphQLService;
 import gov.nih.nci.bento.service.RedisService;
 import graphql.language.Document;
 import graphql.language.OperationDefinition;
 import graphql.parser.Parser;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 
 @RestController
@@ -36,11 +49,25 @@ public class GraphQLController {
 	@Autowired
 	private ConfigurationDAO config;
 	@Autowired
-	private Neo4JGraphQLService neo4jService;
-	@Autowired
 	private RedisService redisService;
-	
-	public static final Gson GSON = new Gson();
+	@Autowired
+	private Neo4jDataFetcher dataFetcherInterceptor;
+
+	private Gson gson = new Gson();
+	private GraphQL graphql;
+
+	@PostConstruct
+	public void init() throws IOException {
+		ResourceLoader resourceLoader = new DefaultResourceLoader();
+		Resource resource = resourceLoader.getResource("classpath:" + config.getSchemaFile());
+		File schemaFile = resource.getFile();
+		String schemaString = Files.readString(schemaFile.toPath());
+		SchemaConfig schemaConfig = new SchemaConfig();
+
+		GraphQLSchema schema = SchemaBuilder.buildSchema(schemaString, schemaConfig, dataFetcherInterceptor);
+		graphql = GraphQL.newGraphQL(schema).build();
+	}
+
 
 	@CrossOrigin
 	@RequestMapping(value = "/version", method = {RequestMethod.GET})
@@ -99,23 +126,17 @@ public class GraphQLController {
 
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
 				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
-			try{
-				String responseText;
-				if (config.getRedisEnabled()) {
-					responseText = redisService.getQueryResult(query_key);
-					if ( null == responseText) {
-						responseText = neo4jService.query(sdl, variables);
-						redisService.setQueryResult(query_key, responseText);
-					}
-				} else {
-					responseText = neo4jService.query(sdl, variables);
+			String responseText;
+			if (config.getRedisEnabled()) {
+				responseText = redisService.getQueryResult(query_key);
+				if ( null == responseText) {
+					responseText = query(sdl, variables);
+					redisService.setQueryResult(query_key, responseText);
 				}
-				return ResponseEntity.ok(responseText);
+			} else {
+				responseText = query(sdl, variables);
 			}
-			catch(ApiError e){
-				String error = ApiError.jsonApiError(e);
-				return logAndReturnError(e.getStatus(), error);
-			}
+			return ResponseEntity.ok(responseText);
 		}
 		else if(operation.equals("query") || operation.equals("mutation")){
 			HttpStatus status = HttpStatus.FORBIDDEN;
@@ -128,6 +149,17 @@ public class GraphQLController {
 			return logAndReturnError(status, error);
 		}
 
+	}
+
+	private String query(String sdl, Map<String, Object> variables) {
+		ExecutionInput.Builder builder = ExecutionInput.newExecutionInput().query(sdl);
+		if (variables != null) {
+			builder = builder.variables(variables);
+		}
+		ExecutionInput input = builder.build();
+		ExecutionResult executionResult = graphql.execute(input);
+		Map<String, Object> standardResult = executionResult.toSpecification();
+		return gson.toJson(standardResult);
 	}
 
 	private ResponseEntity logAndReturnError(HttpStatus status, String error){

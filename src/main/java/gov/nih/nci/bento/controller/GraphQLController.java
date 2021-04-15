@@ -9,9 +9,12 @@ import gov.nih.nci.bento.service.Neo4jDataFetcher;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.ExecutionInput;
+import graphql.schema.GraphQLNamedType;
+import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,7 @@ import graphql.parser.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -58,14 +62,64 @@ public class GraphQLController {
 
 	@PostConstruct
 	public void init() throws IOException {
+		GraphQLSchema neo4jSchema = getNeo4jSchema();
+		GraphQLSchema redisSchema = getRedisSchema();
+		graphql = GraphQL.newGraphQL(mergeSchema(neo4jSchema, redisSchema)).build();
+	}
+
+	private GraphQLSchema getRedisSchema() {
+	    // Todo: need to create a GraphQL schema for Redis queries here or use other objects to get the schema
+		return null;
+	}
+
+	@NotNull
+	private GraphQLSchema getNeo4jSchema() throws IOException {
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
 		Resource resource = resourceLoader.getResource("classpath:" + config.getSchemaFile());
 		File schemaFile = resource.getFile();
 		String schemaString = Files.readString(schemaFile.toPath());
 		SchemaConfig schemaConfig = new SchemaConfig();
 
-		GraphQLSchema schema = SchemaBuilder.buildSchema(schemaString, schemaConfig, dataFetcherInterceptor);
-		graphql = GraphQL.newGraphQL(schema).build();
+		GraphQLSchema neo4jSchema = SchemaBuilder.buildSchema(schemaString, schemaConfig, dataFetcherInterceptor);
+		return neo4jSchema;
+	}
+
+	private GraphQLSchema mergeSchema(GraphQLSchema schema1, GraphQLSchema schema2) {
+		if (schema1 == null) {
+			return schema2;
+		}
+		if (schema2 == null) {
+			return schema1;
+		}
+
+		var builder = GraphQLSchema.newSchema(schema1);
+		var codeRegistry2 = schema2.getCodeRegistry();
+		builder.codeRegistry(schema1.getCodeRegistry().transform( crBuilder -> {crBuilder.dataFetchers(codeRegistry2); crBuilder.typeResolvers(codeRegistry2);}));
+		var allTypes = new HashMap<String, GraphQLNamedType>(schema1.getTypeMap());
+		allTypes.putAll(schema2.getTypeMap());
+		allTypes.put("Query", mergeType(schema1.getQueryType(), schema2.getQueryType()));
+		allTypes.put("Mutation", mergeType(schema1.getMutationType(), schema2.getMutationType()));
+
+		builder.query((GraphQLObjectType) allTypes.get("Query"));
+		builder.mutation((GraphQLObjectType) allTypes.get("Mutation"));
+		builder.subscription((GraphQLObjectType) allTypes.get("Subscription"));
+
+		builder.clearAdditionalTypes();
+		allTypes.values().forEach(builder::additionalType);
+
+		return builder.build();
+	}
+
+	private GraphQLNamedType mergeType(GraphQLObjectType type1, GraphQLObjectType type2) {
+		if (type1 == null) {
+			return type2;
+		}
+		if (type2 == null) {
+			return type1;
+		}
+		var builder = GraphQLObjectType.newObject(type1);
+		type2.getFieldDefinitions().forEach(builder::field);
+		return builder.build();
 	}
 
 

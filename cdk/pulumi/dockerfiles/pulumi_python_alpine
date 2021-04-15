@@ -1,0 +1,29 @@
+FROM node:lts-alpine3.13
+
+# Passing --build-arg PULUMI_VERSION=vX.Y.Z will use that version
+# of the SDK. Otherwise, we use whatever get.pulumi.com thinks is
+# the latest
+ARG PULUMI_VERSION=latest
+
+# Update to the latest npm
+RUN npm install npm@latest -g
+
+# Install pulumi
+ENV PATH=$PATH:/root/.pulumi/bin
+
+RUN echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+
+RUN apk update && \
+    apk add --no-cache curl libc6-compat python3 py3-pip && \
+    if [ "$PULUMI_VERSION" = "latest" ]; then \
+      curl -fsSL https://get.pulumi.com/ | sh; \
+    else \
+      curl -fsSL https://get.pulumi.com/ | sh -s -- --version $(echo $PULUMI_VERSION | cut -c 2-); \
+    fi
+
+# add python and pip
+RUN pip install pipenv
+RUN python3 -V
+RUN pip --version
+
+WORKDIR /bento

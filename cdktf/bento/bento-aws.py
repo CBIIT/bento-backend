@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import sys, json
-import imports.aws as aws
+#import imports.aws as aws
 
+from imports.aws import AwsProvider
 from constructs import Construct
 from cdktf import App, TerraformStack
 from configparser import ConfigParser
 from getArgs import getArgs
+from aws import iam, ec2
 
 class BentoStack(TerraformStack):
   def __init__(self, scope: Construct, ns: str):
@@ -14,27 +16,15 @@ class BentoStack(TerraformStack):
     config = ConfigParser()
     config.read('bento.properties')
     
-    bentoprovider = aws.AwsProvider(self, 'Aws', region=config[ns]['region'])
+    #bentoProvider = aws.AwsProvider(self, 'Aws', region=config[ns]['region'], profile=config[ns]['profile'], shared_credentials_file="/bento/creds/credentials")
+    bentoProvider = AwsProvider(self, 'Aws', region=config[ns]['region'], profile=config[ns]['profile'], shared_credentials_file="/bento/creds/credentials")
+    bentoTags = json.loads(config[ns]['tags'])
 
-    ecsInstancePolicy = json.dumps(dict([["Action", "sts:AssumeRole"], ["Effect", "Allow"], ["Principal", dict([['Service', 'ec2.amazonaws.com']])]]))
-    ecsInstanceRole = aws.IamRole(self, "ecs-instance-role", name="{}-ecs-instance-role".format(ns), assume_role_policy=ecsInstancePolicy)
-    ecsInstanceRolePolicy = aws.IamRolePolicyAttachment(self, "ecs-instance-role-policy", role=ecsInstanceRole.name, policy_arn="arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role")
-    ecsInstanceProfile = aws.IamInstanceProfile(self, "ecs-instance-profile", name="{}-ecs-instance-profile".format(ns), path="/", role=ecsInstanceRole.id)
-
-    ecsServicePolicy = json.dumps(dict([["Action", "sts:AssumeRole"], ["Effect", "Allow"], ["Principal", dict([['Service', 'ecs.amazonaws.com']])]]))
-    ecsServiceRole = aws.IamRole(self, "ecs-service-role", name="{}-ecs-service-role".format(ns), assume_role_policy=ecsServicePolicy)
-    ecsServiceRolePolicy = aws.IamRolePolicyAttachment(self, "ecs-service-role-policy", role=ecsServiceRole.name, policy_arn="arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole")
-    #ecsServiceProfile = aws.IamInstanceProfile(self, "ecs-instance-profile", name="{}-ecs-instance-profile".format(ns), path="/", role=ecsInstanceRole.id)
+    # IAM
+    bentoIAM = iam.IAMResources.createResources(self, ns, bentoTags)
     
-
-    helloInstance = aws.Instance(self, "hello", ami="ami-2757f631", instance_type=config[ns]['fronted_instance_type'])
-    
-    helloAlb = aws.Alb(self, "hello-test-lb")
-    
-
-    
-    helloEcr = aws.EcrRepository(self, "hellorepo", name="hellorepo")
-#    helloEcrPolicy = ECRActions.createECRPolicy(helloEcr)
+    # EC2
+    bentoEC2 = ec2.EC2Resources.createResources(self, ns, config, bentoTags, bentoIAM)
 
 
 if __name__=="__main__":

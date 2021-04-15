@@ -1,6 +1,7 @@
 dist/
 *.pyo
 *.pyc
+creds/*
 imports/*
 !imports/__init__.py
 .terraform

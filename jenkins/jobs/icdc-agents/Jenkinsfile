@@ -169,7 +169,7 @@ pipeline {
                   env: "${params.Environment}",
                   app_type: 'db',
                   project: 'icdc',
-                  log_path: '/var/log/neo4j/logs',
+                  log_path: '/var/log/neo4j',
                   sumo_access_id: "${SUMO_ACCESS_ID}",
                   sumo_access_key: "${SUMO_ACCESS_KEY}",
                   newrelic_license_key: "${NEWRELIC_LICENSE_KEY}"

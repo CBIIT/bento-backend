@@ -385,7 +385,7 @@ pipeline {
 				echo "Applying tag $Backend_Tag to URL:  $gitURL"
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
-				git tag --no-sign -a ${Backend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
+				git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
 				git push https://${git_user}:${git_password}@${gitURL} --tags
 				
 				'''

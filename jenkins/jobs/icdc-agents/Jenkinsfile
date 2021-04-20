@@ -148,7 +148,7 @@ pipeline {
           script {
             sh label: 'database-hosts', script: '''#!/bin/bash
               echo "Creating inventory file"
-              echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              echo "[agent_setup]" > ${WORKSPACE}/icdc-devops/ansible/hosts
 
               if [[ $(wc -l < ${DB_Instances} | cut -d ',' -f2 ) -ge 0 ]];then
                 echo ${DB_Instances} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
@@ -169,7 +169,7 @@ pipeline {
                   env: "${params.Environment}",
                   app_type: 'db',
                   project: 'icdc',
-                  log_path: '/var/log/neo4j/logs',
+                  log_path: '/var/log/neo4j',
                   sumo_access_id: "${SUMO_ACCESS_ID}",
                   sumo_access_key: "${SUMO_ACCESS_KEY}",
                   newrelic_license_key: "${NEWRELIC_LICENSE_KEY}"
@@ -200,7 +200,7 @@ pipeline {
 		  script {
             sh label: 'ui-hosts', script: '''#!/bin/bash
               echo "Creating inventory file"
-              echo "[agent_setup]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              echo "[agent_setup]" > ${WORKSPACE}/icdc-devops/ansible/hosts
 
               if [[ $(wc -l < ${UI_Instances} | cut -d ',' -f2 ) -ge 0 ]];then
                 echo ${UI_Instances} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts

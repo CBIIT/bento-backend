@@ -18,9 +18,8 @@
 
 pipeline {
 	agent {
-        node {
+        node { 'docker-katalon-ff'
             //label "${AGENT_LABEL}"
-			label "docker-katalon-ff"
             }
         }
 	environment { 

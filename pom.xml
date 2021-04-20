@@ -3,6 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<repositories>
+		<repository>
+			<id>local-maven-repo</id>
+			<url>file:///${project.basedir}/local-maven-repo</url>
+		</repository>
+	</repositories>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -103,11 +109,16 @@
 
 
 		<!-- Neo4j dependencies -->
-		<!-- https://mvnrepository.com/artifact/org.neo4j/neo4j-graphql-java -->
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-cypher-dsl</artifactId>
+			<version>2021.0.2</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-graphql-java</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.neo4j/neo4j-jdbc-driver -->
 <!--		<dependency>-->

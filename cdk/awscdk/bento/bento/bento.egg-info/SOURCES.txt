@@ -1,0 +1,7 @@
+README.md
+setup.py
+bento/bento.egg-info/PKG-INFO
+bento/bento.egg-info/SOURCES.txt
+bento/bento.egg-info/dependency_links.txt
+bento/bento.egg-info/requires.txt
+bento/bento.egg-info/top_level.txt

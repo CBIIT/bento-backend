@@ -4,8 +4,7 @@ dist/
 creds/*
 imports/*
 !imports/__init__.py
-.terraform
 .venv
-test.py
+!.env
+*/test.py
 cdk.out
-terraform.tfstate*

@@ -1,0 +1,26 @@
+FROM node:lts-buster-slim
+MAINTAINER ESI Devops Team
+
+# Update to the latest npm
+RUN npm install npm@latest -g
+
+# add python and pip
+RUN apt-get update && apt-get install -y python3 python3-pip wget
+RUN pip3 install pipenv
+RUN python3 -V
+RUN pip3 --version
+
+# install pulumi
+# Download pulumi for linux
+RUN wget https://get.pulumi.com/releases/sdk/pulumi-v2.25.0-linux-x64.tar.gz
+
+# Unzip
+RUN tar -xvzf pulumi-v2.25.0-linux-x64.tar.gz
+# Move to local bin
+RUN chown -R root:root pulumi
+RUN mv pulumi/* /usr/local/bin/ && rm -rf pulumi
+
+# Check that it's installed
+RUN pulumi version 
+
+WORKDIR /bento

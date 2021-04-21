@@ -54,6 +54,11 @@
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
 
+- name: create graphql directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/graphql"
+
 - name: copy schema from frontend to resources
   template:
     src: "{{workspace}}/icdc-frontend/graphql/{{schema_file}}"

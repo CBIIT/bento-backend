@@ -35,5 +35,7 @@ backend_frontend_version: "{{frontend_version }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 neo4j_bearer: "{{ lookup('env','BEARER') }}"
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
 
 # hostname: "{{ansible_fqdn}}"

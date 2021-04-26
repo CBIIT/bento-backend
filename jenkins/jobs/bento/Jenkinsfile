@@ -221,11 +221,13 @@ pipeline {
                 }
               break
               case "perf":
-                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
+                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_PERF_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "perf"
-                  
+                  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                   
                   
                 }
@@ -276,7 +278,7 @@ pipeline {
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            			colorized: true) 
+						colorized: true) 
  				}
  			}
  		}

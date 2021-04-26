@@ -281,6 +281,23 @@ pipeline {
         }
       }
     }
+    stage('copy static content') {
+      when {
+          "${params.Environment}" = "prod"
+      }
+      steps {
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+        withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME'),
+        ]) {
+
+          ansiblePlaybook( 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/git-copy.yml', 
+                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                  colorized: true) 
+        }
+      }
+    }
+    }
   }
   post {
     always {
@@ -293,6 +310,6 @@ pipeline {
 	
 		cleanWs()
     
-	}
+	 }
   }
 }

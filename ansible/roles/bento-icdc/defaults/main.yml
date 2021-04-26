@@ -1,8 +1,8 @@
 ---
 # defaults file for cicd
-
 platform: aws
 release: fail
+project: icdc
 # jq: "{{project}}.{{tier}}"
 # alb_dns_name:
 #   icdc:

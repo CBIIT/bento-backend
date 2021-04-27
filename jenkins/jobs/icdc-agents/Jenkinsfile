@@ -43,7 +43,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa' )
+        value: 'dev,qa,stage,prod' )
 
 //	The UI_Instances parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
 //	The GUI definition for this parameter should follow Environment and use the following values:

@@ -1,22 +1,30 @@
 package gov.nih.nci.bento.service;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import graphql.schema.*;
 import graphql.language.VariableReference;
-import java.math.BigInteger;
-import java.math.BigDecimal;
+import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
+import graphql.schema.GraphQLList;
+import graphql.schema.GraphQLNonNull;
+import graphql.schema.GraphQLType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.neo4j.driver.*;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
 import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.DataFetchingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,26 +39,23 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
     private ConfigurationDAO config;
 
     @PostConstruct
-    public void connect()
-    {
+    public void connect() {
         String uri = config.getNeo4jUrl();
         String user = config.getNeo4jUser();
         String password = config.getNeo4jPassword();
-        driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
+        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
     @Override
-    public void close() throws Exception
-    {
+    public void close() throws Exception {
         driver.close();
     }
 
     @Nullable
     @Override
     public Object fetchData(@NotNull DataFetchingEnvironment dataFetchingEnvironment, @NotNull DataFetcher<Cypher> dataFetcher) throws Exception {
-        try ( Session session = driver.session() ) {
+        try (Session session = driver.session()) {
             Cypher cypher = dataFetcher.get(dataFetchingEnvironment);
-
             Map<String, Object> params = cypher.getParams();
             Result result = session.run(cypher.getQuery(), transformParams(params, dataFetchingEnvironment.getVariables()));
             String key = result.keys().get(0);
@@ -74,8 +79,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
 
     private Map<String, Object> transformParams(Map<String, Object> param, Map<String, Object> variables) {
         Map<String, Object> result = new HashMap<>();
-
-        for (String key: param.keySet()) {
+        for (String key : param.keySet()) {
             Object value = param.get(key);
             if (value.getClass() == VariableReference.class) {
                 result.put(key, variables.get(((VariableReference) value).getName()));
@@ -83,7 +87,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
                 result.put(key, ((BigInteger) value).longValueExact());
             } else if (value.getClass() == BigDecimal.class) {
                 result.put(key, ((BigDecimal) value).doubleValue());
-            }  else {
+            } else {
                 result.put(key, value);
             }
         }
@@ -94,7 +98,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
         if (type instanceof GraphQLList) {
             return true;
         } else if (type instanceof GraphQLNonNull) {
-            return isList(((GraphQLNonNull)type).getWrappedType());
+            return isList(((GraphQLNonNull) type).getWrappedType());
         } else {
             return false;
         }

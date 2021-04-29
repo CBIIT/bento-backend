@@ -1,25 +1,26 @@
-node('cicd_microservice') {
-	parameters {
-		extendedChoice( 
-			name: 'Browser', 
-			defaultValue: 'Firefox', 
-			description: 'Choose the browser (headless) to use', 
-			type: 'PT_SINGLE_SELECT',
-			value: 'Chrome,Firefox' )
-		}
-	stage('set agent'){
-		if (params.Browser == 'Firefox') {
-			AGENT_LABEL = "docker-katalon-ff"
-			} else {
-				AGENT_LABEL = "docker-katalon-ch"
-				}
-		}
-	}
+//node('cicd_microservice') {
+//	parameters {
+//		extendedChoice( 
+//			name: 'Browser', 
+//			defaultValue: 'Firefox', 
+//			description: 'Choose the browser (headless) to use', 
+//			type: 'PT_SINGLE_SELECT',
+//			value: 'Chrome,Firefox' )
+//		}
+//	stage('set agent'){
+//		if (params.Browser == 'Firefox') {
+//			AGENT_LABEL = "docker-katalon-ff"
+//			} else {
+//				AGENT_LABEL = "docker-katalon-ch"
+//				}
+//		}
+//	}
 
 pipeline {
 	agent {
         node {
-            label "${AGENT_LABEL}"
+            //label "${AGENT_LABEL}"
+			label "docker-katalon-ch"
             }
         }
 	environment { 

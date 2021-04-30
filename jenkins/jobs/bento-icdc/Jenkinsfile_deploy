@@ -283,7 +283,7 @@ pipeline {
     }
 	
 	stage('clear redis cache'){
-	  agent { label 'slave-ncias-d2320-c' }
+	  agent { label 'commons-docker-ncias-p2236-v' }
 	  when {
 		expression { params.Flush_Redis }
 		}
@@ -308,6 +308,17 @@ pipeline {
 			])
         
 		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			
+			script {
+              sh label: 'database-hosts', script: '''#!/bin/bash
+                echo "Creating inventory file"
+                echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+                echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+              '''
+
+            }
+			
 			ansiblePlaybook( 
                playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml', 
                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

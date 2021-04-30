@@ -1,6 +1,6 @@
 ---
-- name: Redis stage of bento pipeline
-  hosts: bento
+- name: Redis stage of icdc pipeline
+  hosts: icdc
   connection: local
   gather_facts: no
     

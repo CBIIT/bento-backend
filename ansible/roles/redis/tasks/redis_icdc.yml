@@ -4,4 +4,4 @@
   debug: 
     msg: "{{ redis_host[tier] }}"
 - name: flush redis cache
-  shell: echo -e "get abc \nFLUSHALL ASYNC" | redis-cli -h {{ redis_host[tier] }} -p {{ redis_port }} -c
+  shell: echo -e "get abc \nFLUSHALL ASYNC" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c

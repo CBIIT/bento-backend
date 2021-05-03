@@ -1,19 +1,39 @@
+#API Version
+bento.api.version={{bento_api_version}}
+
+#Spring
 spring.mvc.throw-exception-if-no-handler-found=true
-neo4j.url = bolt://{{neo4j_ip}}:7687
-neo4j.user = {{neo4j_user}}
-neo4j.password = {{neo4j_password}}
-neo4j.graphql.endpoint=http://{{neo4j_ip}}:7474/graphql/
-neo4j.graphql.endpoint.schema_endpoint=idl/
-graphql.schema=graphql/{{schema_file}}
-neo4j.authorization={{bearer}}
 spring.mvc.view.prefix=/WEB-INF/
 spring.mvc.view.suffix=.jsp
 error.redirect_url=http://localhost/error.html
+
+#Neo4j
+neo4j.url = bolt://{{neo4j_ip}}:7687
+neo4j.user = {{neo4j_user}}
+neo4j.password = {{neo4j_password}}
+
+#Neo4j Pre-version 4
+neo4j.graphql.endpoint=http://{{neo4j_ip}}:7474/graphql/
+neo4j.graphql.endpoint.schema_endpoint=idl/
+neo4j.authorization={{bearer}}
+
+#GraphQL
+graphql.schema=graphql/{{schema_file}}
+
+#Query Restrictions
 allow_graphql_query = true
 allow_graphql_mutation =false
-enable.redis={{enable_redis}}
+
+#Redis Caching
+redis.enable={{enable_redis}}
 redis.use_cluster={{use_cluster}}
 redis.host={{redis_host[tier]}}
 redis.port={{redis_port}}
 redis.ttl=-1
-bento.api.version={{bento_api_version}}
+
+#Redis Filtering
+redis.filter.enable=true
+redis.filter.init_queries_file=yaml/redis-init-queries.example.yaml
+
+#Testing
+test.queries_file=yaml/test-queries.example.yaml

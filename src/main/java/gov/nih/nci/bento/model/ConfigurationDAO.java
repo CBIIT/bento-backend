@@ -1,44 +1,45 @@
 package gov.nih.nci.bento.model;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
- * A Configuration bean read configuration setting from
- * classpth:application.properties. This class provides configuration settings.
+ * The Configuration Bean, reads configuration setting from classpath:application.properties.
  */
-
 @Configuration
 @PropertySource("classpath:application.properties")
 public class ConfigurationDAO {
 
-	
-	@Value("${neo4j.authorization}")
-	private String neo4jHttpHeaderAuthorization;
+	//API Version
+	@Value("${bento.api.version}")
+	private String bentoApiVersion;
 
-	@Value("${neo4j.graphql.endpoint}")
-	private String neo4jGraphQLEndPoint;
+	//Neo4j
+	@Value("${neo4j.url}")
+	private String neo4jUrl;
+	@Value("${neo4j.user}")
+	private String neo4jUser;
+	@Value("${neo4j.password}")
+	private String neo4jPassword;
 
-	@Value("${neo4j.graphql.endpoint.schema_endpoint}")
-	private String neo4jGraphQLSchemaEndpoint;
-
+	//GraphQL
 	@Value("${graphql.schema}")
 	private String schemaFile;
+	@Value("${graphql.redis_schema}")
+	private String redisSchemaFile;
 
+	//Query Restrictions
 	@Value("${allow_graphql_query}")
 	private boolean allowGraphQLQuery;
-	
-	
 	@Value("${allow_graphql_mutation}")
 	private boolean allowGraphQLMutation;
 
-
-	@Value("${enable.redis}")
-	private Boolean redisEnabled;
+	//Redis Caching
+	@Value("${redis.enable}")
+	private boolean redisEnabled;
 	@Value("${redis.use_cluster}")
-	private Boolean redisUseCluster;
+	private boolean redisUseCluster;
 	@Value("${redis.host}")
 	private String redisHost;
 	@Value("${redis.port}")
@@ -46,31 +47,17 @@ public class ConfigurationDAO {
 	@Value("${redis.ttl}")
 	private int redisTTL;
 
-	@Value("${bento.api.version}")
-	private String bentoApiVersion;
+	//Redis Filtering
+	@Value("${redis.filter.enable}")
+	private boolean redisFilterEnabled;
+	@Value("${redis.filter.init_queries_file}")
+	private String redisFilterInitQueriesFile;
 
-	@Value("${neo4j.url}")
-	private String neo4jUrl;
+	//Testing
+	@Value("${test.queries_file}")
+	private String testQueriesFile;
 
-	@Value("${neo4j.user}")
-	private String neo4jUser;
-
-	@Value("${neo4j.password}")
-	private String neo4jPassword;
-
-	public void setNeo4jUrl(String neo4jUrl) {
-		this.neo4jUrl = neo4jUrl;
-	}
-
-	public void setNeo4jUser(String neo4jUser) {
-		this.neo4jUser = neo4jUser;
-	}
-
-	public void setNeo4jPassword(String neo4jPassword) {
-		this.neo4jPassword = neo4jPassword;
-	}
-
-
+	//Getters and Setters
 	public String getNeo4jUrl() {
 		return neo4jUrl;
 	}
@@ -83,102 +70,120 @@ public class ConfigurationDAO {
 		return neo4jPassword;
 	}
 
-
-	
-	public String getNeo4jGraphQLEndPoint() {
-		return neo4jGraphQLEndPoint;
-	}
-
-	public void setNeo4jGraphQLEndPoint(String neo4jGraphQLEndPoint) {
-		this.neo4jGraphQLEndPoint = neo4jGraphQLEndPoint;
-	}
-
-	public String getNeo4jGraphQLSchemaEndpoint() {
-		return neo4jGraphQLSchemaEndpoint;
-	}
-
-	public void setNeo4jGraphQLSchemaEndpoint(String neo4jGraphQLSchemaEndpoint) {
-		this.neo4jGraphQLSchemaEndpoint = neo4jGraphQLSchemaEndpoint;
-	}
-
-	public String getNeo4jHttpHeaderAuthorization() {
-		return neo4jHttpHeaderAuthorization;
-	}
-
-	public void setNeo4jHttpHeaderAuthorization(String neo4jHttpHeaderAuthorization) {
-		this.neo4jHttpHeaderAuthorization = neo4jHttpHeaderAuthorization;
-	}
-
 	public String getSchemaFile() {
 		return schemaFile;
-	}
-
-	public void setSchemaFile(String schemaFile) {
-		this.schemaFile = schemaFile;
 	}
 
 	public boolean isAllowGraphQLQuery() {
 		return allowGraphQLQuery;
 	}
 
-	public void setAllowGraphQLQuery(boolean allowGraphQLQuery) {
-		this.allowGraphQLQuery = allowGraphQLQuery;
-	}
-
 	public boolean isAllowGraphQLMutation() {
 		return allowGraphQLMutation;
 	}
 
-	public void setAllowGraphQLMutation(boolean allowGraphQLMutation) {
-		this.allowGraphQLMutation = allowGraphQLMutation;
+	public boolean getRedisEnabled() {
+		return redisEnabled;
 	}
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
-		return new PropertySourcesPlaceholderConfigurer();
+	public boolean getRedisUseCluster() {
+		return redisUseCluster;
 	}
 
 	public String getRedisHost() {
 		return redisHost;
 	}
 
-	public void setRedisHost(String redisHost) {
-		this.redisHost = redisHost;
+	public int getRedisPort() {
+		return redisPort;
 	}
 
 	public int getRedisTTL() {
 		return redisTTL;
 	}
 
-	public void setRedisTTL(int redisTTL) {
-		this.redisTTL = redisTTL;
+	public String getBentoApiVersion() {
+		return bentoApiVersion;
 	}
 
-	public Boolean getRedisUseCluster() {
-		return redisUseCluster;
+	public String getTestQueriesFile() {
+		return testQueriesFile;
+	}
+
+	public boolean isRedisFilterEnabled() {
+		return redisFilterEnabled;
+	}
+
+	public String getRedisFilterInitQueriesFile() {
+		return redisFilterInitQueriesFile;
+	}
+
+	public String getRedisSchemaFile() {
+		return redisSchemaFile;
+	}
+
+	//Setters
+	public void setNeo4jUrl(String neo4jUrl) {
+		this.neo4jUrl = neo4jUrl;
+	}
+
+	public void setNeo4jUser(String neo4jUser) {
+		this.neo4jUser = neo4jUser;
+	}
+
+	public void setNeo4jPassword(String neo4jPassword) {
+		this.neo4jPassword = neo4jPassword;
+	}
+
+	public void setSchemaFile(String schemaFile) {
+		this.schemaFile = schemaFile;
+	}
+
+	public void setAllowGraphQLQuery(boolean allowGraphQLQuery) {
+		this.allowGraphQLQuery = allowGraphQLQuery;
+	}
+
+	public void setAllowGraphQLMutation(boolean allowGraphQLMutation) {
+		this.allowGraphQLMutation = allowGraphQLMutation;
+	}
+
+	public void setRedisHost(String redisHost) {
+		this.redisHost = redisHost;
+	}
+
+	public void setRedisTTL(int redisTTL) {
+		this.redisTTL = redisTTL;
 	}
 
 	public void setRedisUseCluster(Boolean redisUseCluster) {
 		this.redisUseCluster = redisUseCluster;
 	}
 
-	public int getRedisPort() {
-		return redisPort;
-	}
-
 	public void setRedisPort(int redisPort) {
 		this.redisPort = redisPort;
-	}
-
-	public Boolean getRedisEnabled() {
-		return redisEnabled;
 	}
 
 	public void setRedisEnabled(Boolean redisEnabled) {
 		this.redisEnabled = redisEnabled;
 	}
 
-	public String getBentoApiVersion(){ return bentoApiVersion; }
+	public void setBentoApiVersion(String bentoApiVersion) {
+		this.bentoApiVersion = bentoApiVersion;
+	}
 
-	public void setBentoApiVersion(String bentoApiVersion){ this.bentoApiVersion = bentoApiVersion; }
+	public void setTestQueriesFile(String testQueriesFile) {
+		this.testQueriesFile = testQueriesFile;
+	}
+
+	public void setRedisFilterEnabled(boolean redisFilterEnabled) {
+		this.redisFilterEnabled = redisFilterEnabled;
+	}
+
+	public void setRedisFilterInitQueriesFile(String redisFilterInitQueriesFile) {
+		this.redisFilterInitQueriesFile = redisFilterInitQueriesFile;
+	}
+
+	public void setRedisSchemaFile(String redisSchemaFile) {
+		this.redisSchemaFile = redisSchemaFile;
+	}
 }

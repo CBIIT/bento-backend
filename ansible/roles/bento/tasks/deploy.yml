@@ -12,6 +12,12 @@
       essential: true
       image: "cbiitssrepo/bento-backend:{{backend_version}}"
       environment:
+        - name: NEO4J_URL
+          value: bolt://{{ neo4j_ip }}:7687
+        - name: NEO4J_USER
+          value: "{{ neo4j_user }}"
+        - name: NEO4J_PASSWROD
+          value: "{{ neo4j_password }}"
         - name: NEO4J_GRAPHQL_ENDPOINT
           value: http://{{ neo4j_ip }}:7474/graphql/
         - name: NEO4J_AUTHORIZATION

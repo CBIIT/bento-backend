@@ -19,4 +19,6 @@ src/main/resources/application-bento-v4.properties
 src/main/resources/application-icdc.properties
 src/main/resources/graphql/icdc.graphql
 src/main/resources/graphql/bento-extended.graphql
+src/main/resources/graphql/redis-schema.graphql
+src/main/resources/yaml/redis-init-queries.bento.yaml
 

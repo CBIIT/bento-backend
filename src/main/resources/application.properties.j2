@@ -8,32 +8,31 @@ spring.mvc.view.suffix=.jsp
 error.redirect_url=http://localhost/error.html
 
 #Neo4j
-neo4j.url = bolt://{{neo4j_ip}}:7687
-neo4j.user = {{neo4j_user}}
-neo4j.password = {{neo4j_password}}
-
-#Neo4j Pre-version 4
-neo4j.graphql.endpoint=http://{{neo4j_ip}}:7474/graphql/
-neo4j.graphql.endpoint.schema_endpoint=idl/
-neo4j.authorization={{bearer}}
+# following properties will be read from environment variables
+# neo4j.url =
+# neo4j.user =
+# neo4j.password =
 
 #GraphQL
 graphql.schema=graphql/{{schema_file}}
+graphql.redis_schema=graphql/{{redis-schema_file}}
 
 #Query Restrictions
 allow_graphql_query = true
 allow_graphql_mutation =false
 
 #Redis Caching
-redis.enable={{enable_redis}}
-redis.use_cluster={{use_cluster}}
-redis.host={{redis_host[tier]}}
-redis.port={{redis_port}}
+# following properties will be read from environment variables
+# redis.enable =
+# redis.use_cluster =
+# redis.host =
+# redis.port =
 redis.ttl=-1
 
 #Redis Filtering
-redis.filter.enable=true
-redis.filter.init_queries_file=yaml/redis-init-queries.example.yaml
+# following properties will be read from environment variables
+# redis.filter.enable =
+# redis.filter.init_queries_file =
 
 #Testing
-test.queries_file=yaml/test-queries.example.yaml
+# test.queries_file =

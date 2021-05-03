@@ -20,8 +20,5 @@ class BentoStack(cdk.Stack):
     # ECR
     bentoECR = ecr.ECRResources.createResources(self, ns)
     
-    # ECR
+    # ECS
     bentoECS = ecs.ECSResources.createResources(self, ns)
-    
-    # EC2
-    #bentoEC2 = ec2.EC2Resources.createResources(self, ns, config, bentoTags, bentoIAM)

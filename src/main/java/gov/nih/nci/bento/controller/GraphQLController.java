@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.Request;
 import gov.nih.nci.bento.service.Neo4jDataFetcher;
 import gov.nih.nci.bento.service.RedisFilterDataFetcher;
 import gov.nih.nci.bento.service.RedisService;
@@ -13,7 +12,6 @@ import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.language.Document;
-import graphql.language.Field;
 import graphql.language.OperationDefinition;
 import graphql.parser.Parser;
 import graphql.schema.GraphQLNamedType;
@@ -29,6 +27,7 @@ import org.json.JSONObject;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -49,12 +48,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@DependsOn({"neo4jDataFetcher", "redisService"})
 public class GraphQLController {
 
 	private static final Logger logger = LogManager.getLogger(GraphQLController.class);
@@ -113,17 +112,17 @@ public class GraphQLController {
 		String reqBody = httpEntity.getBody().toString();
 		Gson gson = new Gson();
 		JsonObject jsonObject = gson.fromJson(reqBody, JsonObject.class);
+		String query;
+		Map<String, Object> variables;
 		String operation;
-		ArrayList<Request> requests;
 		try{
-			String sdl = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
-			Parser parser = new Parser();
-			Document document = parser.parseDocument(sdl);
+			query = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			JsonElement rawVar = jsonObject.get("variables");
+			variables = gson.fromJson(rawVar, Map.class);
+			Parser parser = new Parser();
+			Document document = parser.parseDocument(query);
 			OperationDefinition def = (OperationDefinition) document.getDefinitions().get(0);
 			operation = def.getOperation().toString().toLowerCase();
-			Map<String, Object> variables = gson.fromJson(rawVar, Map.class);
-			requests = parseRequests(document, variables);
 		}
 		catch(Exception e){
 			HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -133,25 +132,7 @@ public class GraphQLController {
 
 		if ((operation.equals("query") && config.isAllowGraphQLQuery())
 				|| (operation.equals("mutation") && config.isAllowGraphQLMutation())) {
-			String responseText;
-			ArrayList<String> responses = new ArrayList<>();
-			for(Request request : requests){
-				String query = request.getQuery();
-				Map<String, Object> variables = request.getVariables();
-				if (config.getRedisEnabled()) {
-					String queryKey = request.getQueryKey();
-					responseText = redisService.getCachedValue(queryKey);
-					if (null == responseText) {
-						responseText = query(query, variables);
-						redisService.cacheValue(queryKey, responseText);
-					}
-				} else {
-					responseText = query(query, variables);
-				}
-				responses.add(responseText);
-			}
-			responseText = mergeResponses(responses).toString();
-			return ResponseEntity.ok(responseText);
+			return ResponseEntity.ok(query(query, variables));
 		}
 		else if(operation.equals("query") || operation.equals("mutation")){
 			HttpStatus status = HttpStatus.FORBIDDEN;
@@ -181,54 +162,6 @@ public class GraphQLController {
 		return ResponseEntity.status(status).body(error);
 	}
 
-	private ArrayList<Request> parseRequests(Document document, Map<String, Object> variablesMap){
-		OperationDefinition operationDefinition = (OperationDefinition) document.getDefinitions().get(0);
-		Field[] queries = operationDefinition.getSelectionSet().getSelections().toArray(new Field[0]);
-		ArrayList<Request> requests = new ArrayList<>();
-		for (Field field: queries){
-			requests.add(new Request(field, document, variablesMap));
-		}
-		return requests;
-	}
-
-	private JSONObject mergeResponses(List<String> responses){
-		JSONObject mergedData = new JSONObject();
-		JSONArray mergedErrors = new JSONArray();
-
-		for(String response : responses) {
-			JSONObject responseJson = new JSONObject(response);
-			String key;
-
-			key = "data";
-			if (responseJson.has(key)){
-				JSONObject fieldData = responseJson.getJSONObject(key);
-				String[] names = JSONObject.getNames(fieldData);
-				if (names != null){
-					for (String child : names) {
-						if (fieldData.has(child)){
-							mergedData.put(child, fieldData.get(child));
-						}
-					}
-				}
-			}
-
-			key = "errors";
-			if (responseJson.has(key)){
-				JSONArray errorsArray = responseJson.getJSONArray(key);
-				if (errorsArray != null){
-					for (int i = 0; i < errorsArray.length(); i++){
-						mergedErrors.put(errorsArray.getJSONObject(i));
-					}
-				}
-			}
-		}
-
-		JSONObject mergedResponse = new JSONObject();
-		mergedResponse.put("data", mergedData);
-		mergedResponse.put("errors", mergedErrors);
-		return mergedResponse;
-	}
-
 	private void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
 		GraphQLSchema redisSchema = getRedisSchema();
@@ -243,7 +176,7 @@ public class GraphQLController {
 			Map<String, List<String>> obj = yaml.load(inputStream);
 			List<String> queries = obj.get("queries");
 			for (String query : queries) {
-				String response = query(String.format("{%s{group, subjects}}", query), new HashMap<>());
+				String response = query(String.format("{%s{group subjects}}", query), new HashMap<>());
 				//Convert query response to JSON
 				JSONObject jsonObject = new JSONObject(response);
 				//Extract "data" attribute from response as a JSON object

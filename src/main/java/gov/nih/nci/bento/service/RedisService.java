@@ -16,7 +16,7 @@ import javax.annotation.PreDestroy;
 import java.util.HashSet;
 import java.util.Set;
 
-@Service
+@Service("redisService")
 public class RedisService {
     private static final Logger logger = LogManager.getLogger(RedisService.class);
 

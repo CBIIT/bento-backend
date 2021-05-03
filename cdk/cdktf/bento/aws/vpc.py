@@ -4,16 +4,12 @@ class VPCResources:
   def createResources(self, ns, config, bentoTags):
 
     # VPC
-    bentoVPC = aws.Vpc(self, "bento-vpc", ami="ami-2757f631", instance_type=config[ns]['fronted_instance_type'], iam_instance_profile=self.ecsInstanceProfile.name, tags=bentoTags)
+    bentoVPC = aws.Vpc(self, "bento-vpc", cidr_block=config[ns]['vpc_cidr_block'], tags=bentoTags)
     
-    
-    module "vpc" {
-  source = "../../../modules/networks/vpc"
-  stack_name = var.stack_name
-  env = var.env
-  availability_zones = var.availability_zones
-  private_subnets = var.private_subnets
-  public_subnets = var.public_subnets
-  vpc_cidr_block = var.vpc_cidr_block
-  tags = var.tags
-}
+    # Private Subnets
+    for subnet in config[ns]['private_subnets'].split(","):
+      aws.Subnet(self, '_' + subnet.replace('/', '_'), cidr_block=subnet, vpc_id=bentoVPC.id, tags=bentoTags)
+
+    # Public Subnets
+    for subnet in config[ns]['public_subnets'].split(","):
+      aws.Subnet(self, '_' + subnet.replace('/', '_'), cidr_block=subnet, vpc_id=bentoVPC.id, tags=bentoTags)

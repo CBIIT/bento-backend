@@ -41,7 +41,7 @@ pipeline {
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
-        description: 'Choose the environment to build', 
+        description: 'Choose the environment to upgrade', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa' )
 

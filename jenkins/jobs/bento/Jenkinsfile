@@ -52,6 +52,22 @@ pipeline {
 		defaultValue: true,
 		description: 'Flush the Redis cache',
 		name: 'Flush_Redis')
+	booleanParam(
+		defaultValue: true,
+		description: 'Enable the Redis filter',
+		name: 'Enable_Redis_Filter')
+	string(
+	    defaultValue: 'redis-schema.graphql',
+		description: 'The file to use when loading redis schema',
+		name: 'Redis_Schema_File')
+	string(
+	    defaultValue: 'redis-init-queries.example.yaml',
+		description: 'The file to use when loading redis queries',
+		name: 'Redis_Queries_File')
+	string(
+	    defaultValue: 'test-queries.example.yaml',
+		description: 'The file to use when loading test queries',
+		name: 'Test_Queries_File')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -272,6 +288,9 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
+	   REDIS_SCHEMA_FILE = "${params.Redis_Schema_File}"
+	   REDIS_QUERIES_FILE = "${params.Redis_Queries_File}"
+	   TEST_QUERIES_FILE = "${params.Test_Queries_File}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -289,6 +308,7 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+	   ENABLE_REDIS_FILTER = "${params.Enable_Redis_Filter}"
       }
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

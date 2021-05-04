@@ -66,10 +66,48 @@
     state: directory
     path: "{{workspace}}/src/main/resources/graphql"
 
+- name: create yaml directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/yaml"
+
 - name: copy schema from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/graphql/{{schema_file}}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{schema_file}}"
+    src: "{{workspace}}/bento-frontend/graphql/{{ schema_file }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
+
+- name: verify redis schema file exists
+  stat:
+    path: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"
+  register: redis_schema
+
+- name: verify redis init queries file exists
+  stat:
+    path: "{{workspace}}/bento-frontend/yaml/{{ redis_init_queries_file }}"
+  register: redis_queries
+
+- name: verify test queries file exists
+  stat:
+    path: "{{workspace}}/bento-frontend/yaml/{{ test_queries_file }}"
+  register: test_queries
+
+- name: copy redis schema from frontend to resources
+  template:
+    src: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ redis_schema_file }}"
+  when: redis_schema.stat.exists
+
+- name: copy redis init queries from frontend to resources
+  template:
+    src: "{{workspace}}/bento-frontend/yaml/{{ redis_init_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ redis_init_queries_file }}"
+  when: redis_queries.stat.exists
+
+- name: copy test queries from frontend to resources
+  template:
+    src: "{{workspace}}/bento-frontend/yaml/{{ test_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
+  when: test_queries.stat.exists
 
 - name: build springboot code
   command: mvn package -DskipTests

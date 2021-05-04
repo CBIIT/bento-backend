@@ -32,6 +32,8 @@
           value: "{{ redis_host[tier] }}"
         - name: REDIS_PORT
           value: "{{ redis_port }}"
+        - name: REDIS_FILTER_ENABLE
+          value: "{{ enable_redis_filter }}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

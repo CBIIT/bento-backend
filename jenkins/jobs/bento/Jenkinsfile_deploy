@@ -52,6 +52,10 @@ pipeline {
 		defaultValue: true,
 		description: 'Flush the Redis cache',
 		name: 'Flush_Redis')
+	booleanParam(
+		defaultValue: true,
+		description: 'Enable the Redis filter',
+		name: 'Enable_Redis_Filter')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -277,6 +281,7 @@ pipeline {
 	   VERSION = "${params.Frontend_Image}"
        FE_VERSION = "${params.Frontend_Image}"
        BE_VERSION = "${params.Backend_Image}"
+	   ENABLE_REDIS_FILTER = "${params.Enable_Redis_Filter}"
       }
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

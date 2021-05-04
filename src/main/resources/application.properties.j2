@@ -15,7 +15,7 @@ error.redirect_url=http://localhost/error.html
 
 #GraphQL
 graphql.schema=graphql/{{schema_file}}
-graphql.redis_schema=graphql/{{redis-schema_file}}
+graphql.redis_schema=graphql/{{redis_schema_file}}
 
 #Query Restrictions
 allow_graphql_query = true
@@ -32,7 +32,7 @@ redis.ttl=-1
 #Redis Filtering
 # following properties will be read from environment variables
 # redis.filter.enable =
-# redis.filter.init_queries_file =
+redis.filter.init_queries_file = yaml/{{redis_init_queries_file}}
 
 #Testing
-# test.queries_file =
+test.queries_file = yaml/{{test_queries_file}}

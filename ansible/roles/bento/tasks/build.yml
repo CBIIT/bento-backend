@@ -78,7 +78,7 @@
 
 - name: echo redis_schema_file
   debug:
-    msg: "{{ redis_schema_file.stdout_lines }}"
+    var: redis_schema_file
 
 - name: verify redis schema file exists
   stat:

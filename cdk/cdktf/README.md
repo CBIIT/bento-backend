@@ -39,4 +39,12 @@ After modules are installed you can build terraform scripts from cdktf:
 cdktf synth -a "python3 bento-aws.py -t <tier>"
 ```
 
+## Deploy Terraform scripts for the bento cdktf project
+
+Resources can also be deployed directly using cdktf:
+
+```bash
+cdktf deploy -a "python3 bento-aws.py -t <tier>"
+```
+
 * Note: an appropriate tier must be specified to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes

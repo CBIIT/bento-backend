@@ -43,7 +43,34 @@ class IAMResources:
     
     self.ecsServiceRole = aws.IamRole(self, "ecs-service-role", name="{}-ecs-service-role".format(ns), assume_role_policy=json.dumps(ecsServicePolicyDoc), tags=bentoTags)
     self.ecsServiceRolePolicy = aws.IamRolePolicyAttachment(self, "ecs-service-role-policy", role=self.ecsServiceRole.name, policy_arn="arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole")
+
+    # ECR Policy
+    ecrPolicyDocument = {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "ElasticContainerRegistryPushAndPull",
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": [
+              "local.my_account"
+            ],
+          },
+          "Action": [
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:PutImage",
+            "ecr:InitiateLayerUpload",
+            "ecr:UploadLayerPart",
+            "ecr:CompleteLayerUpload"
+          ]
+        }
+      ]
+    }
     
+    self.ecrPolicy = aws.IamPolicy(self, "ecr-policy", name="{}-ecr-policy".format(ns), path="/", policy=json.dumps(ecrPolicyDocument))
+
     # SSM
     ssmPolicyDocument = {
       "Version": "2012-10-17",

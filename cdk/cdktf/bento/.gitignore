@@ -6,4 +6,5 @@ imports/*
 !imports/__init__.py
 .terraform
 cdktf.out
+test.py
 terraform.tfstate*

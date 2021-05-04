@@ -1,0 +1,10 @@
+---
+- name: upgrade neo4j server
+  hosts: neo4j
+  become: yes
+  
+  vars_files:
+    - config/icdc-env-vars.yaml
+    
+  roles:
+    - neo4j-version-update

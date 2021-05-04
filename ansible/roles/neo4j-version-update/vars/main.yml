@@ -1,0 +1,5 @@
+---
+# vars file for neo4j
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+neo4j_version: "4.2.5"
+apoc_version: "4.2.0.2-core"

@@ -1,0 +1,143 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+		}
+	}
+
+	parameters {
+
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa' )
+
+  }
+  
+  options {
+  	ansiColor('xterm')
+  }
+  
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  
+  stages{
+  	stage('checkout'){
+  		steps {
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+	
+	stage('Set Environment'){
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+			    withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.DB_INSTANCE = "ncias-d2224-c"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+				}
+              break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.DB_INSTANCE = "ncias-q2251-c"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+				}
+              break
+              default:
+                withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.DB_INSTANCE = "ncias-d2224-c"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+				}
+              break
+            }
+          }
+        }
+    }
+
+  	stage('DB Update'){
+      environment {
+        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+        }
+ 		steps {
+          wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+
+          script {
+            sh label: 'database-hosts', script: '''#!/bin/bash
+              echo "Creating inventory file"
+              echo "[neo4j]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+              echo ${DB_INSTANCE} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+              '''
+
+          }
+
+          ansiblePlaybook(  			
+            playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-version-update.yml', 
+              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+              credentialsId: 'commonsdocker',
+              colorized: true)
+
+ 		  }
+		}
+  	}
+
+  }
+  post {
+    always {
+      sendSlackMessage()
+      cleanWs()
+    }
+  }
+}

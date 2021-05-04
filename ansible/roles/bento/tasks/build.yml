@@ -76,6 +76,10 @@
     src: "{{workspace}}/bento-frontend/graphql/{{ schema_file }}"
     dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
 
+- name: echo redis_schema_file
+  debug:
+    msg: "{{ redis_schema_file.stdout_lines }}"
+
 - name: verify redis schema file exists
   stat:
     path: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"

@@ -84,7 +84,7 @@ pipeline {
 //	
 //	Script:
 //		env_value = Environment
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
+//		def gettags = ("git ls-remote -h https://github.com/CBIIT/bento-frontend.git").execute()
 //		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
 //		List tagnames = tags.collect{ '' + it + '' }
 //
@@ -129,7 +129,7 @@ pipeline {
 //	
 //	Script:
 //		front_tag = Frontend_Tag
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
+//		def gettags = ("git ls-remote -h https://github.com/CBIIT/bento-backend.git").execute()
 //		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
 //		List tagnames = tags.collect{ '' + it + '' }
 //

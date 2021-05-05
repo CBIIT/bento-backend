@@ -298,6 +298,7 @@ pipeline {
             sh "echo redis queries:    ${REDIS_QUERIES_FILE}"
             sh "echo redis test:    ${TEST_QUERIES_FILE}"
 			sh "echo tier:    ${TIER}"
+			sh "echo fe version:    ${FE_VERSION}"
 		
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){

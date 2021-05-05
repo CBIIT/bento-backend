@@ -16,7 +16,7 @@
           value: bolt://{{ neo4j_ip }}:7687
         - name: NEO4J_USER
           value: "{{ neo4j_user }}"
-        - name: NEO4J_PASSWROD
+        - name: NEO4J_PASSWORD
           value: "{{ neo4j_password }}"
         - name: NEO4J_GRAPHQL_ENDPOINT
           value: http://{{ neo4j_ip }}:7474/graphql/

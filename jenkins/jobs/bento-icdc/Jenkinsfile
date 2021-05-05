@@ -186,7 +186,6 @@ pipeline {
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                  credentialsId: 'commonsdocker',
                   extraVars: [
                     file_version: "${params.File_Tag}-${BUILD_NUMBER}",
                   ],

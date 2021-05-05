@@ -43,12 +43,21 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod' )
-    extendedChoice( 
-        name: 'Release', 
-        defaultValue: 'test', 
-        description: 'Choose the environment to build', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'test,final' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'master', 
+            name: 'File_Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'ASCENDING_SMART', 
+            tagFilter: '*', 
+            useRepository: 'https://github.com/CBIIT/bento-files')
+    // extendedChoice( 
+    //     name: 'Release', 
+    //     defaultValue: 'test', 
+    //     description: 'Choose the environment to build', 
+    //     type: 'PT_SINGLE_SELECT',
+    //     value: 'test,final' )
     booleanParam(
     defaultValue: true,
     description: 'Flush the Redis cache',
@@ -67,14 +76,14 @@ pipeline {
   	stage('checkout'){
   		steps {
 				
-  			checkout([$class: 'GitSCM', 
+  	    checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Backend_Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/bento-backend']]])
 
-			checkout([$class: 'GitSCM',
+			 checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
@@ -83,7 +92,16 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-icdc-frontend']]])
 
-  			checkout( poll: false, 
+       checkout([$class: 'GitSCM',
+        branches: [[name: "${params.File_Tag}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'RelativeTargetDirectory',
+        relativeTargetDir: 'bento-files']],
+        submoduleCfg: [],
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/bento-files']]])
+        
+  		 checkout( poll: false, 
 				changelog:false,
 				scm: [$class: 'GitSCM', 
 				branches: [[name: '*/master']], 
@@ -217,6 +235,7 @@ pipeline {
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}-${BUILD_NUMBER}",
                     backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
+                    file_version: "${params.File_Tag}-${BUILD_NUMBER}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}"
                     ],

@@ -42,7 +42,6 @@
     chdir: "{{ git_home }}"
     warn: false
 
-  
 - name: 
   command: git push 
   args:

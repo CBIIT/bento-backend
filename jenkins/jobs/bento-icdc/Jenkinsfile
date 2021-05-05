@@ -47,6 +47,15 @@ pipeline {
     defaultValue: true,
     description: 'Flush the Redis cache',
     name: 'Flush_Redis')
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'main', 
+            name: 'File_Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'ASCENDING_SMART', 
+            tagFilter: '*', 
+            useRepository: 'https://github.com/CBIIT/bento-files')
 
 
   }

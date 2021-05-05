@@ -2,6 +2,7 @@
 - name: deploy stage of bento pipeline
   hosts: icdc-{{tier}}
   gather_facts: yes
+  become: yes
     
   tasks:
     - name: deploy bento-icdc

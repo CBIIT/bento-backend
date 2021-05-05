@@ -49,3 +49,16 @@ services:
     ports:
       - "80:80"
     restart: always
+
+##########################################################
+# file downloader container
+##########################################################   
+
+  file-downloader:
+    container_name: files
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{file_version}}   
+    volumes:
+      - "/local/content/k9dc/file-downloader:/var/log"
+    ports:
+      - "8081:8081"
+    restart: always

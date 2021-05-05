@@ -78,11 +78,7 @@
 
 - name: echo redis_schema_file
   debug:
-    var: redis_schema_file
-
-- name: echo fe_version
-  debug:
-    var: frontend_version
+    msg: "{{ lookup('env','REDIS_SCHEMA_FILE') }}"
 
 - name: verify redis schema file exists
   stat:

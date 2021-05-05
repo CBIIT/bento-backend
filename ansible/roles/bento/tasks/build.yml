@@ -80,6 +80,10 @@
   debug:
     var: redis_schema_file
 
+- name: echo fe_version
+  debug:
+    var: frontend_version
+
 - name: verify redis schema file exists
   stat:
     path: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"

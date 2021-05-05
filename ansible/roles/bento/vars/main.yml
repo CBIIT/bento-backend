@@ -2,6 +2,7 @@
 # vars file for cicd
 enable_redis: true
 platform: aws
+
 redis_host: 
   dev: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   qa: "bento-qa-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
@@ -10,11 +11,9 @@ redis_host:
   prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 redis_password: ""
 redis_port: 6379
-redis_schema_file: "{{ lookup('env','REDIS_SCHEMA_FILE') }}"
-redis_init_queries_file: "{{ lookup('env','REDIS_INIT_QUERIES_FILE') }}"
-test_queries_file: "{{ lookup('env','TEST_QUERIES_FILE') }}"
 enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"
 use_cluster: 'true'
+
 tier: "{{ lookup('env','TIER') }}"
 version: "{{ lookup('env','VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

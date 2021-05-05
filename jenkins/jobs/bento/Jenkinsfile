@@ -293,7 +293,12 @@ pipeline {
        TEST_QUERIES_FILE = "${params.Test_Queries_File}"
       }
  		steps {
-
+		
+		    sh "echo redis schema:    ${REDIS_SCHEMA_FILE}"
+            sh "echo redis queries:    ${REDIS_QUERIES_FILE}"
+            sh "echo redis test:    ${TEST_QUERIES_FILE}"
+			sh "echo tier:    ${TIER}"
+		
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
           ansiblePlaybook(  			

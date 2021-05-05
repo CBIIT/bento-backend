@@ -3,6 +3,7 @@
   hosts: icdc-local
   gather_facts: no
   connection: local
+ 
 
   tasks:
     - name: build bento-icdc application

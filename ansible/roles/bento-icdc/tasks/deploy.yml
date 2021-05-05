@@ -26,10 +26,14 @@
 - name: clean up 
   shell: docker system prune -a -f
 
-- name: ensure /local/content/docker exists
+- name: ensure log and docker directory exists
   file: 
-    path: /local/content/docker
+    path: "{{item}}"
     state: directory
+  loop:
+    - /local/content/docker
+    - /local/content/k9dc/file-downloader
+    - /local/content/k9dc/nginx
 
 - name: update serivces and compose files
   template:

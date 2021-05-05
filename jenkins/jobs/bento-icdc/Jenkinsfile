@@ -313,6 +313,22 @@ pipeline {
       
         }
       }
+    script {
+      withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+        sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
+        
+        cd ${WORKSPACE}/bento-files
+        gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+        echo "Applying tag $File_Tag to URL:  $gitURL"
+        git config user.email "jenkins@bento-tools.org"
+        git config user.name "Bento Jenkins"
+        git tag --no-sign -a ${File_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${File_Tag}-${BUILD_NUMBER}"
+        git push https://${git_user}:${git_password}@${gitURL} --tags
+        
+        '''
+      
+        }
+      }
     
     }
     cleanup {

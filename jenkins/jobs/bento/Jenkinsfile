@@ -215,9 +215,6 @@ pipeline {
       }
         steps {
           script {
-		    env.REDIS_SCHEMA_FILE = "${params.Redis_Schema_File}"
-            env.REDIS_QUERIES_FILE = "${params.Redis_Queries_File}"
-            env.TEST_QUERIES_FILE = "${params.Test_Queries_File}"
 			
             switch("${params.Environment}") {
               case "dev":
@@ -292,21 +289,19 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
-	   //REDIS_SCHEMA_FILE = "${params.Redis_Schema_File}"
-       //REDIS_QUERIES_FILE = "${params.Redis_Queries_File}"
-       //TEST_QUERIES_FILE = "${params.Test_Queries_File}"
+	   REDIS_QUERIES_FILE = "${params.Redis_Queries_File}"
+       TEST_QUERIES_FILE = "${params.Test_Queries_File}"
       }
  		steps {
-		
-		    sh "echo redis schema:    ${REDIS_SCHEMA_FILE}"
-            sh "echo redis queries:    ${REDIS_QUERIES_FILE}"
-            sh "echo redis test:    ${TEST_QUERIES_FILE}"
-		
+
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
                     playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						extraVars: [
+                        redis_schema_file: "${params.Redis_Schema_File}",
+                        ],
 						colorized: true)
  				}
  			}

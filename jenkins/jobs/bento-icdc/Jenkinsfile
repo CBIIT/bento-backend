@@ -42,17 +42,20 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,test,qa,stage,prod' )
-    extendedChoice( 
-        name: 'Release', 
-        defaultValue: 'test', 
-        description: 'Choose the environment to build', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'test,final' )
+        value: 'sandbox,dev,test,qa,stage,prod')
     booleanParam(
     defaultValue: true,
     description: 'Flush the Redis cache',
     name: 'Flush_Redis')
+    gitParameter(branchFilter: 'origin/(.*)', 
+            defaultValue: 'main', 
+            name: 'File_Tag', 
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false, 
+            selectedValue: 'DEFAULT', 
+            sortMode: 'ASCENDING_SMART', 
+            tagFilter: '*', 
+            useRepository: 'https://github.com/CBIIT/bento-files')
 
 
   }
@@ -67,14 +70,14 @@ pipeline {
   	stage('checkout'){
   		steps {
 				
-  			checkout([$class: 'GitSCM', 
+  	    checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Backend_Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/bento-backend']]])
 
-			checkout([$class: 'GitSCM',
+			 checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
@@ -83,7 +86,16 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-icdc-frontend']]])
 
-  			checkout( poll: false, 
+       checkout([$class: 'GitSCM',
+        branches: [[name: "${params.File_Tag}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'RelativeTargetDirectory',
+        relativeTargetDir: 'bento-files']],
+        submoduleCfg: [],
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/bento-files']]])
+        
+  		 checkout( poll: false, 
 				changelog:false,
 				scm: [$class: 'GitSCM', 
 				branches: [[name: '*/master']], 
@@ -166,8 +178,6 @@ pipeline {
     }
   	stage('build'){
       environment{
-        // FE_VERSION = "${params.Frontend_Tag}"
-        // BE_VERSION = "${params.Backend_Tag}"
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
@@ -185,15 +195,18 @@ pipeline {
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            			colorized: true) 
+                  extraVars: [
+                    file_version: "${params.File_Tag}-${BUILD_NUMBER}",
+                  ],
+            			colorized: true
+                  ) 
  				}
  			}
  		}
   	}
   	stage('deploy'){
       environment {
-        // FE_VERSION = "${params.Frontend_Tag}"
-        // BE_VERSION = "${params.Backend_Tag}"
+        FILE_VERSION = "${params.File_Tag}-${BUILD_NUMBER}"
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
@@ -217,6 +230,7 @@ pipeline {
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}-${BUILD_NUMBER}",
                     backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
+                    file_version: "${params.File_Tag}-${BUILD_NUMBER}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}"
                     ],
@@ -293,6 +307,22 @@ pipeline {
         git config user.email "jenkins@bento-tools.org"
         git config user.name "Bento Jenkins"
         git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
+        git push https://${git_user}:${git_password}@${gitURL} --tags
+        
+        '''
+      
+        }
+      }
+    script {
+      withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+        sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
+        
+        cd ${WORKSPACE}/bento-files
+        gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+        echo "Applying tag $File_Tag to URL:  $gitURL"
+        git config user.email "jenkins@bento-tools.org"
+        git config user.name "Bento Jenkins"
+        git tag --no-sign -a ${File_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${File_Tag}-${BUILD_NUMBER}"
         git push https://${git_user}:${git_password}@${gitURL} --tags
         
         '''

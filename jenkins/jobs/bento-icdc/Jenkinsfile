@@ -284,7 +284,7 @@ pipeline {
     script {
       withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
         sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
-        
+        cd ${WORKSPACE}/bento-backend
         gitURL=$(git config remote.origin.url | sed 's|^.*//||')
         echo "Applying tag $Backend_Tag to URL:  $gitURL"
         git config user.email "jenkins@bento-tools.org"

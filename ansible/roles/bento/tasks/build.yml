@@ -151,6 +151,12 @@
     state: absent
     path: "{{workspace}}/bento-frontend/.env"
 
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
+    dest: '{{workspace}}/bento-frontend/nginx.conf'
+
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"

@@ -57,10 +57,10 @@ pipeline {
 		
 	extendedChoice( 
         name: 'Profile', 
-        defaultValue: 'QA_BENTO', 
+        defaultValue: 'QA_PROD', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_BENTO,PERF_BENTO' )
+        value: 'QA_PROD,PERF_PROD' )
 
 	string(defaultValue: "", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
@@ -93,7 +93,7 @@ pipeline {
 			steps {
                 script {
                     switch("${params.Profile}") {
-                    case "QA_BENTO":
+                    case "QA_PROD":
 						WIKI_PAGE="442632045"
 						WIKI_NAME="Bento"
 						withCredentials([string(credentialsId: 'Box_Email_QA_BENTO', variable: 'box_email')]) {
@@ -102,11 +102,11 @@ pipeline {
 						  withCredentials([string(credentialsId: 'Box_Url_QA_BENTO', variable: 'box_url')]) {
 						     BOX_URL="${box_url}"
                            }
-                        withCredentials([file(credentialsId: 'Katalon_QA_BENTO', variable: 'pass_file')]) {
+                        withCredentials([file(credentialsId: 'Katalon_QA_PROD', variable: 'pass_file')]) {
                             sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
-					case "PERF_BENTO":
+					case "PERF_PROD":
 						WIKI_PAGE="442632045"
 						WIKI_NAME="Bento"
 						withCredentials([string(credentialsId: 'Box_Email_PERF_BENTO', variable: 'box_email')]) {
@@ -115,7 +115,7 @@ pipeline {
 						  withCredentials([string(credentialsId: 'Box_Url_PERF_BENTO', variable: 'box_url')]) {
 						     BOX_URL="${box_url}"
                            }
-                        withCredentials([file(credentialsId: 'Katalon_PERF_BENTO', variable: 'pass_file')]) {
+                        withCredentials([file(credentialsId: 'Katalon_PERF_PROD', variable: 'pass_file')]) {
                             sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break

@@ -58,10 +58,10 @@ pipeline {
 		
 	extendedChoice( 
         name: 'Profile', 
-        defaultValue: 'Katalon_dev', 
+        defaultValue: 'Katalon_DEV', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'Katalon_dev' )
+        value: 'Katalon_DEV' )
 
 	string(defaultValue: "", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
@@ -129,11 +129,11 @@ pipeline {
                     //        sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                     //        }
                     //    break
-					case "Katalon_dev":
+					case "Katalon_DEV":
 					//	withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
                             BOX_EMAIL="${EmailRecipients}"
                     //        }
-                        withCredentials([file(credentialsId: 'Katalon_dev', variable: 'pass_file')]) {
+                        withCredentials([file(credentialsId: 'Katalon_DEV', variable: 'pass_file')]) {
                             PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }

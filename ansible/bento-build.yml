@@ -3,6 +3,7 @@
   hosts: bento
   connection: local
   gather_facts: no
+  become: yes
     
   tasks:
     - name: This is a build stage

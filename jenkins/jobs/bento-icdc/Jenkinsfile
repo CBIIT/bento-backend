@@ -175,8 +175,6 @@ pipeline {
     }
   	stage('build'){
       environment{
-        // FE_VERSION = "${params.Frontend_Tag}"
-        // BE_VERSION = "${params.Backend_Tag}"
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
@@ -194,15 +192,18 @@ pipeline {
           ansiblePlaybook(  			
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-icdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            			colorized: true) 
+                  extraVars: [
+                    file_version: "${params.File_Tag}-${BUILD_NUMBER}",
+                  ]
+            			colorized: true
+                  ) 
  				}
  			}
  		}
   	}
   	stage('deploy'){
       environment {
-        // FE_VERSION = "${params.Frontend_Tag}"
-        // BE_VERSION = "${params.Backend_Tag}"
+        FILE_VERSION = "${params.File_Tag}-${BUILD_NUMBER}"
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }

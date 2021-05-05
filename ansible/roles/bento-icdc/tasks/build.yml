@@ -29,15 +29,6 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
-- name: ensure log and docker directory exists
-  file: 
-    path: "{{item}}"
-    state: directory
-  loop:
-    - /local/content/docker
-    - /local/content/k9dc/file-downloader
-    - /local/content/k9dc/nginx
-    
 - name: remove the application_example.properties file 
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"

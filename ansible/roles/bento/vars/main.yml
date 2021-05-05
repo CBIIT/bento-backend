@@ -13,8 +13,8 @@ redis_port: 6379
 
 #### Redis changes ####
 #redis_schema_file: "{{ lookup('env','REDIS_SCHEMA_FILE') }}"
-redis_init_queries_file: "{{ lookup('env','REDIS_INIT_QUERIES_FILE') }}"
-test_queries_file: "{{ lookup('env','TEST_QUERIES_FILE') }}"
+#redis_init_queries_file: "{{ lookup('env','REDIS_INIT_QUERIES_FILE') }}"
+#test_queries_file: "{{ lookup('env','TEST_QUERIES_FILE') }}"
 enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"
 #######################
 

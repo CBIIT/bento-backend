@@ -289,8 +289,6 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
-	   REDIS_QUERIES_FILE = "${params.Redis_Queries_File}"
-       TEST_QUERIES_FILE = "${params.Test_Queries_File}"
       }
  		steps {
 
@@ -301,6 +299,8 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         redis_schema_file: "${params.Redis_Schema_File}",
+						redis_init_queries_file: "${params.Redis_Queries_File}",
+                        test_queries_file: "${params.Test_Queries_File}",
                         ],
 						colorized: true)
  				}

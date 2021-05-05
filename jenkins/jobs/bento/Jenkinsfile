@@ -61,11 +61,11 @@ pipeline {
 		description: 'The file to use when loading redis schema',
 		name: 'Redis_Schema_File')
 	string(
-	    defaultValue: 'redis-init-queries.example.yaml',
+	    defaultValue: 'redis-init-queries.bento.yaml',
 		description: 'The file to use when loading redis queries',
 		name: 'Redis_Queries_File')
 	string(
-	    defaultValue: 'test-queries.example.yaml',
+	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
 		name: 'Test_Queries_File')
 

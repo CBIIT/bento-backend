@@ -43,12 +43,6 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod')
-    // extendedChoice( 
-    //     name: 'Release', 
-    //     defaultValue: 'test', 
-    //     description: 'Choose the environment to build', 
-    //     type: 'PT_SINGLE_SELECT',
-    //     value: 'test,final' )
     booleanParam(
     defaultValue: true,
     description: 'Flush the Redis cache',
@@ -194,7 +188,7 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                   extraVars: [
                     file_version: "${params.File_Tag}-${BUILD_NUMBER}",
-                  ]
+                  ],
             			colorized: true
                   ) 
  				}

@@ -312,14 +312,16 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
-	   ENABLE_REDIS_FILTER = "${params.Enable_Redis_Filter}"
       }
   		steps{
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            		colorized: true)
+            		extraVars: [
+                    enable_redis_filter: "${params.Enable_Redis_Filter}",
+                    ],
+					colorized: true)
   			}
   		}
   	}

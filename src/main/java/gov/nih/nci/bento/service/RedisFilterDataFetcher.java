@@ -42,7 +42,7 @@ public class RedisFilterDataFetcher {
         };
     }
 
-    private Map<String, Object> filter(Map<String, String[]> variables) throws Exception {
+    private Map<String, Object> filter(Map<String, String[]> variables) throws FilterException {
         Map<String, String[]> categories = new HashMap<>();
         ArrayList<String> invalidGroups = new ArrayList<>();
         ArrayList<String> invalidParams = new ArrayList<>();
@@ -65,17 +65,8 @@ public class RedisFilterDataFetcher {
                 }
             }
         }
-        String exception = "";
-        if (!invalidGroups.isEmpty()){
-            exception += String.format("The following filter groups were not found by the initialization queries: %s. ",
-                    String.join(", ",invalidGroups));
-        }
-        if (!invalidParams.isEmpty()){
-            exception += String.format("The following parameters are not mapped to a filter group: %s",
-                    String.join(", ",invalidParams));
-        }
-        if (!exception.isEmpty()){
-            throw new Exception(exception);
+        if (!invalidGroups.isEmpty() || !invalidParams.isEmpty()){
+            throw new FilterException(invalidGroups, invalidParams);
         }
 
         ArrayList<String> unionKeys = new ArrayList<>();
@@ -100,6 +91,29 @@ public class RedisFilterDataFetcher {
         output.put("numberOfSubjects", intersection.length);
         output.put("subjectIds", intersection);
         return output;
+    }
+
+    private class FilterException extends Exception {
+        private String message = "";
+
+        FilterException(ArrayList<String> invalidGroups, ArrayList<String> invalidParams){
+            if (!invalidGroups.isEmpty()){
+                message = String.format("The following filter groups were not found by the initialization queries: %s",
+                        String.join(", ",invalidGroups));
+            }
+            if (!invalidParams.isEmpty()){
+                if (!message.isEmpty()){
+                    message += "; ";
+                }
+                message += String.format("The following parameters are not mapped to a filter group: %s",
+                        String.join(", ",invalidParams));
+            }
+        }
+
+        @Override
+        public String getMessage(){
+            return message;
+        }
     }
 
 }

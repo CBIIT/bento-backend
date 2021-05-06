@@ -75,8 +75,9 @@ public class GraphQLController {
 	public void init() throws IOException {
 		initGraphQL();
 		if (config.getRedisEnabled() && config.isRedisFilterEnabled()){
+			boolean redisInitialized = initRedisFiltering();
 			//Initialize redis filtering and check if initialization was successful
-			if(!initRedisFiltering()){
+			if(!redisInitialized){
 				//If initialization failed, set redis filtering to disabled in the config and reinitialize GraphQL to
 				//remove the redis schema
 				config.setRedisFilterEnabled(false);

@@ -42,9 +42,10 @@ public class RedisFilterDataFetcher {
         };
     }
 
-    private Map<String, Object> filter(Map<String, String[]> variables) {
+    private Map<String, Object> filter(Map<String, String[]> variables) throws FilterException {
         Map<String, String[]> categories = new HashMap<>();
-        ArrayList<String> errors = new ArrayList<>();
+        ArrayList<String> invalidGroups = new ArrayList<>();
+        ArrayList<String> invalidParams = new ArrayList<>();
         Map<String, String> paramsMapping = redisService.getParameterMappings();
         HashSet<String> filterGroups = new HashSet<>(Arrays.asList(redisService.getGroups()));
         for (String key : variables.keySet()) {
@@ -56,17 +57,16 @@ public class RedisFilterDataFetcher {
                     if (filterGroups.contains(group)) {
                         categories.put(group, values.toArray(new String[0]));
                     } else {
-                        errors.add(String.format("%s is not a valid filter group", group));
+                        invalidGroups.add(group);
                     }
                 }
                 else{
-                    errors.add(String.format("Could not find a group mapping for the parameter %s", key));
+                    invalidParams.add(key);
                 }
             }
         }
-        if (!errors.isEmpty()){
-            errors.add("The following are the filter groups initialized in this instance: "+String.join(", ", filterGroups));
-            errors.add("The following parameters have mappings in this instance: "+String.join(", ", paramsMapping.keySet()));
+        if (!invalidGroups.isEmpty() || !invalidParams.isEmpty()){
+            throw new FilterException(invalidGroups, invalidParams);
         }
 
         ArrayList<String> unionKeys = new ArrayList<>();
@@ -87,14 +87,33 @@ public class RedisFilterDataFetcher {
             intersection = redisService.getIntersection(unionKeys.toArray(new String[0])).toArray(new String[0]);
         }
 
-        for(String error : errors){
-            logger.error(error);
-        }
-
         Map<String, Object> output = new HashMap<>();
         output.put("numberOfSubjects", intersection.length);
         output.put("subjectIds", intersection);
         return output;
+    }
+
+    private class FilterException extends Exception {
+        private String message = "";
+
+        FilterException(ArrayList<String> invalidGroups, ArrayList<String> invalidParams){
+            if (!invalidGroups.isEmpty()){
+                message = String.format("The following filter groups were not found by the initialization queries: %s",
+                        String.join(", ",invalidGroups));
+            }
+            if (!invalidParams.isEmpty()){
+                if (!message.isEmpty()){
+                    message += "; ";
+                }
+                message += String.format("The following parameters are not mapped to a filter group: %s",
+                        String.join(", ",invalidParams));
+            }
+        }
+
+        @Override
+        public String getMessage(){
+            return message;
+        }
     }
 
 }

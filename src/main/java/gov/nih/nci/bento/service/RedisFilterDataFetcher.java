@@ -45,20 +45,28 @@ public class RedisFilterDataFetcher {
     private Map<String, Object> filter(Map<String, String[]> variables) {
         Map<String, String[]> categories = new HashMap<>();
         ArrayList<String> errors = new ArrayList<>();
+        Map<String, String> paramsMapping = redisService.getParameterMappings();
         HashSet<String> filterGroups = new HashSet<>(Arrays.asList(redisService.getGroups()));
         for (String key : variables.keySet()) {
             String[] value = variables.get(key);
             List<String> values = Arrays.asList(value);
             if (!values.isEmpty()) {
-                if (filterGroups.contains(key)) {
-                    categories.put(key, values.toArray(new String[0]));
-                } else {
-                    errors.add(String.format("%s is not a valid filter category so the filter parameters will not be used.", key));
+                if (paramsMapping.containsKey(key)){
+                    String group = paramsMapping.get(key);
+                    if (filterGroups.contains(group)) {
+                        categories.put(group, values.toArray(new String[0]));
+                    } else {
+                        errors.add(String.format("%s is not a valid filter group", group));
+                    }
+                }
+                else{
+                    errors.add(String.format("Could not find a group mapping for the parameter %s", key));
                 }
             }
         }
         if (!errors.isEmpty()){
-            errors.add("The following are the filter categories initialized in this instance: "+String.join(", ", filterGroups));
+            errors.add("The following are the filter groups initialized in this instance: "+String.join(", ", filterGroups));
+            errors.add("The following parameters have mappings in this instance: "+String.join(", ", paramsMapping.keySet()));
         }
 
         ArrayList<String> unionKeys = new ArrayList<>();

@@ -71,7 +71,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
             Map<String, Object> transformedParams = transformParams(params, dataFetchingEnvironment.getVariables());
 
             if (redisService.isInitialized()) {
-                String redisKey = cypher.getQuery() + "::" + transformedParams;
+                String redisKey = cypher.getVariable() + "::" + transformedParams;
                 String cachedValue = redisService.getCachedValue(redisKey);
                 values = deserializeObject(cachedValue);
                 if (values == null) {

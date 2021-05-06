@@ -173,8 +173,8 @@ public class GraphQLController {
 		logger.info("Initializing group list in Redis");
 		Yaml yaml = new Yaml();
 		try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(config.getRedisFilterInitQueriesFile())) {
-			Map<String, List<String>> obj = yaml.load(inputStream);
-			List<String> queries = obj.get("queries");
+			Map<String, Object> yamlMap = yaml.load(inputStream);
+			List<String> queries = (List<String>) yamlMap.get("queries");
 			for (String query : queries) {
 				String response = query(String.format("{%s{group subjects}}", query), new HashMap<>());
 				//Convert query response to JSON
@@ -204,6 +204,7 @@ public class GraphQLController {
 					redisService.cacheGroup(group, subjects);
 				}
 			}
+			redisService.setParameterMappings((HashMap<String, String>) yamlMap.get("parameter_mappings"));
 			return true;
 		} catch (IOException | YAMLException e) {
 			logger.error(e);

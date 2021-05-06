@@ -13,6 +13,7 @@ import redis.clients.jedis.exceptions.JedisException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class RedisService {
     private boolean isInitialized;
     private boolean groupListsInitialized;
     private HashSet<String> groups = new HashSet<>();
+    private HashMap<String, String> parameterMappings = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -145,6 +147,14 @@ public class RedisService {
 
     public void setGroupListsInitialized(boolean groupListsInitialized) {
         this.groupListsInitialized = groupListsInitialized;
+    }
+
+    public HashMap<String, String> getParameterMappings() {
+        return parameterMappings;
+    }
+
+    public void setParameterMappings(HashMap<String, String> parameterMappings) {
+        this.parameterMappings = parameterMappings;
     }
 
     private Set<String> getFromCache(String[] keysInput, RETURNTYPE operation) {

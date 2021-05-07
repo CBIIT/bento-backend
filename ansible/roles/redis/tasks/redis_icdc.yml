@@ -9,6 +9,6 @@
   redis:
     command: flush
     flush_mode: all
-    login_host: {{ redis_host_icdc[tier] }}
-    login_port: {{ redis_port }}
+    login_host: "{{ redis_host_icdc[tier] }}"
+    login_port: "{{ redis_port }}"
   debugger: always

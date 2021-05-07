@@ -32,7 +32,11 @@
 
 - name: install docker python module
   pip:
-    name: docker
+    name: 
+      # - docker
+      - docker-py
+
+
     
 - name: enable and start firewalld
   service:

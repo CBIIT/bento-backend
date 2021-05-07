@@ -5,7 +5,8 @@
     msg: "{{ redis_host_icdc[tier] }}"
 - name: flush redis cache
   #shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
-  command: redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c FLUSHALL
+  command: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
+  #command: redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c FLUSHALL
   #redis:
   #  command: flush
   #  flush_mode: all

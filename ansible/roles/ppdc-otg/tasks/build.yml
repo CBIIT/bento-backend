@@ -65,15 +65,8 @@
   docker_image:
     build:
       path: "{{workspace}}/ppdc-otg-frontend"
-<<<<<<< HEAD
-<<<<<<< HEAD
+
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-ppdc-dockerfile"
-=======
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
->>>>>>> 41424ad2710ab47ee648622fa672b8001f9b59a9
-=======
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
->>>>>>> 41424ad2710ab47ee648622fa672b8001f9b59a9
       pull: yes
       nocache: yes
     name: cbiitssrepo/ppdc-otg-frontend

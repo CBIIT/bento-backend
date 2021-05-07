@@ -226,8 +226,9 @@ pipeline {
               }
 			
 			  ansiblePlaybook( 
-                 playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml', 
-                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                 playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml',
+                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				 extras: '-vvv',
                  colorized: true)
 			}
 		}

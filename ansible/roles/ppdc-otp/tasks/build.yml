@@ -23,6 +23,19 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx-ppdc.conf'
+    dest: '{{workspace}}/ppdc-otp-frontend/nginx.conf'
+
+
+=======
+>>>>>>> 41424ad2710ab47ee648622fa672b8001f9b59a9
+=======
+>>>>>>> 41424ad2710ab47ee648622fa672b8001f9b59a9
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
@@ -60,7 +73,15 @@
   docker_image:
     build:
       path: "{{workspace}}/ppdc-otp-frontend"
+<<<<<<< HEAD
+<<<<<<< HEAD
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-ppdc-dockerfile"
+=======
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
+>>>>>>> 41424ad2710ab47ee648622fa672b8001f9b59a9
+=======
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-yarn-dockerfile"
+>>>>>>> 41424ad2710ab47ee648622fa672b8001f9b59a9
       pull: yes
       nocache: yes
     name: cbiitssrepo/ppdc-otp-frontend

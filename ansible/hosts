@@ -19,19 +19,3 @@ localhost
 [all]
 localhost
 
-
-[bento:vars]
-ansible_python_interpreter=/usr/bin/python3
-
-
-[ppdc-otg:vars]
-ansible_python_interpreter=/usr/bin/python3
-
-[ppdc-otp:vars]
-ansible_python_interpreter=/usr/bin/python3
-
-[loader:vars]
-ansible_python_interpreter=/usr/bin/python3
-
-[docker]
-localhost ansible_python_interpreter=/bin/python

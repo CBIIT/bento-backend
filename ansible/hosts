@@ -19,8 +19,6 @@ localhost
 [all]
 localhost
 
-[docker]
-localhost ansible_python_interpreter=/bin/python
 
 [bento:vars]
 ansible_python_interpreter=/usr/bin/python3
@@ -34,3 +32,6 @@ ansible_python_interpreter=/usr/bin/python3
 
 [loader:vars]
 ansible_python_interpreter=/usr/bin/python3
+
+[docker]
+localhost ansible_python_interpreter=/bin/python

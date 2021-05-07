@@ -1,6 +1,8 @@
 ---
 - name: setup jenkins server
   hosts: docker
+  gather_facts: no
+  connection: local
   become: yes
 
   roles:

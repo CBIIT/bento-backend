@@ -30,7 +30,6 @@ public class IndexController {
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	@ResponseBody
 	public String ping(HttpServletRequest request, HttpServletResponse response) {
-		logger.info("hit end point:/ping");
 		return "pong";
 	}
 }

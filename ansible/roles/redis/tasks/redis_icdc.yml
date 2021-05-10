@@ -4,21 +4,5 @@
   debug: 
     msg: "{{ redis_host_icdc[tier] }}"
 
-#- name: copy redis script to remote instance
-#  template:
-#    src: flush_redis.sh.j2
-#    dest: flush_redis.sh
-#    mode: 0777
-
 - name: flush redis cache
-  #command: sh flush_redis.sh
-  shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
-  #become: yes
-  #become_user: commonsdocker
-  #command: redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c FLUSHALL
-  #redis:
-  #  command: flush
-  #  flush_mode: all
-  #  login_host: "{{ redis_host_icdc[tier] }}"
-  #  login_port: "{{ redis_port }}"
-  debugger: always
+  shell: echo -e "get abc \nFLUSHALL" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c

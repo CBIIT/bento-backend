@@ -34,7 +34,7 @@ services:
       REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
       REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
-      REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}"
+      REACT_APP_BACKEND_API: "{% if tier == "prod" %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}"
       REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
       REACT_APP_BE_VERSION: "{{ bento_api_version }}"
       REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"

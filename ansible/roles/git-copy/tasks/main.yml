@@ -14,7 +14,7 @@
     git_url: "{{git_base}}/bento-frontend"
   when: project == "bento"
 
-- name: checkout commons codebase
+- name: checkout common codebase
   git:
     repo: "{{git_url}}"
     dest: "{{ git_home }}"

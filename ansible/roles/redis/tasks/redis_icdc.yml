@@ -7,11 +7,11 @@
 - name: copy redis script to remote instance
   template:
     src: flush_redis.sh.j2
-    dest: /tmp/flush_redis.sh
+    dest: flush_redis.sh
     mode: 0777
 
 - name: flush redis cache
-  shell: sh /tmp/flush_redis.sh
+  shell: sh flush_redis.sh
   #shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
   #shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
   #shell: echo -e ping | redis-cli -h ncias-d2224-c.nci.nih.gov -p {{ redis_port }} -c

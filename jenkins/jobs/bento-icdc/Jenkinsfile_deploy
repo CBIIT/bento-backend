@@ -292,7 +292,6 @@ pipeline {
                     file_version: "${params.File_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
-                    tier: "${params.Environment}"
                     ],
                 become: true,
                 hostKeyChecking: false,

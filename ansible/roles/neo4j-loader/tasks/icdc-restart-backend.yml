@@ -1,0 +1,30 @@
+---
+############################################################################################################################
+
+#     Restart the backend container to reload schema
+
+############################################################################################################################
+
+- name: query backend container status
+  shell: docker ps -f name=backend | awk '{print $F}'
+  register: status_backend
+
+- name: echo backend status
+  debug:
+    msg: "{{status_backend.stdout_lines}}"
+
+- name: restart backend container
+  shell: docker restart backend
+  register: restart_backend_output
+
+- name: restart output
+  debug:
+    msg: "{{restart_backend_output.stdout_lines}}"
+
+- name: query backend container status
+  shell: docker ps -f name=backend | awk '{print $F}'
+  register: status_backend
+  
+- name: echo backend status
+  debug:
+    msg: "{{status_backend.stdout_lines}}"

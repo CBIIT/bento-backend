@@ -229,7 +229,6 @@ pipeline {
                  playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml',
                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 				 credentialsId: 'commonsdocker',
-				 extras: '-vvv',
                  colorized: true)
 			}
 		}

@@ -316,7 +316,6 @@ pipeline {
 	   VERSION = "${params.Frontend_Image}"
        FE_VERSION = "${params.Frontend_Image}"
        BE_VERSION = "${params.Backend_Image}"
-	   ENABLE_REDIS_FILTER = "${params.Enable_Redis_Filter}"
       }
   		steps{
 		  node('cicd_microservice') {
@@ -338,7 +337,10 @@ pipeline {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            		colorized: true)
+            		extraVars: [
+                    enable_redis_filter: "${params.Enable_Redis_Filter}",
+                    ],
+					colorized: true)
   			}
 		  }
   		}

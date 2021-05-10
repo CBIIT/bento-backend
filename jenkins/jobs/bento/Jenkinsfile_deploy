@@ -154,23 +154,23 @@ pipeline {
     jdk 'Default' 
   }
   stages{
-  	stage('checkout'){
-  		steps {
+//  	stage('checkout'){
+//  		steps {
 //			git branch: "${params.Backend_Image}",
 //				url: 'https://github.com/CBIIT/bento-backend'
-				
+//				
 //  			checkout([$class: 'GitSCM', 
 //  				branches: [[name: "${params.Backend_Image}"]], 
 //  				doGenerateSubmoduleConfigurations: 
 //  				false, extensions: [], submoduleCfg: [], 
 //  				userRemoteConfigs: 
 //  				[[url: 'https://github.com/CBIIT/bento-backend']]])
-
+//
 //			dir('bento-frontend'){
 //				git branch: "${params.Frontend_Image}",
 //				url: 'https://github.com/CBIIT/bento-frontend'
 //				}
-
+//
 //			checkout([$class: 'GitSCM',
 //				branches: [[name: "${params.Frontend_Image}"]],
 //				doGenerateSubmoduleConfigurations: false,
@@ -179,24 +179,24 @@ pipeline {
 //				submoduleCfg: [],
 //				userRemoteConfigs: 
 //				[[url: 'https://github.com/CBIIT/bento-frontend']]])
-
-  			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-        
-        }
- 
-  	}
+//
+//  			checkout( changelog:false,
+//				poll: false,
+//				scm: [$class: 'GitSCM', 
+//				branches: [[name: '*/master']], 
+//				doGenerateSubmoduleConfigurations: false, 
+//				extensions: [[$class: 'DisableRemotePoll'],
+//				[$class: 'PathRestriction', excludedRegions: '*'], 
+//				[$class: 'RelativeTargetDirectory', 
+//				relativeTargetDir: 'icdc-devops']], 
+//				submoduleCfg: [], 
+//				userRemoteConfigs: 
+//				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+//				])
+//        
+//        }
+// 
+//  	}
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
@@ -274,6 +274,41 @@ pipeline {
           }
         }
     }
+
+    stage('clear redis cache'){
+		agent { label 'data-loader' }
+		when {
+			expression { params.Flush_Redis }
+			}
+	
+  		environment {
+			TIER = "${params.Environment}"
+			}
+
+		steps{
+			checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+        
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+			}
+		}
+	}
+	
   	stage('deploy'){
 	  environment {
 	   SLACK_URL = "${SLACK_URL}"
@@ -284,14 +319,31 @@ pipeline {
 	   ENABLE_REDIS_FILTER = "${params.Enable_Redis_Filter}"
       }
   		steps{
-  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+  			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		colorized: true)
   			}
+		  }
   		}
   	}
+	
 	stage('update database monitoring agents'){
 		steps{
 		  node('data-loader') {
@@ -329,39 +381,7 @@ pipeline {
   		  }
 		}
   	}
-	stage('clear redis cache'){
-		agent { label 'data-loader' }
-		when {
-			expression { params.Flush_Redis }
-			}
-	
-  		environment {
-			TIER = "${params.Environment}"
-			}
 
-		steps{
-			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-        
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-				ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                colorized: true)
-				}
-			}
-		}
   }
   post {
     always {

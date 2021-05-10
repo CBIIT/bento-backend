@@ -1,8 +1,10 @@
 ---
 - name: Redis stage of icdc pipeline
   hosts: icdc
-  connection: local
-  gather_facts: no
+  #connection: local
+  #gather_facts: no
+  gather_facts: yes
+  become: yes
     
   tasks:
     - name: flush redis cache

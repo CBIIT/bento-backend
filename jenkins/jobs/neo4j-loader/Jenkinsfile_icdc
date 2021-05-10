@@ -1,0 +1,212 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'demo,dev,ecs-dev,qa,stage,prod' )
+    string(defaultValue: "", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
+    string(defaultValue: "", 
+        description: 'Name of the dump file to use', 
+        name: 'DumpFileName')
+    
+  }
+  // options {
+  // 	ansiColor('xterm')
+  // }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+          sh 'git submodule update --init'
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+
+  		}
+  	}
+	
+    stage('set-environment'){
+        environment {
+          ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+        }
+		steps {
+          script {
+            switch("${params.Environment}") {
+              case "demo":
+                env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                env.S3_BUCKET       = "${params.S3Folder}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "dev":
+                env.NEO4J_IP        = "${NEO4J_ICDC_DEV_IP}"
+                env.S3_BUCKET       = "${params.S3Folder}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+				env.DB_HOSTS        = "ncias-d2224-c"
+				env.FE_HOSTS        = "nciws-d1092-c,nciws-d2001-c"
+              break
+              case "ecs-dev":
+                env.NEO4J_IP        = "${NEO4J_ECS_DEV_IP}"
+                env.S3_BUCKET       = "${params.S3Folder}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "qa":
+                env.NEO4J_IP        = "${NEO4J_ICDC_QA_IP}"
+                env.S3_BUCKET       = "${params.S3Folder}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+				env.DB_HOSTS        = "ncias-q2251-c"
+				env.FE_HOSTS        = "nciws-q2024-c,nciws-q2025-c"
+              break
+              case "stage":
+                env.NEO4J_IP        = "${NEO4J_ICDC_STAGE_IP}"
+                env.S3_BUCKET       = "${params.S3Folder}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "prod":
+                env.NEO4J_IP        = "${NEO4J_ICDC_PROD_IP}"
+                env.S3_BUCKET       = "${params.S3Folder}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+	
+  	stage('load data'){
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			
+			   script {
+                sh label: 'db-hosts', script: '''#!/bin/bash
+                  echo "Creating inventory file"
+                  echo "[icdc-neo4j]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+
+                  if [[ $(wc -l < ${DB_HOSTS} | cut -d ',' -f2 ) -ge 0 ]];then
+                    echo ${DB_HOSTS} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                    echo ${DB_HOSTS} | cut -d ',' -f2 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                  else
+                    echo ${DB_HOSTS} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                  fi
+
+                '''
+
+              }
+			  
+			  script {
+                sh label: 'ui-hosts', script: '''#!/bin/bash
+                  echo "Creating inventory file"
+                  echo "[icdc-hosts]" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+                  if [[ $(wc -l < ${FE_HOSTS} | cut -d ',' -f2 ) -ge 0 ]];then
+                    echo ${FE_HOSTS} | cut -d ',' -f1 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                    echo ${FE_HOSTS} | cut -d ',' -f2 >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                  else
+                    echo ${FE_HOSTS} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                  fi
+
+                '''
+
+		      }
+			
+			  ansiblePlaybook( 
+                 playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-loader-icdc.yml',
+                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				 credentialsId: 'commonsdocker',
+                 colorized: true)
+			}
+			
+ 		}
+    }
+	
+	stage('clear redis cache'){
+		when {
+			expression { params.Flush_Redis }
+			}
+	
+  		environment {
+			TIER = "${params.Environment}"
+			}
+
+		steps{
+        
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			
+			  script {
+                sh label: 'database-hosts', script: '''#!/bin/bash
+                  echo "Creating inventory file"
+                  echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+                  echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+                '''
+
+              }
+			
+			  ansiblePlaybook( 
+                 playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml',
+                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				 credentialsId: 'commonsdocker',
+                 colorized: true)
+			}
+		}
+	}
+  }
+  post {
+    always {
+      sendSlackMessage()
+      }
+    cleanup {
+      cleanWs()
+      }
+  }
+}

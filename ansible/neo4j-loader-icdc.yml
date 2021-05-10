@@ -1,0 +1,22 @@
+---
+- name: load data to neo4j db
+  hosts: icdc-neo4j
+  gather_facts: yes
+  become: yes
+    
+  tasks:
+    - name: perform data loading
+      include_role:
+        name: neo4j-loader
+        tasks_from: neo4j-loader-icdc
+
+- name: restart backend containers
+  hosts: icdc-hosts
+  gather_facts: yes
+  become: yes
+    
+  tasks:
+    - name: restart backend
+      include_role:
+        name: neo4j-loader
+        tasks_from: icdc-restart-backend

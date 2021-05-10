@@ -284,6 +284,7 @@ pipeline {
           }
         }
     }
+
   	stage('build'){
       environment {
        VERSION = "${params.Frontend_Tag}"
@@ -307,6 +308,41 @@ pipeline {
  			}
  		}
   	}
+
+	stage('clear redis cache'){
+		agent { label 'data-loader' }
+		when {
+			expression { params.Flush_Redis }
+			}
+	
+  		environment {
+			TIER = "${params.Environment}"
+			}
+
+		steps{
+			checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+        
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+			}
+		}
+	}
+
   	stage('deploy'){
 	  environment {
        VERSION = "${params.Frontend_Tag}"
@@ -314,7 +350,22 @@ pipeline {
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
   		steps{
-  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
@@ -323,8 +374,10 @@ pipeline {
                     ],
 					colorized: true)
   			}
+		  }
   		}
   	}
+
 	stage('update database monitoring agents'){
 		steps{
 		  node('data-loader') {
@@ -362,39 +415,7 @@ pipeline {
   		  }
 		}
   	}
-	stage('clear redis cache'){
-		agent { label 'data-loader' }
-		when {
-			expression { params.Flush_Redis }
-			}
-	
-  		environment {
-			TIER = "${params.Environment}"
-			}
 
-		steps{
-			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-        
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-				ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                colorized: true)
-				}
-			}
-		}
   }
   post {
 

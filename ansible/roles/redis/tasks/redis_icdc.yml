@@ -11,7 +11,7 @@
     mode: 0777
 
 - name: flush redis cache
-  shell: sh flush_redis.sh
+  command: sh flush_redis.sh
   #shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
   #shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
   #shell: echo -e ping | redis-cli -h ncias-d2224-c.nci.nih.gov -p {{ redis_port }} -c

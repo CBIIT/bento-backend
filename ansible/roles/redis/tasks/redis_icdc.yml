@@ -4,6 +4,12 @@
   debug: 
     msg: "{{ redis_host_icdc[tier] }}"
 - name: flush redis cache
-  #shell: echo -e "get abc \nFLUSHALL" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
-  shell: echo -e "get abc \nFLUSHALL" | redis-cli -c
+  #shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
+  shell: echo -e ping | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
+  #command: redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c FLUSHALL
+  #redis:
+  #  command: flush
+  #  flush_mode: all
+  #  login_host: "{{ redis_host_icdc[tier] }}"
+  #  login_port: "{{ redis_port }}"
   debugger: always

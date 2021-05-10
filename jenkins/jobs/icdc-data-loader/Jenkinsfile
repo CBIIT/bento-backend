@@ -107,7 +107,6 @@ pipeline {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_dev_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   env.NEO4J_IP        = "${NEO4J_ICDC_DEV_IP}"
-				  env.NEO4J_NAME      = "ncias-d2224-c"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -220,7 +219,7 @@ pipeline {
                 sh label: 'database-hosts', script: '''#!/bin/bash
                   echo "Creating inventory file"
                   echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/hosts
-                  echo ${NEO4J_NAME} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+                  echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
 
                 '''
 
@@ -229,6 +228,7 @@ pipeline {
 			  ansiblePlaybook( 
                  playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml',
                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				 credentialsId: 'commonsdocker',
 				 extras: '-vvv',
                  colorized: true)
 			}

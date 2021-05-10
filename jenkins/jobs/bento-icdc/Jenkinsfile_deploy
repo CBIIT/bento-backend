@@ -291,7 +291,7 @@ pipeline {
                     backend_version: "${params.Backend_Tag}",
                     file_version: "${params.File_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
-                    frontend_git_tag: "${params.Frontend_Tag}"
+                    frontend_git_tag: "${params.Frontend_Tag}",
                     ],
                 become: true,
                 hostKeyChecking: false,

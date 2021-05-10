@@ -47,6 +47,10 @@ pipeline {
     string(defaultValue: "", 
         description: 'Name of the dump file to use', 
         name: 'DumpFileName')
+	booleanParam(
+		defaultValue: true,
+		description: 'Flush the Redis cache',
+		name: 'Flush_Redis')
     
   }
   // options {

@@ -14,6 +14,7 @@ redis_password: ""
 redis_port: 6379
 home: /local/content/docker
 tier: "{{ lookup('env','TIER') }}"
+prod: prod
 platform: "cloudone"
 backend_git_tag: "{{ lookup('env','BACKEND_GIT_TAG') }}"
 frontend_git_tag: "{{ lookup('env','FRONTEND_GIT_TAG') }}"

@@ -3,7 +3,6 @@
 platform: aws
 release: fail
 project: icdc
-prod: prod
 # jq: "{{project}}.{{tier}}"
 # alb_dns_name:
 #   icdc:

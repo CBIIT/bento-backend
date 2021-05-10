@@ -12,7 +12,7 @@
 
 - name: flush redis cache
   #command: sh flush_redis.sh
-  command: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
+  shell: echo -e "get abc \nping" | redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c
   become: yes
   become_user: commonsdocker
   #command: redis-cli -h {{ redis_host_icdc[tier] }} -p {{ redis_port }} -c FLUSHALL

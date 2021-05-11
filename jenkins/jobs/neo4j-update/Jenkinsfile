@@ -32,6 +32,7 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
+		    ////////////////////////////////// UPDATE
 			//label 'commons-docker-ncias-p2236-v'
 			label 'data-loader'
 		}
@@ -44,7 +45,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to upgrade', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,perf' )
+        value: 'perf' )
 
   }
   
@@ -97,12 +98,14 @@ pipeline {
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 				}
               break
+			  ////////////////////////////////// UPDATE
 			  case "perf":
                 withCredentials([usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "${NEO4J_PERF3_IP}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 				}
               break
+			  ////////////////////////////////// UPDATE
               default:
                 withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-d2224-c"
@@ -133,7 +136,8 @@ pipeline {
           ansiblePlaybook(  			
             playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-version-update.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-              //credentialsId: 'commonsdocker',
+              ////////////////////////////////// UPDATE
+			  //credentialsId: 'commonsdocker',
 			  credentialsId: 'server_ssh_key',
               colorized: true)
 
@@ -144,6 +148,7 @@ pipeline {
   }
   post {
     always {
+	  ////////////////////////////////// UPDATE
       //sendSlackMessage()
       cleanWs()
     }

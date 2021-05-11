@@ -1,16 +1,9 @@
 ---
 # tasks file for neo4j-loader
 
-- name: install required packages
-  pip:
-    name:
-      - awscli
-      - boto3
-    state: present
-
 - name: ensure that remote workspace exists
   file:
-    path: "{{remote_workspace}}"
+    path: "{{ remote_workspace }}"
     state: directory
 
 - name: ensure backup directory exists
@@ -20,37 +13,44 @@
     owner: neo4j
     group: neo4j
 
-- name: download dump file
-  aws_s3:
-    bucket: "{{s3_bucket_name}}"
-    object: "/dump_files/{{dump_file_name}}"
-    dest: "{{remote_workspace}}/neo4j.dump"
-    mode: get
+- name: copy dump file
+  copy:
+    src: "{{ dump_file_name }}"
+    dest: "{{ remote_workspace }}/neo4j.dump"
 
-- name: stop neo4j
-  service:
-    name: neo4j
-    state: stopped
+- name: verify file is copied
+  stat:
+     path: "{{ remote_workspace }}/neo4j.dump"
+  register: file_status
 
-- name: backup neo4j db
-  command: neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
-  become_user: neo4j
-
-- name: stop neo4j
-  service:
-    name: neo4j
-    state: stopped
-
-- name: load neo4j dumpfile
-  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
-  become_user: neo4j
-  register: loader
-
-- name: loader output
+- name: stat output
   debug:
-    msg: "{{loader.stdout_lines}}"
+    msg: "{{ file_status.stdout_lines }}"
 
-- name: start neo4j
-  service:
-    name: neo4j
-    state: started
+#- name: stop neo4j
+#  service:
+#    name: neo4j
+#    state: stopped
+
+#- name: backup neo4j db
+#  command: neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
+#  become_user: neo4j
+
+#- name: stop neo4j
+#  service:
+#    name: neo4j
+#    state: stopped
+
+#- name: load neo4j dumpfile
+#  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+#  become_user: neo4j
+#  register: loader
+
+#- name: loader output
+#  debug:
+#    msg: "{{loader.stdout_lines}}"
+
+#- name: start neo4j
+#  service:
+#    name: neo4j
+#    state: started

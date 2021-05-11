@@ -1,0 +1,11 @@
+---
+- name: get data for neo4j ddataloader
+  hosts: loader
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: get dump file
+      include_role:
+        name: neo4j-loader
+        tasks_from: neo4j-loader-icdc-get

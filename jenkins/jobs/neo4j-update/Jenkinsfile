@@ -33,7 +33,7 @@ pipeline {
 	agent {
 		node {
 			//label 'commons-docker-ncias-p2236-v'
-			label 'cicd_microservice'
+			label 'data-loader'
 		}
 	}
 
@@ -134,6 +134,7 @@ pipeline {
             playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-version-update.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
               //credentialsId: 'commonsdocker',
+			  credentialsId: 'server_ssh_key',
               colorized: true)
 
  		  }

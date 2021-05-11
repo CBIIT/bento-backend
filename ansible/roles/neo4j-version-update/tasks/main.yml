@@ -35,7 +35,7 @@
   shell: yum -y autoremove neo4j*
 
 - name: install neo4j {{ neo4j_version }}
-  shell: "yum -y install neo4j-{{ neo4j_version }}"
+  shell: "yum update && yum -y install neo4j-{{ neo4j_version }}"
 
 - name: verify installed neo4j version
   shell: yum list installed neo4j

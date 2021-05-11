@@ -13,6 +13,7 @@ import redis.clients.jedis.exceptions.JedisException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,6 +71,7 @@ public class RedisService {
         Jedis jedis = null;
         try {
             if (isSet) {
+                key = addSetHashTag(key);
                 if (useCluster) {
                     cluster.sadd(key, values);
                 } else {
@@ -160,40 +162,43 @@ public class RedisService {
     private Set<String> getFromCache(String[] keysInput, RETURNTYPE operation) {
         String[] keys = formatKeys(keysInput);
         Jedis jedis = null;
+        String key = keys[0];
+        String taggedKey = addSetHashTag(key);
+        String[] taggedKeys = addSetHashTag(keys);
         try {
             switch (operation) {
                 case VALUE:
                     if (useCluster) {
-                        String value = cluster.get(keys[0]);
+                        String value = cluster.get(key);
                         Set<String> output = new HashSet<>();
                         output.add(value);
                         return output;
                     } else {
                         jedis = pool.getResource();
                         Set<String> output = new HashSet<>();
-                        output.add(jedis.get(keys[0]));
+                        output.add(jedis.get(key));
                         return output;
                     }
                 case SET:
                     if (useCluster) {
-                        return cluster.smembers(keys[0]);
+                        return cluster.smembers(taggedKey);
                     } else {
                         jedis = pool.getResource();
-                        return jedis.smembers(keys[0]);
+                        return jedis.smembers(taggedKey);
                     }
                 case UNION:
                     if (useCluster) {
-                        return cluster.sunion(keys);
+                        return cluster.sunion(taggedKeys);
                     } else {
                         jedis = pool.getResource();
-                        return jedis.sunion(keys);
+                        return jedis.sunion(taggedKeys);
                     }
                 case INTERSECTION:
                     if (useCluster) {
-                        return cluster.sinter(keys);
+                        return cluster.sinter(taggedKeys);
                     } else {
                         jedis = pool.getResource();
-                        return jedis.sinter(keys);
+                        return jedis.sinter(taggedKeys);
                     }
                 default:
                     logger.error("Invalid RETURN_TYPE parameter, fall back to query neo4j");
@@ -215,8 +220,8 @@ public class RedisService {
 
     private Long store(String[] keysInput, String newKeyInput, STORETYPE type) {
         //Format keys
-        String[] keys = formatKeys(keysInput);
-        String newKey = formatKey(newKeyInput);
+        String[] keys = addSetHashTag(formatKeys(keysInput));
+        String newKey = addSetHashTag(formatKey(newKeyInput));
         Jedis jedis = null;
         try {
             if (type == STORETYPE.UNION) {
@@ -293,6 +298,18 @@ public class RedisService {
         String key = keyInput.replaceAll("\"", "");
         key = key.replaceAll(" ", "_");
         return key;
+    }
+
+    private String[] addSetHashTag(String[] keys){
+        String[] taggedKeys = Arrays.copyOf(keys, keys.length);
+        for(int i = 0; i < taggedKeys.length; i++){
+            taggedKeys[i] = addSetHashTag(taggedKeys[i]);
+        }
+        return taggedKeys;
+    }
+
+    private String addSetHashTag(String key){
+        return "{set}."+key;
     }
 
     private enum RETURNTYPE {

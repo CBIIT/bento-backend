@@ -25,7 +25,7 @@
 
 - name: stat output
   debug:
-    msg: "{{ file_status.exists }}"
+    msg: "{{ file_status }}"
 
 #- name: stop neo4j
 #  service:

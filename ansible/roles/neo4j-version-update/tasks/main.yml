@@ -65,7 +65,7 @@
   with_items:
     - { regexp: '^#dbms.memory.heap.initial_size=512m', line: 'dbms.memory.heap.initial_size=5632m' }
     - { regexp: '^#dbms.memory.heap.max_size=512m', line: 'dbms.memory.heap.max_size=5632m' }
-    - { regexp: '^#dbms.connectors.default_listen_address=0.0.0.0', line: 'dbms.connectors.default_listen_address=0.0.0.0' }
+    - { regexp: '^#dbms.default_listen_address=0.0.0.0', line: 'dbms.default_listen_address=0.0.0.0' }
     - { regexp: '^#dbms.connector.bolt.tls_level=DISABLED', line: 'dbms.connector.bolt.tls_level=OPTIONAL' }
     - { regexp: '^#dbms.connector.bolt.listen_address=:7687', line: 'dbms.connector.bolt.listen_address=:7687' }
     - { regexp: '^#dbms.ssl.policy.bolt.enabled=true', line: 'dbms.ssl.policy.bolt.enabled=true' }

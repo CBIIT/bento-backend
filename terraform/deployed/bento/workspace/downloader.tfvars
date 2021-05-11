@@ -4,6 +4,7 @@ tags = {
   Project = "Bento"
   Environment = "dev"
   Region = "us-east-1"
+  ShutdownInstance = "Yes"
 }
 
 
@@ -66,7 +67,7 @@ alb_rule_priority = 100
 frontend_rule_priority = 110
 backend_rule_priority = 90
 downloader_rule_priority = 1
-env = "qa"
+env = "dev"
 
 #specify domain name
 domain_name = "bento-tools.org"

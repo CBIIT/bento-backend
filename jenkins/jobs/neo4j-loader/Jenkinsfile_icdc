@@ -31,7 +31,8 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-			label 'commons-docker-ncias-p2236-v'
+			//label 'commons-docker-ncias-p2236-v'
+			label 'slave-ncias-d2320-c'
 		}
 	}
 	parameters {
@@ -136,21 +137,21 @@ pipeline {
     }
 
     stage('get data'){
-		agent { label 'slave-ncias-d2320-c' }
+//		agent { label 'slave-ncias-d2320-c' }
 		steps{
-			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
+//			checkout( changelog:false,
+//				poll: false,
+//				scm: [$class: 'GitSCM', 
+//				branches: [[name: '*/master']], 
+//				doGenerateSubmoduleConfigurations: false, 
+//				extensions: [[$class: 'DisableRemotePoll'],
+//				[$class: 'PathRestriction', excludedRegions: '*'], 
+//				[$class: 'RelativeTargetDirectory', 
+//				relativeTargetDir: 'icdc-devops']], 
+//				submoduleCfg: [], 
+//				userRemoteConfigs: 
+//				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+//				])
         
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				ansiblePlaybook( 

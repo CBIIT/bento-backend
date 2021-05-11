@@ -23,34 +23,34 @@
      path: "{{ remote_workspace }}/neo4j.dump"
   register: file_status
 
-- name: stat output
-  debug:
-    msg: "{{ file_status }}"
-
-#- name: stop neo4j
-#  service:
-#    name: neo4j
-#    state: stopped
-
-#- name: backup neo4j db
-#  command: neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
-#  become_user: neo4j
-
-#- name: stop neo4j
-#  service:
-#    name: neo4j
-#    state: stopped
-
-#- name: load neo4j dumpfile
-#  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
-#  become_user: neo4j
-#  register: loader
-
-#- name: loader output
+#- name: stat output
 #  debug:
-#    msg: "{{loader.stdout_lines}}"
+#    msg: "{{ file_status }}"
 
-#- name: start neo4j
-#  service:
-#    name: neo4j
-#    state: started
+- name: stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+
+- name: backup neo4j db
+  command: neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
+  become_user: neo4j
+
+- name: stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+
+- name: load neo4j dumpfile
+  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+  become_user: neo4j
+  register: loader
+
+- name: loader output
+  debug:
+    msg: "{{loader.stdout_lines}}"
+
+- name: start neo4j
+  service:
+    name: neo4j
+    state: started

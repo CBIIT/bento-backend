@@ -27,6 +27,7 @@ resource "aws_ecs_service" "ecs_service" {
   depends_on = [module.alb]
 }
 
+
  resource "aws_ecs_service" "ecs_service_backend" {
    name              = "${var.stack_name}-${var.env}-backend"
    cluster           = aws_ecs_cluster.ecs_cluster.id
@@ -47,7 +48,7 @@ resource "aws_ecs_task_definition" "frontend" {
   family        = "${var.stack_name}-${var.env}-frontend"
   network_mode  = "bridge"
   cpu = "512"
-  memory = "1024"
+  memory = "512"
   container_definitions = jsonencode(yamldecode(file("frontend.yml")))
   tags = merge(
   {
@@ -56,6 +57,7 @@ resource "aws_ecs_task_definition" "frontend" {
   var.tags,
   )
 }
+
 
 resource "aws_ecs_task_definition" "backend" {
   family        = "${var.stack_name}-${var.env}-backend"

@@ -22,4 +22,4 @@
 
 - name: stat output
   debug:
-    msg: "{{ file_status }}"
+    msg: "{{ file_status.exists }}"

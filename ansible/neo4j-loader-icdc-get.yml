@@ -1,5 +1,5 @@
 ---
-- name: get data for neo4j ddataloader
+- name: get data for neo4j dataloader
   hosts: loader
   connection: local
   gather_facts: yes

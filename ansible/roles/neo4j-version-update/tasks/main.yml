@@ -34,6 +34,14 @@
 - name: remove neo4j
   shell: yum -y autoremove neo4j* java*
 
+- name: clean old neo4j files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - {path: '/var/lib/neo4j/'}
+    - {path: '/etc/neo4j/'}
+
 - name: install neo4j {{ neo4j_version }} and java 11 JRE
   shell: "yum -y install neo4j-{{ neo4j_version }}"
 

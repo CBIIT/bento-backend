@@ -13,6 +13,6 @@
      path: "{{ dump_file_name }}"
   register: file_status
 
-- name: stat output
-  debug:
-    msg: "{{ file_status }}"
+#- name: stat output
+#  debug:
+#    msg: "{{ file_status }}"

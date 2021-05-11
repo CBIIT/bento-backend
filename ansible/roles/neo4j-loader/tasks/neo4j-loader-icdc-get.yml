@@ -1,13 +1,6 @@
 ---
 # tasks file for neo4j-loader
 
-#- name: install required packages
-#  pip:
-#    name:
-#      - awscli
-#      - boto3
-#    state: present
-
 - name: download dump file
   aws_s3:
     bucket: "{{ s3_bucket_name }}"

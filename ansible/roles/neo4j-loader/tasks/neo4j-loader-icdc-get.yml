@@ -22,4 +22,4 @@
 
 - name: stat output
   debug:
-    msg: "{{ file_status.stdout_lines }}"
+    msg: "{{ file_status }}"

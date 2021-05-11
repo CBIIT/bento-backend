@@ -12,14 +12,14 @@
   aws_s3:
     bucket: "{{ s3_bucket_name }}"
     object: "/dump_files/{{ dump_file_name }}"
-    dest: "neo4j.dump"
+    dest: "{{ dump_file_name }}"
     mode: get
 
 - name: verify file is copied
   stat:
-     path: "neo4j.dump"
+     path: "{{ dump_file_name }}"
   register: file_status
 
 - name: stat output
   debug:
-    msg: "{{ file_status.exists }}"
+    msg: "{{ file_status }}"

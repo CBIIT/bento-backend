@@ -32,9 +32,9 @@
     msg: "{{ neo4j_installed.stdout_lines }}"
 
 - name: remove neo4j
-  shell: yum -y autoremove neo4j*
+  shell: yum -y autoremove neo4j* java*
 
-- name: install neo4j {{ neo4j_version }}
+- name: install neo4j {{ neo4j_version }} and java 11 JRE
   shell: "yum -y install neo4j-{{ neo4j_version }}"
 
 - name: verify installed neo4j version

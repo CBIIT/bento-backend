@@ -25,11 +25,11 @@
 
 - name: verify installed neo4j version
   shell: yum list installed neo4j
-  register: neo4j_version
+  register: neo4j_installed
 
 - name: version output
   debug:
-    msg: "{{ neo4j_version.stdout_lines }}"
+    msg: "{{ neo4j_installed.stdout_lines }}"
 
 - name: remove neo4j
   shell: yum -y autoremove neo4j*
@@ -39,11 +39,11 @@
 
 - name: verify installed neo4j version
   shell: yum list installed neo4j
-  register: neo4j_version
+  register: neo4j_installed
 
 - name: version output
   debug:
-    msg: "{{ neo4j_version.stdout_lines }}"
+    msg: "{{ neo4j_installed.stdout_lines }}"
 
 - name: copy neo4j cert and key
   copy:

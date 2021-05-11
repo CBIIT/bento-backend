@@ -40,6 +40,11 @@ variable "backend_container_port" {
   description = "port on which the container listens"
   type = number
 }
+
+variable "downloader_container_port" {
+  description = "port on which the container listens"
+  type = number
+}
 variable "app_name" {
   description = "name of the application"
   type = string
@@ -109,6 +114,12 @@ variable "fronted_rule_priority" {
   description = "priority number to assign to alb rule"
   type = number
   default = 100
+}
+
+variable "downloader_rule_priority" {
+  description = "priority number to assign to alb rule"
+  type = number
+  default = 91
 }
 variable "backend_rule_priority" {
   description = "priority number to assign to alb rule"

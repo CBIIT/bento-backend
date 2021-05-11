@@ -1,0 +1,8 @@
+---
+- name: downloader
+  image: cbiitssrepo/bento-filedownloader:latest
+  essential: true
+  portMappings:
+    - protocol: tcp
+      containerPort: 8081
+      hostPort: 8081

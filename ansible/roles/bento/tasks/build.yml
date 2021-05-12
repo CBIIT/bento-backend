@@ -171,7 +171,7 @@
   args:
     chdir: "{{workspace}}/bento-frontend"
   loop:
-    - npm install npm@latest -g
+    - npm install npm@7.7.6 -g
     - npm install
     - npm run build
 

@@ -55,7 +55,7 @@ pipeline {
   	stage('checkout'){
   		steps {
 			checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Frontend_Tag}"]],
+				branches: [[name: "${params.Downloader_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'bento-files']],

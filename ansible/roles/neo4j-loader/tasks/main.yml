@@ -11,7 +11,7 @@
   yum:
     name: 
       - epel-release
-      - python-pip
+      - python2-pip
     state: present
 
 - name: install required packages

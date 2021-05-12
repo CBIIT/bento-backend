@@ -9,7 +9,7 @@
 - name: create task definition - bento filedownloader
   ecs_taskdefinition:
     containers:
-    - name: frontend
+    - name: downloader
       essential: true
       image: "cbiitssrepo/bento-filedownloader:{{downloader_version}}"
       environment:
@@ -36,7 +36,7 @@
     family: bento-{{tier}}-file-downloader
     state: present
     memory: '512'
-    cpu: '128'
+    cpu: '512'
     region: "{{region}}"
   register: task_output
 
@@ -93,6 +93,6 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers: "{{ lb_downloader }}"
+    load_balancers: "{{ lb_downloader}}"
     region: "{{region}}"
   register: service_downloader_output

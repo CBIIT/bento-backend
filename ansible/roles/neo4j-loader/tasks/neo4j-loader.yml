@@ -17,6 +17,8 @@
   copy:
     src: "{{ dump_file_name }}"
     dest: "{{ remote_workspace }}/neo4j.dump"
+    owner: neo4j
+    group: neo4j
 
 - name: verify file is copied
   stat:

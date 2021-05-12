@@ -47,7 +47,7 @@ pipeline {
     defaultValue: true,
     description: 'Flush the Redis cache',
     name: 'Flush_Redis')
-    stringParam(
+    string(
     defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
     description: 'Provide indexd url',
     name: 'IndexD_Url')

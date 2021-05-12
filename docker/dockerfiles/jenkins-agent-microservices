@@ -19,7 +19,7 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
   && yum install -y https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm \
   && yum -y install docker-ce docker-ce-cli containerd.io \
   && curl -sL https://dl.yarnpkg.com/rpm/yarn.repo -o /etc/yum.repos.d/yarn.repo \
-  && curl -sL https://rpm.nodesource.com/setup_13.x | bash - \
+  && curl -sL https://rpm.nodesource.com/setup_15.x | bash - \
   &&  yum install -y nodejs \
   && npm install -g npm n\
   && npm install -g yarn\

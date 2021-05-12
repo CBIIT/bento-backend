@@ -7,6 +7,12 @@
 #      - redis
 #    state: present
 
+- name: install pip
+  yum:
+    name: 
+      - python-pip
+    state: present
+
 - name: install required packages
   pip:
     name:

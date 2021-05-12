@@ -56,7 +56,10 @@ services:
 
   file-downloader:
     container_name: files
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{file_version}}   
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{file_version}}
+    environment:
+      URL_SRC: indexd
+      INDEXD_URL: "{{INDEXD_URL}}"   
     volumes:
       - "/local/content/k9dc/file-downloader:/var/log"
     ports:

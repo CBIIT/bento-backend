@@ -16,6 +16,7 @@ home: /local/content/docker
 tier: "{{ lookup('env','TIER') }}"
 prod: prod
 platform: "cloudone"
+indexd_url: "{{ lookup('env','INDEXD_URL') }}"
 backend_git_tag: "{{ lookup('env','BACKEND_GIT_TAG') }}"
 frontend_git_tag: "{{ lookup('env','FRONTEND_GIT_TAG') }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"

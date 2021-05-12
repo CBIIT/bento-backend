@@ -29,7 +29,7 @@ def sendSlackMessage() {
 }
 
 
-pipeline {
+pipeline { 
 	agent {
 		node {
 			label 'cicd_microservice'
@@ -117,7 +117,7 @@ pipeline {
                 }
               break
               default:
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) 
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                 }
@@ -216,5 +216,4 @@ pipeline {
 	}
 
   }
-}
 }

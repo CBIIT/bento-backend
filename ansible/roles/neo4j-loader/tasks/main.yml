@@ -7,12 +7,12 @@
 #      - redis
 #    state: present
 
-- name: install pip
-  yum:
-    name: 
-      - epel-release
-      - python2-pip
-    state: present
+#- name: install pip
+#  yum:
+#    name: 
+#      - epel-release
+#      - python2-pip
+#    state: present
 
 - name: install required packages
   pip:

@@ -149,7 +149,7 @@ pipeline {
           
 		  sh '''
             echo [neo4j] >> ${WORKSPACE}/icdc-devops/ansible/hosts
-            echo ${env.NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+            echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
           '''
 		  
 		  unstash 'dump_file'

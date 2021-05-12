@@ -10,7 +10,8 @@
 - name: install pip
   yum:
     name: 
-      - python3-pip
+      - epel-release
+      - python-pip
     state: present
 
 - name: install required packages

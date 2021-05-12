@@ -7,7 +7,7 @@ resource "aws_ecs_service" "downloader_service" {
   deployment_minimum_healthy_percent = 0
   deployment_maximum_percent = 100
   load_balancer {
-    target_group_arn = aws_lb_target_group.frontend_target_group.arn
+    target_group_arn = aws_lb_target_group.downloader_target_group.arn
     container_name   = "downloader"
     container_port   = var.downloader_container_port
   }

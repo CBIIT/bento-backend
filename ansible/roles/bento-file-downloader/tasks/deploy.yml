@@ -35,8 +35,8 @@
     network_mode: bridge
     family: bento-{{tier}}-file-downloader
     state: present
-    memory: '512'
-    cpu: '512'
+    memory: '128'
+    cpu: '128'
     region: "{{region}}"
   register: task_output
 

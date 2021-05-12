@@ -1,11 +1,11 @@
 ---
 # tasks file for neo4j-loader
 
-- name: install redis
-  yum:
-    name: 
-      - redis
-    state: present
+#- name: install redis
+#  yum:
+#    name: 
+#      - redis
+#    state: present
 
 - name: install required packages
   pip:
@@ -41,7 +41,7 @@
     name: neo4j
     state: stopped
 
-- name: buckup neo4j db
+- name: backup neo4j db
   command: /var/lib/neo4j/bin/neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
   become_user: neo4j
 

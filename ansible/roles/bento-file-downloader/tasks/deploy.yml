@@ -1,0 +1,98 @@
+---
+############################################################################################################################
+
+#     Task Definitions
+
+############################################################################################################################
+
+
+- name: create task definition - bento filedownloader
+  ecs_taskdefinition:
+    containers:
+    - name: frontend
+      essential: true
+      image: "cbiitssrepo/bento-filedownloader:{{downloader_version}}"
+      environment:
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}-file-downloader"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: true
+      portMappings:
+      - containerPort: "8081"
+        hostPort: "8081"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://{{ syslog_host }}:514
+          tag: "{{ app_name }}-file-downloader"
+          syslog-format: "rfc5424micro"
+    network_mode: bridge
+    family: bento-{{tier}}-file-downloader
+    state: present
+    memory: '512'
+    cpu: '128'
+    region: "{{region}}"
+  register: task_output
+
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
+- name: query task definition - bento filedownloader
+  ecs_taskdefinition_info:
+    task_definition: bento-{{tier}}-file-downloader
+    region: "{{region}}" 
+  register: task_downloader
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
+
+- name: query filedownloader service
+  ecs_service_info:
+    cluster: bento-{{tier}}
+    service: bento-{{tier}}-file-downloader
+    details: true
+    region: "{{region}}"
+  register: service_downloader
+
+############################################################################################################################
+
+- name: set facts
+  set_fact:
+    downloader_revision: "{{task_downloader.revision}}"
+    task_downloader_name: "{{task_downloader.family}}"
+    lb_downloader: "{{service_downloader.services[0].loadBalancers}}"
+    role_arn: "{{service_downloader.services[0].roleArn}}"
+
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
+
+- name: update filedownloader service
+  ecs_service:
+    state: present
+    name: bento-{{tier}}-file-downloader
+    cluster: bento-{{tier}}
+    task_definition: "{{task_downloader_name}}:{{downloader_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_downloader }}"
+    region: "{{region}}"
+  register: service_downloader_output

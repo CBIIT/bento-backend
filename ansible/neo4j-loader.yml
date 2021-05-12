@@ -8,4 +8,5 @@
     - name: perform data loading
       include_role:
         name: neo4j-loader
+        tasks_from: neo4j-loader
         

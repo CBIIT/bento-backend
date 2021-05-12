@@ -47,6 +47,10 @@ pipeline {
     defaultValue: true,
     description: 'Flush the Redis cache',
     name: 'Flush_Redis')
+    stringParam(
+    defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+    description: 'Provide indexd url',
+    name: 'IndexD_Url')
     gitParameter(branchFilter: 'origin/(.*)', 
             defaultValue: 'main', 
             name: 'File_Tag', 
@@ -241,6 +245,7 @@ pipeline {
         FILE_VERSION = "${params.File_Tag}-${BUILD_NUMBER}"
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+        INDEXD_URL = "${params.IndexD_Url}"
       }
 
   		steps{

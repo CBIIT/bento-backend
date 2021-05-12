@@ -95,10 +95,9 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) 
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"
-                  env.TIER  = "qa"
-              
+                  env.TIER  = "qa"   
 
                 }
               break
@@ -106,7 +105,6 @@ pipeline {
                 withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "perf"
-                 
 
                 }
               break
@@ -141,7 +139,7 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-file-downloader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-                       		placeholder: 'yes'
+                       
                         ],
 						colorized: true)
  				}
@@ -174,7 +172,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                     placeholder: 'yes'
+                     placeholder: 'yes',
                     ],
 					colorized: true)
   			}

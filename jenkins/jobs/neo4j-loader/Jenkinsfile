@@ -125,24 +125,46 @@ pipeline {
           }
         }
     }
+	
+	stage('get data'){
+		steps{
+        
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-loader-icdc-get.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+			}
+		
+		stash includes: "**/${DUMP_FILE}", name: 'dump_file'
+		
+		}
+	}
+	
   	stage('data-loader'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"
  		}
  		steps {
-      sh """
-      echo [neo4j] >> ${WORKSPACE}/icdc-devops/ansible/hosts
-      echo ${env.NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
-      """
- 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 					ansiblePlaybook( 
-            			playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-loader.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                  credentialsId: 'server_ssh_key',
-            			colorized: true) 
- 			}
- 		}
+          
+		  sh '''
+            echo [neo4j] >> ${WORKSPACE}/icdc-devops/ansible/hosts
+            echo ${env.NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+          '''
+		  
+		  unstash 'dump_file'
+		  
+ 		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 			ansiblePlaybook( 
+            	playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-loader.yml', 
+            	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'server_ssh_key',
+				colorized: true) 
+ 		  }
+ 		
+		}
     }
+	
     stage('flush_redis'){
 	  environment {
        TIER = "${params.Environment}"
@@ -157,6 +179,7 @@ pipeline {
         }
       }
     }
+	
   }
   post {
     always {

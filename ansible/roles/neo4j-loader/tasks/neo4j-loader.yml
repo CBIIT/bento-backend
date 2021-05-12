@@ -1,0 +1,98 @@
+---
+# tasks file for neo4j-loader
+
+- name: ensure that remote workspace exists
+  file:
+    path: "{{remote_workspace}}"
+    state: directory
+
+- name: ensure backup directory exists
+  file:
+    path: /backups
+    state: directory
+    owner: neo4j
+    group: neo4j
+
+- name: copy dump file
+  copy:
+    src: "{{ dump_file_name }}"
+    dest: "{{ remote_workspace }}/neo4j.dump"
+
+- name: verify file is copied
+  stat:
+     path: "{{ remote_workspace }}/neo4j.dump"
+  register: file_status
+
+#- name: stat output
+#  debug:
+#    msg: "{{ file_status }}"
+
+- name: stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+
+- name: backup neo4j db
+  command: /var/lib/neo4j/bin/neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
+  become_user: neo4j
+
+- name: stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+
+- name: load neo4j dumpfile
+  command: /var/lib/neo4j/bin/neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+  become_user: neo4j
+  register: loader
+
+- name: loader output
+  debug:
+    msg: "{{loader.stdout_lines}}"
+
+- name: start neo4j
+  service:
+    name: neo4j
+    state: started
+
+
+############################################################################################################################
+
+#     Restart the backend container to reload schema
+
+############################################################################################################################
+
+- name: query backend service
+  ecs_service_info:
+    cluster: bento-{{ tier }}
+    service: bento-{{ tier }}-backend
+    details: true
+    region: "{{ region }}"
+  register: service_backend
+
+############################################################################################################################
+
+- name: set backend facts
+  set_fact:
+    backend_task_definition: "{{ service_backend.services[0].taskDefinition }}"
+    lb_backend: "{{ service_backend.services[0].loadBalancers }}"
+    role_arn: "{{ service_backend.services[0].roleArn }}"
+
+############################################################################################################################
+
+- name: recreate backend service
+  ecs_service:
+    state: present
+    name: bento-{{ tier }}-backend
+    cluster: bento-{{ tier }}
+    task_definition: "{{ backend_task_definition }}"
+    role: "{{ role_arn }}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_backend }}"
+    region: "{{ region }}"
+  register: service_backend_output
+

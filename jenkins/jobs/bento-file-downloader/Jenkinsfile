@@ -148,7 +148,7 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-file-downloader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-                       
+                       		placeholder: 'yes',
                         ],
 						colorized: true)
  				}

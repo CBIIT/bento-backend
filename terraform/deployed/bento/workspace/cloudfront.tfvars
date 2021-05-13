@@ -2,7 +2,7 @@
 tags = {
   ManagedBy = "terraform"
   Project = "Bento"
-  Environment = "dev"
+  Environment = "prod"
   Region = "us-east-1"
 }
 #enter the region in which your aws resources will be provisioned
@@ -20,3 +20,5 @@ domain_name = "bento-tools.org"
 app_name = "bento"
 
 cloudfront_distribution_bucket_name = "bento-files"
+
+env = "prod"

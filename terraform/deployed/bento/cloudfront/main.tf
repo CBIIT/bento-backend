@@ -39,7 +39,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
 
 
   origin {
-    domain_name = var.domain_name
+    domain_name = data.aws_s3_bucket.bento_files.bucket_domain_name
     origin_id   = local.s3_origin_id
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.origin_access.cloudfront_access_identity_path

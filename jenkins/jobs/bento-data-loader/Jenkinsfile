@@ -6,7 +6,7 @@ pipeline {
 	}
 	parameters {
     gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
+        defaultValue: 'Neo4j-v4', 
         name: 'Tag', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 

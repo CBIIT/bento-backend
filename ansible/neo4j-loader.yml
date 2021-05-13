@@ -12,8 +12,8 @@
 
 - name: restart backend container
   hosts: loader
+  connection: local
   gather_facts: yes
-  become: yes
     
   tasks:
     - name: restart backend

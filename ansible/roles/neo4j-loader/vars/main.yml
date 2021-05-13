@@ -8,3 +8,7 @@ timestamp: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 
 tier: "{{ lookup('env','TIER') }}"
 region: us-east-1
+
+icdc_cmd: '/var/lib/neo4j/bin/neo4j-admin'
+std_cmd: 'neo4j-admin'
+neo4j_admin_cmd: "{{ icdc_cmd if tier == 'icdc' else std_cmd }}"

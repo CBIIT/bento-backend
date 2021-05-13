@@ -35,7 +35,7 @@
     state: stopped
 
 - name: backup neo4j db
-  command: neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
+  command: {{ neo4j_admin_cmd }} dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
   become_user: neo4j
 
 - name: stop neo4j
@@ -44,7 +44,7 @@
     state: stopped
 
 - name: load neo4j dumpfile
-  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+  command: {{ neo4j_admin_cmd }} load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
   become_user: neo4j
   register: loader
 

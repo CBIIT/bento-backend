@@ -35,7 +35,7 @@
     state: stopped
 
 - name: backup neo4j db
-  command: "{{ neo4j-admin-cmd }} dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump"
+  command: "{{ neo4j_admin_cmd }} dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump"
   become_user: neo4j
 
 - name: stop neo4j

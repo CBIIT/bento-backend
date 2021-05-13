@@ -36,7 +36,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
   is_ipv6_enabled     = true
   wait_for_deployment = false
   price_class         = "PriceClass_100"
-  trusted_key_groups = aws_cloudfront_key_group.key_group.id
+  trusted_key_groups = [aws_cloudfront_key_group.key_group.id]
 
   origin {
     domain_name = var.domain_name

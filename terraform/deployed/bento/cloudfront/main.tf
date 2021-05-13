@@ -76,6 +76,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
       locations        = ["US", "CA"]
     }
   }
+  tags = var.tags
 }
 #create public key
 resource "aws_cloudfront_public_key" "public_key" {

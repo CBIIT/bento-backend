@@ -14,12 +14,12 @@
 #      - python2-pip
 #    state: present
 
-- name: install required packages
-  pip:
-    name:
+#- name: install required packages
+#  pip:
+#    name:
 #      - awscli
-      - boto3
-    state: present
+#      - boto3
+#    state: present
 
 - name: ensure that remote workspace exists
   file:

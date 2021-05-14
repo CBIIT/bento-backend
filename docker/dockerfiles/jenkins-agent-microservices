@@ -5,7 +5,7 @@ MAINTAINER vincent donkor
 ENV JAVA_HOME /usr/lib/jvm/jre-11-openjdk
 ENV MAVEN_HOME /usr/local/maven
 ENV PATH $MAVEN_HOME/bin:$JAVA_HOME/bin:$PATH
-
+ENV NODE_VERSION=15.13.0
 ARG MAVEN_VERSION=3.6.3
 USER root
 RUN yum -y update \
@@ -23,7 +23,7 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
   &&  yum install -y nodejs \
   && npm install -g npm n\
   && npm install -g yarn\
-  && n stable \
+  && n $NODE_VERSION \
   && usermod -aG docker jenkins
 
 RUN yum -y install jq python3 python3-pip \

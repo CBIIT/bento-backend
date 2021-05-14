@@ -177,7 +177,24 @@ pipeline {
 					reportName: 'HTML Report',
 					reportTitles: ''])
 
-				emailext(attachmentsPattern: 'results/*.html',
+				script {
+
+					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
+
+					sudo apt-get update && apt-get install -y zip
+					
+					resultsFile=$(basename results/*.html)
+					zipFile=$(basename -s .html results/*.html)
+					
+					zip -r results/$zipFile.zip $WORKSPACE/Data\ Files
+					zip -u results/$zipFile.zip results/$resultsFile.html
+
+					'''
+
+				}
+				
+				//emailext(attachmentsPattern: 'results/*.html',
+				emailext(attachmentsPattern: 'results/*.zip',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results - Box',
                     to: "${BOX_EMAIL}")
@@ -189,7 +206,8 @@ pipeline {
 						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
 
 						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-						resultsFile=$(basename results/*.html)
+						//resultsFile=$(basename results/*.html)
+						resultsFile=$(basename results/*.zip)
 						pageID=''' + WIKI_PAGE + '''
 						pageName=''' + WIKI_NAME + '''
 						pageName="$pageName Automated Test Results"
@@ -286,7 +304,8 @@ pipeline {
 
 							errorOutput=''' + ERROR_OUTPUT + '''
 							boxUrl=''' + BOX_URL + '''
-							resultsFile=$(basename results/*.html)
+							//resultsFile=$(basename results/*.html)
+							resultsFile=$(basename results/*.zip)
 							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
 							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
 							post_message_to_slack
@@ -302,7 +321,8 @@ pipeline {
 
 						emailBody=''' + ERROR_OUTPUT + '''
 						boxUrl=''' + BOX_URL + '''
-						resultsFile=$(basename results/*.html)
+						//resultsFile=$(basename results/*.html)
+						resultsFile=$(basename results/*.zip)
 						emailBody="<b> $emailBody"
 						emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
 						emailBody=${emailBody//\\\\n/<br>}
@@ -314,7 +334,8 @@ pipeline {
 
 						}
 
-					emailext(attachmentsPattern: 'results/*.html',
+					//emailext(attachmentsPattern: 'results/*.html',
+					emailext(attachmentsPattern: 'results/*.zip',
 						mimeType: 'text/html',
 						body: "${EMAIL_BODY}",
 						subject: 'Failed Katalon Tests: results attached',

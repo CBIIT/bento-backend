@@ -1,6 +1,6 @@
 
 resource "aws_ecr_repository" "ecr" {
-  name = "${var.stack_name}-${var.env}-ecr"
+  name = "${lower(var.stack_name)}-${var.env}-ecr"
   tags = merge(
   {
     "Name" = format("%s-%s-%s",var.stack_name,var.env,"ecr-registry")

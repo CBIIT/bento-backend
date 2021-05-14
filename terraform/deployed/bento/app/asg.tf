@@ -276,7 +276,7 @@ resource "aws_lb_listener_rule" "www" {
 
 #create boostrap script to hook up the node to ecs cluster
 resource "aws_ssm_document" "ssm_doc_boostrap" {
-  name          = "${var.env}-bootstrap-ecs-node"
+  name          = "${var.stack_name}-${var.env}-bootstrap-ecs-node"
   document_type = "Command"
   document_format = "YAML"
   content = <<DOC
@@ -338,7 +338,7 @@ DOC
 resource "aws_ssm_document" "bootstrap" {
   document_format = "YAML"
   document_type = "Command"
-  name = "boostrap-${var.env}-ecs-nodes"
+  name = "boostrap-${var.stack_name}-${var.env}-ecs-nodes"
   content = <<DOC
 ---
 schemaVersion: '2.2'
@@ -356,7 +356,7 @@ mainSteps:
 DOC
   tags = merge(
   {
-    "Name" = format("%s-%s",var.stack_name,"bootstrap-ecs-nodes")
+    "Name" = format("%s-%s-%s",var.stack_name,var.env,"bootstrap-ecs-nodes")
   },
   var.tags,
   )

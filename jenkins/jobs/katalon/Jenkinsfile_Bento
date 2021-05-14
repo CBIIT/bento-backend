@@ -181,12 +181,12 @@ pipeline {
 
 					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
 
-					sudo apt-get update && apt-get install -y zip
+					apt-get update && apt-get install -y zip
 					
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)
 					
-					zip -r results/$zipFile.zip $WORKSPACE/OutputFiles
+					zip -r results/$zipFile.zip OutputFiles
 					zip -u results/$zipFile.zip results/$resultsFile
 
 					'''

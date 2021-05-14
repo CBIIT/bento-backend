@@ -214,7 +214,8 @@ pipeline {
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)
 					
-					zip -r results/$zipFile.zip OutputFiles
+					//zip -r results/$zipFile.zip OutputFiles
+					zip -r results/$zipFile.zip /root/OutputFiles
 					zip -u results/$zipFile.zip results/$resultsFile
 
 					'''

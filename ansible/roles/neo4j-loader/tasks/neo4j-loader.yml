@@ -35,7 +35,7 @@
     state: stopped
 
 - name: backup neo4j db
-  command: neo4j-admin dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump
+  command: "{{ neo4j_admin_cmd }} dump --database=graph.db --to={{backup_directory}}/neo4j-backup-{{timestamp}}.dump"
   become_user: neo4j
 
 - name: stop neo4j
@@ -44,7 +44,7 @@
     state: stopped
 
 - name: load neo4j dumpfile
-  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database graph.db --force
+  command: "{{ neo4j_admin_cmd }} load --from {{remote_workspace}}/neo4j.dump --database graph.db --force"
   become_user: neo4j
   register: loader
 
@@ -64,37 +64,37 @@
 
 ############################################################################################################################
 
-- name: query backend service
-  ecs_service_info:
-    cluster: bento-{{ tier }}
-    service: bento-{{ tier }}-backend
-    details: true
-    region: "{{ region }}"
-  register: service_backend
+#- name: query backend service
+#  ecs_service_info:
+#    cluster: bento-{{ tier }}
+#    service: bento-{{ tier }}-backend
+#    details: true
+#    region: "{{ region }}"
+#  register: service_backend
 
 ############################################################################################################################
 
-- name: set backend facts
-  set_fact:
-    backend_task_definition: "{{ service_backend.services[0].taskDefinition }}"
-    lb_backend: "{{ service_backend.services[0].loadBalancers }}"
-    role_arn: "{{ service_backend.services[0].roleArn }}"
+#- name: set backend facts
+#  set_fact:
+#    backend_task_definition: "{{ service_backend.services[0].taskDefinition }}"
+#    lb_backend: "{{ service_backend.services[0].loadBalancers }}"
+#    role_arn: "{{ service_backend.services[0].roleArn }}"
 
 ############################################################################################################################
 
-- name: recreate backend service
-  ecs_service:
-    state: present
-    name: bento-{{ tier }}-backend
-    cluster: bento-{{ tier }}
-    task_definition: "{{ backend_task_definition }}"
-    role: "{{ role_arn }}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    load_balancers: "{{ lb_backend }}"
-    region: "{{ region }}"
-  register: service_backend_output
+#- name: recreate backend service
+#  ecs_service:
+#    state: present
+#    name: bento-{{ tier }}-backend
+#    cluster: bento-{{ tier }}
+#    task_definition: "{{ backend_task_definition }}"
+#    role: "{{ role_arn }}"
+#    force_new_deployment: yes
+#    deployment_configuration:
+#      minimum_healthy_percent: 0
+#      maximum_percent: 100
+#    desired_count: 1
+#    load_balancers: "{{ lb_backend }}"
+#    region: "{{ region }}"
+#  register: service_backend_output
 

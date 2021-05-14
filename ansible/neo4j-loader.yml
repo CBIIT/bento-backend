@@ -9,4 +9,14 @@
       include_role:
         name: neo4j-loader
         tasks_from: neo4j-loader
-        
+
+- name: restart backend container
+  hosts: loader
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: restart backend
+      include_role:
+        name: neo4j-loader
+        tasks_from: bento-restart-backend

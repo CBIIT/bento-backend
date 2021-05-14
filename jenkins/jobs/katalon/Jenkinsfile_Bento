@@ -186,8 +186,8 @@ pipeline {
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)
 					
-					zip -r results/$zipFile.zip $WORKSPACE/Data\ Files
-					zip -u results/$zipFile.zip results/$resultsFile.html
+					zip -r results/$zipFile.zip $WORKSPACE/"Data Files"
+					zip -u results/$zipFile.zip results/$resultsFile
 
 					'''
 

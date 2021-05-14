@@ -204,18 +204,18 @@ pipeline {
 					reportFiles: '*.html',
 					reportName: 'HTML Report',
 					reportTitles: ''])
-
+				
 				script {
 
 					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
 
-					sudo apt-get update && apt-get install -y zip
+					apt-get update && apt-get install -y zip
 					
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)
 					
-					zip -r results/$zipFile.zip $WORKSPACE/Data\ Files
-					zip -u results/$zipFile.zip results/$resultsFile.html
+					zip -r results/$zipFile.zip $WORKSPACE/"Data Files"
+					zip -u results/$zipFile.zip results/$resultsFile
 
 					'''
 

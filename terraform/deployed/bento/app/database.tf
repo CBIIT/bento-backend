@@ -24,7 +24,7 @@ resource "aws_instance" "db" {
 
 #create database security group
 resource "aws_security_group" "database-sg" {
-  name = "${var.stack_name}-${var.env}-datagase-sg"
+  name = "${var.stack_name}-${var.env}-database-sg"
   description = "database security group"
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
   tags = merge(

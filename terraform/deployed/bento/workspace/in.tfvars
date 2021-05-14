@@ -16,10 +16,10 @@ region = "us-east-1"
 profile = "icdc"
 
 #specify the name you will like to call this project.
-stack_name = "bento"
+stack_name = "IN"
 
 #provide the name of the ecs cluster 
-ecs_cluster_name = "bento"
+ecs_cluster_name = "IN"
 
 #specify the number of container replicas, minimum is 1
 container_replicas = 1

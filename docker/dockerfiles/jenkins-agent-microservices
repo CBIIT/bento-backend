@@ -26,9 +26,9 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
   && n $NODE_VERSION \
   && usermod -aG docker jenkins
 
-RUN yum -y install jq python3 python3-pip \
+RUN yum -y install jq python3 python3-pip \ 
   && /usr/bin/pip3 install pip -U \
-  && /usr/bin/pip3 install ansible==2.9.0 jmespath docker boto botocore boto3\
+  && /usr/bin/pip3 install ansible==2.9.0 aws jmespath docker boto botocore boto3\
   && mkdir -p /var/cert
 RUN yum clean all 
 

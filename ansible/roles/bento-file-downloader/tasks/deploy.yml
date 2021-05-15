@@ -5,6 +5,23 @@
 
 ############################################################################################################################
 
+- name: get distribution domain name
+  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName|[0]"
+  register: dist_info
+
+- name: retrieve key group id 
+  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]"
+  register: key_group
+
+- name: set facts distribution DomainName and key_group id
+  set_fact:
+    cloudfront_domain_name: "{{dist_info.stdout}}"
+    cloudfront_key_group_id: "{{key_group.stdout}}"
+
+    - name: show distribution info
+      debug:
+        msg: "{{cloudfront_key_group_id}}{{cloudfront_domain_name}}{{cloudfront_private_key}}"
+
 
 - name: create task definition - bento filedownloader
   ecs_taskdefinition:
@@ -13,6 +30,20 @@
       essential: true
       image: "cbiitssrepo/bento-filedownloader:{{downloader_version}}"
       environment:
+        - name: VERSION
+          value: "{{downloader_version}}"
+        - name: DATE
+          value: "{{ansible_date_time.date}}"
+        - name: CF_URL
+          value: https://"{{cloudfront_domain_name}}"
+        - name: CF_PRIVATE_KEY
+          value: "{{cloudfront_private_key}}"
+        - name: CF_KEY_PAIR_ID
+          value: "{{cloudfront_key_group_id}}"
+        - name: URL_SRC
+          value: "{{url_src}}"
+        - name: BACKEND_URL
+          value: "{% if tier == 'prod' %}https://api.bento-tools.org/v1/graphql/{% else %}https://api-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

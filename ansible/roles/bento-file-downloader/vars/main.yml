@@ -1,5 +1,6 @@
 ---
 # vars file for cicd
+url_src: CLOUD_FRONT
 platform: aws
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
@@ -13,4 +14,7 @@ sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 app_name: bento-{{platform}}-{{tier}}
 downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
-# hostname: "{{ansible_fqdn}}"
+#cloudfront variables
+cloudfront_origin_id: bento_files_origin_id
+cloudfront_key_group_name: bento-files-key
+cloudfront_private_key: "{{ lookup('aws_ssm', 'bento_files_cloudfront_private_key', region='us-east-1' ) }}"

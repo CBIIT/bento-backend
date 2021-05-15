@@ -6,11 +6,11 @@
 ############################################################################################################################
 
 - name: get distribution domain name
-  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName|[0]"
+  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName|[0]" --output text
   register: dist_info
 
 - name: retrieve key group id 
-  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]"
+  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]" --output text
   register: key_group
 
 - name: set facts distribution DomainName and key_group id

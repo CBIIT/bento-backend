@@ -6,7 +6,7 @@
 ############################################################################################################################
 
 - name: get distribution domain name
-  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName|[0]" --output text
+  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName |[0]" --output text
   register: dist_info
 
 - name: retrieve key group id 
@@ -15,8 +15,8 @@
 
 - name: set facts distribution DomainName and key_group id
   set_fact:
-    cloudfront_domain_name: "{{dist_info.stdout}}"
-    cloudfront_key_group_id: "{{key_group.stdout}}"
+    cloudfront_domain_name: "{{dist_info.stdout_lines | map('trim') | list |first}}"
+    cloudfront_key_group_id: "{{key_group.stdout_lines | map('trim') | list |first}}"
 
 - name: create task definition - bento filedownloader
   ecs_taskdefinition:

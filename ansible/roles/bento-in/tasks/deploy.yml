@@ -60,7 +60,7 @@
       #     tag: "{{ app_name }}-backend"
       #     syslog-format: "rfc5424micro"
     network_mode: bridge
-    family: "{{stack_name}}-{{tier}}-backend"
+    family: "{{stack_name |upper}}-{{tier}}-backend"
     memory: '2048'
     cpu: '512'
     state: present
@@ -104,7 +104,7 @@
       #     tag: "{{ app_name }}-frontend"
       #     syslog-format: "rfc5424micro"
     network_mode: bridge
-    family: "{{stack_name}}-{{tier}}-frontend"
+    family: "{stack_name |upper}}-{{tier}}-frontend"
     state: present
     memory: '512'
     cpu: '128'
@@ -221,13 +221,13 @@
 
 - name: query task definition - bento frontend
   ecs_taskdefinition_info:
-    task_definition: "{{stack_name}}-{{tier}}-frontend"
+    task_definition: "{{stack_name |upper}}-{{tier}}-frontend"
     region: "{{region}}" 
   register: task_frontend
 
 - name: query task definition - bento backend
   ecs_taskdefinition_info:
-    task_definition: "{{stack_name}}-{{tier}}-backend"
+    task_definition: "{{stack_name |upper}}-{{tier}}-backend"
     region: "{{region}}" 
   register: task_backend
 
@@ -257,16 +257,16 @@
 
 - name: query backend service
   ecs_service_info:
-    cluster: "{{stack_name}}-{{tier}}"
-    service: "{{stack_name}}-{{tier}}-backend"
+    cluster: "{{stack_name |upper}}-{{tier}}"
+    service: "{{stack_name |upper}}-{{tier}}-backend"
     details: true
     region: "{{region}}"
   register: service_backend
 
 - name: query ecs service
   ecs_service_info:
-    cluster: "{{stack_name}}-{{tier}}"
-    service: "{{stack_name}}-{{tier}}-frontend"
+    cluster: "{{stack_name |upper}}-{{tier}}"
+    service: "{{stack_name |upper}}-{{tier}}-frontend"
     details: true
     region: "{{region}}"
   register: service_frontend
@@ -362,7 +362,7 @@
 - name: update backend service
   ecs_service:
     state: present
-    name: "{{stack_name}}-{{tier}}-backend"
+    name: "{{stack_name |upper}}-{{tier}}-backend"
     cluster: bento-{{tier}}
     task_definition: "{{task_backend_name}}:{{backend_revision}}"
     role: "{{role_arn}}"
@@ -378,7 +378,7 @@
 - name: update frontend service
   ecs_service:
     state: present
-    name: "{{stack_name}}-{{tier}}-frontend"
+    name: "{{stack_name |upper}}-{{tier}}-frontend"
     cluster: bento-{{tier}}
     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
     role: "{{role_arn}}"

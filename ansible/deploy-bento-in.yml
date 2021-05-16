@@ -1,8 +1,8 @@
 ---
 - name: deploy stage of bento pipeline
   hosts: bento
-  gather_facts: yes
-  become: yes
+  connection: local
+  gather_facts: no
     
   tasks:
     - name: deploy bento-icdc

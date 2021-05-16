@@ -3,26 +3,41 @@ resource "aws_elasticache_subnet_group" "redis_subnet_group" {
   subnet_ids = data.terraform_remote_state.network.outputs.private_subnets_ids
 }
 
-resource "aws_elasticache_replication_group" "replication_group" {
-  replication_group_id          = "${var.stack_name}-${var.env}-redis-cluster"
-  replication_group_description = "Redis cluster ${var.stack_name} ${var.env}"
 
+resource "aws_elasticache_cluster" "redis_cluster" {
+  cluster_id           = "${var.stack_name}-${var.env}-redis-cluster"
+  engine               = "redis"
   node_type            = "cache.t3.medium"
-  port                 = 6379
+  num_cache_nodes      = 1
   parameter_group_name = "default.redis6.x.cluster.on"
-
+  engine_version       = "3.2.10"
   snapshot_retention_limit = 5
   snapshot_window          = "00:00-05:00"
   security_group_ids = [aws_security_group.redis.id]
-  subnet_group_name = aws_elasticache_subnet_group.redis_subnet_group.name
 
-  automatic_failover_enabled = true
-
-  cluster_mode {
-    replicas_per_node_group = 1
-    num_node_groups         = var.redis_node_group
-  }
+  port                 = 6379
 }
+
+//resource "aws_elasticache_replication_group" "replication_group" {
+//  replication_group_id          = "${var.stack_name}-${var.env}-redis-cluster"
+//  replication_group_description = "Redis cluster ${var.stack_name} ${var.env}"
+//
+//  node_type            = "cache.t3.medium"
+//  port                 = 6379
+//  parameter_group_name = "default.redis6.x.cluster.on"
+//
+//  snapshot_retention_limit = 5
+//  snapshot_window          = "00:00-05:00"
+//  security_group_ids = [aws_security_group.redis.id]
+//  subnet_group_name = aws_elasticache_subnet_group.redis_subnet_group.name
+//
+//  automatic_failover_enabled = true
+//
+//  cluster_mode {
+//    replicas_per_node_group = 1
+//    num_node_groups         = var.redis_node_group
+//  }
+//}
 
 resource "aws_security_group" "redis" {
   name = "${var.stack_name}-${var.env}-redis-sg"

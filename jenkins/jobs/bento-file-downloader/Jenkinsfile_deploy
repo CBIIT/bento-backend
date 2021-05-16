@@ -57,7 +57,7 @@ pipeline {
 	  environment {
 	   SLACK_URL = "${SLACK_URL}"
        TIER = "${params.Environment}"
-	     DOWNLOADER_VERSION = "${params.Downloader_Tag}
+	     DOWNLOADER_VERSION = "${params.Downloader_Tag}"
       }
   		steps{
 		  node('cicd_microservice') {

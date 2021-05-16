@@ -25,7 +25,7 @@ resource "aws_route53_record" "prod_tier_records" {
 }
 
 resource "aws_route53_record" "lower_tiers_records" {
-  count =  var.stack_name == "bento" && var.env ==  "prod" ? 0 : 1
+  count =  var.stack_name == "bento" && !var.env ==  "prod" ? 0 : 1
   name = var.env
   type = "A"
   zone_id = data.aws_route53_zone.zone.zone_id

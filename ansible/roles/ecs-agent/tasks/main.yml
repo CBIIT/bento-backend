@@ -1,6 +1,18 @@
 ---
 # tasks file for ecs-agent
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": "{{stack_name}}-{{env}}-frontend"
+      "instance-state-name": running
+      "tag:Environment": "{{env}}"
+  register: frontend
 
+- name: set instance name
+  set_fact:
+    frontend_ip: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"
+    
 #set local routing 
 - name: set localhost routing
   sysctl:

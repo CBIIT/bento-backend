@@ -14,6 +14,7 @@ resource "aws_elasticache_cluster" "redis_cluster" {
   snapshot_retention_limit = 5
   snapshot_window          = "00:00-05:00"
   security_group_ids = [aws_security_group.redis.id]
+  subnet_group_name = aws_elasticache_subnet_group.redis_subnet_group.name
 
   port                 = 6379
 }

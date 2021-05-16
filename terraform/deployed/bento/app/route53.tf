@@ -38,7 +38,7 @@ resource "aws_route53_record" "lower_tiers_records" {
 
 resource "aws_route53_record" "api" {
   count =  var.env ==  "prod" ? 0:1
-  name = "api-${var.env}"
+  name = "api-${var.stack_name}-${var.env}"
   type = "A"
   zone_id = data.aws_route53_zone.zone.zone_id
   alias {
@@ -50,7 +50,7 @@ resource "aws_route53_record" "api" {
 
 resource "aws_route53_record" "api_prod" {
   count =  var.env ==  "prod" ? 1 : 0
-  name = "api"
+  name = "api-${var.stack_name}"
   type = "A"
   zone_id = data.aws_route53_zone.zone.zone_id
   alias {

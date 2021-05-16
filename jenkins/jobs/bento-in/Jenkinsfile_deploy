@@ -57,93 +57,6 @@ pipeline {
 		description: 'Enable the Redis filter',
 		name: 'Enable_Redis_Filter')
 
-//	gitParameter(branchFilter: 'origin/(.*)', 
-//        defaultValue: 'integration', 
-//        name: 'Frontend_Image', 
-//        type: 'PT_BRANCH_TAG',
-//        quickFilterEnabled: false, 
-//        selectedValue: 'DEFAULT', 
-//        sortMode: 'ASCENDING_SMART', 
-//        tagFilter: '*', 
-//        useRepository: 'https://github.com/CBIIT/bento-frontend')
-//
-//	The Frontend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
-//	The GUI definition for this parameter should follow Environment and use the following values:
-//	
-//	Script:
-//		env_value = Environment
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
-//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
-//		List tagnames = tags.collect{ '' + it + '' }
-//
-//		if(env_value.equalsIgnoreCase("dev")) {
-//		  for(int i=0; i < tagnames.size(); i++) {
-//			if(tagnames.get(i).equalsIgnoreCase("integration")) {
-//			  new_value = tagnames[i] + ':selected'
-//			  tagnames.set(i, new_value);
-//			  }
-//			}
-//		  } else {
-//			for(int i=0; i < tagnames.size(); i++) {
-//			  if(tagnames.get(i).equalsIgnoreCase("master")) {
-//				new_value = tagnames[i] + ':selected'
-//				tagnames.set(i, new_value);
-//				}
-//			  }
-//			}
-//
-//		return tagnames
-//		
-//	Fallback Script:
-//		return ['integration']
-//		
-//		NOTE: this sets the default frontend branch to "integration" and is required for builds triggered from SCM polling.
-//		
-//	Referenced parameters:
-//		Environment
-
-//    gitParameter(branchFilter: 'origin/(.*)', 
-//        defaultValue: 'Integration', 
-//        name: 'Backend_Image', 
-//        type: 'PT_BRANCH_TAG',
-//        quickFilterEnabled: false, 
-//        selectedValue: 'DEFAULT', 
-//        sortMode: 'ASCENDING_SMART', 
-//        tagFilter: '*', 
-//        useRepository: 'https://github.com/CBIIT/bento-backend')
-//
-//	The Backend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
-//	The GUI definition for this parameter should follow Frontend_Image and use the following values:
-//	
-//	Script:
-//		front_tag = Frontend_Image
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
-//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
-//		List tagnames = tags.collect{ '' + it + '' }
-//
-//		for(int i=0; i < tagnames.size(); i++) {
-//		  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
-//			new_value = tagnames[i] + ':selected'
-//			tagnames.set(i, new_value);
-//			}
-//		  }
-//
-//		for(int i=0; i < tagnames.size(); i++) {
-//		  if(tagnames.get(i).equalsIgnoreCase("Integration")) {
-//			new_value = tagnames[i] + ':selected'
-//			tagnames.set(i, new_value);
-//			}
-//		  }
-//
-//		return tagnames
-//		
-//	Fallback Script:
-//		return ['Integration']
-//		
-//		NOTE: this sets the default backend branch to "Integration" and is required for builds triggered from SCM polling. The branch defined here should math the default for Frontend_Image
-//		
-//	Referenced parameters:
-//		Frontend_Image
 
   }
   options {
@@ -154,49 +67,7 @@ pipeline {
     jdk 'Default' 
   }
   stages{
-//  	stage('checkout'){
-//  		steps {
-//			git branch: "${params.Backend_Image}",
-//				url: 'https://github.com/CBIIT/bento-backend'
-//				
-//  			checkout([$class: 'GitSCM', 
-//  				branches: [[name: "${params.Backend_Image}"]], 
-//  				doGenerateSubmoduleConfigurations: 
-//  				false, extensions: [], submoduleCfg: [], 
-//  				userRemoteConfigs: 
-//  				[[url: 'https://github.com/CBIIT/bento-backend']]])
-//
-//			dir('bento-frontend'){
-//				git branch: "${params.Frontend_Image}",
-//				url: 'https://github.com/CBIIT/bento-frontend'
-//				}
-//
-//			checkout([$class: 'GitSCM',
-//				branches: [[name: "${params.Frontend_Image}"]],
-//				doGenerateSubmoduleConfigurations: false,
-//				extensions: [[$class: 'RelativeTargetDirectory',
-//				relativeTargetDir: 'bento-frontend']],
-//				submoduleCfg: [],
-//				userRemoteConfigs: 
-//				[[url: 'https://github.com/CBIIT/bento-frontend']]])
-//
-//  			checkout( changelog:false,
-//				poll: false,
-//				scm: [$class: 'GitSCM', 
-//				branches: [[name: '*/master']], 
-//				doGenerateSubmoduleConfigurations: false, 
-//				extensions: [[$class: 'DisableRemotePoll'],
-//				[$class: 'PathRestriction', excludedRegions: '*'], 
-//				[$class: 'RelativeTargetDirectory', 
-//				relativeTargetDir: 'icdc-devops']], 
-//				submoduleCfg: [], 
-//				userRemoteConfigs: 
-//				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-//				])
-//        
-//        }
-// 
-//  	}
+
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
@@ -211,8 +82,8 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'in_dev_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'in_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
@@ -222,8 +93,8 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'in_qa_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'in_qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
@@ -233,8 +104,8 @@ pipeline {
                 }
               break
               case "perf":
-                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'in_stage_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'in_stage_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_PERF_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "perf"
@@ -244,8 +115,8 @@ pipeline {
                 }
               break
               case "prod":
-                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'prod_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'in_prod_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'in_prod_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
@@ -254,20 +125,10 @@ pipeline {
 
                 }
               break
-              case "icdc":
-                withCredentials([string(credentialsId: 'icdc_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'icdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_ICDC_IP}"
-                  env.BEARER = "${BEARER}"
-                  env.TIER  = "icdc"
-				  env.NEO4J_USER = "${NEO4J_USER}"
-                  env.NEO4J_PASS  = "${NEO4J_PASS}"
-
-                }
-			  break
+      
               default:
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'in_dev_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'in_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
@@ -350,44 +211,6 @@ pipeline {
   			}
 		  }
   		}
-  	}
-	
-	stage('update database monitoring agents'){
-		steps{
-		  node('data-loader') {
-		    checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-			
-		    echo "Recreating inventory file"
-			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
-            sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-            sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					extraVars: [
-                    env: "${params.Environment}",
-					app_type: 'database',
-					app_name: 'neo4j',
-                    project: 'bento',
-					log_path: '/var/lib/neo4j/logs/*.log',
-                    ],
-            		colorized: true)
-  			}
-  		  }
-		}
   	}
 
   }

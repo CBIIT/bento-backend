@@ -4,11 +4,11 @@ stack_name: in
 enable_redis: true
 platform: aws
 redis_host: 
-  dev: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  qa: "bento-qa-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  perf: "bento-perf-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  dev: "in-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
+  qa: "localhost"
+  perf: "localhost"
+  icdc: "localhost"
+  prod: "localhost"
 redis_password: ""
 redis_port: 6379
 #enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"

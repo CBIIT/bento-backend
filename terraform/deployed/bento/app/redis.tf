@@ -5,7 +5,7 @@ resource "aws_elasticache_subnet_group" "redis_subnet_group" {
 
 
 resource "aws_elasticache_cluster" "redis_cluster" {
-  cluster_id           = "${var.stack_name}-${var.env}-redis-cluster"
+  cluster_id           = "${lower(var.stack_name)}-${var.env}-redis-cluster"
   engine               = "redis"
   node_type            = "cache.t3.medium"
   num_cache_nodes      = 1

@@ -1,0 +1,5 @@
+- name: confirm redis redis_host
+  debug: 
+    msg: "{{redis_host[tier]}}"
+- name: flush redis cache
+  shell: echo -e "get abc \nFLUSHALL ASYNC" | redis-cli -h {{ redis_host[tier]}} -p 6379 -c

@@ -1,0 +1,43 @@
+---
+# vars file for cicd
+stack_name: in
+enable_redis: true
+platform: aws
+redis_host: 
+  dev: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  qa: "bento-qa-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  perf: "bento-perf-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+redis_password: ""
+redis_port: 6379
+#enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"
+use_cluster: 'false'
+tier: "{{ lookup('env','TIER') }}"
+version: "{{ lookup('env','VERSION') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+region: us-east-1
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
+app_name: bento-{{platform}}-{{tier}}
+
+#### bento-icdc changes #########################################################################################################
+schema_file: "{% if tier == 'icdc' %}icdc.graphql{% else %}bento-extended.graphql{% endif %}"
+#################################################################################################################################
+
+frontend_version: "{{ lookup('env','FE_VERSION') }}"
+backend_version: "{{ lookup('env','BE_VERSION') }}"
+bento_api_version: "{{ backend_version }}"
+backend_frontend_version: "{{frontend_version }}"
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
+neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+neo4j_bearer: "{{ lookup('env','BEARER') }}"
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+
+# hostname: "{{ansible_fqdn}}"

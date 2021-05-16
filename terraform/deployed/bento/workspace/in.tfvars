@@ -83,3 +83,4 @@ db_private_ip = "172.18.11.29"
 
 remote_state_bucket_name = "bento-terraform-remote-state"
 redis_node_group = 1
+redis_node_type = "cache.t3.medium"

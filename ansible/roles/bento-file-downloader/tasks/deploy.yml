@@ -30,7 +30,7 @@
         - name: DATE
           value: "{{ansible_date_time.date}}"
         - name: CF_URL
-          value: https://"{{cloudfront_domain_name}}"
+          value: https://{{cloudfront_domain_name}}
         - name: CF_PRIVATE_KEY
           value: "{{cloudfront_private_key}}"
         - name: CF_KEY_PAIR_ID

@@ -369,7 +369,7 @@
     name: "{{stack_name |upper}}-{{tier}}-backend"
     cluster: bento-{{tier}}
     task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    role: "{{role_arn}}"
+    # role: "{{role_arn}}"
     force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
@@ -385,7 +385,7 @@
     name: "{{stack_name |upper}}-{{tier}}-frontend"
     cluster: bento-{{tier}}
     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-    role: "{{role_arn}}"
+    # role: "{{role_arn}}"
     force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0

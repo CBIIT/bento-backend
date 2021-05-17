@@ -26,7 +26,7 @@
     - {repo: 'https://repo.clickhouse.tech/rpm/stable/x86_64/',name: clickhouse}
     - {repo: 'https://artifacts.elastic.co/packages/7.x/yum/',name: elasticsearch}
 
-- name: install epel-release
+- name: install clickhouse and elasticsearch
   yum:
     name:
       - clickhouse-server 

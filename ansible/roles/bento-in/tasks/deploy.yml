@@ -311,7 +311,9 @@
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
-
+- name: show
+  debug: 
+    msg: "{{role_arn}}"
 
 ############################################################################################################################
 

@@ -1,0 +1,38 @@
+---
+# tasks file for roles/open-target-backend
+- name: install epel-release
+  yum:
+    name:
+      - epel-release
+      - yum-utils
+      - java-11-openjdk-devel
+      - python3
+
+- name: add click house public rpm gpg key
+  rpm_key:
+    state: present
+    key: https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
+
+- name: add clickhouse repo
+  yum_repository:
+    name: clickhouse
+    description: Clickhouse repo
+    file: external_repos
+    baseurl: https://repo.clickhouse.tech/rpm/stable/x86_64/
+
+- name: install epel-release
+  yum:
+    name:
+      - clickhouse-server 
+      - clickhouse-client
+
+- name: enable and start clickhouse
+  service:
+    name: clickhouse-server
+    enabled: yes
+    state: started
+
+
+
+
+    

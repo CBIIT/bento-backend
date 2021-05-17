@@ -1,0 +1,13 @@
+---
+- name: setup neo4j server
+  hosts: localhost
+  connection: local
+  become: yes
+  
+  tasks:
+    - name: setup clickhouse database
+      include_role:
+        name: open-target-backend
+        tasks_from: database
+
+

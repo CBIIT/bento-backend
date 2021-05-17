@@ -367,9 +367,9 @@
   ecs_service:
     state: present
     name: "{{stack_name |upper}}-{{tier}}-backend"
-    cluster: bento-{{tier}}
+    cluster: "{{stack_name |upper}}-{{tier}}"
     task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    # role: "{{role_arn}}"
+    role: "{{role_arn}}"
     force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0
@@ -383,9 +383,9 @@
   ecs_service:
     state: present
     name: "{{stack_name |upper}}-{{tier}}-frontend"
-    cluster: bento-{{tier}}
+    cluster: "{{stack_name |upper}}-{{tier}}"
     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
-    # role: "{{role_arn}}"
+    role: "{{role_arn}}"
     force_new_deployment: yes
     deployment_configuration:
       minimum_healthy_percent: 0

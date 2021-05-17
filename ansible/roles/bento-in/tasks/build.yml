@@ -97,14 +97,14 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/in-backend image
+- name: build cbiitssrepo/{{stack_name}}-backend image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/in-backend
+    name: cbiitssrepo/{{stack_name}}-backend
     tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
@@ -112,8 +112,8 @@
 
 - name: Add tag latest to cbiitssrepo/in-backend image
   docker_image:
-    name: "cbiitssrepo/in-backend:{{backend_version}}-{{build_number}}"
-    repository: cbiitssrepo/in-backend:latest
+    name: "cbiitssrepo/{{stack_name}}-backend:{{backend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{stack_name}}-backend:latest
     force_tag: yes
     push: yes
     source: local
@@ -154,14 +154,14 @@
     dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
     mode: 0755
           
-- name: build cbiitssrepo/in-frontend image
+- name: build cbiitssrepo/{{stack_name}}-frontend image
   docker_image:
     build:
       path: "{{workspace}}/bento-frontend"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/in-frontend
+    name: cbiitssrepo/{{stack_name}}-frontend
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
@@ -169,8 +169,8 @@
 
 - name: Add tag latest to cbiitssrepo/in-frontend image
   docker_image:
-    name: "cbiitssrepo/in-frontend:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/in-frontend:latest
+    name: "cbiitssrepo/{{stack_name}}-frontend:{{frontend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{stack_name}}-frontend:latest
     force_tag: yes
     push: yes
     source: local

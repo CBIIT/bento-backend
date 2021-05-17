@@ -242,7 +242,6 @@ pipeline {
 	
   	stage('deploy'){
       environment {
-        FILE_VERSION = "${params.File_Tag}-${BUILD_NUMBER}"
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
@@ -266,7 +265,7 @@ pipeline {
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}-${BUILD_NUMBER}",
                     backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
-                    file_version: "${params.File_Tag}-${BUILD_NUMBER}",
+                    downloader_version: "${params.File_Tag}-${BUILD_NUMBER}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
                     indexd_url: "${params.IndexD_Url}"

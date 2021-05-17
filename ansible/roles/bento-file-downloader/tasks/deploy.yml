@@ -29,6 +29,8 @@
           value: "{{downloader_version}}"
         - name: DATE
           value: "{{ansible_date_time.date}}"
+        - name: PROJECT
+          value: BENTO
         - name: CF_URL
           value: https://{{cloudfront_domain_name}}
         - name: CF_PRIVATE_KEY

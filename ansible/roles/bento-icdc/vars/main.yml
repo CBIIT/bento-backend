@@ -31,6 +31,7 @@ build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 neo4j_bearer: "{{ lookup('env','BEARER') }}"
 region: us-east-1
+downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
 newrelic_license_key: "{{ lookup('env','NEWRELIC_LIC_KEY')}}"
 sumo_access_id: "{{ lookup('env','SUMO_ACCESS_ID')}}"
 sumo_access_key: "{{ lookup('env','SUMO_ACCESS_KEY')}}"

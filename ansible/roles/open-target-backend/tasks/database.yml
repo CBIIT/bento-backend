@@ -8,29 +8,51 @@
       - java-11-openjdk-devel
       - python3
 
-- name: add click house public rpm gpg key
+- name: add click house and elasticsearch public rpm gpg key
   rpm_key:
     state: present
-    key: https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
+    key: "{{item}}"
+  loop:
+    - https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
+    - https://artifacts.elastic.co/GPG-KEY-elasticsearch
 
 - name: add clickhouse repo
   yum_repository:
-    name: clickhouse
+    name: "{{item.name}}"
     description: Clickhouse repo
     file: external_repos
-    baseurl: https://repo.clickhouse.tech/rpm/stable/x86_64/
+    baseurl: "{{item.repo}}"
+  loop:
+    - {repo: 'https://repo.clickhouse.tech/rpm/stable/x86_64/',name: clickhouse}
+    - {repo: 'https://artifacts.elastic.co/packages/7.x/yum/',name: elasticsearch}
 
 - name: install epel-release
   yum:
     name:
       - clickhouse-server 
       - clickhouse-client
+      - elasticsearch
+
+- name: reload systemd config
+  systemd: daemon_reload=yes
+
+- name: enable service elasticsearch and ensure it is not masked
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    masked: no
+
+- name: start elasticsearch 
+  systemd: 
+    state: started 
+    name: elasticsearch
 
 - name: enable and start clickhouse
   service:
     name: clickhouse-server
     enabled: yes
     state: started
+
 
 
 

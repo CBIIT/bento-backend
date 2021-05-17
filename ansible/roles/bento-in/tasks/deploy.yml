@@ -61,7 +61,7 @@
       #     syslog-format: "rfc5424micro"
     network_mode: bridge
     family: "{{stack_name |upper}}-{{tier}}-backend"
-    memory: '2048'
+    memory: '1024'
     cpu: '512'
     state: present
     region: "{{region}}"
@@ -72,7 +72,7 @@
     containers:
     - name: frontend
       essential: true
-      image: "cbiitssrepo/in-frontend:{{frontend_version}}"
+      image: "cbiitssrepo/{{stack_name}}-frontend:{{frontend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://api-{{stack_name}}.bento-tools.org/v1/graphql/{% else %}https://api-{{stack_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
@@ -104,7 +104,7 @@
       #     tag: "{{ app_name }}-frontend"
       #     syslog-format: "rfc5424micro"
     network_mode: bridge
-    family: "{stack_name |upper}}-{{tier}}-frontend"
+    family: "{{stack_name |upper}}-{{tier}}-frontend"
     state: present
     memory: '512'
     cpu: '128'

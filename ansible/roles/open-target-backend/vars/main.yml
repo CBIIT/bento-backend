@@ -1,2 +1,6 @@
 ---
 # vars file for roles/open-target-backend
+scala_version: 12.13.5
+project_repo: https://github.com/CBIIT/ppdc-otp-backend.git
+workspace: /tmp/workspace
+project_home: /local/content/ppdc-otp-backend

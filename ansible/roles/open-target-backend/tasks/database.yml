@@ -1,12 +1,5 @@
 ---
 # tasks file for roles/open-target-backend
-- name: install epel-release
-  yum:
-    name:
-      - epel-release
-      - yum-utils
-      - java-11-openjdk-devel
-      - python3
 
 - name: add click house and elasticsearch public rpm gpg key
   rpm_key:

@@ -325,7 +325,7 @@ pipeline {
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}",
                     backend_version: "${params.Backend_Tag}",
-                    file_version: "${params.File_Tag}",
+                    downloader_version: "${params.File_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
                     indexd_url: "${params.IndexD_Url}"

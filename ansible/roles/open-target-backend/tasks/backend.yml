@@ -1,0 +1,33 @@
+---
+- name: scala
+  yum:
+    name: http://www.scala-lang.org/files/archive/{{scala_version}}.rpm
+    state: present
+
+- name: bintray yum repository 
+  get_url:
+    url:  https://bintray.com/sbt/rpm/rpm
+    dest: /etc/yum.repos.d/bintray-sbt.repo
+
+- name: ensure sbt is installed
+  yum: 
+    name:
+      - sbt
+      - git
+    state: present
+
+- name: ensure files directories exists
+  file:
+    path: "{{item}}"
+    state: directory
+  loop:
+    - "{{workspace}}"
+    - "{{project_home}}"
+
+- name: git clone "{{project}}"
+  git:
+    repo: "{{project_repo}}"
+    dest: "{{workspace}}/backend"
+    force: yes
+    version: "{{tag}}"
+

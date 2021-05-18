@@ -1,0 +1,18 @@
+---
+- name: deploy open-target-backend
+  hosts: localhost
+  connection: local
+  become: yes
+  
+  tasks:
+    - name: install common packages
+      include_role:
+        name: open-target-backend
+        tasks_from: common
+
+    - name: deploy backend
+      include_role:
+        name: open-target-backend
+        tasks_from: backend
+
+

@@ -31,5 +31,4 @@
     force: yes
     version: "{{tag}}"
 
-    https://www.scala-lang.org/files/archive/scala-2.13.5.rpm
 

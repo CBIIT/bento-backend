@@ -1,7 +1,7 @@
 ---
 - name: scala
   yum:
-    name: https://www.scala-lang.org/files/archive/{{scala_version}}.rpm
+    name: http://www.scala-lang.org/files/archive/scala-{{scala_version}}.rpm
     state: present
 
 - name: bintray yum repository 
@@ -31,5 +31,5 @@
     force: yes
     version: "{{tag}}"
 
-
+    https://www.scala-lang.org/files/archive/scala-2.13.5.rpm
 

@@ -75,9 +75,9 @@
       image: "cbiitssrepo/bento-frontend:{{frontend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
-          value: "{% if tier == 'prod' %}https://api.bento-tools.org/v1/graphql/{% else %}https://api-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
+          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/v1/graphql/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
         - name: REACT_APP_FILE_SERVICE_API
-          value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{ tier }}.bento-tools.org/api/files/{% endif %}"
+          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/files/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
         - name: REACT_APP_BE_VERSION
           value: "{{backend_version}}"
         - name: REACT_APP_FE_VERSION
@@ -299,7 +299,7 @@
 
 - name: set facts
   set_fact:
-    frontend_url: "{% if tier == 'prod' %}https://bento-tools.org/{% else %}https://{{ tier }}.bento-tools.org/{% endif %}"
+    frontend_url: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/{% endif %}"
     frontend_revision: "{{task_frontend.revision}}"
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"

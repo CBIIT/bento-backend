@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8e597dea-b21f-4593-bdc1-91b325e8ac83" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/deployed/bento/workspace/qa.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/workspace/qa.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployed/bento/app/asg.tf" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/app/asg.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployed/bento/app/downloader.tf" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/app/downloader.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

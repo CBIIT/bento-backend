@@ -65,6 +65,7 @@ db_instance_volume_size = 60
 alb_rule_priority = 50
 frontend_rule_priority = 51
 backend_rule_priority = 52
+downloader_rule_priority = 49
 
 env = "qa"
 

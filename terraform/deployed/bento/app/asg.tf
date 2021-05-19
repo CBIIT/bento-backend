@@ -220,12 +220,12 @@ resource "aws_lb_listener_rule" "backend_alb_listener_prod" {
 
   condition {
     host_header {
-      values = ["api.${var.domain_name}"]
+      values = [var.domain_name]
     }
   }
   condition {
     path_pattern  {
-      values = ["/*"]
+      values = ["/v1/graphql/*"]
     }
   }
 }
@@ -242,12 +242,12 @@ resource "aws_lb_listener_rule" "backend_alb_listener_prod_others" {
 
   condition {
     host_header {
-      values = ["api-${lower(var.stack_name)}.${var.domain_name}"]
+      values = ["${lower(var.stack_name)}.${var.domain_name}"]
     }
   }
   condition {
     path_pattern  {
-      values = ["/*"]
+      values = ["/v1/graphql/*"]
     }
   }
 }
@@ -310,13 +310,13 @@ resource "aws_lb_listener_rule" "backend_alb_listener" {
 
   condition {
     host_header {
-      values = ["api-${var.env}.${var.domain_name}"]
+      values = ["${var.env}.${var.domain_name}"]
     }
 
   }
   condition {
     path_pattern  {
-      values = ["/*"]
+      values = ["/v1/graphql/*"]
     }
   }
 }
@@ -332,13 +332,13 @@ resource "aws_lb_listener_rule" "backend_alb_listener_others" {
 
   condition {
     host_header {
-      values = ["api-${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
+      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
     }
 
   }
   condition {
     path_pattern  {
-      values = ["/*"]
+      values = ["/v1/graphql/*"]
     }
   }
 }

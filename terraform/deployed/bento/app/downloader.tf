@@ -28,14 +28,6 @@ resource "aws_ecs_task_definition" "downloader" {
   )
 }
 
-resource "aws_security_group_rule" "inbound_downloader_alb" {
-  from_port = var.downloader_container_port
-  protocol = local.tcp_protocol
-  to_port = var.downloader_container_port
-  security_group_id = aws_security_group.frontend_sg.id
-  source_security_group_id = module.alb.alb_security_group_id
-  type = "ingress"
-}
 
 #create alb target group
 resource "aws_lb_target_group" "downloader_target_group" {
@@ -49,10 +41,11 @@ resource "aws_lb_target_group" "downloader_target_group" {
     enabled = true
   }
   health_check {
-    path = "/"
+    path = "/api/files/ping"
     protocol = "HTTP"
     matcher = "200"
     interval = 15
+    port = var.shutdown_schedule
     timeout = 3
     healthy_threshold = 2
     unhealthy_threshold = 2
@@ -63,6 +56,15 @@ resource "aws_lb_target_group" "downloader_target_group" {
   },
   var.tags,
   )
+}
+
+resource "aws_security_group_rule" "inbound_downloader_alb" {
+  from_port = var.downloader_container_port
+  protocol = local.tcp_protocol
+  to_port = var.downloader_container_port
+  security_group_id = aws_security_group.frontend_sg.id
+  source_security_group_id = module.alb.alb_security_group_id
+  type = "ingress"
 }
 
 resource "aws_lb_listener_rule" "downloader_alb_listener_prod" {

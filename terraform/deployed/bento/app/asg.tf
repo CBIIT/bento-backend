@@ -210,7 +210,7 @@ resource "aws_lb_listener_rule" "frontend_alb_listener_prod" {
 
 
 resource "aws_lb_listener_rule" "backend_alb_listener_prod" {
-  count =  var.stack_name == "bento" && var.env ==  "prod" ? 1:0
+  count =  var.env ==  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
   priority = var.backend_rule_priority
   action {
@@ -300,7 +300,7 @@ resource "aws_lb_listener_rule" "frontend_alb_listener" {
 
 
 resource "aws_lb_listener_rule" "backend_alb_listener" {
-  count =  var.stack_name == "bento" && var.env !=  "prod" ? 1:0
+  count =  var.env !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
   priority = var.backend_rule_priority
   action {

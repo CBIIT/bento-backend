@@ -45,7 +45,7 @@ resource "aws_lb_target_group" "downloader_target_group" {
     protocol = "HTTP"
     matcher = "200"
     interval = 15
-    port = var.shutdown_schedule
+    port = var.downloader_container_port
     timeout = 3
     healthy_threshold = 2
     unhealthy_threshold = 2

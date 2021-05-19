@@ -28,6 +28,9 @@ frontend_container_port = 80
 #This a port number for bento-backend
 backend_container_port = 8080
 
+#downloader_container_port
+downloader_container_port = 8081
+
 #specify the maximum and minimun number of instances in auto-scalling group
 max_size = 2
 min_size = 1

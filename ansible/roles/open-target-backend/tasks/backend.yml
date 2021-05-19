@@ -31,4 +31,6 @@
     force: yes
     version: "{{tag}}"
 
+- name: build the app
+  command: sbt clean compile package
 

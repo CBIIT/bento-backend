@@ -78,6 +78,6 @@ EOF
 
   part {
     content_type = "text/x-shellscript"
-    content      = "${file("ssm.sh")}"
+    content      = file("ssm.sh")
   }
 }

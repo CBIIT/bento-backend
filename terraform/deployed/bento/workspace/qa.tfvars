@@ -32,13 +32,13 @@ backend_container_port = 8080
 downloader_container_port = 8081
 
 #specify the maximum and minimun number of instances in auto-scalling group
-max_size = 2
+max_size =1
 min_size = 1
 
 #provide name for the auto-scalling-groups
 frontend_asg_name = "frontend"
 
-desired_ec2_instance_capacity = 2
+desired_ec2_instance_capacity =1
 
 #cutomize the volume size for all the instances created except database
 instance_volume_size = 40

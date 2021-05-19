@@ -47,7 +47,7 @@ instance_volume_size = 40
 ssh_key_name = "devops"
 
 #specify the aws compute instance type for the bento
-fronted_instance_type = "t3.medium"
+fronted_instance_type = "t3.xlarge"
 
 #provide the name of the admin user for ssh login
 ssh_user = "bento"

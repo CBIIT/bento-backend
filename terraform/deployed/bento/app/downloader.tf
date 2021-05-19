@@ -76,27 +76,6 @@ resource "aws_lb_listener_rule" "downloader_alb_listener_prod" {
 
   condition {
     host_header {
-      values = [var.domain_name]
-    }
-  }
-  condition {
-    path_pattern  {
-      values = ["/api/files/*"]
-    }
-  }
-}
-
-resource "aws_lb_listener_rule" "downloader_alb_listener_prod_others" {
-  count =  var.env ==  "prod" ? 1:0
-  listener_arn = module.alb.alb_https_listener_arn
-  priority = var.downloader_rule_priority
-  action {
-    type = "forward"
-    target_group_arn = aws_lb_target_group.downloader_target_group.arn
-  }
-
-  condition {
-    host_header {
       values = ["${lower(var.stack_name)}.${var.domain_name}"]
     }
   }
@@ -107,32 +86,30 @@ resource "aws_lb_listener_rule" "downloader_alb_listener_prod_others" {
   }
 }
 
+//resource "aws_lb_listener_rule" "downloader_alb_listener_prod_others" {
+//  count =  var.env ==  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = var.downloader_rule_priority
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.downloader_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = ["${lower(var.stack_name)}.${var.domain_name}"]
+//    }
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/api/files/*"]
+//    }
+//  }
+//}
+
 
 resource "aws_lb_listener_rule" "downloader_alb_listener" {
   count =  var.stack_name == "bento" && var.env !=  "prod" ? 1:0
-  listener_arn = module.alb.alb_https_listener_arn
-  priority = var.downloader_rule_priority
-  action {
-    type = "forward"
-    target_group_arn = aws_lb_target_group.downloader_target_group.arn
-  }
-
-  condition {
-    host_header {
-      values = ["${var.env}.${var.domain_name}"]
-    }
-  }
-  condition {
-    path_pattern  {
-      values = ["/api/files/*"]
-    }
-  }
-
-}
-
-
-resource "aws_lb_listener_rule" "downloader_alb_listener_others" {
-  count =  var.stack_name != "bento" && var.env !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
   priority = var.downloader_rule_priority
   action {
@@ -152,3 +129,26 @@ resource "aws_lb_listener_rule" "downloader_alb_listener_others" {
   }
 
 }
+
+
+//resource "aws_lb_listener_rule" "downloader_alb_listener_others" {
+//  count =  var.stack_name != "bento" && var.env !=  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = var.downloader_rule_priority
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.downloader_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
+//    }
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/api/files/*"]
+//    }
+//  }
+//
+//}

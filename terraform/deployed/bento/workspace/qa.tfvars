@@ -62,9 +62,9 @@ database_name = "neo4j"
 db_instance_volume_size = 60
 
 #alb priority rule number. This can be left as default
-alb_rule_priority = 123
-frontend_rule_priority = 122
-backend_rule_priority =121
+alb_rule_priority = 50
+frontend_rule_priority = 51
+backend_rule_priority = 52
 
 env = "qa"
 

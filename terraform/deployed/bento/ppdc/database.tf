@@ -43,6 +43,15 @@ resource "aws_security_group_rule" "bastion_host_ssh" {
   type = "ingress"
 }
 
+resource "aws_security_group_rule" "ppdc_allow_backend" {
+  from_port = local.backend_port
+  protocol = local.tcp_protocol
+  to_port = local.backend_port
+  source_security_group_id = aws_security_group.ppdc_otp_security_group.id
+  security_group_id = aws_security_group.ppdc-database-sg.id
+  type = "ingress"
+}
+
 
 resource "aws_security_group_rule" "all_outbound" {
   from_port = local.any_port

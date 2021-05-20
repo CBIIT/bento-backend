@@ -54,7 +54,7 @@ fronted_instance_type = "t3.medium"
 ssh_user = "bento"
 
 #specify the aws compute instance type for the database
-database_instance_type =  "c5.xlarge"
+database_instance_type =  "t3.medium"
 
 #name of the database
 database_name = "neo4j"

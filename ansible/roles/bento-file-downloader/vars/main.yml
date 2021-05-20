@@ -1,6 +1,7 @@
 ---
 # vars file for cicd
 url_src: CLOUD_FRONT
+stack_name: bento
 platform: aws
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

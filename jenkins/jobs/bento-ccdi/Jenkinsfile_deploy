@@ -82,9 +82,9 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([string(credentialsId: 'ins_dev_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_INS_DEV_IP}"
+                withCredentials([string(credentialsId: 'ccdi_dev_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ccdi_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CCDI_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
@@ -93,9 +93,9 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'ins_qa_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'ins_qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_INS_QA_IP}"
+                withCredentials([string(credentialsId: 'ccdi_qa_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ccdi_qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CCDI_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.NEO4J_USER = "${NEO4J_USER}"
@@ -104,9 +104,9 @@ pipeline {
                 }
               break
               case "perf":
-                withCredentials([string(credentialsId: 'ins_stage_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'ins_stage_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_INS_STAGE_IP}"
+                withCredentials([string(credentialsId: 'ccdi_stage_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ccdi_stage_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CCDI_STAGE_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
                   env.NEO4J_USER = "${NEO4J_USER}"
@@ -115,9 +115,9 @@ pipeline {
                 }
               break
               case "prod":
-                withCredentials([string(credentialsId: 'ins_prod_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'ins_prod_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_INS_PROD_IP}"
+                withCredentials([string(credentialsId: 'ccdi_prod_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ccdi_prod_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CCDI_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
 				  env.NEO4J_USER = "${NEO4J_USER}"
@@ -127,9 +127,9 @@ pipeline {
               break
       
               default:
-                withCredentials([string(credentialsId: 'ins_dev_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_INS_DEV_IP}"
+                withCredentials([string(credentialsId: 'ccdi_dev_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ccdi_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CCDI_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
 				  env.NEO4J_USER = "${NEO4J_USER}"
@@ -202,7 +202,7 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-ins.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-ccdi.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     enable_redis_filter: "${params.Enable_Redis_Filter}",

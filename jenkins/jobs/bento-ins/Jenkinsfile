@@ -202,7 +202,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-in.yml', 
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-ins.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         redis_schema_file: "${params.Redis_Schema_File}",
@@ -273,7 +273,7 @@ pipeline {
 			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-in.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-ins.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     enable_redis_filter: "${params.Enable_Redis_Filter}",

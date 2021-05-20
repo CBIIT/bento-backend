@@ -8,5 +8,5 @@
   tasks:
     - name: This is a build stage
       include_role:
-        name: bento-in
+        name: bento-ins
         tasks_from: build

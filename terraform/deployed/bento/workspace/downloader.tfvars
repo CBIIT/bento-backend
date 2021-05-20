@@ -32,6 +32,8 @@ backend_container_port = 8080
 #This a port number for bento-backend
 downloader_container_port = 8081
 
+desired_ec2_instance_capacity = 1
+
 #specify the maximum and minimun number of instances in auto-scalling group
 max_size =1
 min_size = 1

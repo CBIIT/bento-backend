@@ -7,6 +7,6 @@
   tasks:
     - name: deploy bento-icdc
       include_role:
-        name: bento-in
+        name: bento-ins
         tasks_from: deploy
   

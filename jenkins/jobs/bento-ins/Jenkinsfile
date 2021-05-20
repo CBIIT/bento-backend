@@ -131,9 +131,9 @@ pipeline {
 			
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([string(credentialsId: 'in_dev_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'in_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_IN_DEV_IP}"
+                withCredentials([string(credentialsId: 'ins_dev_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_INS_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
@@ -142,9 +142,9 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'in_qa_bearer', variable: 'BEARER'),
-				    usernamePassword(credentialsId: 'in_qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_IN_QA_IP}"
+                withCredentials([string(credentialsId: 'ins_qa_bearer', variable: 'BEARER'),
+				    usernamePassword(credentialsId: 'ins_qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_INS_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.NEO4J_USER = "${NEO4J_USER}"
@@ -155,7 +155,7 @@ pipeline {
               case "perf":
                 withCredentials([string(credentialsId: 'in_stage_bearer', variable: 'BEARER'),
 				    usernamePassword(credentialsId: 'in_stage_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_IN_STAGE_IP}"
+                  env.NEO4J_IP    = "${NEO4J_INS_STAGE_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "perf"
                   env.NEO4J_USER = "${NEO4J_USER}"
@@ -166,7 +166,7 @@ pipeline {
               case "prod":
                 withCredentials([string(credentialsId: 'in_prod_bearer', variable: 'BEARER'),
 				    usernamePassword(credentialsId: 'in_prod_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_IN_PROD_IP}"
+                  env.NEO4J_IP    = "${NEO4J_INS_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
 				  env.NEO4J_USER = "${NEO4J_USER}"
@@ -178,7 +178,7 @@ pipeline {
               default:
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
 				    usernamePassword(credentialsId: 'in_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_IN_DEV_IP}"
+                  env.NEO4J_IP    = "${NEO4J_INS_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
 				  env.NEO4J_USER = "${NEO4J_USER}"

@@ -1,10 +1,10 @@
 ---
 # vars file for cicd
-stack_name: in
+stack_name: ins
 enable_redis: true
 platform: aws
 redis_host: 
-  dev: "in-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
+  dev: "ins-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
   qa: "localhost"
   perf: "localhost"
   icdc: "localhost"

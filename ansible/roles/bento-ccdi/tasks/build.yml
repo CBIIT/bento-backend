@@ -1,55 +1,27 @@
 ---
 - name: set dev environment facts
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
+    NEO4J_IN_ip: "{{ lookup('env','NEO4J_IN_DEV_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "dev"
 
 - name: set qa environment facts
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
+    NEO4J_IN_ip: "{{ lookup('env','NEO4J_IN_QA_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "qa"
 
 - name: set stage environment facts
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_PERF_IP') }}"
+    NEO4J_IN_ip: "{{ lookup('env','NEO4J_IN_PERF_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "perf"
 
 - name: set prod environment facts
   set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
+    NEO4J_IN_ip: "{{ lookup('env','NEO4J_IN_PROD_IP') }}"
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
-
-#### bento-icdc changes #########################################################################################################
-- name: set icdc environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "icdc"
-#################################################################################################################################
-
-- name: get backend commit ID
-  shell: git rev-parse HEAD
-  args:
-    chdir: "{{workspace}}"
-  register: backend_tag
-
-- name: get frontend commit ID
-  shell: git rev-parse HEAD
-  args:
-    chdir: "{{workspace}}/bento-frontend"
-  register: frontend_tag
-
-- name: echo backend tag
-  debug:
-    msg: "{{ backend_tag.stdout_lines }}"
-
-- name: echo frontend tag
-  debug:
-    msg: "{{ frontend_tag.stdout_lines }}"
 
 - name: remove the application_example.properties file 
   file:
@@ -125,23 +97,23 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/bento-backend image
+- name: build cbiitssrepo/{{stack_name}}-backend image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-backend
+    name: cbiitssrepo/{{stack_name}}-backend
     tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-backend image
+- name: Add tag latest to cbiitssrepo/in-backend image
   docker_image:
-    name: "cbiitssrepo/bento-backend:{{backend_version}}-{{build_number}}"
-    repository: cbiitssrepo/bento-backend:latest
+    name: "cbiitssrepo/{{stack_name}}-backend:{{backend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{stack_name}}-backend:latest
     force_tag: yes
     push: yes
     source: local
@@ -171,7 +143,7 @@
   args:
     chdir: "{{workspace}}/bento-frontend"
   loop:
-    #  
+    - npm install npm@7.7.6 -g
     - npm install
     - npm run build
 
@@ -182,40 +154,26 @@
     dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
     mode: 0755
           
-- name: build cbiitssrepo/bento-frontend image
+- name: build cbiitssrepo/{{stack_name}}-frontend image
   docker_image:
     build:
       path: "{{workspace}}/bento-frontend"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-frontend
+    name: cbiitssrepo/{{stack_name}}-frontend
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-frontend image
+- name: Add tag latest to cbiitssrepo/in-frontend image
   docker_image:
-    name: "cbiitssrepo/bento-frontend:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/bento-frontend:latest
+    name: "cbiitssrepo/{{stack_name}}-frontend:{{frontend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{stack_name}}-frontend:latest
     force_tag: yes
     push: yes
     source: local
-
-# - name: post schemas
-#   uri:
-#     url: http://{{neo4j_ip}}:7474/graphql/idl/
-#     method: POST
-#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
-#     headers:
-#       Accept: "application/json"
-#       Authorization: "{{bearer}}"
-#   register: schema
-
-# - name: post schema
-#   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/bento-backend/src/main/resources/graphql/ctdc.graphql"
-#   register: schema
 
 
 

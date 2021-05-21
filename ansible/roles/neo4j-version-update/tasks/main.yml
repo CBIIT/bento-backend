@@ -25,6 +25,7 @@
 
 - name: verify installed neo4j version
   shell: yum list installed neo4j*
+  become: yes
   register: neo4j_installed
 
 - name: version output
@@ -33,20 +34,24 @@
 
 - name: remove neo4j
   shell: yum -y autoremove neo4j* java*
+  become: yes
 
 - name: clean old neo4j files
   file:
     path: "{{ item.path }}"
     state: absent
+  become: yes
   with_items:
     - {path: '/var/lib/neo4j/'}
     - {path: '/etc/neo4j/'}
 
 - name: install neo4j {{ neo4j_version }} and java 11 JRE
   shell: "yum -y install neo4j-{{ neo4j_version }}"
+  become: yes
 
 - name: verify installed neo4j version
   shell: yum list installed neo4j*
+  become: yes
   register: neo4j_installed
 
 - name: version output
@@ -70,6 +75,7 @@
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
+  become: yes
   with_items:
     - { regexp: '^#dbms.memory.heap.initial_size=512m', line: 'dbms.memory.heap.initial_size=5632m' }
     - { regexp: '^#dbms.memory.heap.max_size=512m', line: 'dbms.memory.heap.max_size=5632m' }
@@ -119,3 +125,4 @@
     name: neo4j
     state: started
     enabled: yes
+  become: yes

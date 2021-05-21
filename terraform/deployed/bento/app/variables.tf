@@ -237,3 +237,8 @@ variable "startup_schedule" {
   type    = string
   default = "0 12 * * MON-FRI"
 }
+variable "redis_node_type" {
+  description = "redis instance type"
+  type = string
+  default =  "cache.t3.medium"
+}

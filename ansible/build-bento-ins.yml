@@ -1,0 +1,12 @@
+---
+- name: bento cicd pipeline
+  hosts: bento
+  connection: local
+  gather_facts: no
+  become: yes
+    
+  tasks:
+    - name: This is a build stage
+      include_role:
+        name: bento-ins
+        tasks_from: build

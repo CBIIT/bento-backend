@@ -176,7 +176,7 @@ resource "aws_lb_listener_rule" "frontend_alb_listener_prod" {
 
   condition {
     host_header {
-      values = [var.domain_name]
+      values = ["${var.stack_name}.${var.domain_name}"]
     }
   }
   condition {
@@ -185,6 +185,29 @@ resource "aws_lb_listener_rule" "frontend_alb_listener_prod" {
     }
   }
 }
+
+
+//resource "aws_lb_listener_rule" "frontend_alb_listener_prod_others" {
+//  count =   var.env ==  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = var.fronted_rule_priority
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.frontend_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = ["${lower(var.stack_name)}.${var.domain_name}"]
+//    }
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/*"]
+//    }
+//  }
+//}
+
 
 resource "aws_lb_listener_rule" "backend_alb_listener_prod" {
   count =  var.env ==  "prod" ? 1:0
@@ -197,20 +220,41 @@ resource "aws_lb_listener_rule" "backend_alb_listener_prod" {
 
   condition {
     host_header {
-      values = ["api.${var.domain_name}"]
+      values = ["${var.stack_name}.${var.domain_name}"]
     }
   }
   condition {
     path_pattern  {
-      values = ["/*"]
+      values = ["/v1/graphql/*"]
     }
   }
 }
 
 
+//resource "aws_lb_listener_rule" "backend_alb_listener_prod_others" {
+//  count =  var.env ==  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = var.backend_rule_priority
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.backend_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = ["${lower(var.stack_name)}.${var.domain_name}"]
+//    }
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/v1/graphql/*"]
+//    }
+//  }
+//}
+
 
 resource "aws_lb_listener_rule" "frontend_alb_listener" {
-  count =  var.env ==  "prod" ? 0:1
+  count =  var.env !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
   priority = var.fronted_rule_priority
   action {
@@ -220,7 +264,7 @@ resource "aws_lb_listener_rule" "frontend_alb_listener" {
 
   condition {
     host_header {
-      values = ["${var.env}.${var.domain_name}"]
+      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
     }
   }
   condition {
@@ -231,8 +275,32 @@ resource "aws_lb_listener_rule" "frontend_alb_listener" {
 
 }
 
+//resource "aws_lb_listener_rule" "frontend_alb_listener_others" {
+//  count =  var.stack_name != "bento" && var.env !=  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = var.fronted_rule_priority
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.frontend_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
+//    }
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/*"]
+//    }
+//  }
+//
+//}
+
+
+
 resource "aws_lb_listener_rule" "backend_alb_listener" {
-  count =  var.env ==  "prod" ? 0:1
+  count =  var.env !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
   priority = var.backend_rule_priority
   action {
@@ -242,16 +310,38 @@ resource "aws_lb_listener_rule" "backend_alb_listener" {
 
   condition {
     host_header {
-      values = ["api-${var.env}.${var.domain_name}"]
+      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
     }
 
   }
   condition {
     path_pattern  {
-      values = ["/*"]
+      values = ["/v1/graphql/*"]
     }
   }
 }
+
+//resource "aws_lb_listener_rule" "backend_alb_listener_others" {
+//  count =  var.stack_name != "bento" && var.env !=  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = var.backend_rule_priority
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.backend_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
+//    }
+//
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/v1/graphql/*"]
+//    }
+//  }
+//}
 
 resource "aws_lb_listener_rule" "www" {
   count =  var.env ==  "prod" ? 1:0
@@ -294,11 +384,11 @@ mainSteps:
     - rm -rf icdc-devops || true
     - yum -y install epel-release
     - yum -y install wget git python-setuptools python-pip
+    - pip install --upgrade "pip < 21.0"
     - pip install ansible==2.8.0 boto boto3 botocore
     - git clone https://github.com/CBIIT/icdc-devops
-    - cd icdc-devops && git checkout master
-    - cd icrp
-    - ansible-playbook ecs-agent.yml --skip-tags master -e ecs_cluster_name="${var.ecs_cluster_name}-${var.env}" -e env="${var.env}"
+    - cd icdc-devops/ansible && git checkout master
+    - ansible-playbook ecs-agent.yml --skip-tags master -e stack_name="${var.stack_name}" -e ecs_cluster_name="${var.ecs_cluster_name}-${var.env}" -e env="${var.env}"
     - systemctl restart docker
 DOC
   tags = merge(

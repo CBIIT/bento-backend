@@ -2,7 +2,7 @@
 - name: deploy stage of bento-file-downloader pipeline
   hosts: bento
   connection: local
-  gather_facts: no
+  gather_facts: yes
     
   tasks:
     - name: deploy stage

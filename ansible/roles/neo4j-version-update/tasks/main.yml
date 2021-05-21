@@ -1,6 +1,15 @@
 ---
 # tasks file for neo4j update
 
+- name: add neo4j repository
+  yum_repository:
+    name: neo4j
+    description: neo4j repository
+    file: neo4j.repo
+    baseurl: https://yum.neo4j.org/stable
+    gpgcheck: yes
+    enabled: yes
+
 - name: disable and stop neo4j
   service:
     name: neo4j

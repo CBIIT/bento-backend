@@ -32,14 +32,15 @@ backend_container_port = 8080
 #This a port number for bento-backend
 downloader_container_port = 8081
 
+desired_ec2_instance_capacity = 1
+
 #specify the maximum and minimun number of instances in auto-scalling group
-max_size = 2
+max_size =1
 min_size = 1
 
 #provide name for the auto-scalling-groups
 frontend_asg_name = "frontend"
 
-desired_ec2_instance_capacity = 2
 
 #cutomize the volume size for all the instances created except database
 instance_volume_size = 40
@@ -48,13 +49,13 @@ instance_volume_size = 40
 ssh_key_name = "devops"
 
 #specify the aws compute instance type for the bento
-fronted_instance_type = "t3.medium"
+fronted_instance_type = "t3.xlarge"
 
 #provide the name of the admin user for ssh login
 ssh_user = "bento"
 
 #specify the aws compute instance type for the database
-database_instance_type =  "c5.xlarge"
+database_instance_type =  "t3.medium"
 
 #name of the database
 database_name = "neo4j"
@@ -78,7 +79,8 @@ app_name = "bento"
 app_port = 80
 
 #specify private ip of the db instance
-db_private_ip = "172.18.11.25"
+db_private_ip = "172.18.11.42"
 
 remote_state_bucket_name = "bento-terraform-remote-state"
 redis_node_group = 1
+redis_node_type = "cache.t3.medium"

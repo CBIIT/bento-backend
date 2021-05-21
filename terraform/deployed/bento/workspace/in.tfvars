@@ -1,7 +1,7 @@
 #define any tags appropriate to your environment
 tags = {
   ManagedBy = "terraform"
-  Project = "IN"
+  Project = "INS"
   Environment = "dev"
   Region = "us-east-1"
   ShutdownInstance = "Yes"
@@ -16,10 +16,10 @@ region = "us-east-1"
 profile = "icdc"
 
 #specify the name you will like to call this project.
-stack_name = "IN"
+stack_name = "ins"
 
 #provide the name of the ecs cluster 
-ecs_cluster_name = "IN"
+ecs_cluster_name = "ins"
 
 #specify the number of container replicas, minimum is 1
 container_replicas = 1
@@ -83,3 +83,4 @@ db_private_ip = "172.18.11.29"
 
 remote_state_bucket_name = "bento-terraform-remote-state"
 redis_node_group = 1
+redis_node_type = "cache.t3.medium"

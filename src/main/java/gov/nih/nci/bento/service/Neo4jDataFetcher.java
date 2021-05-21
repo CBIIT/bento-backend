@@ -131,17 +131,27 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
         Map<String, Object> result = new HashMap<>();
         for (String key : param.keySet()) {
             Object value = param.get(key);
-            if (value.getClass() == VariableReference.class) {
-                result.put(key, variables.get(((VariableReference) value).getName()));
-            } else if (value.getClass() == BigInteger.class) {
-                result.put(key, ((BigInteger) value).longValueExact());
-            } else if (value.getClass() == BigDecimal.class) {
-                result.put(key, ((BigDecimal) value).doubleValue());
-            } else {
-                result.put(key, value);
-            }
+            result.put(key, mapParam(value, variables));
         }
         return result;
+    }
+
+    private Object mapParam(Object param, Map<String, Object> variables) {
+        if (param instanceof List) {
+            List<Object> result = new ArrayList<>();
+            for (Object val: (List<Object>)param) {
+                result.add(mapParam(val, variables));
+            }
+            return result;
+        } else if (param.getClass() == VariableReference.class) {
+            return variables.get(((VariableReference) param).getName());
+        } else if (param.getClass() == BigInteger.class) {
+            return ((BigInteger) param).longValueExact();
+        } else if (param.getClass() == BigDecimal.class) {
+            return ((BigDecimal) param).doubleValue();
+        } else {
+            return param;
+        }
     }
 
     private boolean isList(GraphQLType type) {

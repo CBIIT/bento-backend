@@ -3,6 +3,7 @@
 env_file_home: /local/content/docker
 # redis config
 enable_redis: 'true'
+#enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"
 use_cluster: 'false'
 redis_host: 
   dev: "10.208.2.75"
@@ -28,8 +29,12 @@ workspace: "{{ lookup('env','WORKSPACE') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"
 docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 neo4j_bearer: "{{ lookup('env','BEARER') }}"
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+
 region: us-east-1
 newrelic_license_key: "{{ lookup('env','NEWRELIC_LIC_KEY')}}"
 sumo_access_id: "{{ lookup('env','SUMO_ACCESS_ID')}}"

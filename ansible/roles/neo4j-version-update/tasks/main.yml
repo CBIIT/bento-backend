@@ -1,11 +1,16 @@
 ---
 # tasks file for neo4j update
+- name: Remove neo4j repository (and clean up left-over metadata)
+  yum_repository:
+    name: neo4j
+    state: absent
+  notify: yum-clean-metadata
 
 - name: add neo4j repository
   yum_repository:
     name: neo4j
     description: neo4j repository
-    file: neo4j.repo
+    file: neo4j
     baseurl: https://yum.neo4j.org/stable
     gpgcheck: yes
     enabled: yes

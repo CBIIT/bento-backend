@@ -24,7 +24,7 @@
     - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
 
 - name: verify installed neo4j version
-  shell: yum list installed neo4j
+  shell: yum list installed neo4j*
   register: neo4j_installed
 
 - name: version output
@@ -46,7 +46,7 @@
   shell: "yum -y install neo4j-{{ neo4j_version }}"
 
 - name: verify installed neo4j version
-  shell: yum list installed neo4j
+  shell: yum list installed neo4j*
   register: neo4j_installed
 
 - name: version output

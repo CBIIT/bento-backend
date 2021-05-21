@@ -42,14 +42,18 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'demo,dev,qa,stage,prod' )
-	  booleanParam(
+	booleanParam(
    		defaultValue: true,
-		  description: 'Flush the Redis cache',
-		  name: 'Flush_Redis')
+		description: 'Flush the Redis cache',
+		name: 'Flush_Redis')
+    booleanParam(
+		defaultValue: true,
+		description: 'Enable the Redis filter',
+		name: 'Enable_Redis_Filter')
     string(
-    defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
-    description: 'Provide indexd url',
-    name: 'IndexD_Url')
+        defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+        description: 'Provide indexd url',
+        name: 'IndexD_Url')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -182,64 +186,78 @@ pipeline {
 		  script {
             switch("${params.Environment}") {
               case "sandbox":
-                withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'sandbox_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_SANDBOX_IP}"
                   env.BEARER = "${BEARER}"
-                  env.TIER  = "sandbox"
+                  env.TIER  = "sandbox"env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                   
                 }
               break
               case "dev":
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_ICDC_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
+				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                  
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_ICDC_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
+				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  
                 }
               break
               case "stage":
-                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_ICDC_STAGE_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
+				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                   
                 }
               break
               case "prod":
-                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'prod_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_ICDC_PROD_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "prod"
+				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                   
                 }
               break
               case "demo":
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_DEMO_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "demo"
+				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                   
                 }
               break
               default:
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')
-                  ]) {
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
+                    usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_ICDC_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
+				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
                   
                 }
               break
@@ -328,7 +346,8 @@ pipeline {
                     file_version: "${params.File_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
-                    indexd_url: "${params.IndexD_Url}"
+                    indexd_url: "${params.IndexD_Url}",
+					enable_redis_filter: "${params.Enable_Redis_Filter}"
                     ],
                 become: true,
                 hostKeyChecking: false,

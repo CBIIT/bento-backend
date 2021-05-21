@@ -39,7 +39,7 @@
     msg: "{{ neo4j_installed.stdout_lines }}"
 
 - name: remove neo4j
-   yum:
+  yum:
     name: neo4j
     state: absent
   become: yes
@@ -58,7 +58,7 @@
     - {path: '/etc/neo4j/'}
 
 - name: install neo4j {{ neo4j_version }} and java 11 JRE
-   yum:
+  yum:
     name: neo4j-{{ neo4j_version }}
     state: present
   become: yes

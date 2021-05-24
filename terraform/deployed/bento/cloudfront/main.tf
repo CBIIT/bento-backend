@@ -59,11 +59,12 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
     prefix          = "${var.stack_name}/cloudfront/logs"
   }
 
+
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = local.s3_origin_id
-
+    cache_policy_id = data.aws_cloudfront_cache_policy.managed_cache.id
     forwarded_values {
       query_string = false
       cookies {

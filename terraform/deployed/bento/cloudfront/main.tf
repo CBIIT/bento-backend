@@ -65,20 +65,11 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = local.s3_origin_id
     cache_policy_id = data.aws_cloudfront_cache_policy.managed_cache.id
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-      headers = ["Origin"]
-    }
     trusted_key_groups = [aws_cloudfront_key_group.key_group.id]
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
-
-
   }
 
   viewer_certificate {

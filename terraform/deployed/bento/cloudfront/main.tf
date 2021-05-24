@@ -72,7 +72,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
       headers = ["Origin"]
     }
     trusted_key_groups = [aws_cloudfront_key_group.key_group.id]
-    viewer_protocol_policy = "redirect-to-https"
+    viewer_protocol_policy = "allow-alll"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400

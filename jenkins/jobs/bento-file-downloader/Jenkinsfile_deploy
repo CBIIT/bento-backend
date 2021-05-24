@@ -55,7 +55,7 @@ pipeline {
   stages{
   	stage('deploy'){
 	  environment {
-	   SLACK_URL = "${SLACK_URL}"
+	   SLACK_URL = "${PPDC_SLACK_URL}"
        TIER = "${params.Environment}"
 	     DOWNLOADER_VERSION = "${params.Downloader_Tag}"
       }

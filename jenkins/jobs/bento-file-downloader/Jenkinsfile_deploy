@@ -22,7 +22,7 @@ def sendSlackMessage() {
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILE_SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -55,7 +55,7 @@ pipeline {
   stages{
   	stage('deploy'){
 	  environment {
-	   SLACK_URL = "${FILES_SLACK_URL}"
+	   FILES_SLACK_URL = "${FILES_SLACK_URL}"
        TIER = "${params.Environment}"
 	     DOWNLOADER_VERSION = "${params.Downloader_Tag}"
       }

@@ -22,7 +22,7 @@ def sendSlackMessage() {
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILES_SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,qa,perf,icdc,prod' )
+        value: 'dev,qa,perf,icdc,prod' )
    	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Downloader_Tag', 
@@ -90,7 +90,7 @@ pipeline {
   	}
     stage('Set Environment'){
       environment {
-        SLACK_URL = "${SLACK_URL}"
+        FILES_SLACK_URL = "${FILES_SLACK_URL}"
         VERSION = "${params.Frontend_Tag}"
       }
         steps {

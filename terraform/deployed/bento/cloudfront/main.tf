@@ -24,6 +24,13 @@ resource "aws_cloudfront_origin_access_identity" "origin_access" {
   comment = "origin access for bento-files"
 }
 
+#create bucket for logs
+resource "aws_s3_bucket" "access_logs" {
+  bucket =  "${data.aws_s3_bucket.bento_files.bucket}-cloudfront-logs"
+  acl    = "private"
+  tags = var.tags
+}
+
 #create s3 bucket policy
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = data.aws_s3_bucket.bento_files.id
@@ -45,25 +52,24 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
       origin_access_identity = aws_cloudfront_origin_access_identity.origin_access.cloudfront_access_identity_path
     }
   }
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = local.s3_origin_id
 
-    forwarded_values {
-      query_string = true
-      cookies {
-        forward = "none"
-      }
-      headers = ["Origin"]
-    }
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.access_logs.bucket_domain_name
+    prefix          = "${var.stack_name}/cloudfront/logs"
+  }
+
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = local.s3_origin_id
+    cache_policy_id = data.aws_cloudfront_cache_policy.managed_cache.id
     trusted_key_groups = [aws_cloudfront_key_group.key_group.id]
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
-
-
   }
 
   viewer_certificate {
@@ -72,12 +78,12 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA"]
+      restriction_type = "none"
     }
   }
   tags = var.tags
 }
+
 #create public key
 resource "aws_cloudfront_public_key" "public_key" {
   comment     = "bento files public key"

@@ -38,11 +38,6 @@
     - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
 
 #- name: verify installed neo4j version
-#  yum:
-#    list: neo4j
-#  register: neo4j_installed
-
-#- name: verify installed neo4j version
 #  shell: yum list installed neo4j*
 #  register: neo4j_installed
 
@@ -51,14 +46,7 @@
 #    msg: "{{ neo4j_installed.stdout_lines }}"
 
 - name: remove neo4j
-  yum:
-    name:
-      - neo4j
-      - java
-    state: absent
-
-#- name: remove neo4j
-#  shell: yum -y autoremove neo4j* java*
+  shell: yum -y autoremove neo4j* java*
 
 - name: clean old neo4j files
   file:
@@ -70,17 +58,7 @@
     - {path: '/etc/neo4j/'}
 
 - name: install neo4j {{ neo4j_version }} and java 11 JRE
-  yum:
-    name: neo4j-{{ neo4j_version }}
-    state: present
-
-#- name: install neo4j {{ neo4j_version }} and java 11 JRE
-#  shell: "yum -y install neo4j-{{ neo4j_version }}"
-
-#- name: verify installed neo4j version
-#  yum:
-#    list: neo4j
-#  register: neo4j_installed
+  shell: "yum -y install neo4j-{{ neo4j_version }}"
 
 #- name: verify installed neo4j version
 #  shell: yum list installed neo4j*

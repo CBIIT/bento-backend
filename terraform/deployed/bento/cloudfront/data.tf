@@ -13,3 +13,8 @@ data "aws_iam_policy_document" "s3_policy" {
     }
   }
 }
+
+#get managed cloudfront distribution
+data "aws_cloudfront_cache_policy" "managed_cache" {
+  name = "Managed-CachingOptimized"
+}

@@ -143,8 +143,12 @@ variable "database_instance_type" {
   description = "ec2 instance type to use"
   type = string
 }
+variable "frontend_app_name" {
+  description = "name of the frontend app"
+  type = string
+}
+
 variable "remote_state_bucket_name" {
   description = "name of the terraform remote state bucket"
   type = string
 }
-

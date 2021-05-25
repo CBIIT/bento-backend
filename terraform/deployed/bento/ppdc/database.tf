@@ -47,7 +47,7 @@ resource "aws_security_group_rule" "ppdc_allow_backend" {
   from_port = local.backend_port
   protocol = local.tcp_protocol
   to_port = local.backend_port
-  source_security_group_id = aws_security_group.ppdc_otp_security_group.id
+  source_security_group_id = aws_security_group.ppdc-database-sg.id
   security_group_id = aws_security_group.ppdc-database-sg.id
   type = "ingress"
 }

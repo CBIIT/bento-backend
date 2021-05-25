@@ -11,7 +11,7 @@
     name: neo4j
     description: neo4j repository
     file: neo4j
-    baseurl: https://yum.neo4j.org/stable
+    baseurl: https://yum.neo4j.com/stable
     gpgcheck: yes
     enabled: yes
 

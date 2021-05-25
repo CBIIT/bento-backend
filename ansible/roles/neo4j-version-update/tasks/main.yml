@@ -37,18 +37,19 @@
     - {src: '/var/lib/neo4j/certificates/neo4j.cert',dest: '/tmp/neo4j_certs/neo4j.cert'}
     - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
 
-#- name: verify installed neo4j version
-#  yum:
-#    list: neo4j
-#  register: neo4j_installed
+- name: verify installed neo4j version
+  yum:
+    list: neo4j
+  register: neo4j_installed
 
 #- name: verify installed neo4j version
 #  shell: yum list installed neo4j*
 #  register: neo4j_installed
 
-#- name: version output
-#  debug:
+- name: version output
+  debug:
 #    msg: "{{ neo4j_installed.stdout_lines }}"
+    msg: "{{ neo4j_installed }}"
 
 - name: remove neo4j
   yum:
@@ -88,7 +89,8 @@
 
 - name: version output
   debug:
-    msg: "{{ neo4j_installed.stdout_lines }}"
+#    msg: "{{ neo4j_installed.stdout_lines }}"
+    msg: "{{ neo4j_installed }}"
 
 - name: copy neo4j cert and key
   copy:

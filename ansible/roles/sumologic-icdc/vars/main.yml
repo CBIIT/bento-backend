@@ -21,6 +21,11 @@ tomcat_logs:
     category: "{{ env }}/app/Tomcat/Localhost"
     path: "{{ log_path }}/logs/localhost.*"
     filters: ""
+  - name: "{{ env }} Tomcat Info Logs"
+    description: "{{ env }} Tomcat Info Logs"
+    category: "{{ env }}/app/Tomcat/Info"
+    path: "{{ log_path }}/logs/info.*"
+    filters: ""
 nginx_logs:
   - name: "{{ env }} Nginx Access Logs"
     description: "{{ env }} Nginx Logs"

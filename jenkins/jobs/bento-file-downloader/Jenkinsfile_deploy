@@ -74,7 +74,7 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-  			
+  		sh "echo ${FILES_SLACK_URL}"
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 

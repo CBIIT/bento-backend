@@ -22,7 +22,7 @@ def sendSlackMessage() {
         ]
     )
     try {
-        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILE_SLACK_URL}'"
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILES_SLACK_URL}'"
     } catch (err) {
         echo "${err} Slack notify failed"
     }
@@ -74,7 +74,6 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-  		sh "echo ${FILES_SLACK_URL}"
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 

@@ -268,7 +268,7 @@ pipeline {
     stage('copy static content') {
       when {
            expression {
-              params.Environment == "prod" || params.Environment == "stage"
+              params.Environment == "prod" || params.Environment == "stage"  || params.Environment == "qa" 
            }
           
       }

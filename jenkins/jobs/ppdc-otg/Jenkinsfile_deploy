@@ -195,7 +195,7 @@ pipeline {
   	}
     stage('Set Environment'){
       environment {
-        PPDC_SLACK_URL = "${PPDC_SLACK_UR}"
+        PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
         VERSION = "${params.Frontend_Image}"
       }
 		steps {
@@ -272,7 +272,7 @@ pipeline {
     }
   	stage('deploy'){
 	  environment {
-	   PPDC_SLACK_URL = "${PPDC_SLACK_UR}"
+	   PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
        TIER = "${params.Environment}"
 	   VERSION = "${params.Frontend_Image}"
        FE_VERSION = "${params.Frontend_Image}"

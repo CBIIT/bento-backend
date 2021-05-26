@@ -280,7 +280,9 @@ pipeline {
           ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/git-copy.yml', 
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                  colorized: true) 
+                  colorized: true,
+                  extraVars: [ project: "icdc"]
+                  ) 
         }
       }
     }

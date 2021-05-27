@@ -31,14 +31,6 @@
   when: tier == "icdc"
 #################################################################################################################################
 
-- name: echo backend_commit_id
-  debug:
-    msg: "{{ backend_commit_id }}"
-
-- name: echo frontend_commit_id
-  debug:
-    msg: "{{ frontend_commit_id }}"
-
 - name: checkout specified commit - backend
   shell: "git checkout {{ backend_commit_id }}"
   args:

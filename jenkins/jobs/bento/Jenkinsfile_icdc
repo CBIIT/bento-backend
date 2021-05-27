@@ -261,8 +261,8 @@ pipeline {
                         redis_schema_file: "${params.Redis_Schema_File}",
 						redis_init_queries_file: "${params.Redis_Queries_File}",
                         test_queries_file: "${params.Test_Queries_File}",
-						frontend_commit_id = "${params.fe_commit_id}",
-						backend_commit_id = "${params.be_commit_id}",
+						frontend_commit_id: "${params.fe_commit_id}",
+						backend_commit_id: "${params.be_commit_id}",
                         ],
 						colorized: true)
  				}

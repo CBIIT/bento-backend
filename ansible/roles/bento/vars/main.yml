@@ -1,7 +1,6 @@
 ---
 # vars file for cicd
 #enable_redis: true
-enable_redis: "{{ lookup('env','USE_REDIS') }}"
 platform: aws
 stack_name: bento
 redis_host: 
@@ -32,8 +31,8 @@ app_name: bento-{{platform}}-{{tier}}
 schema_file: "{% if tier == 'icdc' %}icdc.graphql{% else %}bento-extended.graphql{% endif %}"
 #################################################################################################################################
 
-frontend_version: "{{ lookup('env','FE_VERSION') | default('', true) }}"
-backend_version: "{{ lookup('env','BE_VERSION') | default('', true) }}"
+frontend_version: "{{ lookup('env','FE_VERSION') "
+backend_version: "{{ lookup('env','BE_VERSION') "
 bento_api_version: "{{ backend_version }}"
 backend_frontend_version: "{{frontend_version }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml

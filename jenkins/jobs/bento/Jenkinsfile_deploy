@@ -50,6 +50,10 @@ pipeline {
         value: 'us-east-1,us-west-1' )
 	booleanParam(
 		defaultValue: true,
+		description: 'Use the Redis cache',
+		name: 'Use_Redis')
+	booleanParam(
+		defaultValue: true,
 		description: 'Flush the Redis cache',
 		name: 'Flush_Redis')
 	booleanParam(
@@ -322,6 +326,7 @@ pipeline {
 	   VERSION = "${params.Frontend_Image}"
        FE_VERSION = "${params.Frontend_Image}"
        BE_VERSION = "${params.Backend_Image}"
+       USE_REDIS = "${params.Use_Redis}"
       }
   		steps{
 		  node('cicd_microservice') {

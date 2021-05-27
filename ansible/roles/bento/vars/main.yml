@@ -1,6 +1,7 @@
 ---
 # vars file for cicd
-enable_redis: true
+#enable_redis: true
+enable_redis: "{{ lookup('env','USE_REDIS') }}"
 platform: aws
 stack_name: bento
 redis_host: 

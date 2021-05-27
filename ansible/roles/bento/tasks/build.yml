@@ -31,6 +31,14 @@
   when: tier == "icdc"
 #################################################################################################################################
 
+- name: echo backend_commit_id
+  debug:
+    msg: "{{ backend_commit_id }}"
+
+- name: echo frontend_commit_id
+  debug:
+    msg: "{{ frontend_commit_id }}"
+
 - name: checkout specified commit - backend
   shell: "git checkout {{ backend_commit_id }}"
   args:
@@ -44,22 +52,22 @@
 - name: get backend commit ID
   shell: git rev-parse HEAD
   args:
-    chdir: "{{workspace}}"
-  register: backend_tag
+    chdir: "{{ workspace }}"
+  register: backend_id
 
 - name: get frontend commit ID
   shell: git rev-parse HEAD
   args:
-    chdir: "{{workspace}}/bento-frontend"
-  register: frontend_tag
+    chdir: "{{ workspace }}/bento-frontend"
+  register: frontend_id
 
-- name: echo backend tag
+- name: echo backend id
   debug:
-    msg: "{{ backend_tag.stdout_lines }}"
+    msg: "{{ backend_id.stdout_lines }}"
 
-- name: echo frontend tag
+- name: echo frontend id
   debug:
-    msg: "{{ frontend_tag.stdout_lines }}"
+    msg: "{{ frontend_id.stdout_lines }}"
 
 - name: remove the application_example.properties file 
   file:

@@ -213,8 +213,6 @@ pipeline {
       environment {
         SLACK_URL = "${SLACK_URL}"
         VERSION = "${params.Frontend_Tag}"
-		FE_COMMIT = "${params.fe_commit_id}"
-		BE_COMMIT = "${params.be_commit_id}"
       }
         steps {
           script {
@@ -263,6 +261,8 @@ pipeline {
                         redis_schema_file: "${params.Redis_Schema_File}",
 						redis_init_queries_file: "${params.Redis_Queries_File}",
                         test_queries_file: "${params.Test_Queries_File}",
+						frontend_commit_id = "${params.fe_commit_id}"
+						backend_commit_id = "${params.be_commit_id}"
                         ],
 						colorized: true)
  				}

@@ -350,8 +350,6 @@ pipeline {
             		extraVars: [
                     enable_redis: "${params.Use_Redis}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}",
-					backend_git_tag: "",
-                    frontend_git_tag: "",
                     ],
 					colorized: true)
   			}

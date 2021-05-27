@@ -32,8 +32,8 @@ app_name: bento-{{platform}}-{{tier}}
 schema_file: "{% if tier == 'icdc' %}icdc.graphql{% else %}bento-extended.graphql{% endif %}"
 #################################################################################################################################
 
-frontend_version: "{{ lookup('env','FE_VERSION') | default('') }}"
-backend_version: "{{ lookup('env','BE_VERSION') | default('') }}"
+frontend_version: "{{ lookup('env','FE_VERSION') | default('""') }}"
+backend_version: "{{ lookup('env','BE_VERSION') | default('""') }}"
 bento_api_version: "{{ backend_version }}"
 backend_frontend_version: "{{frontend_version }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml

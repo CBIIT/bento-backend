@@ -68,6 +68,14 @@ pipeline {
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
 		name: 'Test_Queries_File')
+	string(
+	    defaultValue: '',
+		description: 'The commit id to checkout for the frontend',
+		name: 'fe_commit_id')
+	string(
+	    defaultValue: '',
+		description: 'The commit id to checkout for the backend',
+		name: 'be_commit_id')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -205,6 +213,8 @@ pipeline {
       environment {
         SLACK_URL = "${SLACK_URL}"
         VERSION = "${params.Frontend_Tag}"
+		FE_COMMIT = "${params.fe_commit_id}"
+		BE_COMMIT = "${params.be_commit_id}"
       }
         steps {
           script {

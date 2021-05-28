@@ -44,7 +44,8 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
   wait_for_deployment = false
   price_class         = "PriceClass_100"
 
-
+  waf_acl_id = aws_wafv2_web_acl.waf.arn
+  
   origin {
     domain_name = data.aws_s3_bucket.bento_files.bucket_domain_name
     origin_id   = local.s3_origin_id
@@ -82,6 +83,47 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
     }
   }
   tags = var.tags
+}
+
+#create waf
+resource "aws_wafv2_web_acl" "waf" {
+  name        = "${var.stack_name}-ip-limiting-waf-rule"
+  description = "This rule limit number of request per ip"
+  scope       = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "rule-1"
+    priority = 1
+
+    action {
+      count {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 10
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = false
+      metric_name                = "${var.stack_name}-cloudfront-ip-rate-metrics"
+      sampled_requests_enabled   = false
+    }
+  }
+
+  tags = var.tags
+
+  visibility_config {
+    cloudwatch_metrics_enabled = false
+    metric_name                = "${var.stack_name}-files-request-ip"
+    sampled_requests_enabled   = false
+  }
 }
 
 #create public key

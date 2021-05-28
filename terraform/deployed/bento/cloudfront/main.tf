@@ -105,7 +105,7 @@ resource "aws_wafv2_web_acl" "waf" {
 
     statement {
       rate_based_statement {
-        limit              = 10
+        limit              = 100
         aggregate_key_type = "IP"
       }
     }

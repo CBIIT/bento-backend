@@ -44,7 +44,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
   wait_for_deployment = false
   price_class         = "PriceClass_100"
 
-  web_acl_id = aws_wafv2_web_acl.waf.arn
+  web_acl_id = aws_wafv2_web_acl.waf.id
 
   origin {
     domain_name = data.aws_s3_bucket.bento_files.bucket_domain_name

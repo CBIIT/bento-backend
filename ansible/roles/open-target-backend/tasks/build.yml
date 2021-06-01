@@ -58,6 +58,11 @@
 - name: rename "{{artifact_name}}" script
   command: mv  "{{artifact_name}}" start
   args:
+    chdir: "{{workspace}}/app/bin" ls -ltr
+
+- name: rename "{{artifact_name}}" script
+  command: mv  "{{artifact_name}}" start
+  args:
     chdir: "{{workspace}}/app/bin"
           
 - name: build cbiitssrepo/{{stack_name}}-backend image

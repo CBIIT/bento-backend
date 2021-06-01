@@ -55,10 +55,14 @@
   args:
     chdir: "{{workspace}}/app/bin"
 
-- name: rename "{{artifact_name}}" script
-  command: ls -ltr 
+- name: listing the contents
+  shell: ls
+  register: shell_result
   args:
     chdir: "{{workspace}}/app/bin"
+    
+- debug:
+        var: shell_result.stdout_lines
 
 - name: rename "{{artifact_name}}" script
   command: mv  "{{artifact_name}}" start

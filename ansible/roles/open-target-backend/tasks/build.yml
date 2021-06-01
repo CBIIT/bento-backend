@@ -39,6 +39,48 @@
   args:
     chdir: "{{workspace}}/ppdc-otp-backend"
 
+- name: extract build artifacts
+  unarchive:
+    src: "{{workspace}}/ppdc-otp-backend/target/universal/{{artifact_name}}.zip"
+    dest: "{{workspace}}"
+
+- name: rename {{artifact_name}} to app
+  command: mv "{{workspace}}/{{artifact_name}}" "{{workspace}}/app"
+
+- name: copy config files
+  command: cp "{{workspace}}/ppdc-otp-backend/production*" "{{workspace}}/app/conf"
+
+- name: delete bat script
+  command: rm -rf *.bat
+  args:
+    chdir: "{{workspace}}/app/bin"
+
+- name: rename "{{artifact_name}}" script
+  command: mv  "{{artifact_name}}" start
+  args:
+    chdir: "{{workspace}}/app/bin"
+          
+- name: build cbiitssrepo/{{stack_name}}-backend image
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/open-target-backend"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{stack_name}}-backend
+    tag: "{{backend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to cbiitssrepo/{{stack_name}}-backend image
+  docker_image:
+    name: "cbiitssrepo/{{stack_name}}-backend:{{backend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{stack_name}}-backend:latest
+    force_tag: yes
+    push: yes
+    source: local
+
 
 
 

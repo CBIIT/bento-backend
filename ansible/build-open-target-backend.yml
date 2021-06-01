@@ -1,0 +1,11 @@
+---
+- name: ppdc cicd pipeline
+  hosts: cicd
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: This is a build stage open target backend
+      include_role:
+        name: open-target-backend
+        tasks_from: build

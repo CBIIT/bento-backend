@@ -1,6 +1,6 @@
 ---
 - name: deploy stage of ppdc open-target-backend
-  hosts: cicd
+  hosts: ppdc-otp-{{tier}}
   gather_facts: yes
   become: yes
     

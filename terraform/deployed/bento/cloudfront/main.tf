@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
 resource "aws_wafv2_web_acl" "waf" {
   name        = "${var.stack_name}-ip-limiting-waf-rule"
   description = "This rule limit number of request per ip"
-  scope       = "REGIONAL"
+  scope       = "CLOUDFRONT"
 
   default_action {
     allow {}

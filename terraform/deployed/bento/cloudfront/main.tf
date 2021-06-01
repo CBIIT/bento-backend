@@ -100,7 +100,7 @@ resource "aws_wafv2_web_acl" "waf" {
     priority = 1
 
     action {
-      count {}
+      block {}
     }
 
     statement {
@@ -111,18 +111,18 @@ resource "aws_wafv2_web_acl" "waf" {
     }
 
     visibility_config {
-      cloudwatch_metrics_enabled = false
+      cloudwatch_metrics_enabled = true
       metric_name                = "${var.stack_name}-cloudfront-ip-rate-metrics"
-      sampled_requests_enabled   = false
+      sampled_requests_enabled   = true
     }
   }
 
   tags = var.tags
 
   visibility_config {
-    cloudwatch_metrics_enabled = false
+    cloudwatch_metrics_enabled = true
     metric_name                = "${var.stack_name}-files-request-ip"
-    sampled_requests_enabled   = false
+    sampled_requests_enabled   = true
   }
 }
 

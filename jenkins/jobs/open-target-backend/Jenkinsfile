@@ -66,7 +66,7 @@ pipeline {
   		steps {				
   		
 			checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Frontend_Tag}"]],
+				branches: [[name: "${params.Backend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'ppdc-otp-backend']],

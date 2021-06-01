@@ -1,12 +1,12 @@
 ---
-- name: deploy stage of ppdc otp
-  hosts: ppdc-otp-{{tier}}
+- name: deploy stage of ppdc open-target-backend
+  hosts: cicd
   gather_facts: yes
   become: yes
     
   tasks:
-    - name: deploy ppdc-otg
+    - name: deploy ppdc open-target-backend
       include_role:
-        name: ppdc-otp
+        name: open-target-backend
         tasks_from: deploy
   

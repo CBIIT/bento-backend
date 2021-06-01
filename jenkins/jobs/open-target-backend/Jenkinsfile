@@ -32,7 +32,7 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-			label 'cicd_ppdc'
+			label 'cicd_scala'
 		}
 	}
 	parameters {
@@ -44,13 +44,13 @@ pipeline {
         value: 'dev,qa,stage,prod' )
     gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'master', 
-       name: 'Frontend_Tag', 
+       name: 'Backend_Tag', 
        type: 'PT_BRANCH_TAG',
        quickFilterEnabled: false, 
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/ppdc-otp-frontend.git')
+       useRepository: 'https://github.com/CBIIT/ppdc-otp-backend.git')
 
 
   }
@@ -69,10 +69,10 @@ pipeline {
 				branches: [[name: "${params.Frontend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'ppdc-otp-frontend']],
+				relativeTargetDir: 'ppdc-otp-backend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/ppdc-otp-frontend.git']]])
+				[[url: 'https://github.com/CBIIT/ppdc-otp-backend.git']]])
 
   			checkout( poll: false, 
 				changelog:false,
@@ -102,8 +102,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
-                  
-                  
+    
                  
                 }
               break
@@ -117,7 +116,7 @@ pipeline {
                 }
               break
               case "stage":
-                withCredentials([string(credentialsId: 'stage_bearer', variable: 'BEARER')]) {
+                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
                   
@@ -138,6 +137,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
+            
+                  
                   
                 }
               break
@@ -153,7 +154,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
           ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-ppdc-otp.yml', 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-open-target-backend.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
                     tier: "${params.Environment}",
@@ -184,7 +185,7 @@ pipeline {
        ]){
              sh "cp ${host_file} ${WORKSPACE}/ansible/hosts"
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/ansible/deploy-ppdc-otp.yml', 
+                playbook: '${WORKSPACE}/ansible/deploy-open-target-backend.yml', 
                 inventory: '${WORKSPACE}/ansible/hosts', 
                 credentialsId: 'server_ssh_key',
                 extraVars: [

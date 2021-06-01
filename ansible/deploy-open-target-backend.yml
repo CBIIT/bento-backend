@@ -1,0 +1,12 @@
+---
+- name: deploy stage of ppdc otp
+  hosts: ppdc-otp-{{tier}}
+  gather_facts: yes
+  become: yes
+    
+  tasks:
+    - name: deploy ppdc-otg
+      include_role:
+        name: ppdc-otp
+        tasks_from: deploy
+  

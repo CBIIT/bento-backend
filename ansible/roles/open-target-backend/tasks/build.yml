@@ -56,9 +56,9 @@
     chdir: "{{workspace}}/app/bin"
 
 - name: rename "{{artifact_name}}" script
-  command: mv  "{{artifact_name}}" start
+  command: ls -ltr 
   args:
-    chdir: "{{workspace}}/app/bin" ls -ltr
+    chdir: "{{workspace}}/app/bin"
 
 - name: rename "{{artifact_name}}" script
   command: mv  "{{artifact_name}}" start

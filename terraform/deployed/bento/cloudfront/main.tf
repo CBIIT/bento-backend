@@ -92,7 +92,7 @@ resource "aws_wafv2_web_acl" "waf" {
   scope       = "CLOUDFRONT"
 
   default_action {
-    allow {}
+    block {}
   }
 
   rule {
@@ -100,7 +100,7 @@ resource "aws_wafv2_web_acl" "waf" {
     priority = 1
 
     action {
-      block {}
+      count {}
     }
 
     statement {

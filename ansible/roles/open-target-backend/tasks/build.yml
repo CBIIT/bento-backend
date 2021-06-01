@@ -44,6 +44,15 @@
     src: "{{workspace}}/ppdc-otp-backend/target/universal/{{artifact_name}}.zip"
     dest: "{{workspace}}"
 
+- name: listing the contents after extracting
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "{{workspace}}"
+
+- debug:
+        var: shell_result.stdout_lines
+
 - name: rename {{artifact_name}} to app
   command: mv "{{workspace}}/{{artifact_name}}" "{{workspace}}/app"
 

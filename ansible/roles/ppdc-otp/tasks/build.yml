@@ -36,12 +36,12 @@
     mode: 0755
 
 - name: run yarn install in {{workspace}}/ppdc-otp-frontend
-  command: yarn install
+  shell: yarn install
   args:
     chdir: "{{workspace}}/ppdc-otp-frontend"
 
 - name: run yarn build in {{workspace}}/ppdc-otp-frontend
-  command: yarn build
+  shell: yarn build
   args:
     chdir: "{{workspace}}/ppdc-otp-frontend"
 

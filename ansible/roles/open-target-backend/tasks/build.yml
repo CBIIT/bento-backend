@@ -48,7 +48,7 @@
   command: mv "{{workspace}}/{{artifact_name}}" "{{workspace}}/app"
 
 - name: copy config files
-  command: cp "{{workspace}}/ppdc-otp-backend/production*" "{{workspace}}/app/conf"
+  command: cp "{{workspace}}/ppdc-otp-backend/production.conf" "{{workspace}}/ppdc-otp-backend/production.xml" "{{workspace}}/app/conf"
 
 - name: delete bat script
   command: rm -rf *.bat

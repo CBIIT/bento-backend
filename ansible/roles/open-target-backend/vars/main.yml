@@ -8,3 +8,5 @@ stack_name: open-target
 artifact_name: ot-platform-api-beta
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"

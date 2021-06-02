@@ -156,8 +156,7 @@ pipeline {
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-open-target-backend.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
-                    tier: "${params.Environment}",
-                    frontend_version: "${params.Frontend_Tag}"
+                    tier: "${params.Environment}"
                     ], 
                   hostKeyChecking: false,
             			colorized: true) 

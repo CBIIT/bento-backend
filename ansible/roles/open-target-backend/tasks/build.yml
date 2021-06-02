@@ -90,6 +90,9 @@
   args:
     chdir: "{{workspace}}/app/bin"
           
+- debug:
+        var: "{{backend_version}}-{{build_number}}"
+
 - name: build cbiitssrepo/{{stack_name}}-backend image
   docker_image:
     build:

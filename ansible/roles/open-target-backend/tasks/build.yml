@@ -93,6 +93,11 @@
 - debug:
         var: "{{backend_version}}-{{build_number}}"
 
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
 - name: build cbiitssrepo/{{stack_name}}-backend image
   docker_image:
     build:

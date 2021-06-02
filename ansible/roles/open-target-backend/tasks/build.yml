@@ -41,7 +41,7 @@
 
 - name: extract build artifacts
   unarchive:
-    src: "{{workspace}}/ppdc-otp-backend/target/universal/{{artifact_name}}.zip"
+    src: "{{workspace}}/ppdc-otp-backend/target/universal/{{artifact_dir_name}}.zip"
     dest: "{{workspace}}"
 
 - name: listing the contents after extracting

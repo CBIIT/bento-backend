@@ -59,22 +59,22 @@
 - name: copy config files
   command: cp "{{workspace}}/ppdc-otp-backend/production.conf" "{{workspace}}/ppdc-otp-backend/production.xml" "{{workspace}}/app/conf"
 
-#- name: delete bat script
-#  command: rm -rf *.bat
-#  args:
-#    chdir: "{{workspace}}/app/bin"
-
 - name: delete bat script
-  find:
-    paths: "{{workspace}}/app/bin"
-    patterns: *.bat
-  register: files_to_delete
+  command: rm -rf *.bat
+  args:
+    chdir: "{{workspace}}/app/bin"
 
-- name: Ansible remove .bat script
-  file:
-    path: "{{ item.path }}"
-    state: absent
-  with_items: "{{ files_to_delete.files }}"
+#- name: delete bat script
+#  find:
+#    paths: "{{workspace}}/app/bin"
+#    patterns: "*.bat"
+#  register: files_to_delete
+
+#- name: Ansible remove .bat script
+#  file:
+#    path: "{{ item.path }}"
+#    state: absent
+#  with_items: "{{ files_to_delete.files }}"
 
 - name: listing the contents
   shell: ls

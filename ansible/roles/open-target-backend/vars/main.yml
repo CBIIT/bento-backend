@@ -3,5 +3,6 @@
 scala_version: 2.13.5
 project_repo: https://github.com/CBIIT/ppdc-otp-backend.git
 workspace: "{{ lookup('env','WORKSPACE') }}"
-artifact_name: ot-platform-api-beta-latest
+artifact_dir_name: ot-platform-api-beta-latest
 stack_name: open-target
+artifact_name: ot-platform-api-beta

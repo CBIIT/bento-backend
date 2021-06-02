@@ -65,16 +65,16 @@
 #    chdir: "{{workspace}}/app/bin"
 
 - name: delete bat script
-    find:
-      paths: "{{workspace}}/app/bin"
-      patterns: *.bat
-    register: files_to_delete
+  find:
+    paths: "{{workspace}}/app/bin"
+    patterns: *.bat
+  register: files_to_delete
 
 - name: Ansible remove .bat script
-    file:
-      path: "{{ item.path }}"
-      state: absent
-    with_items: "{{ files_to_delete.files }}"
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"
 
 - name: listing the contents
   shell: ls

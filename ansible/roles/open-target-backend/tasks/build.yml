@@ -53,16 +53,28 @@
 - debug:
         var: shell_result.stdout_lines
 
-- name: rename {{artifact_name}} to app
-  command: mv "{{workspace}}/{{artifact_name}}" "{{workspace}}/app"
+- name: rename {{artifact_dir_name}} to app
+  command: mv "{{workspace}}/{{artifact_dir_name}}" "{{workspace}}/app"
 
 - name: copy config files
   command: cp "{{workspace}}/ppdc-otp-backend/production.conf" "{{workspace}}/ppdc-otp-backend/production.xml" "{{workspace}}/app/conf"
 
+#- name: delete bat script
+#  command: rm -rf *.bat
+#  args:
+#    chdir: "{{workspace}}/app/bin"
+
 - name: delete bat script
-  command: rm -rf *.bat
-  args:
-    chdir: "{{workspace}}/app/bin"
+    find:
+      paths: "{{workspace}}/app/bin"
+      patterns: *.bat
+    register: files_to_delete
+
+- name: Ansible remove .bat script
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
 
 - name: listing the contents
   shell: ls
@@ -98,10 +110,4 @@
     force_tag: yes
     push: yes
     source: local
-
-
-
-
-
-
 

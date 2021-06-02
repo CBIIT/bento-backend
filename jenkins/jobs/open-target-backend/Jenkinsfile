@@ -93,6 +93,7 @@ pipeline {
     stage('Set Environment'){
       environment {
         PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
+
       }
         steps {
           script {
@@ -107,6 +108,8 @@ pipeline {
               break
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                  env.ELASTICSEARCH_HOST = "${ELASTICSEARCH_QA_IP}"
+                  env.SLICK_CLICKHOUSE_URL = "${CLICKHOUSE_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   

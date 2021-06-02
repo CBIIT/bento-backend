@@ -6,3 +6,5 @@ workspace: "{{ lookup('env','WORKSPACE') }}"
 artifact_dir_name: ot-platform-api-beta-latest
 stack_name: open-target
 artifact_name: ot-platform-api-beta
+backend_version: "{{ lookup('env','BE_VERSION') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"

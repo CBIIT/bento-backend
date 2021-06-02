@@ -9,8 +9,8 @@ redis_host:
   dev: "10.208.2.75"
   qa: "10.208.10.169"
   stage: "10.208.18.154"
-  prod: "10.208.26.177"
-  demo: "localhost "
+  prod: "10.208.26.156"
+  demo: "10.208.6.182"
 redis_password: ""
 redis_port: 6379
 home: /local/content/docker

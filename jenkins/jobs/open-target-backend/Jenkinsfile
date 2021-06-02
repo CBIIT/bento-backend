@@ -93,7 +93,6 @@ pipeline {
     stage('Set Environment'){
       environment {
         PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
-        BE_VERSION = "${params.Backend_Tag}"
       }
         steps {
           script {
@@ -148,7 +147,7 @@ pipeline {
     }
   	stage('build'){
       environment {
-       VERSION = "${params.Branch_Tag}"
+       BE_VERSION = "${params.Backend_Tag}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

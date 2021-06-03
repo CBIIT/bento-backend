@@ -1,6 +1,16 @@
 ---
 # tasks file for neo4j-loader
 
+- name: remove the dump_files workspace
+  file:
+    path: /dump_files
+    state: absent
+
+- name: recreate the dump_files workspace
+  file:
+    path: /dump_files
+    state: directory
+
 - name: download dump file
   aws_s3:
     bucket: "{{ s3_bucket_name }}"

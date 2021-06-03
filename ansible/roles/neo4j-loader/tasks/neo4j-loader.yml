@@ -48,7 +48,8 @@
     msg: "{{ neo4j_db_name }}"
 
 - name: load neo4j dumpfile
-  command: "{{ neo4j_admin_cmd }} load --from {{remote_workspace}}/neo4j.dump --database {{ neo4j_db_name }} --force --verbose --info"
+  shell: "{{ neo4j_admin_cmd }} load --from {{remote_workspace}}/neo4j.dump --database {{ neo4j_db_name }} --force --verbose"
+  become: true
   become_user: neo4j
   register: loader
 

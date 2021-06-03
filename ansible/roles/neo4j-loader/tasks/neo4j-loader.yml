@@ -47,9 +47,6 @@
   debug:
     msg: "{{ neo4j_db_name }}"
 
-- name: back up db files
-  command: "mv /var/lib/neo4j/data/databases/{{ neo4j_db_name }} /var/lib/neo4j/data/databases/{{ neo4j_db_name }}_bak"
-
 - name: load neo4j dumpfile
   command: "{{ neo4j_admin_cmd }} load --from={{ remote_workspace }}/neo4j.dump --database={{ neo4j_db_name }} --force --verbose --info"
   become_user: neo4j

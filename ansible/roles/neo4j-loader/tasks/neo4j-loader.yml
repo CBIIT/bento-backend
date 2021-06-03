@@ -61,6 +61,10 @@
     name: neo4j
     state: started
 
+- name: remove the remote workspace
+  file:
+    path: "{{remote_workspace}}"
+    state: absent
 
 ############################################################################################################################
 

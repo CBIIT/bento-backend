@@ -18,10 +18,11 @@
     image: cbiitssrepo/{{stack_name}}-backend:{{backend_version}}-{{build_number}}
     restart_policy: always
     ports:
-     - "9000:9000"
+     - "8080:8080"
     env:
       SLICK_CLICKHOUSE_URL: jdbc:clickhouse://{{slick_clickhouse_url}}:8123
       ELASTICSEARCH_HOST: "{{elasticsearch_host}}"
+      PLAY_PORT: "{{play_port}}"
 
 
 

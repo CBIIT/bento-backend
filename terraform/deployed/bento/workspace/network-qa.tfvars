@@ -18,7 +18,7 @@ public_subnets = ["172.18.0.0/24","172.18.1.0/24"]
 region = "us-east-1"
 
 #specify your aws credential profile. Note this is not IAM role but rather profile configured during AWS CLI installation
-profile = "icdc"
+profile = "NCI_sow"
 
 #specify the name you will like to call this project.
 stack_name = "bento"

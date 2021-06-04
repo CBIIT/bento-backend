@@ -17,3 +17,8 @@ output "database_subnets_ids" {
   description = "database subnets ids"
   value       = aws_subnet.db_subnet.*.id
 }
+
+output "vpc_cidr_block"{
+  description="cidr block details of vpc"
+  value = aws_vpc.vpc.cidr_block
+}

@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "ecs-instance-role" {
-  name               = "${var.stack_name}-${var.env}-instance-role"
+  name               = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-instance-role"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.ecs-instance-policy.json
 }
@@ -22,14 +22,14 @@ resource "aws_iam_role_policy_attachment" "ecs-instance-role-attachment" {
 }
 
 resource "aws_iam_instance_profile" "ecs-instance-profile" {
-  name  = "${var.stack_name}-${var.env}-ecs-instance-profile"
+  name  = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ecs-instance-profile"
   path  = "/"
   role = aws_iam_role.ecs-instance-role.id
 
 }
 
 resource "aws_iam_role" "ecs-service-role" {
-  name               = "${var.stack_name}-${var.env}-ecs-service-role"
+  name               = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ecs-service-role"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.ecs-service-policy.json
 }
@@ -104,13 +104,13 @@ data "aws_iam_policy_document" "ssm-policy-document" {
 }
 
 resource "aws_iam_policy" "ssm-policy" {
-  name   = "${var.stack_name}-${var.env}-ssm-policy"
+  name   = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ssm-policy"
   path   = "/"
   policy = data.aws_iam_policy_document.ssm-policy-document.json
 }
 
 resource "aws_iam_policy_attachment" "ssm-policy-attachement" {
-  name       = "${var.stack_name}-${var.env}-ssm-attach-policy"
+  name       = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ssm-attach-policy"
   roles      = [aws_iam_role.ecs-instance-role.name]
   policy_arn = local.ssm_iam_policy_arn
 }
@@ -124,12 +124,12 @@ data "aws_iam_policy_document" "ec2-policy-doc" {
   }
 }
 resource "aws_iam_policy" "ec2-policy" {
-  name   = "${var.stack_name}-${var.env}-ec2-policy"
+  name   = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ec2-policy"
   path   = "/"
   policy = data.aws_iam_policy_document.ec2-policy-doc.json
 }
 resource "aws_iam_policy_attachment" "ec2-policy-attach" {
-  name  = "${var.stack_name}-ec2-attach-policy"
+  name  = "${var.stack_name}-${var.frontend_app_name}-frontend-ec2-attach-policy"
   policy_arn = aws_iam_policy.ec2-policy.arn
   roles = [aws_iam_role.ecs-instance-role.name]
 }
@@ -164,12 +164,12 @@ data "aws_iam_policy_document" "ecs-policy-doc" {
   }
 }
 resource "aws_iam_policy" "ecs-policy" {
-  name   = "${var.stack_name}-${var.env}-ecs-policy"
+  name   = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ecs-policy"
   path   = "/"
   policy = data.aws_iam_policy_document.ecs-policy-doc.json
 }
 resource "aws_iam_policy_attachment" "ecs-policy-attach" {
-  name  = "${var.stack_name}-${var.env}-ecs-policy-attachement"
+  name  = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-ecs-policy-attachement"
   policy_arn = aws_iam_policy.ecs-policy.arn
   roles = [aws_iam_role.ecs-instance-role.name]
 }

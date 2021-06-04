@@ -49,7 +49,8 @@ data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
     bucket = var.remote_state_bucket_name
-    key = "env/${var.env}/bento/network/terraform.tfstate"
+    #key = "env/${var.env}/bento/network/terraform.tfstate"
+    key = "env/${local.workspace_env}/bento/network/terraform.tfstate"
     region = var.region
     encrypt = true
   }

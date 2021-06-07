@@ -110,7 +110,7 @@ pipeline {
           ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            	credentialsId: 'commonsdocker'
+            	credentialsId: 'commonsdocker',
 						  extraVars: [
                        		placeholder: 'yes',
                         ],

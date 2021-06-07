@@ -42,6 +42,9 @@ import java.util.Map;
 public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
     private static final Logger logger = LogManager.getLogger(Neo4jDataFetcher.class);
 
+    private int cacheHits = 0;
+    private int cacheMisses = 0;
+
     private Driver driver;
     @Autowired
     private ConfigurationDAO config;
@@ -77,9 +80,18 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
                 if (values == null) {
                     values = executeQuery(session, cypher, transformedParams);
                     redisService.cacheValue(redisKey, serializeObject(values));
+                    logger.info("Cache Miss: Query executed and cache entry created");
+                    cacheMisses++;
                 }
+                else{
+                    logger.info("Cache Hit: Cached response retrieved");
+                    cacheHits++;
+                }
+                int ratio = (int) ((double)cacheHits/(double)(cacheHits+cacheMisses)*100);
+                logger.info(String.format("Cache Hit-Miss Ratio: %s-%s, %s%%", cacheHits, cacheMisses, ratio));
                 return values;
             } else {
+                logger.info("Cache Disabled: Executing query");
                 return executeQuery(session, cypher, transformedParams);
             }
         }

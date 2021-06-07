@@ -40,5 +40,11 @@
     force_tag: yes
     push: yes
     source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
 
     

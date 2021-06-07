@@ -92,38 +92,11 @@ pipeline {
         }
  
   	}
-    stage('Set Environment'){
-      environment {
-        FILES_SLACK_URL = "${FILES_SLACK_URL}"
-        VERSION = "${params.Frontend_Tag}"
-      }
-        steps {
-          script {
-			
-            switch("${params.Environment}") {
-              case "dev":
-                  env.TIER  = "dev"
-              break
-              case "qa":
-                  env.TIER  = "qa" 
-              break
-              case "stage":
-                  env.TIER  = "stage"
-              break
-              case "prod":
-                  env.TIER  = "prod"
-              break
-              default:
-                  env.TIER  = "dev"
-              break
-            }
-          }
-        }
-    }
-
+    
   	stage('build'){
       environment {
        DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       TIER = "${params.Environment}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -149,6 +122,8 @@ pipeline {
   	stage('deploy'){
 	  environment {
        DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       FILES_SLACK_URL = "${FILES_SLACK_URL}"
+       TIER = "${params.Environment}"
       }
   		steps{
   	// 	  node('commons-docker-ncias-p2236-v') {

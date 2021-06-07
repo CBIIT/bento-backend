@@ -151,21 +151,21 @@ pipeline {
        DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
       }
   		steps{
-  		  node('commons-docker-ncias-p2236-v') {
-		    checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-			sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+  	// 	  node('commons-docker-ncias-p2236-v') {
+		 //    checkout( changelog:false,
+			// 	poll: false,
+			// 	scm: [$class: 'GitSCM', 
+			// 	branches: [[name: '*/master']], 
+			// 	doGenerateSubmoduleConfigurations: false, 
+			// 	extensions: [[$class: 'DisableRemotePoll'],
+			// 	[$class: 'PathRestriction', excludedRegions: '*'], 
+			// 	[$class: 'RelativeTargetDirectory', 
+			// 	relativeTargetDir: 'icdc-devops']], 
+			// 	submoduleCfg: [], 
+			// 	userRemoteConfigs: 
+			// 	[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+			// 	])
+			// sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 

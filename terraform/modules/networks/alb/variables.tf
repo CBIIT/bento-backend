@@ -52,3 +52,10 @@ variable "env" {
   description = "environment"
   type = string
 }
+
+#added frontend app name to accomodate ppdc-otg and ppdc-otp
+variable "frontend_app_name" {
+  description = "it will be either otp or otg"
+  type = string
+  default = ""
+}

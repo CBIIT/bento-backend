@@ -43,12 +43,17 @@
     name: neo4j
     state: stopped
 
-- name: neo4j db name
-  debug:
-    msg: "{{ neo4j_db_name }}"
+#- name: neo4j db name
+#  debug:
+#    msg: "{{ neo4j_db_name }}"
+
+#- name: neo4j load command
+#  debug:
+#    msg: "{{ neo4j_admin_cmd }} load --from={{ remote_workspace }}/neo4j.dump --database={{ neo4j_db_name }} --force --verbose"
 
 - name: load neo4j dumpfile
-  command: "{{ neo4j_admin_cmd }} load --from {{remote_workspace}}/neo4j.dump --database {{ neo4j_db_name }} --force"
+  #command: "{{ neo4j_admin_cmd }} load --from={{ remote_workspace }}/neo4j.dump --database={{ neo4j_db_name }} --force --verbose"
+  command: "{{ neo4j_admin_cmd }} load --from={{ remote_workspace }}/neo4j.dump --force --verbose"
   become_user: neo4j
   register: loader
 
@@ -61,6 +66,10 @@
     name: neo4j
     state: started
 
+#- name: remove the remote workspace
+#  file:
+#    path: "{{remote_workspace}}"
+#    state: absent
 
 ############################################################################################################################
 

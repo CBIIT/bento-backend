@@ -1,0 +1,14 @@
+---
+# vars file for cicd
+docker_host: "{{ lookup('env','DOCKER_HOST') }}"
+tls_hostname: "{{ lookup('env','TLS_HOSTNAME') }}"
+indexd_url: "{{ indexd_url }}"
+url_src: CLOUD_FRONT
+stack_name: icdc
+tier: "{{ lookup('env','TIER') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}"
+downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
+#cloudfront variables

@@ -24,7 +24,7 @@
 - name: copy content {{copy_from}} to {{copy_to}}
   command: rsync -rcCivh {{copy_from}}/ {{copy_to}}/ --delete
   args:
-    chdir: "{{ git_home }}/src/content"
+    chdir: "{{ git_home}}/src/content"
   register: git_copy
 
 - debug:

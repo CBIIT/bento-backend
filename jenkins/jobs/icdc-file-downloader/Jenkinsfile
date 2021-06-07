@@ -1,0 +1,213 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILES_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline { 
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod' )
+    string(
+    defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+    description: 'Provide indexd url',
+    name: 'IndexD_Url')
+   	gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Downloader_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/bento-files')
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Downloader_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-files']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-files']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+    stage('Set Environment'){
+      environment {
+        FILES_SLACK_URL = "${FILES_SLACK_URL}"
+        VERSION = "${params.Frontend_Tag}"
+      }
+        steps {
+          script {
+			
+            switch("${params.Environment}") {
+              case "dev":
+                  env.TIER  = "dev"
+              break
+              case "qa":
+                  env.TIER  = "qa" 
+              break
+              case "stage":
+                  env.TIER  = "stage"
+              break
+              case "prod":
+                  env.TIER  = "prod"
+              break
+              default:
+                  env.TIER  = "dev"
+              break
+            }
+          }
+        }
+    }
+
+  	stage('build'){
+      environment {
+       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+      }
+ 		steps {
+      sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  ansiblePlaybook(  			
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						extraVars: [
+                       		placeholder: 'yes',
+                        ],
+						colorized: true)
+ 				}
+ 			}
+ 		}
+  	}
+
+  	stage('deploy'){
+	  environment {
+       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+      }
+  		steps{
+  		  node('commons-docker-ncias-p2236-v') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+			sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		extraVars: [
+                     indexd_url: "${params.IndexD_Url}"
+                    ],
+					colorized: true)
+  			}
+		  }
+  		}
+  	}
+  }
+  post {
+
+	always {
+
+      sendSlackMessage()
+
+    }
+
+	success {
+
+		script {
+			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
+				
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				git tag --no-sign -a ${Downloader_Tag}-icdc-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
+				git push https://${git_user}:${git_password}@${gitURL} --tags
+				
+				'''
+			
+				}
+			}
+	
+		
+		}
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

@@ -126,13 +126,15 @@ pipeline {
        DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
       }
  		steps {
-      sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-						extraVars: [
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
+          ,file(credentialsId: 'ansible_host_file', variable: 'host_file')])
+        {
+          sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          ansiblePlaybook(  			
+              playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
+            	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						  extraVars: [
                        		placeholder: 'yes',
                         ],
 						colorized: true)

@@ -146,7 +146,8 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                     indexd_url: "${params.IndexD_Url}"
+                     indexd_url: "${params.IndexD_Url}",
+                     tier: "${params.Environment}"
                     ],
 					colorized: true)
   			}

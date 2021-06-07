@@ -4,6 +4,7 @@
     username: "{{ docker_user }}"
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
+    
 
 - name: remove frontend container
   docker_container:

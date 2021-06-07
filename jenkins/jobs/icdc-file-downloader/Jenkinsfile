@@ -144,7 +144,9 @@ pipeline {
 			// sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
-          usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          usernamePassword(
+          	credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+            credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')
           ])
         {
   				ansiblePlaybook( 

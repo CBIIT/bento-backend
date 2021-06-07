@@ -7,4 +7,4 @@ ENV PATH=$PATH:${JAVA_HOME}/bin
 
 COPY app /app
 EXPOSE 8080
-CMD /app/bin/start -Dplay.http.secret.key="chslslkdangethisssksksaosometkdakdhingsecretkslakdd"
+CMD /app/bin/start -Dhttp.port="8080" -Dplay.http.secret.key="chslslkdangethisssksksaosometkdakdhingsecretkslakdd"

@@ -3,5 +3,13 @@
 scala_version: 2.13.5
 project_repo: https://github.com/CBIIT/ppdc-otp-backend.git
 workspace: "{{ lookup('env','WORKSPACE') }}"
-artifact_name: ot-platform-api-beta-latest
+artifact_dir_name: ot-platform-api-beta-latest
 stack_name: open-target
+artifact_name: ot-platform-api-beta
+backend_version: "{{ lookup('env','BE_VERSION') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+elasticsearch_host: "{{ lookup('env','ELASTICSEARCH_HOST') }}"
+slick_clickhouse_url: "{{ lookup('env','SLICK_CLICKHOUSE_URL') }}"
+play_port: "{{lookup('env','PLAY_PORT') }}"

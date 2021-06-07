@@ -14,7 +14,7 @@ resource "aws_instance" "db" {
   }
   tags = merge(
   {
-    "Name" = "${var.stack_name}-${var.env}-database",
+    "Name" = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-database",
   },
   var.tags,
   )
@@ -22,12 +22,12 @@ resource "aws_instance" "db" {
 
 #create database security group
 resource "aws_security_group" "ppdc-database-sg" {
-  name = "${var.stack_name}-${var.env}-database-sg"
+  name = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-database-sg"
   description = "database security group"
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
   tags = merge(
   {
-    "Name" = format("%s-%s-%s",var.stack_name,var.env,"database-sg")
+    "Name" = format("%s-%s-%s-%s-%s",var.stack_name,var.frontend_app_name,"frontend",var.env,"database-sg")
   },
   var.tags,
   )
@@ -47,11 +47,21 @@ resource "aws_security_group_rule" "ppdc_allow_backend" {
   from_port = local.backend_port
   protocol = local.tcp_protocol
   to_port = local.backend_port
-  source_security_group_id = aws_security_group.ppdc-database-sg.id
+  #source_security_group_id = aws_security_group.ppdc-database-sg.id
   security_group_id = aws_security_group.ppdc-database-sg.id
+  cidr_blocks = [local.vpc_cidr_block]
   type = "ingress"
 }
 
+resource "aws_security_group_rule" "ppdc_allow_backend1" {
+  from_port = local.backend_port1
+  protocol = local.tcp_protocol
+  to_port = local.backend_port1
+  #source_security_group_id = aws_security_group.ppdc-database-sg.id
+  security_group_id = aws_security_group.ppdc-database-sg.id
+  cidr_blocks = [local.vpc_cidr_block]
+  type = "ingress"
+}
 
 resource "aws_security_group_rule" "all_outbound" {
   from_port = local.any_port
@@ -65,7 +75,7 @@ resource "aws_security_group_rule" "all_outbound" {
 
 #create boostrap script to hook up the node to ecs cluster
 resource "aws_ssm_document" "ssm_neo4j_boostrap" {
-  name          = "${var.stack_name}-${var.env}-setup-database"
+  name          = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-setup-database"
   document_type = "Command"
   document_format = "YAML"
   content = <<DOC

@@ -93,7 +93,7 @@ pipeline {
     stage('Set Environment'){
       environment {
         PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
-        VERSION = "${params.Frontend_Tag}"
+
       }
         steps {
           script {
@@ -108,6 +108,9 @@ pipeline {
               break
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                  env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_QA_IP}"
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_QA_IP}"
+                  env.PLAY_PORT = "${PLAY_PORT}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   
@@ -148,7 +151,7 @@ pipeline {
     }
   	stage('build'){
       environment {
-       VERSION = "${params.Branch_Tag}"
+       BE_VERSION = "${params.Backend_Tag}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -157,8 +160,7 @@ pipeline {
                   playbook: '${WORKSPACE}/icdc-devops/ansible/build-open-target-backend.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
-                    tier: "${params.Environment}",
-                    frontend_version: "${params.Frontend_Tag}"
+                    tier: "${params.Environment}"
                     ], 
                   hostKeyChecking: false,
             			colorized: true) 
@@ -175,7 +177,7 @@ pipeline {
       environment {
         PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
         TIER = "${params.Environment}"
-        VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
       }
 
       steps{
@@ -189,8 +191,7 @@ pipeline {
                 inventory: '${WORKSPACE}/ansible/hosts', 
                 credentialsId: 'server_ssh_key',
                 extraVars: [
-                    tier: "${params.Environment}",
-                    frontend_version: "${params.Frontend_Tag}"
+                    tier: "${params.Environment}"
                     ],
                 become: true,
                 hostKeyChecking: false,

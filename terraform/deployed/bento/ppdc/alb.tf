@@ -2,6 +2,8 @@
 module "alb" {
   source = "../../../modules/networks/alb"
   stack_name = var.stack_name
+  alb_name = var.alb_name
+  frontend_app_name = var.frontend_app_name
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
   certificate_arn = data.aws_acm_certificate.certificate.arn
   subnets =data.terraform_remote_state.network.outputs.public_subnets_ids

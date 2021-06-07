@@ -1,0 +1,12 @@
+---
+- name: deploy stage of icdc-file-downloader pipeline
+  hosts: icdc-{{tier}}
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: icdc-file-downloader
+        tasks_from: deploy
+    

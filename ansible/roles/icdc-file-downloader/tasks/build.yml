@@ -1,0 +1,44 @@
+---
+#################################################################################################
+
+- name: log into ncidockerhub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+    registry: https://ncidockerhub.nci.nih.gov
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+
+- name: build cbiitssrepo/icdc-filedownloader image
+  docker_image:
+    build:
+      path: "{{workspace}}/bento-files"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/filedownload-dockerfile"
+      pull: yes
+      nocache: yes
+    name: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader
+    tag: "{{downloader_version}}"
+    push: yes
+    force_source: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+        
+- name: Add tag latest to cbiitssrepo/bento-filedownloader image
+  docker_image:
+    name: "ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{downloader_version}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:latest
+    force_tag: yes
+    push: yes
+    source: local
+
+    

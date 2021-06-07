@@ -1,0 +1,11 @@
+---
+- name: icdc cicd pipeline
+  hosts: icdc-local
+  gather_facts: no
+  connection: local
+    
+  tasks:
+    - name: This is a build stage
+      include_role:
+        name: icdc-file-downloader
+        tasks_from: build

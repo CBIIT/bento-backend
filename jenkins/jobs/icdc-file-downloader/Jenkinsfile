@@ -127,8 +127,11 @@ pipeline {
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
-          ,file(credentialsId: 'ansible_host_file', variable: 'host_file')])
+ 				withCredentials([
+          usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
+          string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+          string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')])
         {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
           ansiblePlaybook(  			

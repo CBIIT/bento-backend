@@ -146,7 +146,6 @@ pipeline {
 				withCredentials([
           usernamePassword(
           	credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-            credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')
           ])
         {
   				ansiblePlaybook( 

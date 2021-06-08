@@ -82,7 +82,7 @@ pipeline {
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
           string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
           string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
-          string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST')
+          string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
           file(credentialsId: 'ansible_host_file', variable: 'host_file')])
           {
             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"

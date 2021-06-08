@@ -110,7 +110,6 @@ pipeline {
           ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            	credentialsId: 'commonsdocker',
 						  extraVars: [
                        		placeholder: 'yes',
                         ],
@@ -127,25 +126,9 @@ pipeline {
        TIER = "${params.Environment}"
       }
   		steps{
-  	// 	  node('commons-docker-ncias-p2236-v') {
-		 //    checkout( changelog:false,
-			// 	poll: false,
-			// 	scm: [$class: 'GitSCM', 
-			// 	branches: [[name: '*/master']], 
-			// 	doGenerateSubmoduleConfigurations: false, 
-			// 	extensions: [[$class: 'DisableRemotePoll'],
-			// 	[$class: 'PathRestriction', excludedRegions: '*'], 
-			// 	[$class: 'RelativeTargetDirectory', 
-			// 	relativeTargetDir: 'icdc-devops']], 
-			// 	submoduleCfg: [], 
-			// 	userRemoteConfigs: 
-			// 	[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-			// 	])
-			// sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
-          usernamePassword(
-          	credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
           ])
         {
   				ansiblePlaybook( 
@@ -172,7 +155,7 @@ pipeline {
 	success {
 
 		script {
-			withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
 				
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
@@ -186,7 +169,6 @@ pipeline {
 			
 				}
 			}
-	
 		
 		}
 

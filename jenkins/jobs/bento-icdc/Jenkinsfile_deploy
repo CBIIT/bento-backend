@@ -50,10 +50,7 @@ pipeline {
 		defaultValue: true,
 		description: 'Enable the Redis filter',
 		name: 'Enable_Redis_Filter')
-    string(
-        defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
-        description: 'Provide indexd url',
-        name: 'IndexD_Url')
+    
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -349,10 +346,8 @@ pipeline {
                     project: 'icdc',
                     frontend_version: "${params.Frontend_Tag}",
                     backend_version: "${params.Backend_Tag}",
-                    downloader_version: "${params.File_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
-                    indexd_url: "${params.IndexD_Url}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}"
                     ],
                 become: true,

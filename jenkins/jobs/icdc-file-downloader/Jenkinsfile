@@ -128,6 +128,7 @@ pipeline {
   		steps{
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
+          string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
           usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
           ])
         {

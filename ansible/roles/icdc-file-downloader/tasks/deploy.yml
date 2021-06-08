@@ -28,7 +28,7 @@
       VERSION: "{{downloader_version}}" 
       DATE: "{{ansible_date_time.date}}"
       PROJECT: "ICDC"
-      NEW_RELIC_APP_NAME: "{{stack_name}}-file-downloader"
+      NEW_RELIC_APP_NAME: "{{stack_name}}-{{tier}}file-downloader-{{ansible_hostname}}"
       NEW_RELIC_LICENSE_KEY: "{{license_key}}"
     restart_policy: always
     ports:

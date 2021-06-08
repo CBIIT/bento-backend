@@ -44,13 +44,7 @@
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
-          value: "{{ app_name }}-file-downloader"
-        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-          value: true
-        - name: NEW_RELIC_HOST
-          value: "gov-collector.newrelic.com"
-        - name: NEW_RELIC_NO_CONFIG_FILE
-          value: true
+          value: "{{stack_name}}-{{tier}}file-downloader-{{ansible_hostname}}"
       portMappings:
       - containerPort: "8081"
         hostPort: "8081"

@@ -29,7 +29,7 @@ def sendSlackMessage() {
 }
 
 
-pipeline {
+pipeline { 
 	agent {
 		node {
 			label 'commons-docker-ncias-p2236-v'
@@ -41,11 +41,20 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,test,qa,stage,prod')
+        value: 'dev,qa,stage,prod' )
     string(
     defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
     description: 'Provide indexd url',
     name: 'IndexD_Url')
+   	gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Downloader_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/bento-files')
 
   }
   options {
@@ -56,16 +65,19 @@ pipeline {
     jdk 'Default' 
   }
   stages{
-  	stage('deploy'){
-	  environment {
-	     FILES_SLACK_URL = "${FILES_SLACK_URL}"
-       TIER = "${params.Environment}"
-	     DOWNLOADER_VERSION = "${params.Downloader_Tag}"
-      }
-  		steps{
-		  node('commons-docker-ncias-p2236-v') {
-		    checkout( changelog:false,
-				poll: false,
+  	stage('checkout'){
+  		steps {
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Downloader_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-files']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-files']]])
+
+  			checkout( poll: false, 
+				changelog:false,
 				scm: [$class: 'GitSCM', 
 				branches: [[name: '*/master']], 
 				doGenerateSubmoduleConfigurations: false, 
@@ -75,43 +87,96 @@ pipeline {
 				relativeTargetDir: 'icdc-devops']], 
 				submoduleCfg: [], 
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				]
-      sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-        withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-          string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
-          string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
-          string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
-          string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST')
-          file(credentialsId: 'ansible_host_file', variable: 'host_file')])
-          {
-            ansiblePlaybook( 
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
-                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                  extraVars: [
-                       tier: "${params.Environment}",
-                       indexd_url: "${params.IndexD_Url}",
-                      ],
-            colorized: true)
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
         }
-        }
-		  }
-  		}
+ 
+  	}
+    
+  	stage('build'){
+      environment {
+       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       TIER = "${params.Environment}"
+      }
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([
+          usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
+          string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+          string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')])
+        {
+          sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          ansiblePlaybook(  			
+              playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
+            	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						  extraVars: [
+                       		placeholder: 'yes',
+                        ],
+						colorized: true)
+ 				}
+ 			}
+ 		}
   	}
 
+  	stage('deploy'){
+	  environment {
+       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       FILES_SLACK_URL = "${FILES_SLACK_URL}"
+       TIER = "${params.Environment}"
+      }
+  		steps{
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				withCredentials([
+          usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
+          ])
+        {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		extraVars: [
+                     indexd_url: "${params.IndexD_Url}",
+                     tier: "${params.Environment}"
+                    ],
+					colorized: true)
+  			}
+		   }
+  		}
+  	}
   }
   post {
-    always {
-      
+
+	always {
+
       sendSlackMessage()
 
     }
-	
+
+	success {
+
+		script {
+			withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
+				
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				git tag --no-sign -a ${Downloader_Tag}-icdc-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
+				git push https://${git_user}:${git_password}@${gitURL} --tags
+				
+				'''
+			
+				}
+			}
+		
+		}
+
 	cleanup {
 	
-		cleanWs()
+	  cleanWs()
     
 	}
+
   }
 }

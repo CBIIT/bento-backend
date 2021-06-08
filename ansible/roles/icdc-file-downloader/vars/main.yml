@@ -11,5 +11,5 @@ docker_user: "{{ lookup('env','DOCKER_USER') }}"
 docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}"
 downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
-license_key: "{{ lookup('env','NEWRELIC_LIC_KEY) }}"
+license_key: "{{ lookup('env','NEWRELIC_LIC_KEY') }}"
 #cloudfront variables

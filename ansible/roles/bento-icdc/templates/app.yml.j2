@@ -60,21 +60,3 @@ services:
       - "80:80"
     restart: always
 
-##########################################################
-# file downloader container
-##########################################################   
-
-  file-downloader:
-    container_name: files
-    image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{downloader_version}}
-    environment:
-      URL_SRC: indexd
-      INDEXD_URL: "{{indexd_url}}"
-      VERSION: "{{downloader_version}}" 
-      DATE: "{{ansible_date_time.date}}"
-      PROJECT: "ICDC"  
-    volumes:
-      - "/local/content/k9dc/file-downloader:/var/log"
-    ports:
-      - "8081:8081"
-    restart: always

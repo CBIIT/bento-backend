@@ -4,7 +4,6 @@
     username: "{{ docker_user }}"
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
-    
 
 - name: remove frontend container
   docker_container:
@@ -34,3 +33,13 @@
       - "8081:8081"
     volumes:
       - "/local/content/k9dc/file-downloader:/var/log"
+
+- name: "wait for file-downloader service to become available"
+  uri:
+   url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/ping{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/ping{% endif %}"
+   follow_redirects: none
+   method: GET
+  register: _result
+  until: ('status' in _result) and (_result.status == 200)
+  retries: 100
+  delay: 10

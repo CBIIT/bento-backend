@@ -22,7 +22,7 @@
     icon_emoji: ":alert:"
     attachments:
       - text: "{{custom_text | default(text)}}"
-        title: "{{custom_title | default(title)}}"
+        title: "{{custom_title | default(title)}}{% if result.status == 200 %}*Up*{% else %}*Down*{% endif %}"
         color: "{% if result.status == 200 %}good{% else %}danger{% endif %}"
         footer: "icdc devops"
         ts: "{[ansible_date_time.epoch }}"

@@ -25,4 +25,4 @@
     - name: get url status
       include_role:
         name: url-monitor
-      loop: lookup("dict", {{urls}}, wantlist=True)
+      loop: lookup("dict", urls, wantlist=True)

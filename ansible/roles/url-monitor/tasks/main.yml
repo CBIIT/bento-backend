@@ -1,6 +1,10 @@
 ---
 - name: install dependencies
-  command: ansible-galaxy collection install community.general
+  shell: ansible-galaxy collection install community.general
+  register: output
+
+- debug:
+    msg: "{{output.stdout_lines}}"
 # tasks file for url-monitor
 - name: "check {{app_name | default(name)}} for availability"
   uri:

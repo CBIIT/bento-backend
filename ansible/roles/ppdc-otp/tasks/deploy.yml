@@ -22,35 +22,14 @@
   docker_container:
     name: ppdc-otp
     image: cbiitssrepo/ppdc-otp-frontend:{{frontend_version}}-{{build_number}}
+    env:
+      CONFIG_URL_API: "http://{{slick_clickhouse_url}}:9000/api/v4/graphql"
+      CONFIG_URL_API_BETA: "http://{{slick_clickhouse_url}}:9000/api/v4/graphql"
     restart_policy: always
     ports:
      - "80:80"
 
-# - name: update serivces and compose files
-#   template:
-#     src: "{{item.src}}"
-#     dest: "{{item.dest}}"
-#   loop:
-#     - {src: 'app.yml.j2',dest: '/local/content/docker/app.yml'}
-#     - {src: 'app.service.j2',dest: '/etc/systemd/system/app.service'}
-#     - {src: 'app.timer.j2',dest: '/etc/systemd/system/app.timer'}
 
-# - name: start frontend and backend containers
-#   docker_compose:
-#     project_src: /local/content/docker
-#     files: app.yml
-#     state: present
-
-
-# - name: "wait for {{ frontend_url }} to become available"
-#   uri:
-#    url: "{{ frontend_url }}"
-#    follow_redirects: none
-#    method: GET
-#   register: _result
-#   until: ('status' in _result) and (_result.status == 200)
-#   retries: 100
-#   delay: 10
 
 
 

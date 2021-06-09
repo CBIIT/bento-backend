@@ -57,6 +57,9 @@ pipeline {
        useRepository: 'https://github.com/CBIIT/bento-files')
 
   }
+   triggers { 
+     pollSCM('H/15 * * * 1-5') 
+    }
   options {
   	ansiColor('xterm')
   }

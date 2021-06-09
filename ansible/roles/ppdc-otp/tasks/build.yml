@@ -31,8 +31,8 @@
 
 - name: copy entrypoint.sh to workspace
   copy:
-    src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/ppdc-otp-frontend/nginx-entrypoint.sh"
+    src: "ppdc-otp-entrypoint.sh"
+    dest: "{{workspace}}/ppdc-otp-frontend/ppdc-otp-entrypoint.sh"
     mode: 0755
 
 - name: run yarn install in {{workspace}}/ppdc-otp-frontend

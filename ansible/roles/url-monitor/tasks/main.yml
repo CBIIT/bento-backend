@@ -13,4 +13,4 @@
 
 - name: show output
   debug:
-    msg: "{{result}}"
+    msg: "{{result.status}}"

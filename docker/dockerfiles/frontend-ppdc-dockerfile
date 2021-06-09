@@ -9,8 +9,8 @@ ENV HOST 0.0.0.0
 RUN sh -c "envsubst '\$PORT'  < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf"
 
 COPY ./dist /usr/share/nginx/html
-COPY ./ppdc-otp-entrypoint.sh /
+COPY ./nginx-entrypoint.sh /
 
 EXPOSE 80
 
-ENTRYPOINT [ "sh", "/ppdc-otp-entrypoint.sh" ]
+ENTRYPOINT [ "sh", "/nginx-entrypoint.sh" ]

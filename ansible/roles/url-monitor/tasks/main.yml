@@ -9,8 +9,19 @@
   until: ('status' in result)
   retries: 100
   delay: 10
-  
 
-- name: show output
-  debug:
-    msg: "{{result.status}}"
+- name: send notification
+  community.general.slack:
+    token: "{{slack_token}}"
+    attachments:
+      - text: "{{custom_text|default(text)}}"
+        title: "{{custom_title | default(title)}}"
+        color: "good",
+        footer: "icdc devops",
+        ts: "{[ansible_date_time.epoch }}",
+        mrkdwn_in: ["footer", "title"]
+        fallback: "File Service Monitor",
+
+# - name: show output
+#   debug:
+#     msg: "{{result.status}}"

@@ -1,2 +1,15 @@
 ---
 # tasks file for slack-notification
+
+- name: Use the attachments API
+  community.general.slack:
+    token: "{{slack_token}}"
+    icon_emoji: ":alert:"
+    attachments:
+      - text: "{{custom_text}}"
+        title: "{{custom_title}}"
+        color: "${BUILD_COLORS[currentBuild.currentResult]}",
+        footer: "bento devops",
+        ts: epoch,
+        mrkdwn_in: ["footer", "title"]
+        fallback: "Bento Jenkins Build",

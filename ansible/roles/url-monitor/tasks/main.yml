@@ -19,13 +19,13 @@
 - name: send notification
   slack:
     token: "{{slack_token}}"
-    icon_emoji: ":alert:"
+    # icon_emoji: ":alert:"
     attachments:
-      - text: "{{custom_text | default(text)}}"
-        title: "{{custom_title | default(title)}}{% if result.status == 200 %}*Up*{% else %}*Down*{% endif %}"
+      - text: "{{custom_text | default(text)}}{% if result.status == 200 %} *Up*{% else %} *Down*{% endif %}"
+        title: "{{custom_title | default(title)}}"
         color: "{% if result.status == 200 %}good{% else %}danger{% endif %}"
         footer: "icdc devops"
-        ts: "{[ansible_date_time.epoch }}"
+        ts: "{{ansible_date_time.epoch }}"
         mrkdwn_in: "{{mkdown}}"
         fallback: "File Service Monitor"
 

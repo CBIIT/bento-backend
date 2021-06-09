@@ -2,7 +2,7 @@
 pipeline { 
 	agent {
 		node {
-			label 'commons-docker-ncias-p2236-v'
+			label 'icdc_maven'
 		}
 	}
 	

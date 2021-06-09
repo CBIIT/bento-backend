@@ -7,8 +7,8 @@
   vars:
     - urls:
         - https://caninecommons-dev.cancer.gov/api/files/ping
-        # - https://caninecommons-qa.cancer.gov/api/files/ping
-        # - https://caninecommons-stage.cancer.gov/api/files/ping
+        - https://caninecommons-qa.cancer.gov/api/files/ping
+        - https://caninecommons-stage.cancer.gov/api/files/ping
  
   tasks:
     - name: get url status

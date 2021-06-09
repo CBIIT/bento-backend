@@ -13,5 +13,5 @@
   tasks:
     - name: get url status
       include_role:
-        name: url-montor
+        name: url-monitor
       loop: "{{urls}}"

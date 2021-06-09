@@ -6,10 +6,11 @@
    url: "{{item | default(url)}}"
    follow_redirects: none
    method: GET
+   status_code: [200,201,401,403,404,500,502,503]
   register: result
 
 - debug:
-    msg: "{{result.content}}"
+    msg: "{{result}}"
   # until: ('status' in result)
   # retries: 100
   # delay: 10

@@ -1,0 +1,4 @@
+---
+# vars file for url-monitor
+app_name: "{{app_name}}"
+url: "{{url}}"

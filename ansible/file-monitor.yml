@@ -1,0 +1,17 @@
+---
+- name: check file microservice status
+  hosts: localhost
+  gather_facts: yes
+  connection: local
+
+  vars:
+    - urls:
+        - https://caninecommons-dev.cancer.gov/api/files/ping
+        # - https://caninecommons-qa.cancer.gov/api/files/ping
+        # - https://caninecommons-stage.cancer.gov/api/files/ping
+ 
+  tasks:
+    - name: get url status
+      include_role:
+        name: url-montor
+      loop: "{{urls}}"

@@ -1,0 +1,60 @@
+
+pipeline { 
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+		}
+	}
+	
+  options {
+  	ansiColor('xterm')
+  }
+  
+  stages{
+  	stage('checkout'){
+  		steps 
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+    
+  	stage('check status'){
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([string(credentialsId: 'files-slack-token', variable: 'SLACK_TOKEN')])
+        {
+          ansiblePlaybook(  			
+              playbook: '${WORKSPACE}/icdc-devops/ansible/file-monitor.yml', 
+            	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						  extraVars: [
+                       		slack_token: ${SLACK_TOKEN}
+                         ],
+						  colorized: true
+              )
+ 				}
+ 			}
+ 		}
+  	}
+  }
+  post {
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

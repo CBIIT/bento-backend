@@ -1,0 +1,4 @@
+---
+# defaults file for url-monitor
+default_app_name: default
+default_url: http://localhost

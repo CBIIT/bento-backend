@@ -1,0 +1,18 @@
+
+- name: ensure /local/content/docker directory exist
+  file:
+    path: /local/content/docker
+    state: directory
+
+- name: check if app.yml exist
+  stat:
+    path: "/local/content/docker/app.yml"
+  register: prev_app
+
+
+- name: save previous app.yml file
+  copy: 
+    src: "/local/content/docker/app.yml"
+    dest: "/local/content/docker/prev_app.yml"
+    remote_src: yes
+  when: not prev_app.stat.exists or release == "pass"

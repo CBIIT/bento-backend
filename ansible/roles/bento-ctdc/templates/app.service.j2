@@ -1,0 +1,19 @@
+[Unit]
+Description=Docker Compose Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/local/content/docker
+
+#User=tomcat
+#Group=tomcat
+
+ExecStart=/usr/bin/docker-compose -f app.yml up -d 
+ExecStop=/usr/bin/docker-compose -f app.yml down
+#TimeoutStartSec=60
+
+[Install]
+WantedBy=multi-user.target

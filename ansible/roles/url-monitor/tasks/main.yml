@@ -2,31 +2,31 @@
 
 # tasks file for url-monitor
 - debug:
-    msg: "{{item}}{{item.url}}"
+    msg: "{{item}}"
 
-- name: "check {{app_name | default(name)}} for availability"
-  uri:
-   url: "{{item.url | default(url)}}"
-   follow_redirects: none
-   method: GET
-   status_code: [200,201,401,403,404,500,502,503]
-  register: result
-  until: ('status' in result)
-  retries: 100
-  delay: 10
+# - name: "check {{app_name | default(name)}} for availability"
+#   uri:
+#    url: "{{item.url | default(url)}}"
+#    follow_redirects: none
+#    method: GET
+#    status_code: [200,201,401,403,404,500,502,503]
+#   register: result
+#   until: ('status' in result)
+#   retries: 100
+#   delay: 10
 
-- name: send notification
-  slack:
-    token: "{{slack_token}}"
-    # icon_emoji: ":alert:"
-    attachments:
-      - text: "{{custom_text | default(text)}}{% if result.status == 200 %}*Up*{% else %}*Down*{% endif %}"
-        title: "{{custom_title | default(title)}}"
-        color: "{% if result.status == 200 %}good{% else %}danger{% endif %}"
-        footer: "icdc devops"
-        ts: "{{ansible_date_time.epoch }}"
-        mrkdwn_in: "{{mkdown}}"
-        fallback: "File Service Monitor"
+# - name: send notification
+#   slack:
+#     token: "{{slack_token}}"
+#     # icon_emoji: ":alert:"
+#     attachments:
+#       - text: "{{custom_text | default(text)}}{% if result.status == 200 %}*Up*{% else %}*Down*{% endif %}"
+#         title: "{{custom_title | default(title)}}"
+#         color: "{% if result.status == 200 %}good{% else %}danger{% endif %}"
+#         footer: "icdc devops"
+#         ts: "{{ansible_date_time.epoch }}"
+#         mrkdwn_in: "{{mkdown}}"
+#         fallback: "File Service Monitor"
 
 # - name: show output
 #   debug:

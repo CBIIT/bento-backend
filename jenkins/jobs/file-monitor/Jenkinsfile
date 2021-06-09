@@ -2,7 +2,7 @@
 pipeline { 
 	agent {
 		node {
-			label 'icdc_maven'
+			label 'docker-maven'
 		}
 	}
 	

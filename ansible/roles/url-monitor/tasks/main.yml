@@ -1,7 +1,7 @@
 ---
-- name: install dependencies
-  shell: ansible-galaxy collection install community.general
-  register: output
+# - name: install dependencies
+#   shell: ansible-galaxy collection install community.general
+#   register: output
 
 - debug:
     msg: "{{output.stdout_lines}}"
@@ -16,16 +16,16 @@
   retries: 100
   delay: 10
 
-# - name: send notification
-#   slack:
-#     token: "{{slack_token}}"
-#     attachments:
-#       - text: "{{custom_text | default(text)}}"
-#         title: "{{custom_title | default(title)}}"
-#         color: "good"
-#         footer: "icdc devops"
-#         ts: "{[ansible_date_time.epoch }}"
-#         mrkdwn_in: "{{mkdown}}"
+- name: send notification
+  slack:
+    token: "{{slack_token}}"
+    attachments:
+      - text: "{{custom_text | default(text)}}"
+        title: "{{custom_title | default(title)}}"
+        color: "good"
+        footer: "icdc devops"
+        ts: "{[ansible_date_time.epoch }}"
+        mrkdwn_in: "{{mkdown}}"
 #         fallback: "File Service Monitor"
 
 # - name: show output

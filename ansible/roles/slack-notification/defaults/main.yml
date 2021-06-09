@@ -1,2 +1,4 @@
 ---
 # defaults file for slack-notification
+title: "File Monitor URL Status"
+text: "Current Status of {{item}} is good"

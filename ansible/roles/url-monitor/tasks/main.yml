@@ -1,6 +1,9 @@
 ---
 
 # tasks file for url-monitor
+- debug:
+    msg: "{{item}}{{item.url}}"
+
 - name: "check {{app_name | default(name)}} for availability"
   uri:
    url: "{{item.url | default(url)}}"

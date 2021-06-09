@@ -17,7 +17,7 @@
   delay: 10
 
 - name: send notification
-  community.general.slack:
+  slack:
     token: "{{slack_token}}"
     attachments:
       - text: "{{custom_text | default(text)}}"

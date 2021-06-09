@@ -3,8 +3,8 @@
 #   shell: ansible-galaxy collection install community.general
 #   register: output
 
-# - debug:
-#     msg: "{{output.stdout_lines}}"
+- debug:
+    msg: "{{slack_token}}"
 # tasks file for url-monitor
 - name: "check {{app_name | default(name)}} for availability"
   uri:

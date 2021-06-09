@@ -11,16 +11,16 @@
   delay: 10
 
 - name: send notification
-  community.general.slack:
+  slack:
     token: "{{slack_token}}"
     attachments:
-      - text: "{{custom_text|default(text)}}"
+      - text: "{{custom_text | default(text)}}"
         title: "{{custom_title | default(title)}}"
-        color: "good",
-        footer: "icdc devops",
-        ts: "{[ansible_date_time.epoch }}",
+        color: "good"
+        footer: "icdc devops"
+        ts: "{[ansible_date_time.epoch }}"
         mrkdwn_in: "{{mkdown}}"
-        fallback: "File Service Monitor",
+        fallback: "File Service Monitor"
 
 # - name: show output
 #   debug:

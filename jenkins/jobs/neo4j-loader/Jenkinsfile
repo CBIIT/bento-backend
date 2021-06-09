@@ -19,7 +19,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'demo,gdc,dev,qa,perf,prod,icdc' )
+        value: 'demo,gdc,dev,qa,perf,prod,icdc,ctdc' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -105,6 +105,14 @@ pipeline {
               case "icdc":
                 withCredentials([usernamePassword(credentialsId: 'icdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   env.NEO4J_IP        = "${NEO4J_ICDC_IP}"
+                  env.S3_BUCKET       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.DUMP_FILE       = "${params.DumpFileName}"
+                }
+			  break
+              case "ctdc":
+                withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${NEO4J_CTDC_IP}"
                   env.S3_BUCKET       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.DUMP_FILE       = "${params.DumpFileName}"

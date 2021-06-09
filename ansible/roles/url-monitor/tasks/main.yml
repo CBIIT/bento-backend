@@ -1,4 +1,6 @@
 ---
+- name: install dependencies
+  command: ansible-galaxy collection install community.general
 # tasks file for url-monitor
 - name: "check {{app_name | default(name)}} for availability"
   uri:
@@ -10,17 +12,17 @@
   retries: 100
   delay: 10
 
-- name: send notification
-  slack:
-    token: "{{slack_token}}"
-    attachments:
-      - text: "{{custom_text | default(text)}}"
-        title: "{{custom_title | default(title)}}"
-        color: "good"
-        footer: "icdc devops"
-        ts: "{[ansible_date_time.epoch }}"
-        mrkdwn_in: "{{mkdown}}"
-        fallback: "File Service Monitor"
+# - name: send notification
+#   slack:
+#     token: "{{slack_token}}"
+#     attachments:
+#       - text: "{{custom_text | default(text)}}"
+#         title: "{{custom_title | default(title)}}"
+#         color: "good"
+#         footer: "icdc devops"
+#         ts: "{[ansible_date_time.epoch }}"
+#         mrkdwn_in: "{{mkdown}}"
+#         fallback: "File Service Monitor"
 
 # - name: show output
 #   debug:

@@ -39,7 +39,7 @@ pipeline {
               playbook: '${WORKSPACE}/icdc-devops/ansible/file-monitor.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						  extraVars: [
-                       		slack_token: ${SLACK_TOKEN}
+                       		slack_token: "${SLACK_TOKEN}"
                          ],
 						  colorized: true
               )

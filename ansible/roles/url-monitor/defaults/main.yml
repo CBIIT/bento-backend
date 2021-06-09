@@ -2,5 +2,5 @@
 # defaults file for url-monitor
 name: default
 url: http://localhost
-title: "{{item.tier}} Files Microservice URL Status"
-text: "Current Status of {{item.url}} is "
+title: "{{item.value.tier}} Files Microservice URL Status"
+text: "Current Status of {{item.value.url}} is "

@@ -1,6 +1,7 @@
 ---
 # vars file for cicd
 platform: aws
+stack_name: ppdc-otp
 tier: "{{ lookup('env','TIER') }}"
 version: "{{ lookup('env','VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

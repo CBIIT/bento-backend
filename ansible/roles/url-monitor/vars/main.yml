@@ -1,2 +1,5 @@
 ---
 # vars file for url-monitor
+mkdown:
+  - footer
+  - title

@@ -19,7 +19,7 @@
         color: "good",
         footer: "icdc devops",
         ts: "{[ansible_date_time.epoch }}",
-        mrkdwn_in: ["footer", "title"]
+        mrkdwn_in: "{{mkdown}}"
         fallback: "File Service Monitor",
 
 # - name: show output

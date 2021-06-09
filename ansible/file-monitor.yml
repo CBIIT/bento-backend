@@ -6,10 +6,20 @@
 
   vars:
     - urls:
-        - https://caninecommons-dev.cancer.gov/api/files/ping
-        - https://caninecommons-qa.cancer.gov/api/files/ping
-        - https://caninecommons-stage.cancer.gov/api/files/ping
-        - https://caninecommons.cancer.gov/api/files/ping
+        - dev:
+            tier: Dev
+            url: https://caninecommons-dev.cancer.gov/api/files/ping
+
+        - qa: 
+            tier: QA
+            url: https://caninecommons-qa.cancer.gov/api/files/ping
+        - stage:
+            tier: Stage
+            url: https://caninecommons-stage.cancer.gov/api/files/ping
+
+        - prod:
+            tier: Prod
+            url: https://caninecommons.cancer.gov/api/files/ping
  
   tasks:
     - name: get url status

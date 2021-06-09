@@ -1,8 +1,8 @@
 ---
 # tasks file for url-monitor
-- name: "check {{app_name | default(default_app_name)}} for availability"
+- name: "check {{app_name | default(name)}} for availability"
   uri:
-   url: "{{item | default(default_url)}}"
+   url: "{{item | default(url)}}"
    follow_redirects: none
    method: GET
   register: result

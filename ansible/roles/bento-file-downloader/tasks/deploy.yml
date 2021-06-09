@@ -44,7 +44,7 @@
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
-          value: "{{stack_name}}-{{tier}}file-downloader-{{ansible_hostname}}"
+          value: "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}"
       portMappings:
       - containerPort: "8081"
         hostPort: "8081"

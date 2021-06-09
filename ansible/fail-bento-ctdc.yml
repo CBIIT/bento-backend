@@ -1,0 +1,11 @@
+---
+- name: deploy stage of bento pipeline
+  hosts: ctdc-{{tier}}
+  gather_facts: yes
+    
+  tasks:
+    - name: fail bento-ctdc deployment
+      include_role:
+        name: bento-ctdc
+        tasks_from: fail-build
+  

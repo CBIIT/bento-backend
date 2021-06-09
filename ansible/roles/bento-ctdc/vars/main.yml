@@ -1,0 +1,60 @@
+---
+# vars file for cicd
+#env_file_home: /local/content/docker
+#tls_hostname: "{{ lookup('env','TLS_HOSTNAME') }}"
+#fence_id: "{{ lookup('env','FENCE_ID') }}"
+#home: /local/content/docker
+#dev_alb_dns_name: internal-dev-a-appli-caninedata-8uhlkjyn-1830173970.us-east-1.elb.amazonaws.com
+#frontend_url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/{% else %}https://caninecommons-{{ tier }}.cancer.gov/{% endif %}" 
+
+workspace: "{{ lookup('env','WORKSPACE') }}"
+tier: "{{ lookup('env','TIER') }}"
+platform: "cloudone"
+app_name: ctdc-{{ platform }}-{{ tier }}
+region: us-east-1
+
+# redis config
+enable_redis: 'true'
+use_cluster: 'false'
+redis_host: 
+  dev: "10.208.2.75"
+  qa: "10.208.10.169"
+  stage: "10.208.18.154"
+  prod: "10.208.26.156"
+  demo: "10.208.6.182"
+redis_password: ""
+redis_port: 6379
+
+# versions
+frontend_git_tag: "{{ lookup('env','FRONTEND_GIT_TAG') }}"
+frontend_version: "{{ lookup('env','FE_VERSION') }}"
+backend_git_tag: "{{ lookup('env','BACKEND_GIT_TAG') }}"
+backend_version: "{{ lookup('env','BE_VERSION') }}"
+bento_api_version: {{ backend_version }}
+downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+
+# docker
+docker_host: "{{ lookup('env','DOCKER_HOST') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+
+# neo4j
+neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+
+# monitoring
+newrelic_license_key: "{{ lookup('env','NEWRELIC_LIC_KEY')}}"
+sumo_access_id: "{{ lookup('env','SUMO_ACCESS_ID')}}"
+sumo_access_key: "{{ lookup('env','SUMO_ACCESS_KEY')}}"
+syslog_host: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
+
+# backend
+schema_file: icdc.graphql
+backend_user_info: https://caninecommons.cancer.gov/fence/login/
+backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{ fence_id }}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
+backend_fence_logout: https://caninecommons.cancer.gov/fence/logout
+backend_content_url: "{% if tier == prod %}https://raw.githubusercontent.com/CBIIT/bento-icdc-frontend/master/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/bento-icdc-frontend/master/src/content/pre-prod/aboutPagesContent.yaml{% endif %}"
+indexd_url: "{{ indexd_url }}"
+backend_google_analytics_id: UA-154442677-1

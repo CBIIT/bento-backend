@@ -1,0 +1,223 @@
+---
+##################################################################################
+
+- name: get backend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}"
+  register: backend_tag
+
+- name: get frontend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{workspace}}/ctdc-frontend"
+  register: frontend_tag
+
+- name: echo backend tag
+  debug:
+    msg: "{{ backend_tag.stdout_lines }}"
+
+- name: echo frontend tag
+  debug:
+    msg: "{{ frontend_tag.stdout_lines }}"
+
+##################################################################################
+
+- name: remove the application_example.properties file 
+  file:
+    path: "{{workspace}}/src/main/resources/application_example.properties"
+    state: absent
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: "{{workspace}}/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: create graphql directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/graphql"
+
+- name: create yaml directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/yaml"
+
+- name: copy schema from frontend to resources
+  template:
+    src: "{{workspace}}/ctdc-frontend/graphql/{{ schema_file }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
+
+- name: verify redis schema file exists
+  stat:
+    path: "{{workspace}}/ctdc-frontend/graphql/{{ redis_schema_file }}"
+  register: redis_schema
+
+- name: copy redis schema from frontend to resources
+  template:
+    src: "{{workspace}}/icdc-frontend/graphql/{{ redis_schema_file }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ redis_schema_file }}"
+  when: redis_schema.stat.exists
+
+- name: verify redis init queries file exists
+  stat:
+    path: "{{workspace}}/ctdc-frontend/yaml/{{ redis_init_queries_file }}"
+  register: redis_queries
+
+- name: copy redis init queries from frontend to resources
+  template:
+    src: "{{workspace}}/icdc-frontend/yaml/{{ redis_init_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ redis_init_queries_file }}"
+  when: redis_queries.stat.exists
+
+- name: verify test queries file exists
+  stat:
+    path: "{{workspace}}/ctdc-frontend/yaml/{{ test_queries_file }}"
+  register: test_queries
+
+- name: copy test queries from frontend to resources
+  template:
+    src: "{{workspace}}/icdc-frontend/yaml/{{ test_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
+  when: test_queries.stat.exists
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+- name: copy Bento-0.0.1.war to api.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+- name: log into ncidockerhub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+    registry: https://ncidockerhub.nci.nih.gov
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+
+- name: build cbiitssrepo/ctdc-backend image
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-ctdc-dockerfile"
+      pull: yes
+      nocache: yes
+    name: ncidockerhub.nci.nih.gov/ctdc/ctdc-backend
+    tag: "{{backend_version}}"
+    push: yes
+    force_source: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+- name: Add tag latest to cbiitssrepo/ctdc-backend image
+  docker_image:
+    name: "ncidockerhub.nci.nih.gov/ctdc/ctdc-backend:{{backend_version}}"
+    repository: ncidockerhub.nci.nih.gov/ctdc/ctdc-backend:latest
+    force_tag: yes
+    push: yes
+    source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+- name: remove .env
+  file:
+    state: absent
+    path: "{{workspace}}/ctdc-frontend/.env"
+
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
+    dest: '{{workspace}}/ctdc-frontend/nginx.conf'
+
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{workspace}}/ctdc-frontend/nginx-entrypoint.sh"
+    mode: 0755
+
+- name: run npm install in {{workspace}}/ctdc-frontend/
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/ctdc-frontend"
+  loop:
+    - npm install npm@latest -g
+    - npm install
+    - npm run build
+
+- name: copy env to dist
+  copy:
+    # remote_src: yes
+    src: inject.template.js
+    dest: "{{workspace}}/ctdc-frontend/dist/inject.template.js"
+    mode: 0755
+          
+- name: build cbiitssrepo/ctdc-frontend image
+  docker_image:
+    build:
+      path: "{{workspace}}/ctdc-frontend"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-ctdc-dockerfile"
+      pull: yes
+      nocache: yes
+    name: ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend
+    tag: "{{frontend_version}}"
+    push: yes
+    force_source: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+- name: Add tag latest to cbiitssrepo/ctdc-frontend image
+  docker_image:
+    name: "ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend:{{frontend_version}}"
+    repository: ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend:latest
+    force_tag: yes
+    push: yes
+    source: local
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"
+
+- name: build cbiitssrepo/ctdc-filedownloader image
+  docker_image:
+    build:
+      path: "{{workspace}}/bento-files"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/filedownload-dockerfile"
+      pull: yes
+      nocache: yes
+    name: ncidockerhub.nci.nih.gov/ctdc/ctdc-filedownloader
+    tag: "{{file_version}}"
+    push: yes
+    force_source: yes
+    source: build
+    tls: yes
+    ca_cert: /local/home/commonsdocker/.docker/ca.pem
+    client_cert: /local/home/commonsdocker/.docker/jenkinscert.pem
+    client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
+    tls_hostname: "{{tls_hostname}}"
+    docker_host: "{{docker_host}}"

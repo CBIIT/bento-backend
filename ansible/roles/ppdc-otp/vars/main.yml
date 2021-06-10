@@ -1,6 +1,7 @@
 ---
 # vars file for cicd
 platform: aws
+stack_name: ppdc-otp
 tier: "{{ lookup('env','TIER') }}"
 version: "{{ lookup('env','VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
@@ -16,5 +17,6 @@ app_name: ppdc-otg-{{platform}}-{{tier}
 frontend_version: "{{version}}"
 neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 neo4j_bearer: "{{ lookup('env','BEARER') }}"
+slick_clickhouse_url: "{{ lookup('env','SLICK_CLICKHOUSE_URL') }}"
 
 # hostname: "{{ansible_fqdn}}"

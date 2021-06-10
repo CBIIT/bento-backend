@@ -96,6 +96,12 @@
     - { regexp: '^#dbms.ssl.policy.bolt.private_key=private.key', line: 'dbms.ssl.policy.bolt.private_key=neo4j.key' }
     - { regexp: '^#dbms.ssl.policy.bolt.public_certificate=public.crt', line: 'dbms.ssl.policy.bolt.public_certificate=neo4j.cert' }
     - { regexp: '^#dbms.ssl.policy.bolt.client_auth=NONE', line: 'dbms.ssl.policy.bolt.client_auth=NONE' }
+    - metrics.enabled=true
+    - metrics.neo4j.enabled=true
+    - metrics.neo4j.tx.enabled=true
+    - metrics.neo4j.pagecache.enabled=true
+    - metrics.neo4j.counts.enabled=true
+    - metrics.neo4j.network.enabled=true
     #- { regexp: '^#dbms.backup.enabled=true', line: 'dbms.backup.enabled=true' }
     #- { regexp: '^#dbms.logs.query.page_logging_enabled=true', line: 'dbms.logs.query.page_logging_enabled=true' }
     #- { regexp: '^#dbms.logs.security.level=INFO', line: 'dbms.logs.security.level=INFO' }

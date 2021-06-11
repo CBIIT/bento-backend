@@ -42,7 +42,7 @@
     state: stopped
 
 - name: load neo4j dumpfile
-  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --database neo4j --force
+  command: neo4j-admin load --from {{remote_workspace}}/neo4j.dump --force
   become_user: neo4j
   register: loader
 

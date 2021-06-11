@@ -36,18 +36,18 @@ resource "aws_route53_record" "lower_tiers_records" {
   }
 }
 
-//resource "aws_route53_record" "api" {
-//  count =  var.env ==  "prod" ? 0:1
-//  name = "api-${var.env}"
-//  type = "A"
-//  zone_id = data.aws_route53_zone.zone.zone_id
-//  alias {
-//    evaluate_target_health = false
-//    name = module.alb.alb_dns_name
-//    zone_id = module.alb.alb_zone_id
-//  }
-//}
-//
+resource "aws_route53_record" "api" {
+  count =  var.env ==  "prod" ? 0:1
+  name = "api-${var.env}"
+  type = "A"
+  zone_id = data.aws_route53_zone.zone.zone_id
+  alias {
+    evaluate_target_health = false
+    name = module.alb.alb_dns_name
+    zone_id = module.alb.alb_zone_id
+  }
+}
+
 //resource "aws_route53_record" "api_prod" {
 //  count =  var.env ==  "prod" ? 1 : 0
 //  name = "api"

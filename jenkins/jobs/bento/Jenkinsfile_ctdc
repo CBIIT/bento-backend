@@ -49,6 +49,10 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1' )
 	booleanParam(
+		defaultValue: true,
+		description: 'Use the Redis cache',
+		name: 'Use_Redis')
+	booleanParam(
 		defaultValue: false,
 		description: 'Flush the Redis cache',
 		name: 'Flush_Redis')
@@ -327,7 +331,8 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                    enable_redis_filter: "${params.Enable_Redis_Filter}",
+                    enable_redis: "${params.Use_Redis}",
+					enable_redis_filter: "${params.Enable_Redis_Filter}",
                     ],
 					colorized: true)
   			}

@@ -88,12 +88,12 @@ pipeline {
           script {
             switch("${params.Environment}") {
                 case "dev":
-                withCredentials([usernamePassword(credentialsId: 'ctdc_dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                withCredentials([usernamePassword(credentialsId: 'ctdc_dev_neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP        = "${CTDC_NEO4J_DEV_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.NEO4J_PASSWORD  = "${NEO4J_PASSWORD}"
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "${params.ProjectName}"
                   env.SPLIT           = "${params.SplitTransactions}"
@@ -196,7 +196,8 @@ pipeline {
   }
   post {
     always {
-	  cleanWs()
+      sh "echo hello"
+	  // cleanWs()
     }
   }
 }

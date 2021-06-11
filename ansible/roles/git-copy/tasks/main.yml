@@ -37,7 +37,7 @@
     warn: false
 
 - name: commit changes 
-  command: git commit -m "copy content from {{copy_from}} to {{copy_to}} on {{git_date}}"
+  command: git commit -m "copy content from {{copy_from}} to {{copy_to}} on {{git_date}}" --allow-empty
   args:
     chdir: "{{ git_home }}"
     warn: false

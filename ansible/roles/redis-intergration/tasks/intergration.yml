@@ -1,0 +1,11 @@
+---
+- name: install redis integration
+  yum:
+    name:
+      - nri-redis
+
+- name: copy redis config file to /etc/newrelic-infra/integrations.d/
+  template:
+    src: redis-config.yml.j2
+    dest: /etc/newrelic-infra/integrations.d/redis-config.yml
+  notify: restart newrelic

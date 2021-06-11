@@ -1,0 +1,15 @@
+---
+# handlers file for redis-intergration
+- name: restart redis
+  service: 
+    name: redis-server 
+    state: restarted 
+    enabled: yes
+
+- name: restart newrelic
+  service: 
+    name: newrelic-infra 
+    state: restarted 
+    enabled: yes
+      
+      

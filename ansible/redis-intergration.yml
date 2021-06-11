@@ -1,0 +1,11 @@
+---
+- name: check file microservice status
+  hosts: localhost
+  gather_facts: yes
+  connection: local
+ 
+  tasks:
+    - name: setup redis intergration
+      include_role:
+        name: url-monitor
+      

@@ -21,7 +21,7 @@ instances:
       # Unix sockets.
       use_unix_socket: true
     labels:
-      environment: production
+      environment: {{env}}
 
   - name: redis-inventory
     command: inventory
@@ -42,5 +42,5 @@ instances:
       # Unix sockets.
       use_unix_socket: true
     labels:
-      environment: {{tier}}
+      environment: {{env}}
 ~                                 

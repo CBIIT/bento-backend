@@ -9,7 +9,7 @@
     
 - name: start and enable redis
   service: 
-    name: redis-server 
+    name: redis
     state: started 
     enabled: yes
     

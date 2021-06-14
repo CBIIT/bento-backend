@@ -59,6 +59,7 @@ pipeline {
               playbook: '${WORKSPACE}/icdc-devops/ansible/redis-intergration.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             	credentialsId: 'commonsdocker',
+            	hostKeyChecking: false,
 						  extraVars: [
                        		env: "${params.Environment}",
                        		newrelic_license_key: "${NEWRELIC_LIC_KEY}",

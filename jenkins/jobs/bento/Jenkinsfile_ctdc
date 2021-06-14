@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'ctdc', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'ctdc' )
+        value: 'dev' )
     extendedChoice( 
         name: 'Region', 
         defaultValue: 'us-east-1', 

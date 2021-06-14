@@ -195,7 +195,7 @@ pipeline {
 				relativeTargetDir: 'bento-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
+				[[url: 'https://github.com/CBIIT/ctdc-frontend']]])
 
   			checkout( poll: false, 
 				changelog:false,
@@ -258,6 +258,7 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
+						project: 'ctdc',
                         redis_schema_file: "${params.Redis_Schema_File}",
 						redis_init_queries_file: "${params.Redis_Queries_File}",
                         test_queries_file: "${params.Test_Queries_File}",
@@ -328,9 +329,10 @@ pipeline {
 			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy-ctdc.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
+					project: 'ctdc',
                     enable_redis: "${params.Use_Redis}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}",
                     ],

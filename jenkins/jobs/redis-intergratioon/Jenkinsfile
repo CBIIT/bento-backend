@@ -1,0 +1,82 @@
+
+pipeline { 
+	agent {
+		node {
+			label 'docker-maven'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod' )
+    extendedChoice( 
+        name: 'ProjectName', 
+        defaultValue: 'icdc', 
+        description: 'Choose aws region to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'icdc,bento' )
+    string(
+	    defaultValue: '127.0.0.1',
+			description: 'IP or Hostname of the redis server',
+			name: 'Hostname')
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+    
+  	stage('check status'){
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY')])
+        {
+        	sh "echo -n [${params.Environment}] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+        	sh "echo -n ${params.Hostname} >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+          ansiblePlaybook(  			
+              playbook: '${WORKSPACE}/icdc-devops/ansible/redis-intergration.yml', 
+            	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            	credentialsId: 'commonsdocker',
+						  extraVars: [
+                       		env: "${params.Environment}",
+                       		newrelic_license_key: "${NEWRELIC_LIC_KEY}",
+                       		project: "${params.ProjectName}"
+                         ],
+						  colorized: true
+              )
+ 				}
+ 			}
+ 		}
+  	}
+  }
+  post {
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

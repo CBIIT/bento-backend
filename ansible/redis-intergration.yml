@@ -1,11 +1,11 @@
 ---
 - name: check file microservice status
-  hosts: localhost
+  hosts: "{{env}}"
   gather_facts: yes
-  connection: local
+  become: yes
  
   tasks:
-    - name: setup redis intergration
+    - name: get url status
       include_role:
-        name: url-monitor
-      
+        name: redis-intergration
+    

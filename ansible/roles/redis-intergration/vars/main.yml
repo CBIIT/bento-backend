@@ -6,3 +6,4 @@ newrelic_license_key: "{{ newrelic_license_key }}"
 newrelic_collector_url: "https://gov-infra-api.newrelic.com"
 newrelic_identity_url: "https://gov-identity-api.newrelic.com"
 newrelic_command_channel_url: "https://gov-infrastructure-command-api.newrelic.com"
+

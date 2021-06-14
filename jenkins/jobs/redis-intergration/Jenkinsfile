@@ -55,7 +55,7 @@ pipeline {
         {
         	sh "echo -e [${params.Environment}] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
         	sh "echo -e ${params.Hostname}  >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-        	sh "cat ${WORKSPACE}/icdc-devops/ansible/hosts"
+   
           ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/redis-intergration.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

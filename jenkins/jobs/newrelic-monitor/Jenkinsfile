@@ -97,27 +97,10 @@ pipeline {
 
           '''
 		
-		}
-		
-		script {
-		
-  		  echo "Project:  env.PROJECT"
-		  echo "Tier:  env.TIER"
-		  echo "API_Key:  env.API_KEY"
-		  python3 --version
-		
-		}  
-		
-		script {
-		
-		  sh label: 'Query-Newrelic', script: '''#!/bin/bash
-
-		  echo "Project:  \$PROJECT"
-		  echo "Tier:  \$TIER"
-		  echo "API_Key:  \$API_KEY"
-		  python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY
-
-          '''
+		  sh "echo Project:  $PROJECT"
+		  sh "echo Tier:  $TIER"
+		  sh "echo API_Key:  $API_KEY"
+		  sh "python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY"
 
         }
 

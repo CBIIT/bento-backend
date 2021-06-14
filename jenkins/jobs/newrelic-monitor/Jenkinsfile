@@ -74,12 +74,17 @@ pipeline {
  
   	}
 
+    stage('set-environment'){
+		steps {
+          script {
+            env.PROJECT = "${params.Project}"
+		    env.TIER    = "${params.Tier}"
+		    env.API_KEY = "${params.API_Key}"
+          }
+        }
+    }
+
     stage('Search Newrelic'){
-      environment {
-	    PROJECT = "${params.Project}"
-		TIER    = "${params.Tier}"
-		API_KEY = "${params.API_Key}"
-		}
 	  steps {
         script {
 
@@ -94,10 +99,10 @@ pipeline {
 		  
 		  sh label: 'Query-Newrelic', script: '''#!/bin/bash
 
-		  echo "Project:  ${env.PROJECT}"
-		  echo "Tier:  ${env.TIER}"
-		  echo "API_Key:  ${env.API_KEY}"
-		  python3 monitoring/newrelic/monitor_query.py -p ${env.PROJECT} -t ${env.TIER} -k ${env.API_KEY}
+		  echo "Project:  $PROJECT"
+		  echo "Tier:  ${TIER}"
+		  echo "API_Key:  ${API_KEY}"
+		  python3 monitoring/newrelic/monitor_query.py -p ${PROJECT} -t ${TIER} -k ${API_KEY}
 
           '''
 

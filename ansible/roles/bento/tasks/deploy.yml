@@ -60,7 +60,7 @@
           tag: "{{ app_name }}-backend"
           syslog-format: "rfc5424micro"
     network_mode: bridge
-    family: {{ project }}-{{tier}}-backend
+    family: "{{ project }}-{{tier}}-backend"
     memory: '2048'
     cpu: '512'
     state: present
@@ -104,7 +104,7 @@
           tag: "{{ app_name }}-frontend"
           syslog-format: "rfc5424micro"
     network_mode: bridge
-    family: {{ project }}-{{tier}}-frontend
+    family: "{{ project }}-{{tier}}-frontend"
     state: present
     memory: '512'
     cpu: '128'
@@ -132,7 +132,7 @@
       - containerPort: "514"
         hostPort: "514"
     network_mode: bridge
-    family: {{ project }}-{{tier}}-sumo_syslog
+    family: "{{ project }}-{{tier}}-sumo_syslog"
     state: present
     memory: '512'
     cpu: '128'
@@ -165,7 +165,7 @@
       host:
         sourcePath: /var/run/docker.sock
     network_mode: bridge
-    family: {{ project }}-{{tier}}-sumo_docker
+    family: "{{ project }}-{{tier}}-sumo_docker"
     state: present
     memory: '512'
     cpu: '128'
@@ -206,7 +206,7 @@
       host:
         sourcePath: /
     network_mode: bridge
-    family: {{ project }}-{{tier}}-nr_docker
+    family: "{{ project }}-{{tier}}-nr_docker"
     state: present
     memory: '128'
     cpu: '128'
@@ -221,31 +221,31 @@
 
 - name: query task definition - bento frontend
   ecs_taskdefinition_info:
-    task_definition: {{ project }}-{{tier}}-frontend
+    task_definition: "{{ project }}-{{tier}}-frontend"
     region: "{{region}}" 
   register: task_frontend
 
 - name: query task definition - bento backend
   ecs_taskdefinition_info:
-    task_definition: {{ project }}-{{tier}}-backend
+    task_definition: "{{ project }}-{{tier}}-backend"
     region: "{{region}}" 
   register: task_backend
 
 - name: query task definition - sumologic syslog
   ecs_taskdefinition_info:
-    task_definition: {{ project }}-{{tier}}-sumo_syslog
+    task_definition: "{{ project }}-{{tier}}-sumo_syslog"
     region: "{{region}}" 
   register: task_sumo_syslog
 
 - name: query task definition - sumologic docker
   ecs_taskdefinition_info:
-    task_definition: {{ project }}-{{tier}}-sumo_docker
+    task_definition: "{{ project }}-{{tier}}-sumo_docker"
     region: "{{region}}" 
   register: task_sumo_docker
 
 - name: query task definition - newrelic docker
   ecs_taskdefinition_info:
-    task_definition: {{ project }}-{{tier}}-nr_docker
+    task_definition: "{{ project }}-{{tier}}-nr_docker"
     region: "{{region}}" 
   register: task_nr_docker
 
@@ -257,40 +257,40 @@
 
 - name: query backend service
   ecs_service_info:
-    cluster: {{ project }}-{{tier}}
-    service: {{ project }}-{{tier}}-backend
+    cluster: "{{ project }}-{{tier}}"
+    service: "{{ project }}-{{tier}}-backend"
     details: true
     region: "{{region}}"
   register: service_backend
 
 - name: query ecs service
   ecs_service_info:
-    cluster: {{ project }}-{{tier}}
-    service: {{ project }}-{{tier}}-frontend
+    cluster: "{{ project }}-{{tier}}"
+    service: "{{ project }}-{{tier}}-frontend"
     details: true
     region: "{{region}}"
   register: service_frontend
 
 - name: query sumologic syslog service
   ecs_service_info:
-    cluster: {{ project }}-{{tier}}
-    service: {{ project }}-{{tier}}-sumo_syslog
+    cluster: "{{ project }}-{{tier}}"
+    service: "{{ project }}-{{tier}}-sumo_syslog"
     details: true
     region: "{{region}}"
   register: service_sumo_syslog
 
 - name: query sumologic docker service
   ecs_service_info:
-    cluster: {{ project }}-{{tier}}
-    service: {{ project }}-{{tier}}-sumo_docker
+    cluster: "{{ project }}-{{tier}}"
+    service: "{{ project }}-{{tier}}-sumo_docker"
     details: true
     region: "{{region}}"
   register: service_sumo_docker
 
 - name: query newrelic docker service
   ecs_service_info:
-    cluster: {{ project }}-{{tier}}
-    service: {{ project }}-{{tier}}-nr_docker
+    cluster: "{{ project }}-{{tier}}"
+    service: "{{ project }}-{{tier}}-nr_docker"
     details: true
     region: "{{region}}"
   register: service_nr_docker
@@ -320,8 +320,8 @@
 - name: update sumologic syslog service
   ecs_service:
     state: present
-    name: {{ project }}-{{tier}}-sumo_syslog
-    cluster: {{ project }}-{{tier}}
+    name: "{{ project }}-{{tier}}-sumo_syslog"
+    cluster: "{{ project }}-{{tier}}"
     task_definition: "{{task_sumo_syslog_name}}"
     force_new_deployment: no
     deployment_configuration:
@@ -334,8 +334,8 @@
 - name: update sumologic docker service
   ecs_service:
     state: present
-    name: {{ project }}-{{tier}}-sumo_docker
-    cluster: {{ project }}-{{tier}}
+    name: "{{ project }}-{{tier}}-sumo_docker"
+    cluster: "{{ project }}-{{tier}}"
     task_definition: "{{task_sumo_docker_name}}"
     force_new_deployment: no
     deployment_configuration:
@@ -348,8 +348,8 @@
 - name: update newrelic docker service
   ecs_service:
     state: present
-    name: {{ project }}-{{tier}}-nr_docker
-    cluster: {{ project }}-{{tier}}
+    name: "{{ project }}-{{tier}}-nr_docker"
+    cluster: "{{ project }}-{{tier}}"
     task_definition: "{{task_nr_docker_name}}"
     force_new_deployment: no
     deployment_configuration:
@@ -362,8 +362,8 @@
 - name: update backend service
   ecs_service:
     state: present
-    name: {{ project }}-{{tier}}-backend
-    cluster: {{ project }}-{{tier}}
+    name: "{{ project }}-{{tier}}-backend"
+    cluster: "{{ project }}-{{tier}}"
     task_definition: "{{task_backend_name}}:{{backend_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes
@@ -378,8 +378,8 @@
 - name: update frontend service
   ecs_service:
     state: present
-    name: {{ project }}-{{tier}}-frontend
-    cluster: {{ project }}-{{tier}}
+    name: "{{ project }}-{{tier}}-frontend"
+    cluster: "{{ project }}-{{tier}}"
     task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes

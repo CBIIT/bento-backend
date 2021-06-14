@@ -371,7 +371,7 @@ pipeline {
                     env: "${params.Environment}",
 					app_type: 'database',
 					app_name: 'neo4j',
-                    project: 'bento',
+                    project: 'ctdc',
 					log_path: '/var/lib/neo4j/logs/*.log',
                     ],
             		colorized: true)

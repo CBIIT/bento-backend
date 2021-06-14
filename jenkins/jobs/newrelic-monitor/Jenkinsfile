@@ -87,13 +87,14 @@ pipeline {
 
 		  yum -y install python3 curl
 		  
+		  cd monitoring/newrelic
 		  pip3 install -r requirements.txt
 
           '''
 		  
 		  sh label: 'Query-Newrelic', script: '''#!/bin/bash
 
-		  python3 monitor_query.py -p ${PROJECT} -t ${TIER} -k ${API_KEY}
+		  python3 monitoring/newrelic/monitor_query.py -p ${PROJECT} -t ${TIER} -k ${API_KEY}
 
           '''
 

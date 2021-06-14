@@ -5,31 +5,29 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "dev"
 
-- name: set qa environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "qa"
+#- name: set qa environment facts
+#  set_fact:
+#    neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
+#    bearer: "{{ lookup('env','BEARER') }}"
+#  when: tier == "qa"
 
-- name: set stage environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_PERF_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "perf"
+#- name: set stage environment facts
+#  set_fact:
+#    neo4j_ip: "{{ lookup('env','NEO4J_PERF_IP') }}"
+#    bearer: "{{ lookup('env','BEARER') }}"
+#  when: tier == "perf"
 
-- name: set prod environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "prod"
+#- name: set prod environment facts
+#  set_fact:
+#    neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
+#    bearer: "{{ lookup('env','BEARER') }}"
+#  when: tier == "prod"
 
-#### bento-icdc changes #########################################################################################################
-- name: set icdc environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "icdc"
-#################################################################################################################################
+#- name: set icdc environment facts
+#  set_fact:
+#    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_IP') }}"
+#    bearer: "{{ lookup('env','BEARER') }}"
+#  when: tier == "icdc"
 
 - name: checkout specified commit - backend
   shell: "git checkout {{ backend_commit_id }}"
@@ -39,7 +37,7 @@
 - name: checkout specified commit - frontend
   shell: "git checkout {{ frontend_commit_id }}"
   args:
-    chdir: "{{ workspace }}/bento-frontend"
+    chdir: "{{ workspace }}/{{ project }}-frontend"
 
 - name: get backend commit ID
   shell: git rev-parse HEAD
@@ -50,7 +48,7 @@
 - name: get frontend commit ID
   shell: git rev-parse HEAD
   args:
-    chdir: "{{ workspace }}/bento-frontend"
+    chdir: "{{ workspace }}/{{ project }}-frontend"
   register: frontend_id
 
 - name: echo backend id
@@ -83,39 +81,39 @@
 
 - name: copy schema from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/graphql/{{ schema_file }}"
+    src: "{{workspace}}/{{ project }}-frontend/graphql/{{ schema_file }}"
     dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
 
 - name: verify redis schema file exists
   stat:
-    path: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"
+    path: "{{workspace}}/{{ project }}-frontend/graphql/{{ redis_schema_file }}"
   register: redis_schema
 
 - name: verify redis init queries file exists
   stat:
-    path: "{{workspace}}/bento-frontend/yaml/{{ redis_init_queries_file }}"
+    path: "{{workspace}}/{{ project }}-frontend/yaml/{{ redis_init_queries_file }}"
   register: redis_queries
 
 - name: verify test queries file exists
   stat:
-    path: "{{workspace}}/bento-frontend/yaml/{{ test_queries_file }}"
+    path: "{{workspace}}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
   register: test_queries
 
 - name: copy redis schema from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"
+    src: "{{workspace}}/{{ project }}-frontend/graphql/{{ redis_schema_file }}"
     dest: "{{workspace}}/src/main/resources/graphql/{{ redis_schema_file }}"
   when: redis_schema.stat.exists
 
 - name: copy redis init queries from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/yaml/{{ redis_init_queries_file }}"
+    src: "{{workspace}}/{{ project }}-frontend/yaml/{{ redis_init_queries_file }}"
     dest: "{{workspace}}/src/main/resources/yaml/{{ redis_init_queries_file }}"
   when: redis_queries.stat.exists
 
 - name: copy test queries from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/yaml/{{ test_queries_file }}"
+    src: "{{workspace}}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
     dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
@@ -135,23 +133,23 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/bento-backend image
+- name: build cbiitssrepo/{{ project }}-backend image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-backend
+    name: cbiitssrepo/{{ project }}-backend
     tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-backend image
+- name: Add tag latest to cbiitssrepo/{{ project }}-backend image
   docker_image:
-    name: "cbiitssrepo/bento-backend:{{backend_version}}-{{build_number}}"
-    repository: cbiitssrepo/bento-backend:latest
+    name: "cbiitssrepo/{{ project }}-backend:{{backend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ project }}-backend:latest
     force_tag: yes
     push: yes
     source: local
@@ -159,27 +157,27 @@
 - name: remove .env
   file:
     state: absent
-    path: "{{workspace}}/bento-frontend/.env"
+    path: "{{workspace}}/{{ project }}-frontend/.env"
 
 - name: copy  nginx conf
   copy:
     remote_src: yes
     src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
-    dest: '{{workspace}}/bento-frontend/nginx.conf'
+    dest: '{{workspace}}/{{ project }}-frontend/nginx.conf'
 
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/bento-frontend/nginx-entrypoint.sh"
+    dest: "{{workspace}}/{{ project }}-frontend/nginx-entrypoint.sh"
     mode: 0755
-# - name: copy environment file to {{workspace}}/bento-frontend
+# - name: copy environment file to {{workspace}}/{{ project }}-frontend
 #   template:
 #     src: env.j2
-#     dest: "{{workspace}}/bento-frontend/.env"
-- name: run npm install in {{workspace}}/bento-frontend/
+#     dest: "{{workspace}}/{{ project }}-frontend/.env"
+- name: run npm install in {{workspace}}/{{ project }}-frontend/
   command: "{{item}}"
   args:
-    chdir: "{{workspace}}/bento-frontend"
+    chdir: "{{workspace}}/{{ project }}-frontend"
   loop:
     #  
     - npm install
@@ -189,26 +187,26 @@
   copy:
     # remote_src: yes
     src: inject.template.js
-    dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
+    dest: "{{workspace}}/{{ project }}-frontend/dist/inject.template.js"
     mode: 0755
           
-- name: build cbiitssrepo/bento-frontend image
+- name: build cbiitssrepo/{{ project }}-frontend image
   docker_image:
     build:
-      path: "{{workspace}}/bento-frontend"
+      path: "{{workspace}}/{{ project }}-frontend"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/bento-frontend
+    name: cbiitssrepo/{{ project }}-frontend
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/bento-frontend image
+- name: Add tag latest to cbiitssrepo/{{ project }}-frontend image
   docker_image:
-    name: "cbiitssrepo/bento-frontend:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/bento-frontend:latest
+    name: "cbiitssrepo/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ project }}-frontend:latest
     force_tag: yes
     push: yes
     source: local
@@ -217,14 +215,14 @@
 #   uri:
 #     url: http://{{neo4j_ip}}:7474/graphql/idl/
 #     method: POST
-#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/bento-extended.graphql') }}"
+#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/{{ project }}-extended.graphql') }}"
 #     headers:
 #       Accept: "application/json"
 #       Authorization: "{{bearer}}"
 #   register: schema
 
 # - name: post schema
-#   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/bento-backend/src/main/resources/graphql/ctdc.graphql"
+#   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/{{ project }}-backend/src/main/resources/graphql/ctdc.graphql"
 #   register: schema
 
 

@@ -43,5 +43,6 @@ neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 neo4j_bearer: "{{ lookup('env','BEARER') }}"
 neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
 neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+bearer: "{{ lookup('env','BEARER') }}"
 
 # hostname: "{{ansible_fqdn}}"

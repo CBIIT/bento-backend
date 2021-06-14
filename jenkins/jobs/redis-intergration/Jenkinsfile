@@ -53,9 +53,10 @@ pipeline {
  				withCredentials([string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY')])
         {
         	sh """
-        	echo  [${params.Environment}] >> ${WORKSPACE}/icdc-devops/ansible/hosts
-          echo  ${params.Hostname}  ansible_ssh_common_args='-o StrictHostKeyChecking=no' >> ${WORKSPACE}/icdc-devops/ansible/hosts
-        	sh cat ${WORKSPACE}/icdc-devops/ansible/hosts
+        	cat <<EOF >> ${WORKSPACE}/icdc-devops/ansible/hosts
+        	[${params.Environment}]
+          ${params.Hostname}  ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+        	EOF 
         	"""
           ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/redis-intergration.yml', 

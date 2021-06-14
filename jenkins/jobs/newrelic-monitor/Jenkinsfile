@@ -97,6 +97,12 @@ pipeline {
 
           '''
 		  
+		  echo "Project:  env.PROJECT"
+		  echo "Tier:  env.TIER"
+		  echo "API_Key:  env.API_KEY"
+		  
+		  python3 --version
+		  
 		  sh label: 'Query-Newrelic', script: '''#!/bin/bash
 
 		  echo "Project:  \$PROJECT"

@@ -54,7 +54,7 @@ pipeline {
         {
         	sh """
         	echo -e [${params.Environment}] >> ${WORKSPACE}/icdc-devops/ansible/hosts
-          echo -e ${params.Hostname}  ansible_ssh_common_args='-o StrictHostKeyChecking=no' >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+          echo -e ${params.Hostname}  ansible_ssh_common_args='-o StrictHostKeyChecking=no' >> ${WORKSPACE}/icdc-devops/ansible/hosts
         	sh cat ${WORKSPACE}/icdc-devops/ansible/hosts
         	"""
           ansiblePlaybook(  			

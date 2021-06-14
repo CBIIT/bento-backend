@@ -103,7 +103,7 @@ pipeline {
 				relativeTargetDir: 'icdc-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
+				[[url: 'https://github.com/CBIIT/ctdc-frontend']]])
 
        checkout([$class: 'GitSCM',
         branches: [[name: "${params.File_Tag}"]],
@@ -204,10 +204,11 @@ pipeline {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
           sh "echo ${TLS_HOSTNAME}"
           ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-ctdc.yml', 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                   extraVars: [
-                    file_version: "${params.File_Tag}-${BUILD_NUMBER}",
+                    project: 'ctdc',
+					file_version: "${params.File_Tag}-${BUILD_NUMBER}",
 					redis_schema_file: "${params.Redis_Schema_File}",
 					redis_init_queries_file: "${params.Redis_Queries_File}",
                     test_queries_file: "${params.Test_Queries_File}"
@@ -266,13 +267,13 @@ pipeline {
 			 string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
 			 ]){
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-ctdc.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [
-                    tier: "${params.Environment}",
+					tier: "${params.Environment}",
                     release: "${params.Release}",
-                    project: 'icdc',
+                    project: 'ctdc',
                     frontend_version: "${params.Frontend_Tag}-${BUILD_NUMBER}",
                     backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
                     downloader_version: "${params.File_Tag}-${BUILD_NUMBER}",

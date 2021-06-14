@@ -318,7 +318,7 @@ pipeline {
          ]){
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [

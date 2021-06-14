@@ -38,7 +38,7 @@ pipeline {
 	parameters {
     extendedChoice( 
         name: 'Environment', 
-        defaultValue: 'ctdc', 
+        defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev' )
@@ -221,10 +221,10 @@ pipeline {
         steps {
           script {
             switch("${params.Environment}") {
-              case "icdc":
+              case "dev":
                 withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_CTDC_IP}"
-                  env.TIER  = "ctdc"
+                  env.TIER  = "dev"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 
@@ -233,7 +233,7 @@ pipeline {
               default:
                 withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_CTDC_IP}"
-                  env.TIER  = "ctdc"
+                  env.TIER  = "dev"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 

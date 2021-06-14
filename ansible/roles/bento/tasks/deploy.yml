@@ -5,7 +5,7 @@
 
 ############################################################################################################################
 
-- name: create task definition - backend
+- name: create task definition - {{ project }}-backend
   ecs_taskdefinition:
     containers:
     - name: backend
@@ -67,7 +67,7 @@
     region: "{{region}}"
   register: task_output
 
-- name: create task definition - frontend
+- name: create task definition - {{ project }}-frontend
   ecs_taskdefinition:
     containers:
     - name: frontend
@@ -219,13 +219,13 @@
 
 ############################################################################################################################
 
-- name: query task definition - bento frontend
+- name: query task definition - {{ project }}-{{tier}}-frontend
   ecs_taskdefinition_info:
     task_definition: "{{ project }}-{{tier}}-frontend"
     region: "{{region}}" 
   register: task_frontend
 
-- name: query task definition - bento backend
+- name: query task definition - {{ project }}-{{tier}}-backend
   ecs_taskdefinition_info:
     task_definition: "{{ project }}-{{tier}}-backend"
     region: "{{region}}" 
@@ -255,7 +255,7 @@
 
 ############################################################################################################################
 
-- name: query backend service
+- name: query {{ project }}-{{tier}}-backend service
   ecs_service_info:
     cluster: "{{ project }}-{{tier}}"
     service: "{{ project }}-{{tier}}-backend"
@@ -263,7 +263,7 @@
     region: "{{region}}"
   register: service_backend
 
-- name: query ecs service
+- name: query {{ project }}-{{tier}}-frontend service
   ecs_service_info:
     cluster: "{{ project }}-{{tier}}"
     service: "{{ project }}-{{tier}}-frontend"
@@ -359,7 +359,7 @@
     region: "{{region}}"
   register: service_nr_docker_output
 
-- name: update backend service
+- name: update {{ project }}-{{tier}}-backend service
   ecs_service:
     state: present
     name: "{{ project }}-{{tier}}-backend"
@@ -375,7 +375,7 @@
     region: "{{region}}"
   register: service_backend_output
 
-- name: update frontend service
+- name: update {{ project }}-{{tier}}-frontend service
   ecs_service:
     state: present
     name: "{{ project }}-{{tier}}-frontend"

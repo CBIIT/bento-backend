@@ -192,10 +192,10 @@ pipeline {
 				branches: [[name: "${params.Frontend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-frontend']],
+				relativeTargetDir: 'ctdc-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/ctdc-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
 
   			checkout( poll: false, 
 				changelog:false,

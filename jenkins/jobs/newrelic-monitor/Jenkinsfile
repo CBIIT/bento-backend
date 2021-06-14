@@ -68,7 +68,7 @@ pipeline {
 				[$class: 'PathRestriction', excludedRegions: '*']], 
 				submoduleCfg: [], 
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']])
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
 
         }
  

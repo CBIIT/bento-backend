@@ -94,7 +94,10 @@ pipeline {
 		  
 		  sh label: 'Query-Newrelic', script: '''#!/bin/bash
 
-		  python3 monitoring/newrelic/monitor_query.py -p ${PROJECT} -t ${TIER} -k ${API_KEY}
+		  echo "Project:  $PROJECT"
+		  echo "Tier:  $TIER"
+		  echo "API_Key:  $API_KEY"
+		  python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY
 
           '''
 

@@ -73,11 +73,8 @@ pipeline {
     stage('set-environment'){
 		steps {
           script {
-		    withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
-              env.PROJECT = "${params.Project}"
-		      env.TIER    = "${params.Tier}"
-		      env.API_KEY = "${API_Key}"
-			}
+		    env.PROJECT = "${params.Project}"
+		    env.TIER    = "${params.Tier}"
           }
         }
     }
@@ -95,7 +92,9 @@ pipeline {
 
           '''
 		  
-		  sh "python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY"
+		  withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
+            sh "python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY"    
+	      }
 
         }
 

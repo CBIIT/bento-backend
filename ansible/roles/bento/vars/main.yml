@@ -29,7 +29,7 @@ syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 app_name: bento-{{platform}}-{{tier}}
 
 #### bento-icdc changes #########################################################################################################
-schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif tier == 'ctdc' %}ctdc.graphql{% else %}bento-extended.graphql{% endif %}"
+schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif project == 'ctdc' %}ctdc.graphql{% else %}bento-extended.graphql{% endif %}"
 #################################################################################################################################
 
 frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"

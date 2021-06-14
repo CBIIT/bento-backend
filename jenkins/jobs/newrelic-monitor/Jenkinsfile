@@ -45,10 +45,6 @@ pipeline {
 	    defaultValue: '',
 		description: 'The tier to search for',
 		name: 'Tier')
-	string(
-	    defaultValue: '',
-		description: 'The API key to use',
-		name: 'API_Key')
   }
   
   options {
@@ -77,9 +73,11 @@ pipeline {
     stage('set-environment'){
 		steps {
           script {
-            env.PROJECT = "${params.Project}"
-		    env.TIER    = "${params.Tier}"
-		    env.API_KEY = "${params.API_Key}"
+		    withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
+              env.PROJECT = "${params.Project}"
+		      env.TIER    = "${params.Tier}"
+		      env.API_KEY = "${API_Key}"
+			}
           }
         }
     }
@@ -96,10 +94,7 @@ pipeline {
 		  pip3 install -r requirements.txt
 
           '''
-		
-		  sh "echo Project:  $PROJECT"
-		  sh "echo Tier:  $TIER"
-		  sh "echo API_Key:  $API_KEY"
+		  
 		  sh "python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY"
 
         }

@@ -167,9 +167,10 @@ pipeline {
   	}
     stage('deploy'){
       agent {
-      node {
-        label 'bastion-host'
-      }
+        node {
+          label 'bastion-host'
+        }
+
     }
       environment {
         PPDC_SLACK_URL = "${PPDC_SLACK_URL}"

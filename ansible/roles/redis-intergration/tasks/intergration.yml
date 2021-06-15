@@ -6,6 +6,9 @@
 
 - name: copy redis config file to /etc/newrelic-infra/integrations.d/
   template:
-    src: redis-config.yml.j2
-    dest: /etc/newrelic-infra/integrations.d/redis-config.yml
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  loop:
+    - {src: redis-config.yml.j2,dest: /etc/newrelic-infra/integrations.d/redis-config.yml  }
+    - {src: redis-definition.yml.j2,dest: /var/db/newrelic-infra/newrelic-integrations/redis-definition.yml}
   notify: restart newrelic

@@ -1,10 +1,10 @@
-integration_name: com.newrelic.redis
+integration_name: {{project}}-{{env}}-redis
 
 instances:
   - name: redis-metrics
     command: metrics
     arguments:
-      hostname: "{{ansible_hostname}}"
+      hostname: {{ansible_hostname}}
       port: 6379
       keys: '{"0":["<KEY_1>"],"1":["<KEY_2>"]}'
 

@@ -24,7 +24,7 @@
     name:
       - clickhouse-server 
       - clickhouse-client
-      - elasticsearch
+      - elasticsearch-7.9.0-1.x86_64
 
 - name: reload systemd config
   systemd: daemon_reload=yes

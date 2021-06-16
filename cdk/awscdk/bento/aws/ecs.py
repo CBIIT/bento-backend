@@ -1,5 +1,6 @@
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ec2 as ec2
+from aws_cdk import core as cdk
 
 class ECSResources:
   def createResources(self, ns):
@@ -11,6 +12,7 @@ class ECSResources:
     
     self.bentoECS.add_capacity('bento-ecs-instance',
         instance_type=ec2.InstanceType(self.config[ns]['fronted_instance_type']),
+        task_drain_time=cdk.Duration.minutes(0),
         min_capacity=1,
         max_capacity=1)
 

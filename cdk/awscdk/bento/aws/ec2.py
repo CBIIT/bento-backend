@@ -1,0 +1,18 @@
+from aws_cdk import aws_ec2 as ec2
+
+class EC2Resources:
+  def createResources(self, ns):
+
+    # Database EC2 Instance
+    # AMI 
+    neo4j_4 = linux = ec2.MachineImage.generic_linux({
+        "us-east-1": "ami-0d5eaaf9327be9c1b"
+        })
+
+    # Instance
+    self.DBInstance = ec2.Instance(self, 
+        "Database Instance",
+        instance_type=ec2.InstanceType(self.config[ns]['database_instance_type']),
+        machine_image=neo4j_4,
+        vpc = self.bentoVPC,
+        role = self.ecsInstanceRole)

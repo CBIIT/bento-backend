@@ -110,30 +110,17 @@ class IAMResources:
         document=iam.PolicyDocument.from_json(ecsPolicyDocument))
     
     self.ecsInstanceRole.attach_inline_policy(ecsPolicy)
+    self.ecsInstanceRole.add_managed_policy(iam.ManagedPolicy. from_aws_managed_policy_name('service-role/AmazonEC2ContainerServiceforEC2Role'))
     
-#    # ECR Policy
-#    ecrPolicyDocument = {
-#      "Version": "2012-10-17",
-#      "Statement": [
-#        {
-#          "Sid": "ElasticContainerRegistryPushAndPull",
-#          "Effect": "Allow",
-#          "Principal": {
-#            "AWS": [
-#              "local.my_account"
-#            ],
-#          },
-#          "Action": [
-#            "ecr:GetDownloadUrlForLayer",
-#            "ecr:BatchGetImage",
-#            "ecr:BatchCheckLayerAvailability",
-#            "ecr:PutImage",
-#            "ecr:InitiateLayerUpload",
-#            "ecr:UploadLayerPart",
-#            "ecr:CompleteLayerUpload"
-#          ]
-#        }
-#      ]
-#    }
-#    
-#    self.ecrPolicy = aws.IamPolicy(self, "ecr-policy", name="{}-ecr-policy".format(ns), path="/", policy=json.dumps(ecrPolicyDocument))
+    # ECR
+    self.ecrPolicyStatement = iam.PolicyStatement(
+            sid="ElasticContainerRegistryPushAndPull",
+            effect=iam.Effect.ALLOW,
+            actions=["ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:PutImage",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload"],
+            principals=[iam.AccountRootPrincipal()])

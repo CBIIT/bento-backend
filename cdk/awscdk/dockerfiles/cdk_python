@@ -12,10 +12,9 @@ RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade virtualenv
 
 RUN python3 -V
-RUN pip --version
+RUN pip3 --version
 
 # install aws-cdk and set its log level to debug
 RUN npm install -g aws-cdk
-#ENV CDKTF_LOG_LEVEL=debug
 
 WORKDIR /bento

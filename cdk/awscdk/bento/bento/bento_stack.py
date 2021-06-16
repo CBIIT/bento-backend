@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from aws_cdk import core
 from aws_cdk import core as cdk
-from aws import iam, vpc, ecr, ecs
+from aws import iam, vpc, ecr, ecs, alb
 
 class BentoStack(cdk.Stack):
   def __init__(self, scope: cdk.Construct, ns: str, **kwargs) -> None:
@@ -22,3 +22,6 @@ class BentoStack(cdk.Stack):
     
     # ECS
     bentoECS = ecs.ECSResources.createResources(self, ns)
+    
+    # ALB
+    bentoALB = alb.ALBResources.createResources(self, ns)

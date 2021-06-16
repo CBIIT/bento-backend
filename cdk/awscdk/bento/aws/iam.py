@@ -4,10 +4,14 @@ class IAMResources:
   def createResources(self, ns):
 
     # ECS Instance Role
-    self.ecsInstanceRole = iam.Role(self, "ecs-instance-role", role_name="{}-ecs-instance-role".format(ns), assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"))
+    self.ecsInstanceRole = iam.Role(self, "ecs-instance-role",
+        role_name="{}-ecs-instance-role".format(ns),
+        assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"))
     
     # ECS Service Role
-    self.ecsServiceRole = iam.Role(self, "ecs-service-role", role_name="{}-ecs-service-role".format(ns), assumed_by=iam.ServicePrincipal("ecs.amazonaws.com"))
+    self.ecsServiceRole = iam.Role(self, "ecs-service-role",
+        role_name="{}-ecs-service-role".format(ns),
+        assumed_by=iam.ServicePrincipal("ecs.amazonaws.com"))
     
     # SSM
     ssmPolicyDocument = {
@@ -50,7 +54,10 @@ class IAMResources:
       ]
     }
     
-    ssmPolicy = iam.Policy(self, "ssm-policy", policy_name="{}-ssm-policy".format(ns), document=iam.PolicyDocument.from_json(ssmPolicyDocument))
+    ssmPolicy = iam.Policy(self, "ssm-policy",
+        policy_name="{}-ssm-policy".format(ns),
+        document=iam.PolicyDocument.from_json(ssmPolicyDocument))
+        
     self.ecsInstanceRole.attach_inline_policy(ssmPolicy)
     
     # EC2
@@ -65,7 +72,10 @@ class IAMResources:
       ]
     }
     
-    ec2Policy = iam.Policy(self, "ec2-policy", policy_name="{}-ec2-policy".format(ns), document=iam.PolicyDocument.from_json(ec2PolicyDocument))
+    ec2Policy = iam.Policy(self, "ec2-policy",
+        policy_name="{}-ec2-policy".format(ns),
+        document=iam.PolicyDocument.from_json(ec2PolicyDocument))
+    
     self.ecsInstanceRole.attach_inline_policy(ec2Policy)
     
     # ECS
@@ -95,7 +105,10 @@ class IAMResources:
       ]
     }
 
-    ecsPolicy = iam.Policy(self, "ecs-policy", policy_name="{}-ecs-policy".format(ns), document=iam.PolicyDocument.from_json(ecsPolicyDocument))
+    ecsPolicy = iam.Policy(self, "ecs-policy",
+        policy_name="{}-ecs-policy".format(ns),
+        document=iam.PolicyDocument.from_json(ecsPolicyDocument))
+    
     self.ecsInstanceRole.attach_inline_policy(ecsPolicy)
     
 #    # ECR Policy

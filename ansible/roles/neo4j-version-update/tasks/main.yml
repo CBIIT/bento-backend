@@ -58,7 +58,7 @@
     - {path: '/etc/neo4j/'}
 
 - name: install neo4j {{ neo4j_version }} and java 11 JRE
-  shell: "yum -y install neo4j-{{ neo4j_version }}"
+  shell: "yum -y install java-11-openjdk-11 neo4j-{{ neo4j_version }}" 
 
 #- name: verify installed neo4j version
 #  shell: yum list installed neo4j*

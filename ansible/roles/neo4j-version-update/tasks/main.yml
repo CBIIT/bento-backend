@@ -15,11 +15,11 @@
     gpgcheck: yes
     enabled: yes
 
-- name: disable and stop neo4j
-  service:
-    name: neo4j
-    state: stopped
-    enabled: no
+# - name: disable and stop neo4j
+#   service:
+#     name: neo4j
+#     state: stopped
+#     enabled: no
 
 - name: create neo4j cert backup directory
   file:

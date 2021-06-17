@@ -60,7 +60,7 @@
 - name: install neo4j {{ neo4j_version }} and java 11 JRE
   yum:
     name: 
-     - java-11-openjdk-11
+     - java-11-openjdk
      - neo4j-{{ neo4j_version }}
     state: installed
 

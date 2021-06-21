@@ -12,6 +12,7 @@ resource "aws_route53_record" "www" {
   records = [var.domain_name]
 }
 
+
 resource "aws_route53_record" "prod_tier_records" {
   count =  var.env ==  "prod" ? 1 : 0
   name = "${lower(var.stack_name)}.${var.domain_name}"

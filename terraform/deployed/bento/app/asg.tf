@@ -363,26 +363,26 @@ resource "aws_lb_listener_rule" "backend_alb_listener" {
 //  }
 //}
 
-resource "aws_lb_listener_rule" "www" {
-  count =  var.env ==  "prod" ? 1:0
-  listener_arn = module.alb.alb_https_listener_arn
-  priority = "120"
-  action {
-    type = "forward"
-    target_group_arn = aws_lb_target_group.frontend_target_group.arn
-  }
-
-  condition {
-    host_header {
-      values = [join(".",["www",var.domain_name])]
-    }
-  }
-  condition {
-    path_pattern  {
-      values = ["/*"]
-    }
-  }
-}
+//resource "aws_lb_listener_rule" "www" {
+//  count =  var.env ==  "prod" ? 1:0
+//  listener_arn = module.alb.alb_https_listener_arn
+//  priority = "120"
+//  action {
+//    type = "forward"
+//    target_group_arn = aws_lb_target_group.frontend_target_group.arn
+//  }
+//
+//  condition {
+//    host_header {
+//      values = [join(".",["www",var.domain_name])]
+//    }
+//  }
+//  condition {
+//    path_pattern  {
+//      values = ["/*"]
+//    }
+//  }
+//}
 
 #create boostrap script to hook up the node to ecs cluster
 resource "aws_ssm_document" "ssm_doc_boostrap" {

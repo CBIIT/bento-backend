@@ -126,7 +126,7 @@
 - name: add APOC
   copy:
     remote_src: yes
-    src: "/var/lib/neo4j/labs/apoc-*.jar"
+    src: /var/lib/neo4j/labs/apoc-*.jar
     dest: "/var/lib/neo4j/plugins/"
     owner: neo4j
     group: neo4j

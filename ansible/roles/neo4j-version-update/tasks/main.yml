@@ -26,16 +26,16 @@
     path: /tmp/neo4j_certs
     state: directory
 
-# - name: copy neo4j certs
-#   copy:
-#     remote_src: yes
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     owner: neo4j
-#     group: neo4j
-#   with_items:
-#     - {src: '/var/lib/neo4j/certificates/neo4j.cert',dest: '/tmp/neo4j_certs/neo4j.cert'}
-#     - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
+- name: copy neo4j certs
+  copy:
+    remote_src: yes
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: neo4j
+    group: neo4j
+  with_items:
+    - {src: '/var/lib/neo4j/certificates/neo4j.cert',dest: '/tmp/neo4j_certs/neo4j.cert'}
+    - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
 
 #- name: verify installed neo4j version
 #  shell: yum list installed neo4j*
@@ -46,7 +46,10 @@
 #    msg: "{{ neo4j_installed.stdout_lines }}"
 
 - name: remove neo4j
-  shell: yum -y autoremove neo4j* java*
+  yum:
+    name:
+      - neo4j*
+    state: absent
 
 - name: clean old neo4j files
   file:

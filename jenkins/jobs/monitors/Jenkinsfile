@@ -74,14 +74,14 @@ pipeline {
 		steps {
           script {
 		    def proj = ''
-            if (params.Project != null){
+            if (params.Project != ''){
               proj = "-p ${params.Project}"
             }
 
 			//env.PROJECT = "${params.Project}"
 
             def tier = ''
-            if (params.Tier != null){
+            if (params.Tier != ''){
               tier = "-t ${params.Tier}"
             }
 		    

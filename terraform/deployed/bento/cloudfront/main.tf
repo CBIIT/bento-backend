@@ -136,5 +136,5 @@ resource "aws_cloudfront_public_key" "public_key" {
 resource "aws_cloudfront_key_group" "key_group" {
   comment = "bento files key group"
   items   = [aws_cloudfront_public_key.public_key.id]
-  name    = "bento-files-key-group"
+  name    = "${var.stack_name}-${var.env}-key-group"
 }

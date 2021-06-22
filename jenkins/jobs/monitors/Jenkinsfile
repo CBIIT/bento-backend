@@ -73,8 +73,21 @@ pipeline {
     stage('set-environment'){
 		steps {
           script {
-		    env.PROJECT = "${params.Project}"
-		    env.TIER    = "${params.Tier}"
+		    def proj = ''
+            if (params.Project != null){
+              proj = "-p ${params.Project}"
+            }
+
+			//env.PROJECT = "${params.Project}"
+
+            def tier = ''
+            if (params.Tier != null){
+              tier = "-t ${params.Tier}"
+            }
+		    
+			//env.TIER    = "${params.Tier}"
+			
+			env.PY_VARS = "${proj} ${tier}"
           }
         }
     }
@@ -94,7 +107,8 @@ pipeline {
 		  
 		  withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY'),
 		    string(credentialsId: 'sumo_auth', variable: 'SUMO_AUTH')]) {
-            sh "python3 monitoring/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY -a \'$SUMO_AUTH\'"
+            //sh "python3 monitoring/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY -a \'$SUMO_AUTH\'"
+			sh "python3 monitoring/monitor_query.py $PY_VARS -k $API_KEY -a \'$SUMO_AUTH\'"
 	      }
 
         }

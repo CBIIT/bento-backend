@@ -3,6 +3,7 @@
 import sys, getopt
 import json
 import requests
+import subprocess
 
 def main(argv):
    global project
@@ -11,10 +12,12 @@ def main(argv):
    tier = ''
    global key
    key = ''
+   global auth
+   auth = ''
    try:
-      opts, args = getopt.getopt(argv,"hp:t:k:",["project=","tier=","key="])
+      opts, args = getopt.getopt(argv,"hp:t:k:a:",["project=","tier=","key=","auth="])
    except getopt.GetoptError:
-      print('monitor_query.py -p <project> -t <tier> -k <api key>')
+      print('monitor_query.py -p <project> -t <tier> -k <newrelic api key> -a <sumologic basic auth>')
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
@@ -26,6 +29,8 @@ def main(argv):
          tier = arg
       elif opt in ("-k", "--key"):
          key = arg
+      elif opt in ("-a", "--auth"):
+         auth = arg
    #print('Project is ', project)
    #print('Tier is ', tier)
 
@@ -37,7 +42,6 @@ def getsyntheticmonitors(project, tier):
    response = requests.get('{}/v3/monitors'.format(API_ENDPOINT), headers=headers)
 
    print('Synthetics Monitors:')
-   print()
    for x in response.json()['monitors']:
      if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():
        print('  ' + x.get("name", "none"))
@@ -51,7 +55,6 @@ def getalertchannels(project, tier):
    response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
 
    print('Alert Channels:')
-   print()
    for x in response.json()['channels']:
      if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():
        print('  ' + x.get("name", "none"))
@@ -135,7 +138,6 @@ def getalertpolicies(project, tier):
    response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
 
    print('Alert Policies:')
-   print()
    for x in response.json()['policies']:
      if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():
        print('  ' + x.get("name", "none"))
@@ -143,7 +145,7 @@ def getalertpolicies(project, tier):
        getnrqlconditions(x.get("id", "none"))
        getexternalservices(x.get("id", "none"))
        getsyntheticsconditions(x.get("id", "none"))
-       getpluginsconditions(x.get("id", "none"))
+       #getpluginsconditions(x.get("id", "none"))
        print()
 
 def getapmapps(project, tier):
@@ -154,15 +156,34 @@ def getapmapps(project, tier):
    response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
 
    print('APM Applications:')
-   print()
    for x in response.json()['applications']:
+     if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():
+       print('  ' + x.get("name", "none"))
+   print()
+
+def getsumocollectors(project, tier):
+   API_ENDPOINT = 'https://api.fed.sumologic.com/api/v1/collectors'
+   
+   headers = {'Authorization': '{}'.format(auth)}
+   
+   response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+
+   print('Sumo Collectors:')
+   print()
+   for x in response.json()['collectors']:
      if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():
        print('  ' + x.get("name", "none"))
    print()
 
 if __name__ == "__main__":
    main(sys.argv[1:])
+   
+   print()
+   print('Monitor Information for: {} {}'.format(project, tier))
+   print()
+   
    getsyntheticmonitors(project, tier)
    getalertchannels(project, tier)
    getalertpolicies(project, tier)
    getapmapps(project, tier)
+   getsumocollectors(project, tier)

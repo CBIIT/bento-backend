@@ -130,7 +130,7 @@ resource "aws_wafv2_web_acl" "waf" {
 resource "aws_cloudfront_public_key" "public_key" {
   comment     = "bento files public key"
   encoded_key = file("cloudfront_public_key.pem")
-  name        = "bento-files-key"
+  name        = "${var.stack_name}-${var.env}-pub-key"
 }
 
 resource "aws_cloudfront_key_group" "key_group" {

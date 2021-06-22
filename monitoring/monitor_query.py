@@ -116,20 +116,6 @@ def getsyntheticsconditions(policy):
        print('    - ' + x.get("name", "none"))
      print()
 
-def getpluginsconditions(policy):
-   API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_plugins_conditions.json'
-
-   headers = {'Api-Key': key}
-   data = {'policy_id': policy}
-
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers, data=data)
-
-   if response.json()['plugins_conditions']:
-     print('    Alert Plugins Conditions:')
-     for x in response.json()['plunigs_conditions']:
-       print('    - ' + x.get("name", "none"))
-     print()
-
 def getalertpolicies(project, tier):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
@@ -145,7 +131,6 @@ def getalertpolicies(project, tier):
        getnrqlconditions(x.get("id", "none"))
        getexternalservices(x.get("id", "none"))
        getsyntheticsconditions(x.get("id", "none"))
-       #getpluginsconditions(x.get("id", "none"))
        print()
 
 def getapmapps(project, tier):

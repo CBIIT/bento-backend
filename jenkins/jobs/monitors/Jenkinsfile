@@ -79,7 +79,7 @@ pipeline {
         }
     }
 
-    stage('Search Newrelic'){
+    stage('Search Monitors'){
 	  steps {
         script {
 
@@ -87,13 +87,14 @@ pipeline {
 
 		  yum -y install python3 curl
 		  
-		  cd monitoring/newrelic
+		  cd monitoring
 		  pip3 install -r requirements.txt
 
           '''
 		  
-		  withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
-            sh "python3 monitoring/newrelic/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY"    
+		  withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY'),
+		    string(credentialsId: 'sumo_auth', variable: 'SUMO_AUTH')]) {
+            sh "python3 monitoring/monitor_query.py -p $PROJECT -t $TIER -k $API_KEY -a \'$SUMO_AUTH\'"
 	      }
 
         }

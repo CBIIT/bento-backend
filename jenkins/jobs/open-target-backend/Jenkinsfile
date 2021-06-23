@@ -120,6 +120,9 @@ pipeline {
               break
               case "stage":
                 withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
+                  env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_QA_IP}"
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_QA_IP}"
+                  env.PLAY_PORT = "${PLAY_PORT}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"
                   

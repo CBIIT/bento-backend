@@ -15,27 +15,27 @@
     gpgcheck: yes
     enabled: yes
 
-# - name: disable and stop neo4j
-#   service:
-#     name: neo4j
-#     state: stopped
-#     enabled: no
+- name: disable and stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+    enabled: no
 
-# - name: create neo4j cert backup directory
-#   file:
-#     path: /tmp/neo4j_certs
-#     state: directory
+- name: create neo4j cert backup directory
+  file:
+    path: /tmp/neo4j_certs
+    state: directory
 
-# - name: copy neo4j certs
-#   copy:
-#     remote_src: yes
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     owner: neo4j
-#     group: neo4j
-#   with_items:
-#     - {src: '/var/lib/neo4j/certificates/neo4j.cert',dest: '/tmp/neo4j_certs/neo4j.cert'}
-#     - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
+- name: copy neo4j certs
+  copy:
+    remote_src: yes
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: neo4j
+    group: neo4j
+  with_items:
+    - {src: '/var/lib/neo4j/certificates/neo4j.cert',dest: '/tmp/neo4j_certs/neo4j.cert'}
+    - {src: '/var/lib/neo4j/certificates/neo4j.key',dest: '/tmp/neo4j_certs/neo4j.key'}
 
 #- name: verify installed neo4j version
 #  shell: yum list installed neo4j*
@@ -77,16 +77,16 @@
 #  debug:
 #    msg: "{{ neo4j_installed.stdout_lines }}"
 
-- name: copy neo4j cert and key
-  copy:
-    remote_src: yes
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: neo4j
-    group: neo4j
-  with_items:
-    - {src: /tmp/neo4j_certs/neo4j.cert ,dest: /var/lib/neo4j/certificates/neo4j.cert}
-    - {src: /tmp/neo4j_certs/neo4j.key,dest: /var/lib/neo4j/certificates/neo4j.key}
+# - name: copy neo4j cert and key
+#   copy:
+#     remote_src: yes
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     owner: neo4j
+#     group: neo4j
+#   with_items:
+#     - {src: /tmp/neo4j_certs/neo4j.cert ,dest: /var/lib/neo4j/certificates/neo4j.cert}
+#     - {src: /tmp/neo4j_certs/neo4j.key,dest: /var/lib/neo4j/certificates/neo4j.key}
 
 - name: change neo4j parameters
   lineinfile:

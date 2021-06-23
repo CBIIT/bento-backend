@@ -90,7 +90,7 @@ pipeline {
         }
  
   	}
-    stage('Set Environment'){
+    /*stage('Set Environment'){
       environment {
         PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
         VERSION = "${params.Frontend_Tag}"
@@ -144,7 +144,7 @@ pipeline {
             }
           }
         }
-    }
+    }*/
   	stage('build'){
       environment {
        VERSION = "${params.Branch_Tag}"

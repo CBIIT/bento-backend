@@ -138,6 +138,9 @@ pipeline {
           ansiblePlaybook(  			
             playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-version-update.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+			  extraVars: [
+                    neo4j_edition: 'enterprise',
+                    ],
 			  credentialsId: 'commonsdocker',
               colorized: true)
 

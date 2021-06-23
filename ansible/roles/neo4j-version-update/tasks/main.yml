@@ -2,7 +2,7 @@
 # tasks file for neo4j update
 - name: Remove neo4j repository (and clean up left-over metadata)
   yum_repository:
-    name: neo4j
+    name: neo4j-enterprise
     state: absent
   notify: yum-clean-metadata
 

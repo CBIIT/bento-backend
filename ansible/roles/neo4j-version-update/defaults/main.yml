@@ -1,2 +1,3 @@
 ---
 # defaults file
+neo4j_edition: 'community'

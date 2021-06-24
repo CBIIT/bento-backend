@@ -10,16 +10,33 @@ class ALBListener:
         timeout=core.Duration.seconds(5))
 
     listener = self.bentoALB.add_listener("PublicListener",
-        port=80,
-        open=True)
-    
-    albtarget = listener.add_targets("ECS-Target",
+        port=80
+        )
+
+    frontendtarget = listener.add_targets("ECS-frontend-Target",
         port=80,
         targets=[self.frontendService],
         health_check=health_check)
-    
-    albrule = elbv2.ApplicationListenerRule(self, id="alb listener rule",
-        path_pattern="/",
+
+    backendtarget = listener.add_targets("ECS-backend-Target",
+        port=8080,
+        targets=[self.backendService],
+        health_check=health_check)
+
+    # Add a fixed error message when browsing an invalid URL
+    listener.add_action("ECS-Content-Not-Found",
+        action=elbv2.ListenerAction.fixed_response(200,
+            message_body="The requested resource is not available")
+        )
+
+    elbv2.ApplicationListenerRule(self, id="alb_frontend_rule",
+        path_pattern="/*",
         priority=1,
         listener=listener,
-        target_groups=[albtarget])
+        target_groups=[frontendtarget])
+
+    elbv2.ApplicationListenerRule(self, id="alb_backend_rule",
+        path_pattern="/v1/graphql/*",
+        priority=2,
+        listener=listener,
+        target_groups=[backendtarget])

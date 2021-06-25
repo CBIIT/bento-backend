@@ -26,40 +26,39 @@
       - clickhouse-client
       - elasticsearch-7.9.0-1.x86_64
 
--name: updating elasticsearch config files
- lineinfile:
-   path: /etc/elasticsearch/elasticsearch.yml
-   line: "{{ item }}"
- with_items:
-  - 'node.name: node-1'
-  - 'network.host: 0.0.0.0'
-  - 'http.port: 9200'
-  - 'cluster.initial_master_nodes: ["node-1"]'
-
--name: updating clickhouse-server config files
- lineinfile:
-   path: /etc/clickhouse-server/config.xml
-   line: "{{ item }}"
- with_items: 
-  - '<listen_host>::</listen_host>'
-  - '<http_port>8123</http_port>'
-
--name: updating elasticsearch memory configurations
- lineinfile:
-   path: /etc/sysconfig/elasticsearch
-   line: "{{ item }}"
- with_items:
-  - 'ES_HEAP_SIZE=2g'
-  - 'MAX_OPEN_FILES=65535'
-  - 'MAX_LOCKED_MEMORY=unlimited'
-
--name: updating elasticsearch memory configurations
- lineinfile:
-   path: /etc/elasticsearch/jvm.options
-   line: "{{ item }}"
+- name: updating elasticsearch config files
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: "{{ item }}"
   with_items:
-   - '-Xms2g'
-   - '-Xmx2g'
+    - 'node.name: node-1'
+    - 'network.host: 0.0.0.0'
+    - 'http.port: 9200'
+    - 'cluster.initial_master_nodes: ["node-1"]'
+
+- name: updating clickhouse-server config files
+  lineinfile:
+    path: /etc/clickhouse-server/config.xml
+    line:<listen_host>::</listen_host>
+    insertafter:
+      *listen_host* 
+
+- name: updating elasticsearch memory configurations
+  lineinfile:
+    path: /etc/sysconfig/elasticsearch
+    line: "{{ item }}"
+  with_items:
+    - 'ES_HEAP_SIZE=2g'
+    - 'MAX_OPEN_FILES=65535'
+    - 'MAX_LOCKED_MEMORY=unlimited'
+
+- name: updating elasticsearch memory configurations
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    line: "{{ item }}"
+  with_items:
+    - '-Xms2g'
+    - '-Xmx2g'
 
 - name: reload systemd config
   systemd: daemon_reload=yes

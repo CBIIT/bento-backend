@@ -39,10 +39,9 @@
 - name: updating clickhouse-server config files
   lineinfile:
     path: /etc/clickhouse-server/config.xml
-    line: "{{ item }}"
-  with_items: 
-    - '<listen_host>::</listen_host>'
-    - '<http_port>8123</http_port>'
+    line:<listen_host>::</listen_host>
+    insertafter:
+      *listen_host* 
 
 - name: updating elasticsearch memory configurations
   lineinfile:

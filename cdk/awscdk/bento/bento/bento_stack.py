@@ -35,5 +35,8 @@ class BentoStack(cdk.Stack):
     # EC2
     bentoEC2 = ec2.EC2Resources.createResources(self, ns)
     
-    # Security Groups
-    #bentoSG = sg.SGResources.createResources(self, ns)
+    # Outputs
+    cdk.CfnOutput(self, "Database-IP",
+        value=self.DBInstance.instance_private_ip,
+        description="The IP address assigned to the DB Instance",
+        export_name="dbipaddress")

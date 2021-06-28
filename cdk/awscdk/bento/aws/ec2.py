@@ -1,3 +1,4 @@
+from aws_cdk import core
 from aws_cdk import aws_ec2 as ec2
 
 class EC2Resources:
@@ -16,3 +17,4 @@ class EC2Resources:
         machine_image=neo4j_4,
         vpc = self.bentoVPC,
         role = self.ecsInstanceRole)
+    core.Tags.of(self.DBInstance).add("Name", "{}-neo4j".format(ns))

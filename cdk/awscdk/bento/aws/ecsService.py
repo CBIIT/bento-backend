@@ -10,11 +10,11 @@ class ECSService:
 
     ecsasg.add_ingress_rule(
         albsg,
-        ec2.Port.tcp(8080)
+        ec2.Port.tcp(int(self.config[ns]['backend_container_port']))
     )
     ecsasg.add_ingress_rule(
         albsg,
-        ec2.Port.tcp(80)
+        ec2.Port.tcp(int(self.config[ns]['frontend_container_port']))
     )
 
     # Backend Task Definition
@@ -27,8 +27,8 @@ class ECSService:
         cpu=512)
     
     backend_port_mapping = ecs.PortMapping(
-        container_port=8080,
-        host_port=8080,
+        container_port=int(self.config[ns]['backend_container_port']),
+        host_port=int(self.config[ns]['backend_container_port']),
         protocol=ecs.Protocol.TCP
     )
     
@@ -36,6 +36,7 @@ class ECSService:
 
     # Backend Service
     self.backendService = ecs.Ec2Service(self, "{}-backend".format(ns),
+        service_name="{}-backend".format(ns),
         task_definition=backendECSTask,
         cluster=self.bentoECS)
 
@@ -49,8 +50,8 @@ class ECSService:
         cpu=512)
 
     frontend_port_mapping = ecs.PortMapping(
-        container_port=80,
-        host_port=80,
+        container_port=int(self.config[ns]['frontend_container_port']),
+        host_port=int(self.config[ns]['frontend_container_port']),
         protocol=ecs.Protocol.TCP
     )
     
@@ -58,5 +59,6 @@ class ECSService:
 
     # Frontend Service
     self.frontendService = ecs.Ec2Service(self, "{}-frontend".format(ns),
+        service_name="{}-frontend".format(ns),
         task_definition=frontendECSTask,
         cluster=self.bentoECS)

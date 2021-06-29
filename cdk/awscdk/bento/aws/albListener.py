@@ -27,13 +27,13 @@ class ALBListener:
         port=443)
 
     frontendtarget = listener.add_targets("ECS-frontend-Target",
-        port=self.config[ns]['frontend_container_port'],
+        port=int(self.config[ns]['frontend_container_port']),
         targets=[self.frontendService],
         target_group_name="{}-frontend".format(ns))
     core.Tags.of(frontendtarget).add("Name", "{}-frontend-alb-target".format(ns))
 
     backendtarget = listener.add_targets("ECS-backend-Target",
-        port=self.config[ns]['backend_container_port'],
+        port=int(self.config[ns]['backend_container_port']),
         targets=[self.backendService],
         health_check=be_health_check,
         target_group_name="{}-backend".format(ns))

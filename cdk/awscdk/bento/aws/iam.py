@@ -1,3 +1,4 @@
+from aws_cdk import core
 from aws_cdk import aws_iam as iam
 
 class IAMResources:
@@ -7,11 +8,13 @@ class IAMResources:
     self.ecsInstanceRole = iam.Role(self, "ecs-instance-role",
         role_name="{}-ecs-instance-role".format(ns),
         assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"))
+    core.Tags.of(self.ecsInstanceRole).add("Name", "{}-ecs-instance-role".format(ns))
     
     # ECS Service Role
     self.ecsServiceRole = iam.Role(self, "ecs-service-role",
         role_name="{}-ecs-service-role".format(ns),
         assumed_by=iam.ServicePrincipal("ecs.amazonaws.com"))
+    core.Tags.of(self.ecsServiceRole).add("Name", "{}-ecs-service-role".format(ns))
     
     # SSM
     ssmPolicyDocument = {
@@ -57,6 +60,7 @@ class IAMResources:
     ssmPolicy = iam.Policy(self, "ssm-policy",
         policy_name="{}-ssm-policy".format(ns),
         document=iam.PolicyDocument.from_json(ssmPolicyDocument))
+    core.Tags.of(ssmPolicy).add("Name", "{}-ssm-policy".format(ns))
         
     self.ecsInstanceRole.attach_inline_policy(ssmPolicy)
     
@@ -75,6 +79,7 @@ class IAMResources:
     ec2Policy = iam.Policy(self, "ec2-policy",
         policy_name="{}-ec2-policy".format(ns),
         document=iam.PolicyDocument.from_json(ec2PolicyDocument))
+    core.Tags.of(ec2Policy).add("Name", "{}-ec2-policy".format(ns))
     
     self.ecsInstanceRole.attach_inline_policy(ec2Policy)
     
@@ -108,6 +113,7 @@ class IAMResources:
     ecsPolicy = iam.Policy(self, "ecs-policy",
         policy_name="{}-ecs-policy".format(ns),
         document=iam.PolicyDocument.from_json(ecsPolicyDocument))
+    core.Tags.of(ecsPolicy).add("Name", "{}-ecs-policy".format(ns))
     
     self.ecsInstanceRole.attach_inline_policy(ecsPolicy)
     self.ecsInstanceRole.add_managed_policy(iam.ManagedPolicy. from_aws_managed_policy_name('service-role/AmazonEC2ContainerServiceforEC2Role'))

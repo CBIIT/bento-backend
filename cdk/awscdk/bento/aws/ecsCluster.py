@@ -12,6 +12,7 @@ class ECSCluster:
     
     self.bentoECS_ASG = self.bentoECS.add_capacity('bento-ecs-instance',
         instance_type=ec2.InstanceType(self.config[ns]['fronted_instance_type']),
+        key_name=self.config[ns]['ssh_key_name'],
         task_drain_time=cdk.Duration.minutes(0),
-        min_capacity=1,
-        max_capacity=1)
+        min_capacity=int(self.config[ns]['min_size']),
+        max_capacity=int(self.config[ns]['max_size']))

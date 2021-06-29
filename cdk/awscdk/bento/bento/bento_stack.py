@@ -1,7 +1,9 @@
+import os
 from configparser import ConfigParser
 from aws_cdk import core
 from aws_cdk import core as cdk
-from aws import iam, vpc, ecr, ecsCluster, ecsService, alb, albListener, ec2, sg
+from aws import iam, vpc, ecr, ecsCluster, ecsService, alb, albListener, ec2, route53
+
 
 class BentoStack(cdk.Stack):
   def __init__(self, scope: cdk.Construct, ns: str, **kwargs) -> None:
@@ -34,7 +36,10 @@ class BentoStack(cdk.Stack):
 
     # EC2
     bentoEC2 = ec2.EC2Resources.createResources(self, ns)
-    
+
+    # Route53
+    bentoDNS = route53.Route53Resources.createResources(self, ns)
+
     # Outputs
     cdk.CfnOutput(self, "Database-IP",
         value=self.DBInstance.instance_private_ip,

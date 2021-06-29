@@ -14,8 +14,9 @@ if __name__=="__main__":
     print('Please specify the tier to build:  awsApp.py -t <tier>')
     sys.exit(1)
 
+  env = core.Environment(account=os.environ["AWS_DEFAULT_ACCOUNT"], region=os.environ["AWS_DEFAULT_REGION"])
   app = core.App()
-  bentoApp = BentoStack(app, tierName)
+  bentoApp = BentoStack(app, tierName, env=env)
 
   bentoTags = dict(s.split(':') for s in bentoApp.config['bento-cdk']['tags'].split(","))
 

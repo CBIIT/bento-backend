@@ -37,11 +37,10 @@
     - 'cluster.initial_master_nodes: ["node-1"]'
 
 - name: updating clickhouse-server config files
-  lineinfile:
+  replace:
     path: /etc/clickhouse-server/config.xml
-    regexp: '*<listen_host>* '
-    insertafter: '*<listen_host>* '
-    line: <listen_host>::</listen_host> 
+    regexp: '<!-- <listen_host>::</listen_host> -->'
+    replace: '<listen_host>::</listen_host> '
 
 - name: updating elasticsearch memory configurations
   lineinfile:
@@ -52,26 +51,17 @@
     - 'MAX_OPEN_FILES=65535'
     - 'MAX_LOCKED_MEMORY=unlimited'
 
-- name: updating elasticsearch to comment out initial memory configurations -Xms1g
+- name: updating elasticsearch to increase initial memory configurations -Xms4g
   replace:
     path: /etc/elasticsearch/jvm.options
     regexp: '-Xms1g'
-    replace: '#\1'
+    replace: '-Xms4g'
 
-- name: updating elasticsearch to comment out initial memory configurations -Xmx1g
+- name: updating elasticsearch to increase initial memory configurations -Xmx4g
   replace:
     path: /etc/elasticsearch/jvm.options
     regexp: '-Xmx1g'
-    replace: '#\1'
-
-- name: updating elasticsearch memory configurations
-  lineinfile:
-    path: /etc/elasticsearch/jvm.options
-    insertafter: '*total heap space*'
-    line: "{{ item }}"
-  with_items:
-    - '-Xms4g'
-    - '-Xmx4g'
+    replace: '-Xmx4g'
 
 - name: reload systemd config
   systemd: daemon_reload=yes

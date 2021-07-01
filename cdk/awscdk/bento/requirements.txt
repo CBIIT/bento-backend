@@ -5,3 +5,4 @@ aws-cdk.aws_ec2
 aws-cdk.aws_ecr
 aws-cdk.aws_ecs
 configparser
+boto3

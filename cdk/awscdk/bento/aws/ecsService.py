@@ -1,3 +1,4 @@
+import boto3
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ec2 as ec2
 
@@ -6,16 +7,31 @@ class ECSService:
 
     # Security Group Updates
     albsg = self.bentoALB.connections.security_groups[0]
-    ecsasg = self.bentoECS_ASG.connections.security_groups[0]
+    self.ecssg = self.bentoECS_ASG.connections.security_groups[0]
+    
+#    botoec2 = boto3.client('ec2')
+#    group_name = 'bento-bastion-sg'
+#    response = botoec2.describe_security_groups(
+#        Filters=[
+#            dict(Name='group-name', Values=[group_name])
+#        ]
+#    )
+#    bastion_group_id = response['SecurityGroups'][0]['GroupId']
+#    bastionsg = ec2.SecurityGroup.from_security_group_id(self, 'bastion-security-group',
+#        security_group_id=bastion_group_id)
 
-    ecsasg.add_ingress_rule(
+    self.ecssg.add_ingress_rule(
         albsg,
         ec2.Port.tcp(int(self.config[ns]['backend_container_port']))
     )
-    ecsasg.add_ingress_rule(
+    self.ecssg.add_ingress_rule(
         albsg,
         ec2.Port.tcp(int(self.config[ns]['frontend_container_port']))
     )
+#    self.ecssg.add_ingress_rule(
+#        bastionsg,
+#        ec2.Port.tcp(22)
+#    )
 
     # Backend Task Definition
     backendECSTask = ecs.Ec2TaskDefinition(self, "bento-ecs-backend",

@@ -18,3 +18,15 @@ class EC2Resources:
         vpc = self.bentoVPC,
         role = self.ecsInstanceRole)
     core.Tags.of(self.DBInstance).add("Name", "{}-neo4j".format(ns))
+    
+    # Update DB Security Group
+    dbsg = self.DBInstance.connections.security_groups[0]
+    
+    dbsg.add_ingress_rule(
+        self.ecssg,
+        ec2.Port.tcp(7474)
+    )
+    dbsg.add_ingress_rule(
+        self.ecssg,
+        ec2.Port.tcp(7687)
+    )

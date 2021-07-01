@@ -33,6 +33,4 @@ cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
 ctdc_base_url: "https://trialcommons-dev.cancer.gov"
 s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
 manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
-=======
-# vars file for data-processing
->>>>>>> d2152c45d9436bd371f4f511a379e7076475f1d6
+

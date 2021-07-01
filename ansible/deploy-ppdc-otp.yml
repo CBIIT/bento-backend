@@ -5,7 +5,7 @@
   become: yes
     
   tasks:
-    - name: deploy ppdc-otg
+    - name: deploy ppdc-otp
       include_role:
         name: ppdc-otp
         tasks_from: deploy

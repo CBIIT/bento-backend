@@ -16,3 +16,14 @@ class VPCResources:
         peer_vpc_id=self.bentoVPC.vpc_id,
         vpc_id=mgtVPC.vpc_id)
     core.Tags.of(vpc_peering).add("Name", "{}-vpc-peering".format(ns))
+    
+    # Add peering routes
+    #vpcSubnets = self.bentoVPC.select_subnets(subnet_type=ec2.SubnetType.PRIVATE)
+    
+    #subnetNum = 1
+    #for subnet in vpcSubnets.subnets:
+    #  ec2.CfnRoute(self, 'vpc-peer-{}'.format(subnetNum),
+    #      route_table_id=subnet.route_table.route_table_id,
+    #      destination_cidr_block=self.bentoVPC.vpc_cidr_block,
+    #      vpc_peering_connection_id=vpc_peering.ref )
+    #  subnetNum += 1

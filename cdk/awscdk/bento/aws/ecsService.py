@@ -9,16 +9,16 @@ class ECSService:
     albsg = self.bentoALB.connections.security_groups[0]
     self.ecssg = self.bentoECS_ASG.connections.security_groups[0]
     
-#    botoec2 = boto3.client('ec2')
-#    group_name = 'bento-bastion-sg'
-#    response = botoec2.describe_security_groups(
-#        Filters=[
-#            dict(Name='group-name', Values=[group_name])
-#        ]
-#    )
-#    bastion_group_id = response['SecurityGroups'][0]['GroupId']
-#    bastionsg = ec2.SecurityGroup.from_security_group_id(self, 'bastion-security-group',
-#        security_group_id=bastion_group_id)
+    botoec2 = boto3.client('ec2')
+    group_name = 'bento-bastion-sg'
+    response = botoec2.describe_security_groups(
+        Filters=[
+            dict(Name='group-name', Values=[group_name])
+        ]
+    )
+    bastion_group_id = response['SecurityGroups'][0]['GroupId']
+    self.bastionsg = ec2.SecurityGroup.from_security_group_id(self, 'bastion-security-group',
+        security_group_id=bastion_group_id)
 
     self.ecssg.add_ingress_rule(
         albsg,
@@ -28,10 +28,10 @@ class ECSService:
         albsg,
         ec2.Port.tcp(int(self.config[ns]['frontend_container_port']))
     )
-#    self.ecssg.add_ingress_rule(
-#        bastionsg,
-#        ec2.Port.tcp(22)
-#    )
+    self.ecssg.add_ingress_rule(
+        self.bastionsg,
+        ec2.Port.tcp(22)
+    )
 
     # Backend Task Definition
     backendECSTask = ecs.Ec2TaskDefinition(self, "bento-ecs-backend",

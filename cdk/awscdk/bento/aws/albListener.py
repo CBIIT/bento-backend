@@ -1,3 +1,4 @@
+import boto3
 from aws_cdk import core
 from aws_cdk import aws_elasticloadbalancingv2 as elbv2
 from aws_cdk import aws_certificatemanager as cfm
@@ -16,10 +17,21 @@ class ALBListener:
         target_protocol=elbv2.ApplicationProtocol.HTTPS,
         target_port=443)
 
-    bento_cert = cfm.Certificate.from_certificate_arn(self,
-        "bento-cert",
-        certificate_arn=self.config[ns]['cert_arn'])
+    # Get certificate ARN for specified domain name
+    client = boto3.client('acm')
+    response = client.list_certificates(
+        CertificateStatuses=[
+            'ISSUED',
+        ],
+    )
+    
+    for cert in response["CertificateSummaryList"]:
+        if ('*.{}'.format(self.config[ns]['domain_name']) in cert.values()):
+            certARN = cert['CertificateArn']
 
+    bento_cert = cfm.Certificate.from_certificate_arn(self, "bento-cert",
+        certificate_arn=certARN)
+    
     listener = self.bentoALB.add_listener("PublicListener",
         certificates=[
             bento_cert

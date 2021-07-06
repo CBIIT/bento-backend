@@ -23,8 +23,12 @@
     name: file-downloader
     image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{downloader_version}}
     env:
-      URL_SRC: indexd
-      INDEXD_URL: "{{indexd_url}}"
+      CF_URL: "https://{{cloudfront_domain_name}}"
+      # URL_SRC: "indexd"
+      # INDEXD_URL: "{{indexd_url}}"
+      CF_PRIVATE_KEY: "{{cloudfront_private_key}}"
+      CF_KEY_PAIR_ID: "{{cloudfront_key_group_id}}"
+      URL_SRC: "{{url_src}}"
       VERSION: "{{downloader_version}}" 
       DATE: "{{ansible_date_time.date}}"
       PROJECT: "ICDC"

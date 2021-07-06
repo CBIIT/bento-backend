@@ -6,20 +6,6 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-# - name: copy entrypoint.sh to workspace
-#   copy:
-#     src: "nginx-entrypoint.sh"
-#     dest: "{{workspace}}/bento-frontend/nginx-entrypoint.sh"
-#     mode: 0755
-
-# - name: copy env to dist
-#   copy:
-#     # remote_src: yes
-#     src: inject.template.js
-#     dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
-#     mode: 0755
-          
-
 - name: build cbiitssrepo/bento-filedownloader image
   docker_image:
     build:

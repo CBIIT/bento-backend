@@ -13,3 +13,7 @@ build_number: "{{ lookup('env','BUILD_NUMBER')}"
 downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
 license_key: "{{ lookup('env','NEWRELIC_LIC_KEY') }}"
 #cloudfront variables
+cloudfront_origin_id: bento_files_origin_id
+cloudfront_key_group_name: icdc-{{tier}}-key-group
+cloudfront_private_key: "{{ lookup('env', 'CLOUDFRONT_PRIVATE_KEY') }}"
+

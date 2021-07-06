@@ -17,7 +17,7 @@ terraform {
   }
 }
 locals {
-  s3_origin_id = "bento_files_origin_id"
+  s3_origin_id = "${var.stack_name}_files_origin_id"
 }
 # create origin access identity
 resource "aws_cloudfront_origin_access_identity" "origin_access" {

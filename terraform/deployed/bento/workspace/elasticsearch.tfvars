@@ -15,7 +15,7 @@ profile = "icdc"
 stack_name = "bento"
 
 #specify domain name
-domain_name = "bento-tools.org"
+domain_name = "bento-tools"
 #name of the application
 remote_state_bucket_name = "bento-terraform-remote-state"
 

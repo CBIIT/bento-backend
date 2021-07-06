@@ -82,6 +82,7 @@ pipeline {
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
           string(credentialsId: 'cloudfront_private_key', variable: 'CLOUDFRONT_PRIVATE_KEY'),
           string(credentialsId: 'dev_cloudfront_domain_name', variable: 'CLOUDFRONT_DOMAIN_NAME'),
+          string(credentialsId: 'dev_cloudfront_key_group_id', variable: 'CLOUDFRONT_KEY_GROUP_ID'),
           string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
           string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
           string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
@@ -95,7 +96,8 @@ pipeline {
                        tier: "${params.Environment}",
                        indexd_url: "${params.IndexD_Url}",
                        cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
-                       cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}"
+                       cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
+                       cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                       ],
             colorized: true)
         }

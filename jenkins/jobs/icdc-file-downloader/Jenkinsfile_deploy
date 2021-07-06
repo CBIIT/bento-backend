@@ -84,11 +84,12 @@ pipeline {
           string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
           string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
           string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+          file(credentialsId: 'cloudfront_private_key', variable: 'cloudfront_private_key'),
           string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
           string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
           file(credentialsId: 'ansible_host_file', variable: 'host_file')])
           {
-            sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+            sh "cp ${cloudfront_private_key} ${WORKSPACE}/cloudfront_private_key.pem"
             ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

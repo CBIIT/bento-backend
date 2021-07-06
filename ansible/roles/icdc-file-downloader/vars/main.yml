@@ -16,5 +16,6 @@ license_key: "{{ lookup('env','NEWRELIC_LIC_KEY') }}"
 cloudfront_origin_id: icdc_files_origin_id
 cloudfront_key_group_name: icdc-{{tier}}-key-group
 cloudfront_key_group_id: "{{cloudfront_key_group_id}}"
-cloudfront_private_key: "{{ cloudfront_private_key }}"
+cloudfront_private_key: "{{ lookup('file','{{workspace}}/cloudfront_private_key.pem')}}"
 cloudfront_domain_name: "{{ cloudfront_domain_name }}"
+

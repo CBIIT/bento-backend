@@ -29,6 +29,7 @@
       CF_PRIVATE_KEY: "{{cloudfront_private_key}}"
       CF_KEY_PAIR_ID: "{{cloudfront_key_group_id}}"
       URL_SRC: "{{url_src}}"
+      BACKEND_URL: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}"
       VERSION: "{{downloader_version}}" 
       DATE: "{{ansible_date_time.date}}"
       PROJECT: "ICDC"

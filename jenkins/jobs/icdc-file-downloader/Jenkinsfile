@@ -42,10 +42,10 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod' )
-    string(
-    defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
-    description: 'Provide indexd url',
-    name: 'IndexD_Url')
+    // string(
+    // defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+    // description: 'Provide indexd url',
+    // name: 'IndexD_Url')
    	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Downloader_Tag', 
@@ -114,7 +114,7 @@ pipeline {
               playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-file-downloader.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						  extraVars: [
-                       		placeholder: 'yes',
+                       		tier: "${params.Environment}"
                         ],
 						colorized: true)
  				}
@@ -132,6 +132,8 @@ pipeline {
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
+          string(credentialsId: 'cloudfront_private_key', variable: 'CLOUDFRONT_PRIVATE_KEY'),
+          string(credentialsId: 'dev_cloudfront_domain_name', variable: 'CLOUDFRONT_DOMAIN_NAME'),
           usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
           ])
         {
@@ -140,7 +142,9 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                      indexd_url: "${params.IndexD_Url}",
-                     tier: "${params.Environment}"
+                     tier: "${params.Environment}",
+                     cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
+                     cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}"
                     ],
 					colorized: true)
   			}

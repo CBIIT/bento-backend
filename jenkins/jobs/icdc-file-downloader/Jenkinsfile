@@ -132,12 +132,13 @@ pipeline {
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
-          string(credentialsId: 'cloudfront_private_key', variable: 'CLOUDFRONT_PRIVATE_KEY'),
+          file(credentialsId: 'cloudfront_private_key', variable: 'cloudfront_private_key_file'),
           string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
           string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
           usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
           ])
         {
+          sh "cp ${cloudfront_private_key_file} ${WORKSPACE}/cloudfront_private_key.pem"
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

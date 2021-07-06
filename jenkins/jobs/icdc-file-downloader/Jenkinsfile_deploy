@@ -95,7 +95,7 @@ pipeline {
                   extraVars: [
                        tier: "${params.Environment}",
                        indexd_url: "${params.IndexD_Url}",
-                       cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
+                       //cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
                        cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
                        cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                       ],

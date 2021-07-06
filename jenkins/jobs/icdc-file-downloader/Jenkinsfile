@@ -133,8 +133,8 @@ pipeline {
 				withCredentials([
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
           string(credentialsId: 'cloudfront_private_key', variable: 'CLOUDFRONT_PRIVATE_KEY'),
-          string(credentialsId: '${params.Environment}_cloudfront_key_group_id', variable: 'CLOUDFRONT_KEY_GROUP_ID'),
-          string(credentialsId: '${params.Environment}_cloudfront_domain_name', variable: 'CLOUDFRONT_DOMAIN_NAME'),
+          string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
+          string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
           usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
           ])
         {

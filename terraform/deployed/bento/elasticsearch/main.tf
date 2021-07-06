@@ -33,7 +33,7 @@ resource "aws_security_group" "es" {
   ingress {
     from_port = local.https_port
     to_port = local.https_port
-    protocol = local.any_protocol
+    protocol = local.tcp_protocol
     cidr_blocks = [
       data.terraform_remote_state.network.outputs.vpc_cidr_block
     ]

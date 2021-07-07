@@ -96,7 +96,7 @@ resource "aws_lb_target_group" "ppdc_frontend_target_group" {
 }
 
 resource "aws_lb_target_group" "ppdc_frontend_db_target_group" {
-  name = "${var.stack_name}-${var.frontend_app_name}-backend-${var.env}-tg"
+  name = "${var.stack_name}-${var.frontend_app_name}-database-${var.env}-tg" # Please change from database to backend
   port = local.play_port
   protocol = "HTTP"
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
@@ -157,7 +157,26 @@ resource "aws_lb_listener_rule" "ppdc_frontend_alb_listener_db" {
   }
   condition {
     path_pattern  {
-      values = ["/api/v4/*"]
+      values = ["/api/graphql/*","/api/graphql"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "ppdc_frontend_alb_listener_apiportal_db" {
+  listener_arn = module.alb.alb_https_listener_arn
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.ppdc_frontend_db_target_group.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${var.stack_name}-${var.frontend_app_name}-${var.env}-api.${var.domain_name}"]
+    }
+  }
+  condition {
+    path_pattern  {
+      values = ["/*"]
     }
   }
 }
@@ -172,7 +191,7 @@ resource "aws_lb_target_group_attachment" "ppdc_frontend" {
 resource "aws_lb_target_group_attachment" "ppdc_frontend_db" {
   target_group_arn = aws_lb_target_group.ppdc_frontend_db_target_group.arn
   target_id = aws_instance.ppdc_frontend.id
-  port      = local.http_port
+  port      = local.play_port
 }
 
 
@@ -224,6 +243,17 @@ data "aws_route53_zone" "ppdc_frontend_zone" {
 
 resource "aws_route53_record" "ppdc_frontend_records" {
   name = "${var.stack_name}-${var.frontend_app_name}-${var.env}"
+  type = "A"
+  zone_id = data.aws_route53_zone.zone.zone_id
+  alias {
+    evaluate_target_health = false
+    name = module.alb.alb_dns_name
+    zone_id = module.alb.alb_zone_id
+  }
+}
+
+resource "aws_route53_record" "ppdc_api_record" {
+  name = "${var.stack_name}-${var.frontend_app_name}-${var.env}-api"
   type = "A"
   zone_id = data.aws_route53_zone.zone.zone_id
   alias {

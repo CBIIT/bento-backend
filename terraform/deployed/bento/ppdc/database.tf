@@ -5,6 +5,7 @@ resource "aws_instance" "db" {
   subnet_id                = data.terraform_remote_state.network.outputs.private_subnets_ids[1]
   iam_instance_profile = aws_iam_instance_profile.ecs-instance-profile.id
   source_dest_check           = false
+  ebs_optimized = true
   vpc_security_group_ids = [aws_security_group.ppdc-database-sg.id]
   user_data  = data.template_cloudinit_config.user_data.rendered
   root_block_device {
@@ -74,7 +75,8 @@ resource "aws_security_group_rule" "all_outbound" {
 
 
 #create boostrap script to hook up the node to ecs cluster
-resource "aws_ssm_document" "ssm_neo4j_boostrap" {
+resource "aws_ssm_document" "ssm_ppdc_database_boostrap" {
+#resource "aws_ssm_document" "ssm_neo4j_boostrap" {
   name          = "${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-setup-database"
   document_type = "Command"
   document_format = "YAML"
@@ -109,12 +111,11 @@ DOC
 }
 
 
-
-//resource "aws_ssm_association" "database" {
-//  name = aws_ssm_document.ssm_neo4j_boostrap.name
-//  targets {
-//    key    = "tag:Name"
-//    values = ["${var.stack_name}-${var.env}-${var.database_name}"]
-//  }
-//  depends_on = [aws_instance.db]
-//}
+resource "aws_ssm_association" "database" {
+  name = aws_ssm_document.ssm_ppdc_database_boostrap.name
+  targets {
+    key    = "tag:Name"
+    values = ["${var.stack_name}-${var.frontend_app_name}-frontend-${var.env}-database"]
+  }
+  depends_on = [aws_instance.db]
+}

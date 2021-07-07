@@ -42,10 +42,10 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod')
-    string(
-    defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
-    description: 'Provide indexd url',
-    name: 'IndexD_Url')
+    //string(
+    //defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+    //description: 'Provide indexd url',
+    //name: 'IndexD_Url')
 
   }
   options {
@@ -80,18 +80,25 @@ pipeline {
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
         withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
+          string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
+          string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
           string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+          file(credentialsId: 'cloudfront_private_key', variable: 'cloudfront_private_key_file'),
           string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
           string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
           file(credentialsId: 'ansible_host_file', variable: 'host_file')])
           {
             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+            sh "cp ${cloudfront_private_key_file} ${WORKSPACE}/icdc-devops/ansible/cloudfront_private_key"
             ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                   extraVars: [
                        tier: "${params.Environment}",
                        indexd_url: "${params.IndexD_Url}",
+                       //cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
+                       cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
+                       cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                       ],
             colorized: true)
         }

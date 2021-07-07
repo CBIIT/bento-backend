@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 # vars file for data loading
 neo4j_password: "{{ lookup('env','NEO4J_PASSWORD') }}"
 neo4j_user: neo4j
@@ -12,9 +11,6 @@ cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
 split_transactions:  "{{ lookup('env','SPLIT')}}"
 project:  "{{lookup('env','PROJECT')}}"
 region: us-east-1
-
-
-
 #vars for match files
 match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
 okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
@@ -33,6 +29,4 @@ cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
 ctdc_base_url: "https://trialcommons-dev.cancer.gov"
 s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
 manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
-=======
-# vars file for data-processing
->>>>>>> d2152c45d9436bd371f4f511a379e7076475f1d6
+

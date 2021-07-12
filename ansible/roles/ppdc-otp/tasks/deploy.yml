@@ -23,8 +23,8 @@
     name: ppdc-otp
     image: cbiitssrepo/ppdc-otp-frontend:{{frontend_version}}-{{build_number}}
     env:
-      CONFIG_URL_API: "{% if  tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/graphql{% endif %}"
-      CONFIG_URL_API_BETA: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/graphql{% endif %}"
+      CONFIG_URL_API: "{% if  tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/v4/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/v4/graphql{% endif %}"
+      CONFIG_URL_API_BETA: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/v4/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/v4/graphql{% endif %}"
     restart_policy: always
     ports:
      - "80:80"

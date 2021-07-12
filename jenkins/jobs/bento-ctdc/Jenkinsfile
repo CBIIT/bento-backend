@@ -96,7 +96,7 @@ pipeline {
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/bento-backend']]])
 
-			 checkout([$class: 'GitSCM',
+	    checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
@@ -105,14 +105,14 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/ctdc-frontend']]])
 
-       checkout([$class: 'GitSCM',
-        branches: [[name: "${params.File_Tag}"]],
-        doGenerateSubmoduleConfigurations: false,
-        extensions: [[$class: 'RelativeTargetDirectory',
-        relativeTargetDir: 'bento-files']],
-        submoduleCfg: [],
-        userRemoteConfigs: 
-        [[url: 'https://github.com/CBIIT/bento-files']]])
+        checkout([$class: 'GitSCM',
+                branches: [[name: "${params.File_Tag}"]],
+                doGenerateSubmoduleConfigurations: false,
+                extensions: [[$class: 'RelativeTargetDirectory',
+                relativeTargetDir: 'bento-files']],
+                submoduleCfg: [],
+                userRemoteConfigs: 
+                [[url: 'https://github.com/CBIIT/bento-files']]])
         
   		 checkout( poll: false, 
 				changelog:false,

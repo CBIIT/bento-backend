@@ -32,7 +32,7 @@ neo4j_logs:
   - name: "{{ env }} {{ app_name }} Logs"
     description: "{{ env }} {{ app_name}} Logs"
     category: "{{ env }}/{{ app_type }}/{{ app_name }}"
-    path: "{{ log_path }}/*"
+    path: "{{ log_path }}"
     filters: ""
 additional_logs: "{{ tomcat_logs if app_name == 'Tomcat' else neo4j_logs }}"
 additional_logs_docker: "{{ docker_logs if app_name == 'Tomcat' else '' }}"

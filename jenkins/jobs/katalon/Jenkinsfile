@@ -136,7 +136,8 @@ pipeline {
             steps {
 
 				script {
-					withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key')]) {
+					withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key'),
+					    string(credentialsId: 'Katalon_Org_ID', variable: 'org_id')]) {
 
 						sh label: 'Katalon-Tests', script: '''#!/bin/bash
 

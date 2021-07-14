@@ -3,6 +3,7 @@ dist/
 *.pyc
 creds/*
 imports/*
+*/*.egg-info
 !imports/__init__.py
 .venv
 .env

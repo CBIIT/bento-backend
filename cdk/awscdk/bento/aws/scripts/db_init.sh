@@ -9,7 +9,6 @@ pip install ansible==2.8.0 boto boto3 botocore
 git clone https://github.com/CBIIT/icdc-devops
 cd icdc-devops/ansible && git checkout master
 mkdir -p /var/lib/neo4j/conf
-systemctl restart firewalld
 ansible-playbook community-neo4j.yml
 systemctl restart neo4j
 

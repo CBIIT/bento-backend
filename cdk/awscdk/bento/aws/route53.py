@@ -10,7 +10,7 @@ class Route53Resources:
         domain_name=self.config[ns]['domain_name'])
 
     route53.ARecord(self,
-        'Bento-Alias-Record',
+        "{}-Alias-Record".format(ns),
         record_name=ns,
         target=route53.RecordTarget.from_alias(targets.LoadBalancerTarget(self.bentoALB)),
         zone=hostedZone)

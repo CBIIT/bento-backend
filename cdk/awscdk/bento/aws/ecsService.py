@@ -34,7 +34,8 @@ class ECSService:
     )
 
     # Backend Task Definition
-    backendECSTask = ecs.Ec2TaskDefinition(self, "bento-ecs-backend",
+    backendECSTask = ecs.Ec2TaskDefinition(self,
+        "{}-ecs-backend".format(ns),
         network_mode=ecs.NetworkMode.AWS_VPC)
     
     backendECSContainer = backendECSTask.add_container('api',
@@ -57,7 +58,8 @@ class ECSService:
         cluster=self.bentoECS)
 
     # Frontend Task Definition
-    frontendECSTask = ecs.Ec2TaskDefinition(self, "bento-ecs-frontend",
+    frontendECSTask = ecs.Ec2TaskDefinition(self,
+        "{}-ecs-frontend".format(ns),
         network_mode=ecs.NetworkMode.AWS_VPC)
     
     frontendECSContainer = frontendECSTask.add_container('ui',

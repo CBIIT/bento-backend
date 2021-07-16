@@ -6,11 +6,12 @@ class ECSCluster:
   def createResources(self, ns):
 
     # ECS Cluster
-    self.bentoECS = ecs.Cluster(self, "bento-ecs",
+    self.bentoECS = ecs.Cluster(self,
+        "{}-ecs".format(ns),
         cluster_name="{}".format(ns),
         vpc=self.bentoVPC)
     
-    self.bentoECS_ASG = self.bentoECS.add_capacity('bento-ecs-instance',
+    self.bentoECS_ASG = self.bentoECS.add_capacity("{}-ecs-instance".format(ns),
         instance_type=ec2.InstanceType(self.config[ns]['fronted_instance_type']),
         key_name=self.config[ns]['ssh_key_name'],
         auto_scaling_group_name="{}-frontend".format(ns),

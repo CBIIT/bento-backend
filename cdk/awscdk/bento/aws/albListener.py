@@ -29,7 +29,7 @@ class ALBListener:
         if ('*.{}'.format(self.config[ns]['domain_name']) in cert.values()):
             certARN = cert['CertificateArn']
 
-    bento_cert = cfm.Certificate.from_certificate_arn(self, "bento-cert",
+    bento_cert = cfm.Certificate.from_certificate_arn(self, "{}-cert".format(ns),
         certificate_arn=certARN)
     
     listener = self.bentoALB.add_listener("PublicListener",

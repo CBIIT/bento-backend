@@ -17,7 +17,7 @@ class EC2Resources:
     
     # Instance
     self.DBInstance = ec2.Instance(self, 
-        "Database Instance",
+        "{}-Database-Instance".format(ns),
         instance_type=ec2.InstanceType(self.config[ns]['database_instance_type']),
         machine_image=neo4j_4,
         key_name=self.config[ns]['ssh_key_name'],

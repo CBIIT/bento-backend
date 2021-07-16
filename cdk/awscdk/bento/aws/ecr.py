@@ -4,7 +4,8 @@ class ECRResources:
   def createResources(self, ns):
 
     # ECR Repository
-    self.bentoECR = ecr.Repository(self, "bento-ecr",
+    self.bentoECR = ecr.Repository(self,
+        "{}-ecr".format(ns),
         repository_name="{}-ecr-repository".format(ns),
         image_scan_on_push=True)
 

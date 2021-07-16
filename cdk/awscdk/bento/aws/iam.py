@@ -5,13 +5,15 @@ class IAMResources:
   def createResources(self, ns):
 
     # ECS Instance Role
-    self.ecsInstanceRole = iam.Role(self, "ecs-instance-role",
+    self.ecsInstanceRole = iam.Role(self,
+        "{}-ecs-instance-role".format(ns),
         role_name="{}-ecs-instance-role".format(ns),
         assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"))
     core.Tags.of(self.ecsInstanceRole).add("Name", "{}-ecs-instance-role".format(ns))
     
     # ECS Service Role
-    self.ecsServiceRole = iam.Role(self, "ecs-service-role",
+    self.ecsServiceRole = iam.Role(self,
+        "{}-ecs-service-role".format(ns),
         role_name="{}-ecs-service-role".format(ns),
         assumed_by=iam.ServicePrincipal("ecs.amazonaws.com"))
     core.Tags.of(self.ecsServiceRole).add("Name", "{}-ecs-service-role".format(ns))
@@ -57,7 +59,8 @@ class IAMResources:
       ]
     }
     
-    ssmPolicy = iam.Policy(self, "ssm-policy",
+    ssmPolicy = iam.Policy(self,
+        "{}-ssm-policy".format(ns),
         policy_name="{}-ssm-policy".format(ns),
         document=iam.PolicyDocument.from_json(ssmPolicyDocument))
     core.Tags.of(ssmPolicy).add("Name", "{}-ssm-policy".format(ns))
@@ -76,7 +79,8 @@ class IAMResources:
       ]
     }
     
-    ec2Policy = iam.Policy(self, "ec2-policy",
+    ec2Policy = iam.Policy(self,
+        "{}-ec2-policy".format(ns),
         policy_name="{}-ec2-policy".format(ns),
         document=iam.PolicyDocument.from_json(ec2PolicyDocument))
     core.Tags.of(ec2Policy).add("Name", "{}-ec2-policy".format(ns))
@@ -110,7 +114,8 @@ class IAMResources:
       ]
     }
 
-    ecsPolicy = iam.Policy(self, "ecs-policy",
+    ecsPolicy = iam.Policy(self,
+        "{}-ecs-policy".format(ns),
         policy_name="{}-ecs-policy".format(ns),
         document=iam.PolicyDocument.from_json(ecsPolicyDocument))
     core.Tags.of(ecsPolicy).add("Name", "{}-ecs-policy".format(ns))

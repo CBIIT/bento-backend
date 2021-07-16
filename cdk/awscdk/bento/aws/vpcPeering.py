@@ -5,23 +5,27 @@ class VPCPeering:
   def createResources(self, ns):
 
     # VPC Peering to Management VPC
-    mgtVPC = ec2.Vpc.from_lookup(self, 'management-vpc',
+    mgtVPC = ec2.Vpc.from_lookup(self,
+        "{}-management-vpc".format(ns),
         vpc_name='bento-management-vpc')
     
-    vpc_peering = ec2.CfnVPCPeeringConnection(self, 'mgt-vpc-peering',
+    vpc_peering = ec2.CfnVPCPeeringConnection(self,
+        "{}-vpc-peering".format(ns),
         peer_vpc_id=self.bentoVPC.vpc_id,
         vpc_id=mgtVPC.vpc_id)
     core.Tags.of(vpc_peering).add("Name", "{}-vpc-peering".format(ns))
     
     # Add peering routes from management VPC
     mgtPrivateSubnets = mgtVPC.select_subnets(subnet_type=ec2.SubnetType.PRIVATE)
-    ec2.CfnRoute(self, 'mgt-vpc-peer-private',
+    ec2.CfnRoute(self,
+        "mgt-vpc-peer-private",
         route_table_id=mgtPrivateSubnets.subnets[0].route_table.route_table_id,
         destination_cidr_block=self.bentoVPC.vpc_cidr_block,
         vpc_peering_connection_id=vpc_peering.ref )
 
     mgtPublicSubnets = mgtVPC.select_subnets(subnet_type=ec2.SubnetType.PUBLIC)
-    ec2.CfnRoute(self, 'mgt-vpc-peer-public',
+    ec2.CfnRoute(self,
+        "mgt-vpc-peer-public",
         route_table_id=mgtPublicSubnets.subnets[0].route_table.route_table_id,
         destination_cidr_block=self.bentoVPC.vpc_cidr_block,
         vpc_peering_connection_id=vpc_peering.ref )
@@ -30,7 +34,8 @@ class VPCPeering:
     vpcPrivateSubnets = self.bentoVPC.select_subnets(subnet_type=ec2.SubnetType.PRIVATE)
     subnetNum = 1
     for subnet in vpcPrivateSubnets.subnets:
-      ec2.CfnRoute(self, 'bento-vpc-peer-private-{}'.format(subnetNum),
+      ec2.CfnRoute(self,
+          "{}-vpc-peer-private-{}".format(ns, subnetNum),
           route_table_id=subnet.route_table.route_table_id,
           destination_cidr_block=mgtVPC.vpc_cidr_block,
           vpc_peering_connection_id=vpc_peering.ref )
@@ -39,7 +44,8 @@ class VPCPeering:
     vpcPublicSubnets = self.bentoVPC.select_subnets(subnet_type=ec2.SubnetType.PUBLIC)
     subnetNum = 1
     for subnet in vpcPublicSubnets.subnets:
-      ec2.CfnRoute(self, 'bento-vpc-peer-public-{}'.format(subnetNum),
+      ec2.CfnRoute(self,
+          "{}-vpc-peer-public-{}".format(ns, subnetNum),
           route_table_id=subnet.route_table.route_table_id,
           destination_cidr_block=mgtVPC.vpc_cidr_block,
           vpc_peering_connection_id=vpc_peering.ref )

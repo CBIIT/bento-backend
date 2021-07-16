@@ -4,5 +4,6 @@ class VPCResources:
   def createResources(self, ns):
 
     # VPC
-    self.bentoVPC = ec2.Vpc(self, "bento-vpc",
+    self.bentoVPC = ec2.Vpc(self,
+        "{}-vpc".format(ns),
         cidr=self.config[ns]['vpc_cidr_block'])

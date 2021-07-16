@@ -5,7 +5,8 @@ class ALBResources:
   def createResources(self, ns):
 
     # Create ALB
-    self.bentoALB = elbv2.ApplicationLoadBalancer(self, "bento-alb",
+    self.bentoALB = elbv2.ApplicationLoadBalancer(self,
+        "{}-alb".format(ns),
         vpc=self.bentoVPC,
         load_balancer_name="{}-alb".format(ns),
         internet_facing=True)

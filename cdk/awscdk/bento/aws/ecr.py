@@ -6,7 +6,7 @@ class ECRResources:
     # ECR Repository
     self.bentoECR = ecr.Repository(self,
         "{}-ecr".format(ns),
-        repository_name="{}-ecr-repository".format(ns),
+        repository_name="{}-ecr".format(ns),
         image_scan_on_push=True)
 
     # ECR Policy

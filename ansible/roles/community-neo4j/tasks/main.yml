@@ -106,6 +106,12 @@
   systemd:
     daemon_reload: yes
 
+- name: start and enable firewalld service
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
 - name: open neo4j data ports
   firewalld:
     port: "{{item}}/tcp"

@@ -21,7 +21,7 @@ This will start a container with all required applications installed and map the
 
 ## Initialize the bento cdk project
 
-In order to build the bento cdk files you will need to get the required python modules:
+In order to build the bento cdk files you will need to get the required python modules (this command should be run in the bento folder):
 
 ```bash
 pip3 install --ignore-installed -r requirements.txt

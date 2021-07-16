@@ -27,7 +27,7 @@
     description: neo4j repository
     file: neo4j
     baseurl: https://yum.neo4j.com/stable
-    gpgcheck: yes
+    gpgcheck: no
     enabled: yes
 
 - name: install neo4j community {{ neo4j_version }} and java 11 JRE
@@ -81,6 +81,13 @@
     dest: "/var/lib/neo4j/plugins/apoc-{{ apoc_version }}.jar"
     owner: neo4j
     group: neo4j
+
+- name: update ownership of /var/lib/neo4j
+  file: 
+    path: /var/lib/neo4j
+    owner: neo4j
+    group: neo4j
+    recurse: yes
 
 - name: start and enable neo4j service
   service:

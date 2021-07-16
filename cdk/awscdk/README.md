@@ -40,4 +40,4 @@ cdk diff -a "python3 app.py -t <tier>"
 cdk destroy -a "python3 app.py -t <tier>"
 ```
 
-* Note: an appropriate tier must be specified to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes
+* Note: an appropriate tier must be specified in bento.properties in order to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes

@@ -1,0 +1,30 @@
+type FilterResult{
+    numberOfSubjects: Int
+    subjectIds: [String]
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+    searchSubject2(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): FilterResult
+}
+
+

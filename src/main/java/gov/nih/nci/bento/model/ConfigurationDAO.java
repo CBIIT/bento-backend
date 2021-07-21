@@ -29,6 +29,17 @@ public class ConfigurationDAO {
 	@Value("${graphql.redis_schema}")
 	private String redisSchemaFile;
 
+	public String getEsSchemaFile() {
+		return esSchemaFile;
+	}
+
+	public void setEsSchemaFile(String esSchemaFile) {
+		this.esSchemaFile = esSchemaFile;
+	}
+
+	@Value("${graphql.es_schema}")
+	private String esSchemaFile;
+
 	//Query Restrictions
 	@Value("${allow_graphql_query}")
 	private boolean allowGraphQLQuery;
@@ -52,6 +63,17 @@ public class ConfigurationDAO {
 	private boolean redisFilterEnabled;
 	@Value("${redis.filter.init_queries_file}")
 	private String redisFilterInitQueriesFile;
+
+	public String getEsHost() {
+		return esHost;
+	}
+
+	public void setEsHost(String esHost) {
+		this.esHost = esHost;
+	}
+
+	@Value("${es.host}")
+	private String esHost;
 
 	//Testing
 	@Value("${test.queries_file}")

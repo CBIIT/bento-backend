@@ -135,7 +135,7 @@ pipeline {
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_DEV', variable: 'pass_file')]) {
                             PROFILE="${pass_file}"
-							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+							sh "mkdir ${WORKSPACE}/Profiles && cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
                             }
                         break
 					//case "Katalon_Dev_CTDC":

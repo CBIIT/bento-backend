@@ -157,7 +157,7 @@ resource "aws_lb_listener_rule" "ppdc_frontend_alb_listener_db" {
   }
   condition {
     path_pattern  {
-      values = ["/api/graphql/*","/api/graphql"]
+      values = ["/api/v4/graphql/*","/api/v4/graphql"]
     }
   }
 }

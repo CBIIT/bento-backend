@@ -100,6 +100,9 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_DEV_IP}"
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_DEV_IP}"
+                  env.PLAY_PORT = "${PLAY_PORT}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
     
@@ -120,8 +123,8 @@ pipeline {
               break
               case "stage":
                 withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
-                  env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_QA_IP}"
-                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_QA_IP}"
+                  env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_STAGE_IP}"
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_STAGE_IP}"
                   env.PLAY_PORT = "${PLAY_PORT}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"

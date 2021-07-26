@@ -64,6 +64,13 @@ public class ConfigurationDAO {
 	@Value("${redis.filter.init_queries_file}")
 	private String redisFilterInitQueriesFile;
 
+
+	@Value("${es.host}")
+	private String esHost;
+	@Value(("${es.filter.enabled}"))
+	private boolean esFilterEnabled;
+
+
 	public String getEsHost() {
 		return esHost;
 	}
@@ -72,8 +79,13 @@ public class ConfigurationDAO {
 		this.esHost = esHost;
 	}
 
-	@Value("${es.host}")
-	private String esHost;
+	public boolean getEsFilterEnabled() {
+		return esFilterEnabled;
+	}
+
+	public void setEsFilterEnabled(boolean esFilterEnabled) {
+		this.esFilterEnabled = esFilterEnabled;
+	}
 
 	//Testing
 	@Value("${test.queries_file}")

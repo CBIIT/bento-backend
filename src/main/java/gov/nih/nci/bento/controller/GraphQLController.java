@@ -171,8 +171,8 @@ public class GraphQLController {
 
 	private void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
-		GraphQLSchema redisSchema = getRedisSchema();
-		GraphQLSchema newSchema = mergeSchema(neo4jSchema, redisSchema);
+		GraphQLSchema esSchema = getEsSchema();
+		GraphQLSchema newSchema = mergeSchema(neo4jSchema, esSchema);
 		graphql = GraphQL.newGraphQL(newSchema).build();
 	}
 
@@ -226,6 +226,16 @@ public class GraphQLController {
 
 	private GraphQLSchema getRedisSchema() throws IOException {
 		if (config.getRedisEnabled() && config.isRedisFilterEnabled()){
+			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
+			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
+		}
+		else{
+			return null;
+		}
+	}
+
+	private GraphQLSchema getEsSchema() throws IOException {
+		if (config.getEsFilterEnabled()){
 			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
 			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
 		}

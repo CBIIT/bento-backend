@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 import sys, getopt
-from alerts.channels import email_channel, slack_channel
-from alerts.policies import url_policy
+from monitors.alerts.channels import email_channel, slack_channel
+from monitors.alerts.policies import url_policy
+from monitors.synthetics import url_monitor
 
 def main(argv):
 
@@ -41,6 +42,7 @@ if __name__ == "__main__":
    print('Adding Monitor Configuration For: {} {}'.format(project, tier))
    print()
    
-   email_channel.setalertemail(project, tier, key)
-   slack_channel.setalertslack(project, tier, key)
-   url_policy.setalertpolicy(project, tier, key)
+   email_id = email_channel.setalertemail(project, tier, key)
+   slack_id = slack_channel.setalertslack(project, tier, key)
+   synthetics_id = url_monitor.seturlmonitor(project, tier, key)
+   url_policy.setalertpolicy(project, tier, email_id, slack_id, synthetics_id, key)

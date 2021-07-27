@@ -120,7 +120,7 @@ pipeline {
 						WIKI_NAME="Bento"
 						withCredentials([string(credentialsId: 'Box_Email_BENTO_ICDC', variable: 'box_email'),
 						  string(credentialsId: 'Box_Url_BENTO_ICDC', variable: 'box_url'),
-						  file(credentialsId: 'Katalon_PERF_PROD', variable: 'pass_file')]) {
+						  file(credentialsId: 'Katalon_ICDC_PROD', variable: 'pass_file')]) {
                             BOX_EMAIL="${box_email}"
 							BOX_URL="${box_url}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"

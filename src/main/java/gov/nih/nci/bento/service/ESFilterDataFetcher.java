@@ -3,20 +3,19 @@ package gov.nih.nci.bento.service;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.action.search.*;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -41,23 +40,25 @@ public class ESFilterDataFetcher {
     }
 
     private List<String> searchSubjects3(Map<String, Object> params) throws FilterException {
+        final String ID_FIELD = "subject_id";
+        final String DASHBOARD_INDEX = "dashboard";
+
+        String[] includeFields = new String[] {ID_FIELD};
         try {
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             sourceBuilder.query(buildQuery(params));
-            //Todo: limited to 10,000 IDs by ES, need to use "search after" to get all subject IDs
-            sourceBuilder.from(0);
+            sourceBuilder.fetchSource(includeFields, null);
+            sourceBuilder.sort(new FieldSortBuilder(ID_FIELD).order(SortOrder.ASC));
             sourceBuilder.size(10000);
             sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
-            SearchRequest searchRequest = new SearchRequest();
-            searchRequest.indices("dashboard");
+            SearchRequest searchRequest = new SearchRequest(DASHBOARD_INDEX);
+            final Scroll scroll = new Scroll(TimeValue.timeValueSeconds(10L));
+            searchRequest.scroll(scroll);
             searchRequest.source(sourceBuilder);
 
             SearchResponse response = esService.query(searchRequest);
-            List<String> subject_ids = new ArrayList<>();
-            for (var hit: response.getHits()) {
-                subject_ids.add((String)hit.getSourceAsMap().get("subject_id"));
-            }
+            List<String> subject_ids = esService.collectAll(response, scroll, ID_FIELD);
 
             return subject_ids;
         } catch (Exception e) {

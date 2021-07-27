@@ -60,7 +60,7 @@ pipeline {
         defaultValue: 'QA_PROD', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_PROD,PERF_PROD' )
+        value: 'QA_PROD,PERF_PROD,BENTO_ICDC' )
 
 	string(defaultValue: "", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
@@ -96,27 +96,34 @@ pipeline {
                     case "QA_PROD":
 						WIKI_PAGE="442632045"
 						WIKI_NAME="Bento"
-						withCredentials([string(credentialsId: 'Box_Email_QA_BENTO', variable: 'box_email')]) {
-                           BOX_EMAIL="${box_email}"
-                            }
-						  withCredentials([string(credentialsId: 'Box_Url_QA_BENTO', variable: 'box_url')]) {
-						     BOX_URL="${box_url}"
-                           }
-                        withCredentials([file(credentialsId: 'Katalon_QA_PROD', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+						withCredentials([string(credentialsId: 'Box_Email_QA_BENTO', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_QA_BENTO', variable: 'box_url'),
+					      file(credentialsId: 'Katalon_QA_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
 					case "PERF_PROD":
 						WIKI_PAGE="442632045"
 						WIKI_NAME="Bento"
-						withCredentials([string(credentialsId: 'Box_Email_PERF_BENTO', variable: 'box_email')]) {
-                           BOX_EMAIL="${box_email}"
+						withCredentials([string(credentialsId: 'Box_Email_PERF_BENTO', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_PERF_BENTO', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_PERF_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
-						  withCredentials([string(credentialsId: 'Box_Url_PERF_BENTO', variable: 'box_url')]) {
-						     BOX_URL="${box_url}"
-                           }
-                        withCredentials([file(credentialsId: 'Katalon_PERF_PROD', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+                        break
+					case "BENTO_ICDC":
+						WIKI_PAGE="442632045"
+						WIKI_NAME="Bento"
+						withCredentials([string(credentialsId: 'Box_Email_BENTO_ICDC', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_BENTO_ICDC', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_PERF_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                        }
@@ -152,7 +159,6 @@ pipeline {
 								# Update profile filename
 								profile_file=$(basename $PROFILE_FILE)
 								profile_name="${profile_file%.*}"
-								cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
 								
 								#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
 								
@@ -194,7 +200,6 @@ pipeline {
 
 				}
 				
-				//emailext(attachmentsPattern: 'results/*.html',
 				emailext(attachmentsPattern: 'results/*.zip',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results - Box',
@@ -207,7 +212,6 @@ pipeline {
 						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
 
 						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-						//resultsFile=$(basename results/*.html)
 						resultsFile=$(basename results/*.zip)
 						pageID=''' + WIKI_PAGE + '''
 						pageName=''' + WIKI_NAME + '''
@@ -305,7 +309,6 @@ pipeline {
 
 							errorOutput=''' + ERROR_OUTPUT + '''
 							boxUrl=''' + BOX_URL + '''
-							//resultsFile=$(basename results/*.html)
 							resultsFile=$(basename results/*.zip)
 							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
 							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
@@ -322,7 +325,6 @@ pipeline {
 
 						emailBody=''' + ERROR_OUTPUT + '''
 						boxUrl=''' + BOX_URL + '''
-						//resultsFile=$(basename results/*.html)
 						resultsFile=$(basename results/*.zip)
 						emailBody="<b> $emailBody"
 						emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
@@ -335,7 +337,6 @@ pipeline {
 
 						}
 
-					//emailext(attachmentsPattern: 'results/*.html',
 					emailext(attachmentsPattern: 'results/*.zip',
 						mimeType: 'text/html',
 						body: "${EMAIL_BODY}",

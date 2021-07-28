@@ -99,27 +99,25 @@ pipeline {
                     case "QA_ICDC":
 						WIKI_PAGE="434110502"
 						WIKI_NAME="ICDC"
-						withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email')]) {
-                            BOX_EMAIL="${box_email}"
-                            }
-						withCredentials([string(credentialsId: 'Box_Url_QA_ICDC', variable: 'box_url')]) {
-							BOX_URL="${box_url}"
-                            }
-                        withCredentials([file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+						withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_QA_ICDC', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
+                            BOX_URL="${box_url}"
+							BOX_EMAIL="${box_email}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                     case "QA_CTDC":
 						WIKI_PAGE="434110839"
 						WIKI_NAME="CTDC"
-						withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
-                            BOX_EMAIL="${box_email}"
-                            }
-						withCredentials([string(credentialsId: 'Box_Url_QA_CTDC', variable: 'box_url')]) {
-							BOX_URL="${box_url}"
-                            }
-                        withCredentials([file(credentialsId: 'Katalon_QA_CTDC', variable: 'pass_file')]) {
-                            sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+						withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_QA_CTDC', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_QA_CTDC', variable: 'pass_file')]) {
+                            BOX_URL="${box_url}"
+							BOX_EMAIL="${box_email}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                        }
@@ -132,6 +130,7 @@ pipeline {
 				KATALON_PROFILE     =   "${params.Profile}"
                 KATALON_PRJ         =   "${params.KatalonPrj}"
                 KATALON_SUITE_PATH  =   "${params.KatalonSuite}"
+				PROFILE_FILE        =   "${PROFILE}"
                 }
             steps {
 
@@ -150,9 +149,13 @@ pipeline {
 
 							# Create the output files directory (required for writing excel files)
 							rm -rf OutputFiles && mkdir OutputFiles
+
+							# Update profile filename
+							profile_file=$(basename $PROFILE_FILE)
+							profile_name="${profile_file%.*}"
 							
 							# Run Katalon Tests
-							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$KATALON_PROFILE" -browserType="$KATALON_BROWSER (headless)" -reportFolder="$WORKSPACE/results" -reportFileName="$reportFile" -apiKey="$api_key"
+							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
 
 							'''
 
@@ -173,7 +176,23 @@ pipeline {
 					reportName: 'HTML Report',
 					reportTitles: ''])
 
-				emailext(attachmentsPattern: 'results/*.html',
+				script {
+
+					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
+
+					apt-get update && apt-get install -y zip
+					
+					resultsFile=$(basename results/*.html)
+					zipFile=$(basename -s .html results/*.html)
+					
+					zip -r results/$zipFile.zip OutputFiles
+					zip -u results/$zipFile.zip results/$resultsFile
+
+					'''
+
+				}
+
+				emailext(attachmentsPattern: 'results/*.zip',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results',
                     to: "${BOX_EMAIL}")
@@ -185,7 +204,7 @@ pipeline {
 						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
 
 						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-						resultsFile=$(basename results/*.html)
+						resultsFile=$(basename results/*.zip)
 						pageID=''' + WIKI_PAGE + '''
 						pageName=''' + WIKI_NAME + '''
 						pageName="$pageName Automated Test Results"
@@ -282,7 +301,7 @@ pipeline {
 
 							errorOutput=''' + ERROR_OUTPUT + '''
 							boxUrl=''' + BOX_URL + '''
-							resultsFile=$(basename results/*.html)
+							resultsFile=$(basename results/*.zip)
 							errorOutput="$errorOutput \\n\\n <!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
 							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
 							post_message_to_slack
@@ -298,7 +317,7 @@ pipeline {
 
 						emailBody=''' + ERROR_OUTPUT + '''
 						boxUrl=''' + BOX_URL + '''
-						resultsFile=$(basename results/*.html)
+						resultsFile=$(basename results/*.zip)
 						emailBody="<b> $emailBody"
 						emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
 						emailBody=${emailBody//\\\\n/<br>}
@@ -310,7 +329,7 @@ pipeline {
 
 						}
 
-					emailext(attachmentsPattern: 'results/*.html',
+					emailext(attachmentsPattern: 'results/*.zip',
 						mimeType: 'text/html',
 						body: "${EMAIL_BODY}",
 						subject: 'Failed Katalon Tests: results attached',

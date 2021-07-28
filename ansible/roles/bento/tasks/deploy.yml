@@ -24,6 +24,8 @@
           value: "{{ neo4j_bearer }}"
         - name: BENTO_API_VERSION
           value: "{{backend_version}}"
+        - name: ES_HOST
+          value: "{{es_host}}"
         - name: REDIS_ENABLE
           value: "{{ enable_redis }}"
         - name: REDIS_USE_CLUSTER

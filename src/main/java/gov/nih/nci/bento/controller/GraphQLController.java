@@ -34,6 +34,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,7 +89,7 @@ public class GraphQLController {
 	}
 
 	@CrossOrigin
-	@RequestMapping(value = "/version", method = {RequestMethod.GET})
+	@RequestMapping(value = "/version", method = {RequestMethod.GET}, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	public ResponseEntity<String> getVersion(HttpEntity<String> httpEntity, HttpServletResponse response){
 		logger.info("Hit end point:/version");
 		String versionString = "Bento API Version: "+config.getBentoApiVersion();
@@ -101,7 +102,7 @@ public class GraphQLController {
 			(value = "/v1/graphql/", method = {
 				RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PUT, RequestMethod.DELETE,
 				RequestMethod.TRACE, RequestMethod.OPTIONS, RequestMethod.PATCH}
-			)
+				, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	public ResponseEntity<String> getGraphQLResponseByGET(HttpEntity<String> httpEntity, HttpServletResponse response){
 		HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
 		String error = ApiError.jsonApiError(new ApiError(status, "API will only accept POST requests"));
@@ -109,7 +110,7 @@ public class GraphQLController {
 	}
 
 	@CrossOrigin
-	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.POST)
+	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	@ResponseBody
 	public ResponseEntity<String> getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response){
 

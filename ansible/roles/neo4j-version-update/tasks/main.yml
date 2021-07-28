@@ -99,7 +99,7 @@
     #- { regexp: '^#dbms.memory.heap.max_size=512m', line: 'dbms.memory.heap.max_size=5632m' }
     - { regexp: '^#dbms.allow_upgrade=true', line: 'dbms.allow_upgrade=true' }
     - { regexp: '^#dbms.default_listen_address=0.0.0.0', line: 'dbms.default_listen_address=0.0.0.0' }
-    - { regexp: '^#dbms.connector.bolt.tls_level=DISABLED', line: 'dbms.connector.bolt.tls_level=OPTIONAL' }
+    - { regexp: '^#dbms.connector.bolt.tls_level=DISABLED', line: 'dbms.connector.bolt.tls_level=REQUIRED' }
     - { regexp: '^#dbms.connector.bolt.listen_address=:7687', line: 'dbms.connector.bolt.listen_address=:7687' }
     - { regexp: '^#dbms.ssl.policy.bolt.enabled=true', line: 'dbms.ssl.policy.bolt.enabled=true' }
     - { regexp: '^#dbms.ssl.policy.bolt.base_directory=certificates/bolt', line: 'dbms.ssl.policy.bolt.base_directory=certificates' }

@@ -190,7 +190,7 @@ pipeline {
 					'''
 
 				}
-
+				
 				emailext(attachmentsPattern: 'results/*.zip',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results - Box',
@@ -241,11 +241,7 @@ pipeline {
 						}
 					
 					}
-				
-				}
-				
-			failure {
-
+					
 				script {
 				
 				    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
@@ -260,7 +256,7 @@ pipeline {
 				
 					# function to read output file: JUnit.xml
 					parse_results_xml(){
-						error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
+						error_message="Katalon Test results for the latest run on $Profile (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
 
 						IFS=$'\\n'
 						for line in $(grep '<testcase' $inputFile)
@@ -282,57 +278,62 @@ pipeline {
 						returnStdout: true).trim()
 				
                     }
-					
-					script {
 
-						withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
+				script {
+					EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash
+
+					emailBody=''' + ERROR_OUTPUT + '''
+					boxUrl=''' + BOX_URL + '''
+					resultsFile=$(basename results/*.zip)
+					emailBody="<b> $emailBody"
+					emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
+					emailBody=${emailBody//\\\\n/<br>}
+					emailBody="$emailBody <br><br><br> The results of this test run can be found in Box:  <a href=\\\"$boxUrl\\\">$resultsFile</a>"
+					echo $emailBody
+
+					''',
+					returnStdout: true).trim()
+
+					}
+
+				emailext(attachmentsPattern: 'results/*.zip',
+					mimeType: 'text/html',
+					body: "${EMAIL_BODY}",
+					subject: 'Katalon Tests: results attached',
+					to: "${EmailRecipients}")
+					
+				
+				}
+			
+			failure {
+
+				script {
+
+					withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
 						
-							sh label: 'Katalon-Results-Slack', script: '''#!/bin/bash
+						sh label: 'Katalon-Results-Slack', script: '''#!/bin/bash
 
-							slackHeaders="\'Content-type: application/json\'"
+						slackHeaders="\'Content-type: application/json\'"
 
-							# POST function to send to Slack
-							post_message_to_slack(){
-									curlCMD="curl --silent --max-time 10 --request POST --header $slackHeaders --data $payload $slack_url"
-									slackError=$(eval $curlCMD)
-									echo "Slack Error:   $slackError"
-									}
+						# POST function to send to Slack
+						post_message_to_slack(){
+								curlCMD="curl --silent --max-time 10 --request POST --header $slackHeaders --data $payload $slack_url"
+								slackError=$(eval $curlCMD)
+								echo "Slack Error:   $slackError"
+								}
 
-							errorOutput=''' + ERROR_OUTPUT + '''
-							boxUrl=''' + BOX_URL + '''
-							resultsFile=$(basename results/*.zip)
-							errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
-							payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
-							post_message_to_slack
-
-							'''
-						
-							}
-					
-						}
-					
-					script {
-						EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash
-
-						emailBody=''' + ERROR_OUTPUT + '''
+						errorOutput=''' + ERROR_OUTPUT + '''
 						boxUrl=''' + BOX_URL + '''
 						resultsFile=$(basename results/*.zip)
-						emailBody="<b> $emailBody"
-						emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
-						emailBody=${emailBody//\\\\n/<br>}
-						emailBody="$emailBody <br><br><br> The results of this test run can be found in Box:  <a href=\\\"$boxUrl\\\">$resultsFile</a>"
-						echo $emailBody
-
-						''',
-						returnStdout: true).trim()
-
+						errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
+						payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
+						post_message_to_slack
+							'''
+						
 						}
-
-					emailext(attachmentsPattern: 'results/*.zip',
-						mimeType: 'text/html',
-						body: "${EMAIL_BODY}",
-						subject: 'Failed Katalon Tests: results attached',
-						to: "${EmailRecipients}")
+					
+					}
+					
 					
 				}
 

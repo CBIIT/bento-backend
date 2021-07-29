@@ -67,6 +67,27 @@ public class ConfigurationDAO {
 
 	@Value("${es.host}")
 	private String esHost;
+	@Value("${es.port}")
+	private int esPort;
+	@Value("${es.scheme}")
+	private String esScheme;
+
+	public int getEsPort() {
+		return esPort;
+	}
+
+	public void setEsPort(int esPort) {
+		this.esPort = esPort;
+	}
+
+	public String getEsScheme() {
+		return esScheme;
+	}
+
+	public void setEsScheme(String esScheme) {
+		this.esScheme = esScheme;
+	}
+
 	@Value(("${es.filter.enabled}"))
 	private boolean esFilterEnabled;
 

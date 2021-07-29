@@ -31,7 +31,7 @@ public class ESService {
     @PostConstruct
     public void init() {
         logger.info("Initializing Elasticsearch client");
-        var lowLevelBuilder = RestClient.builder(new HttpHost(config.getEsHost(), 9200, "http"));
+        var lowLevelBuilder = RestClient.builder(new HttpHost(config.getEsHost(), config.getEsPort(), config.getEsScheme()));
         client = new RestHighLevelClient( lowLevelBuilder );
     }
 

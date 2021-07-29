@@ -308,6 +308,43 @@ pipeline {
 			failure {
 
 				script {
+				
+				    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
+				
+					inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
+
+					# Get test stats
+					totalTestCases="$(grep -c '<testcase' $inputFile)"
+					passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
+					failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
+					errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
+				
+					# function to read output file: JUnit.xml
+					parse_results_xml(){
+						error_message="Katalon Test results for the latest run on $Profile (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
+
+						IFS=$'\\n'
+						for line in $(grep '<testcase' $inputFile)
+						do
+						  if [[ "$line" =~ .*"FAILED" || "$line" =~ .*"ERROR" ]]
+					      then
+							  error_message+="$(echo $line | cut -d '=' -f 2 | cut -d '"' -f 2) \\n "
+						  fi
+						done
+						}
+				
+						# Get test failures
+						parse_results_xml
+												
+						error_message="\'$error_message\'"
+						echo $error_message
+				
+                      ''',
+						returnStdout: true).trim()
+				
+                    }
+				
+				script {
 
 					withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
 						

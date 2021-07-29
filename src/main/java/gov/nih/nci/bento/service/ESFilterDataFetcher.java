@@ -24,7 +24,7 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 @Service
 public class ESFilterDataFetcher {
-    private static final Logger logger = LogManager.getLogger(RedisFilterDataFetcher.class);
+    private static final Logger logger = LogManager.getLogger(ESFilterDataFetcher.class);
 
     @Autowired ESService esService;
 

@@ -60,6 +60,10 @@ pipeline {
 		defaultValue: true,
 		description: 'Enable the Redis filter',
 		name: 'Enable_Redis_Filter')
+	string(
+	    defaultValue: '',
+		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
+		name: 'Test_Params')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -404,7 +408,19 @@ pipeline {
       sendSlackMessage()
 
     }
-	
+
+	success {
+
+		script {
+			echo "${params.Test_Params}"?.trim()
+			if ("${params.Test_Params}"?.trim()) {
+				echo 'Run Bento Katalon Tests'
+				echo "build quietPeriod: 300, job: 'Katalon_prod', parameters: [${params.Test_Params}]"
+			}
+		}
+		
+	}
+
 	cleanup {
 	
 		cleanWs()

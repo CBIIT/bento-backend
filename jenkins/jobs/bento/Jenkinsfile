@@ -74,7 +74,7 @@ pipeline {
 		name: 'Test_Queries_File')
 	string(
 	    defaultValue: '',
-		description: 'The set of parameters to use for test automation (if left blank no tests will be run) - this is a string in the following format: gitParameter(name: 'Tag', value: 'master'), string(name: 'KatalonPrj', value: 'Commons_Automation.prj'), string(name: 'KatalonSuite', value: 'Test Suites/Bento_TestSuite'), extendedChoice(name: 'Browser', value: 'Chrome'), extendedChoice(name: 'Profile', value: 'QA_PROD'), string(name: 'EmailRecipients', value: '')',
+		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
 		name: 'Test_Params')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 

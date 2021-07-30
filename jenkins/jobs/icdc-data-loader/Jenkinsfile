@@ -182,7 +182,8 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-loader.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+						credentialsId: 'commonsdocker',
             			colorized: true) 
  			}
  		}

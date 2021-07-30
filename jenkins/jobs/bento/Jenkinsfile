@@ -72,6 +72,10 @@ pipeline {
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
 		name: 'Test_Queries_File')
+	string(
+	    defaultValue: '',
+		description: 'The set of parameters to use for test automation (if left blank no tests will be run) - this is a string in the following format: gitParameter(name: 'Tag', value: 'master'), string(name: 'KatalonPrj', value: 'Commons_Automation.prj'), string(name: 'KatalonSuite', value: 'Test Suites/Bento_TestSuite'), extendedChoice(name: 'Browser', value: 'Chrome'), extendedChoice(name: 'Profile', value: 'QA_PROD'), string(name: 'EmailRecipients', value: '')',
+		name: 'Test_Params')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -172,20 +176,13 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
-//			git branch: "${params.Backend_Tag}",
-//				url: 'https://github.com/CBIIT/bento-backend'
-				
+
   			checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Backend_Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/bento-backend']]])
-
-//			dir('bento-frontend'){
-//				git branch: "${params.Frontend_Tag}",
-//				url: 'https://github.com/CBIIT/bento-frontend'
-//				}
 
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Tag}"]],
@@ -464,6 +461,13 @@ pipeline {
 				
 				'''
 			
+				}
+			}
+		
+		script {
+			if ("${params.Test_Params}"?.trim()) {
+				echo 'Run Bento Katalon Tests'
+				echo "build quietPeriod: 300, job: 'Katalon_prod', parameters: ["${params.Test_Params}"]"
 				}
 			}
 		

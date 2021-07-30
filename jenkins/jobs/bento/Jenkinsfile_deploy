@@ -412,10 +412,9 @@ pipeline {
 	success {
 
 		script {
-			echo "${params.Test_Params}"?.trim()
 			if ("${params.Test_Params}"?.trim()) {
 				echo 'Run Bento Katalon Tests'
-				echo "build quietPeriod: 300, job: 'Katalon_prod', parameters: [${params.Test_Params}]"
+				build quietPeriod: 300, job: 'Katalon_dev', parameters: ["${params.Test_Params}"]
 			}
 		}
 		

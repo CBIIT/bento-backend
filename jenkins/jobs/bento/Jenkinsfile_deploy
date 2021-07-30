@@ -414,7 +414,7 @@ pipeline {
 		script {
 			if ("${params.Test_Params}"?.trim()) {
 				echo 'Run Bento Katalon Tests'
-				def list_params = params.split(';').collect{it}
+				def list_params = "${params.Test_Params}".split(';').collect{it}
 				build quietPeriod: 300, job: 'Katalon_dev', parameters: [list_params]
 			}
 		}

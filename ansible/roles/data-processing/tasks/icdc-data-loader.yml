@@ -61,8 +61,6 @@
   pip:
     requirements: "{{workspace}}/requirements.txt"
     executable: pip3
-  become: True
-
 
 - name: loader data
   shell:

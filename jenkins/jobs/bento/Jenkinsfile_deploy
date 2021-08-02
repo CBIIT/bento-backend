@@ -416,7 +416,7 @@ pipeline {
 				echo 'Run Bento Katalon Tests'
 				def params = "[${params.Test_Params}]"
 				def list_params = evaluate(params)
-				build quietPeriod: 300, job: 'Test_Automation/Katalon_dev', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonPrj', value: 'Commons_Automation.prj'), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Browser', value: 'Chrome'), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: '')]
+				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_dev', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: '')]
 			}
 		}
 		

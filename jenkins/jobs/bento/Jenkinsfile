@@ -467,8 +467,9 @@ pipeline {
 		script {
 			if ("${params.Test_Params}"?.trim()) {
 				echo 'Run Bento Katalon Tests'
-				echo "build quietPeriod: 300, job: 'Katalon_prod', parameters: [${params.Test_Params}]"
-				}
+				def params = "[${params.Test_Params}]"
+				def list_params = evaluate(params)
+				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
 			}
 		
 		}

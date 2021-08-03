@@ -15,4 +15,4 @@ RUN cd /tmp \
 
 COPY app /app
 EXPOSE 8080
-CMD /app/bin/start -Dhttp.port="8080" -Dplay.http.secret.key="chslslkdangethisssksksaosometkdakdhingsecretkslakdd" -Dconfig.file=/app/conf/production.conf -Dlogger.file=/app/conf/production.xml
+CMD /app/bin/start -Dhttp.port="8080" -Dplay.http.secret.key="chslslkdangethisssksksaosometkdakdhingsecretkslakdd" -Dconfig.file=/app/conf/production.conf -Dlogger.file=/app/conf/production.xml -Dnewrelic.config.app_name='PPDC_AWS_BACKEND_DEV' -javaagent:/usr/local/tomcat/newrelic/newrelic.jar

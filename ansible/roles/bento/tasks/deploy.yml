@@ -46,6 +46,8 @@
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_LOG_FILE_NAME
           value: "STDOUT"
+        - name: NEW_RELIC_LABELS
+          value: '{"project":"{{ project }}","tier": "{{ tier }}"}'
         - name: JAVA_OPTS
           value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
       entryPoint:
@@ -96,6 +98,8 @@
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_NO_CONFIG_FILE
           value: true
+        - name: NEW_RELIC_LABELS
+          value: '{"project":"{{ project }}","tier": "{{ tier }}"}'
       portMappings:
       - containerPort: "80"
         hostPort: "80"
@@ -187,6 +191,8 @@
           value: "{{ app_name }}-docker"
         - name: NEW_RELIC_HOST
           value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_LABELS
+          value: '{"project":"{{ project }}","tier": "{{ tier }}"}'
         - name: STATUS_URL
           value: "{% if tier == 'prod' %}https://bento-tools.org/nginx_status{% else %}https://{{ tier }}.bento-tools.org/nginx_status{% endif %}"
       entryPoint:

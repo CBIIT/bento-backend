@@ -25,5 +25,5 @@
       PLAY_PORT: "{{play_port}}"
       NEW_RELIC_APP_NAME: "{{newrelic_appname}}"
       NEW_RELIC_LICENSE_KEY: "{{newrelic_license}}"
-      JAVA_OPTS: "$JAVA_OPTS -javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+      
 

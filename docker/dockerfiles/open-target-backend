@@ -4,6 +4,7 @@ ENV JAVA_HOME="/usr/lib/jvm/default-jvm/"
 RUN apk add openjdk11 bash curl
 
 ENV PATH=$PATH:${JAVA_HOME}/bin
+ENV JAVA_OPTS="$JAVA_OPTS -javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
 
 RUN cd /tmp \
 && curl -O https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip \

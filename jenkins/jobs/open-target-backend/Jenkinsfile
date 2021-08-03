@@ -104,7 +104,7 @@ pipeline {
                   env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_DEV_IP}"
                   env.PLAY_PORT = "${PLAY_PORT}"
                   env.NEWRELIC_APPNAME = "PPDC_AWS_BACKEND_DEV"
-                  NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+                  env.NEWRELIC_LICENSE="${NEWRELIC_LICENSE}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
     

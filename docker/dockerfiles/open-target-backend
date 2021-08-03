@@ -11,7 +11,10 @@ RUN cd /tmp \
 && unzip /tmp/newrelic-java.zip \
 && mkdir -p /usr/local/tomcat/newrelic \
 && cp /tmp/newrelic/newrelic.jar /usr/local/tomcat/newrelic/newrelic.jar \
-&& cp /tmp/newrelic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml
+&& cp /tmp/newrelic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml \
+&& sed s/license_key:.*license_key.*/license_key: '$NEWRELIC_LICENSE'/ /usr/local/tomcat/newrelic/newrelic.yml \
+&& sed s/app_name:.*Application.*/app_name: $NEWRELIC_APPNAME/ /usr/local/tomcat/newrelic/newrelic.yml
+
 
 COPY app /app
 EXPOSE 8080

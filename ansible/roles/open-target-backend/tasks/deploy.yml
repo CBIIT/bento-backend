@@ -19,7 +19,6 @@
     restart_policy: always
     ports:
      - "8080:8080"
-    command: docker exec "{{stack_name}}-backend" bash -l -c ../files/newrelic.sh
     env:
       SLICK_CLICKHOUSE_URL: jdbc:clickhouse://{{slick_clickhouse_url}}:8123
       ELASTICSEARCH_HOST: "{{elasticsearch_host}}"

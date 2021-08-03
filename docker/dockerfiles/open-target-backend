@@ -5,11 +5,12 @@ RUN apk add openjdk11 bash curl
 
 ENV PATH=$PATH:${JAVA_HOME}/bin
 
-RUN curl -O https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip \
-&& unzip newrelic-java.zip \
+RUN cd /tmp \
+&& curl -O https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip \
+&& unzip /tmp/newrelic-java.zip \
 && mkdir -p /usr/local/tomcat/newrelic \
-&& cp ./newrelic/newrelic.jar /usr/local/tomcat/newrelic/newrelic.jar \
-&& cp ./new-relic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml
+&& cp /tmp/newrelic/newrelic.jar /usr/local/tomcat/newrelic/newrelic.jar \
+&& cp /tmp/new-relic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml
 
 COPY app /app
 EXPOSE 8080

@@ -10,7 +10,7 @@ RUN cd /tmp \
 && unzip /tmp/newrelic-java.zip \
 && mkdir -p /usr/local/tomcat/newrelic \
 && cp /tmp/newrelic/newrelic.jar /usr/local/tomcat/newrelic/newrelic.jar \
-&& cp /tmp/new-relic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml
+&& cp /tmp/newrelic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml
 
 COPY app /app
 EXPOSE 8080

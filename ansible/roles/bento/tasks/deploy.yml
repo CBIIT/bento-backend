@@ -47,7 +47,7 @@
         - name: NEW_RELIC_LOG_FILE_NAME
           value: "STDOUT"
         - name: NEW_RELIC_LABELS
-          value: "{"project":"{{ project }}","tier": "{{ tier }}"}"
+          value: "project:{{ project }},tier: {{ tier }}"
         - name: JAVA_OPTS
           value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
       entryPoint:

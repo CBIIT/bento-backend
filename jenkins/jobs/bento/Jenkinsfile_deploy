@@ -233,12 +233,14 @@ pipeline {
               break
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER'),
+                string(credentialsId: 'es_qa_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  env.ES_HOST = "${ES_HOST}"
 
                 }
               break

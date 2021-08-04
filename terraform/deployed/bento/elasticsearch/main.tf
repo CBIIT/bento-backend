@@ -46,7 +46,7 @@ resource "aws_iam_service_linked_role" "es" {
 }
 
 resource "aws_elasticsearch_domain" "es" {
-  domain_name = var.domain_name
+  domain_name = "${var.stack_name}-${terraform.workspace}-elasticsearch"
   elasticsearch_version = var.elasticsearch_version
 
   cluster_config {

@@ -31,7 +31,7 @@ variable "remote_state_bucket_name" {
 variable "elasticsearch_version" {
   type = string
   description = "specify es version"
-  default =
+  default = "7.10"
 }
 variable "create_es_service_role" {
   type = bool

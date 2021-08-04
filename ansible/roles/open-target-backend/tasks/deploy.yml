@@ -23,7 +23,7 @@
       SLICK_CLICKHOUSE_URL: jdbc:clickhouse://{{slick_clickhouse_url}}:8123
       ELASTICSEARCH_HOST: "{{elasticsearch_host}}"
       PLAY_PORT: "{{play_port}}"
-      NEWRELIC_APPNAME: "{{newrelic_appname}}"
-      NEWRELIC_LICENSE: "{{newrelic_license}}"
+      NEW_RELIC_APP_NAME: "{{newrelic_appname}}"
+      NEW_RELIC_LICENSE_KEY: "{{newrelic_license}}"
       
 

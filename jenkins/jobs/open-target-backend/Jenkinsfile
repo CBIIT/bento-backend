@@ -105,6 +105,7 @@ pipeline {
                   env.PLAY_PORT = "${PLAY_PORT}"
                   env.NEW_RELIC_APP_NAME = "PPDC_AWS_BACKEND_DEV"
                   env.NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+                  env.NEW_RELIC_HOST = "gov-collector.newrelic.com"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
     

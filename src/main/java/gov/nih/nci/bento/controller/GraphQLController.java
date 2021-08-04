@@ -6,8 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.service.ESFilterDataFetcher;
 import gov.nih.nci.bento.service.Neo4jDataFetcher;
-import gov.nih.nci.bento.service.RedisFilterDataFetcher;
 import gov.nih.nci.bento.service.RedisService;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
@@ -67,7 +67,7 @@ public class GraphQLController {
 	@Autowired
 	private Neo4jDataFetcher dataFetcherInterceptor;
 	@Autowired
-	private RedisFilterDataFetcher redisFilterDataFetcher;
+	private ESFilterDataFetcher esFilterDataFetcher;
 
 
 	private Gson gson = new GsonBuilder().serializeNulls().create();
@@ -172,8 +172,8 @@ public class GraphQLController {
 
 	private void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
-		GraphQLSchema redisSchema = getRedisSchema();
-		GraphQLSchema newSchema = mergeSchema(neo4jSchema, redisSchema);
+		GraphQLSchema esSchema = getEsSchema();
+		GraphQLSchema newSchema = mergeSchema(neo4jSchema, esSchema);
 		graphql = GraphQL.newGraphQL(newSchema).build();
 	}
 
@@ -227,8 +227,18 @@ public class GraphQLController {
 
 	private GraphQLSchema getRedisSchema() throws IOException {
 		if (config.getRedisEnabled() && config.isRedisFilterEnabled()){
-			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getRedisSchemaFile()).getFile();
-			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), redisFilterDataFetcher.buildRuntimeWiring());
+			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
+			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
+		}
+		else{
+			return null;
+		}
+	}
+
+	private GraphQLSchema getEsSchema() throws IOException {
+		if (config.getEsFilterEnabled()){
+			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
+			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
 		}
 		else{
 			return null;

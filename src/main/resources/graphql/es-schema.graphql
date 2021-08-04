@@ -1,0 +1,55 @@
+type SubjectOverview3 {
+    subject_id: String
+    program: String
+    program_id: String
+    study_acronym: String
+    diagnosis: String
+    recurrence_score: String
+    tumor_size: String
+    tumor_grade: String
+    er_status: String
+    pr_status: String
+    age_at_index: Int
+    survival_time: Int
+    survival_time_unit: String
+}
+
+
+type SearchResult3 {
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfLabProcedures: Int
+    numberOfFiles: Int
+    subjectIds: [String]
+    sampleIds: [String]
+    fileIds: [String]
+    firstPage: [SubjectOverview3]
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+    searchSubjects3(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): [String]
+}
+
+

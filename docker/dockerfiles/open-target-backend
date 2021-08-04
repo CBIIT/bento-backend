@@ -12,8 +12,9 @@ RUN cd /tmp \
 && mkdir -p /usr/local/tomcat/newrelic \
 && cp /tmp/newrelic/newrelic.jar /usr/local/tomcat/newrelic/newrelic.jar \
 && cp /tmp/newrelic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml \
-&& sed s/license_key:.*/license_key: '${NEW_RELIC_LICENSE_KEY}'/ /usr/local/tomcat/newrelic/newrelic.yml \
-&& sed s/app_name:.*Application.*/app_name: ${NEW_RELIC_APP_NAME}/ /usr/local/tomcat/newrelic/newrelic.yml
+&& sed s/^*app_name:.*/app_name: PPDC_AWS_BACKEND_DEV/ /usr/local/tomcat/newrelic/newrelic.yml \
+&& sed s/^*license_key:.*/license_key: '${NEW_RELIC_LICENSE_KEY}'/ /usr/local/tomcat/newrelic/newrelic.yml \
+
 
 
 COPY app /app

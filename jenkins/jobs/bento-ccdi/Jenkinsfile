@@ -83,13 +83,23 @@ pipeline {
   		steps {
 //			git branch: "${params.Backend_Tag}",
 //				url: 'https://github.com/CBIIT/bento-backend'
+
+        checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Backend_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [[$class: 'RelativeTargetDirectory',
+					relativeTargetDir: 'CCDI-Portal-Service']],
+					submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/CCDI-Portal-Service']]])
+
 				
-  			checkout([$class: 'GitSCM', 
-  				branches: [[name: "${params.Backend_Tag}"]], 
-  				doGenerateSubmoduleConfigurations: 
-  				false, extensions: [], submoduleCfg: [], 
-  				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/CCDI-Portal-Service']]])
+  			//checkout([$class: 'GitSCM', 
+  			//	branches: [[name: "${params.Backend_Tag}"]], 
+  			//	doGenerateSubmoduleConfigurations: 
+  			//	false, extensions: [], submoduleCfg: [], 
+  		  //	userRemoteConfigs: 
+  			//	[[url: 'https://github.com/CBIIT/CCDI-Portal-Service']]])
   				//[[url: 'https://github.com/CBIIT/bento-backend']]])
 
 //			dir('bento-frontend'){

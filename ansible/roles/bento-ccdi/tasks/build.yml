@@ -35,8 +35,9 @@
     recurse: yes
   register: command_output
 
-- debug: 
-    msg : "{{command_output.stdout}}"
+- name: Print version
+  debug: 
+    msg : "{{ command_output.files }}"
 
 - name: copy application.properties file to /src/main/resources/
   template:

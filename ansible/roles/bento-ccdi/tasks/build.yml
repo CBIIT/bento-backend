@@ -29,7 +29,7 @@
     state: absent
 
 - name: List files and folder in home directory
-    shell: "ls -l {{workspace}}/src/main/resources/"
+    command: "ls -l {{workspace}}/src/main/resources/"
     register: command_output
 
 - debug:

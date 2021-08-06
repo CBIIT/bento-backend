@@ -27,6 +27,10 @@
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
+  register: output
+
+- debug:
+    var: output
 
 - name: Recursively find /src/main/resources/ files older than 2 days
   find:

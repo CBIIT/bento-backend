@@ -28,8 +28,11 @@
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
 
-- name: List files and folder in home directory
-    command: "ls -l {{workspace}}/src/main/resources/"
+- name: Recursively find /src/main/resources/ files older than 2 days
+  find:
+    paths: "{{workspace}}/src/main/resources"
+    age: 2d
+    recurse: yes
     register: command_output
 
 - debug:

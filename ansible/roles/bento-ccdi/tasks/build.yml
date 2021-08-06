@@ -25,42 +25,28 @@
 
 - name: remove the application_example.properties file 
   file:
-    path: "{{workspace}}/src/main/resources/application_example.properties"
+    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application_example.properties"
     state: absent
-  register: output
-
-- debug:
-    var: output
-
-- name: Recursively find /src/main/resources/ files older than 2 days
-  find:
-    paths: "{{workspace}}/src/main/resources"
-    recurse: yes
-  register: command_output
-
-- name: Print version
-  debug: 
-    msg : "{{ command_output.files }}"
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: "{{workspace}}/src/main/resources/application.properties.j2"
-    dest: "{{workspace}}/src/main/resources/application.properties"
+    src: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application.properties"
 
 - name: create graphql directory in backend
   file:
     state: directory
-    path: "{{workspace}}/src/main/resources/graphql"
+    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql"
 
 - name: create yaml directory in backend
   file:
     state: directory
-    path: "{{workspace}}/src/main/resources/yaml"
+    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml"
 
 - name: copy schema from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/graphql/{{ schema_file }}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
+    src: "{{workspace}}/CCDI-Portal-WebPortal/graphql/{{ schema_file }}"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql/{{ schema_file }}"
 
 - name: verify redis schema file exists
   stat:

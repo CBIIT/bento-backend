@@ -33,7 +33,7 @@
     paths: "{{workspace}}/src/main/resources"
     age: 2d
     recurse: yes
-    register: command_output
+  register: command_output
 
 - debug:
     var: command_output.stdout_lines

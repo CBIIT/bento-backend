@@ -3,8 +3,9 @@
 import os
 import json
 import requests
+from monitors.alerts.conditions import set_synthetics_condition
 
-def setalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
+def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
    policy_found = False
@@ -33,16 +34,7 @@ def setalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
      policy_id = response.json()['policy'].get("id", "none")
 
      # add synthetics condition
-     data = {
-       "synthetics_condition": {
-         "name": '{}-{}-url'.format(project, tier),
-         "monitor_id": synthetics_id,
-         "enabled": True
-       }
-     }
-
-     response = requests.post('https://api.newrelic.com/v2/alerts_synthetics_conditions/policies/{}.json'.format(policy_id), headers=headers, data=json.dumps(data), allow_redirects=False)
-     print(response.text)
+     set_synthetics_condition.setsyntheticscondition(project, tier, key, synthetics_id, policy_id)
 
      # add notification channels
 

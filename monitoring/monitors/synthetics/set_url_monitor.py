@@ -3,6 +3,7 @@
 import os
 import json
 import requests
+import re
 
 def seturlmonitor(project, tier, key):
    API_ENDPOINT = 'https://synthetics.newrelic.com/synthetics/api/v3/monitors'
@@ -38,7 +39,9 @@ def seturlmonitor(project, tier, key):
          "Content-Type": "application/json"
      }
 
-     requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+     response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+     location = response.headers.get('location')
+     print(location)
 
    else:
      print("Monitor {}-{}-url-monitor already exists - updating with current configuration".format(project, tier))
@@ -56,5 +59,19 @@ def seturlmonitor(project, tier, key):
    for x in response.json()['monitors']:
      if '{}-{}-url-monitor'.format(project.lower(), tier.lower()) in x.get("name", "none").lower():
        url_monitor = x
+
+   # set tags on the monitor
+   data = {"query":"{\n  actor {\n    entitySearch(query: \"name = \'" + url_monitor.get('name') + "\'\") {\n      query\n      results {\n        entities {\n          guid\n        }\n      }\n    }\n  }\n}\n", "variables":""}
+   response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
+   guid = re.findall(r'^.*?\bguid\b\":\"([^$]*?)\"',response.text)[0]
+   
+   tagdefs = {
+       'key: "Environment", values: "{}"'.format(tier),
+       'key: "Project", values: "{}"'.format(project)
+   }
+   
+   for tag in tagdefs:
+     data = {"query":"mutation {\n  taggingAddTagsToEntity(guid: \"" + guid + "\", tags: { " + tag + " }) {\n    errors {\n      message\n    }\n  }\n}\n", "variables":""}
+     response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
 
    return(url_monitor.get('id'))

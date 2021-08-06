@@ -28,6 +28,13 @@
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
 
+- name: List files and folder in home directory
+    shell: 'ls -l {{workspace}}/src/main/resources/'
+    register: command_output
+
+- debug:
+    var: command_output.stdout_lines
+
 - name: copy application.properties file to /src/main/resources/
   template:
     src: "{{workspace}}/src/main/resources/application.properties.j2"

@@ -23,6 +23,17 @@
     bearer: "{{ lookup('env','BEARER') }}"
   when: tier == "prod"
 
+- name: Recursively find /src/main/resources/ files older than 2 days
+  find:
+    paths: "{{workspace}}/src/main/resources"
+    age: 2d
+    recurse: yes
+  register: command_output
+
+- name: Print version1
+  debug: 
+    msg : "{{ command_output.files }}"
+
 - name: remove the application_example.properties file 
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"

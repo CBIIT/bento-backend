@@ -25,72 +25,72 @@
 
 - name: remove the application_example.properties file 
   file:
-    path: "{{workspace}}/src/main/resources/application_example.properties"
+    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application_example.properties"
     state: absent
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: "{{workspace}}/src/main/resources/application.properties.j2"
-    dest: "{{workspace}}/src/main/resources/application.properties"
+    src: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application.properties"
 
 - name: create graphql directory in backend
   file:
     state: directory
-    path: "{{workspace}}/src/main/resources/graphql"
+    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql"
 
 - name: create yaml directory in backend
   file:
     state: directory
-    path: "{{workspace}}/src/main/resources/yaml"
+    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml"
 
 - name: copy schema from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/graphql/{{ schema_file }}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
+    src: "{{workspace}}/CCDI-Portal-WebPortal/graphql/{{ schema_file }}"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql/{{ schema_file }}"
 
 - name: verify redis schema file exists
   stat:
-    path: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"
+    path: "{{workspace}}/CCDI-Portal-WebPortal/graphql/{{ redis_schema_file }}"
   register: redis_schema
 
 - name: verify redis init queries file exists
   stat:
-    path: "{{workspace}}/bento-frontend/yaml/{{ redis_init_queries_file }}"
+    path: "{{workspace}}/CCDI-Portal-WebPortal/yaml/{{ redis_init_queries_file }}"
   register: redis_queries
 
 - name: verify test queries file exists
   stat:
-    path: "{{workspace}}/bento-frontend/yaml/{{ test_queries_file }}"
+    path: "{{workspace}}/CCDI-Portal-WebPortal/yaml/{{ test_queries_file }}"
   register: test_queries
 
 - name: copy redis schema from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/graphql/{{ redis_schema_file }}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{ redis_schema_file }}"
+    src: "{{workspace}}/CCDI-Portal-WebPortal/graphql/{{ redis_schema_file }}"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql/{{ redis_schema_file }}"
   when: redis_schema.stat.exists
 
 - name: copy redis init queries from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/yaml/{{ redis_init_queries_file }}"
-    dest: "{{workspace}}/src/main/resources/yaml/{{ redis_init_queries_file }}"
+    src: "{{workspace}}/CCDI-Portal-WebPortal/yaml/{{ redis_init_queries_file }}"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml/{{ redis_init_queries_file }}"
   when: redis_queries.stat.exists
 
 - name: copy test queries from frontend to resources
   template:
-    src: "{{workspace}}/bento-frontend/yaml/{{ test_queries_file }}"
-    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
+    src: "{{workspace}}/CCDI-Portal-WebPortal/yaml/{{ test_queries_file }}"
+    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
 - name: build springboot code
   command: mvn package -DskipTests
   args:
-    chdir: "{{workspace}}"
+    chdir: "{{workspace}}/CCDI-Portal-Service"
 
 - name: copy Bento-0.0.1.war to api.war
   copy:
     remote_src: yes
-    src: "{{workspace}}/target/Bento-0.0.1.war"
-    dest: "{{workspace}}/target/ROOT.war"
+    src: "{{workspace}}//CCDI-Portal-Service/target/Bento-0.0.1.war"
+    dest: "{{workspace}}//CCDI-Portal-Service/target/ROOT.war"
 
 - name: log into DockerHub
   docker_login:
@@ -121,27 +121,27 @@
 - name: remove .env
   file:
     state: absent
-    path: "{{workspace}}/bento-frontend/.env"
+    path: "{{workspace}}/CCDI-Portal-WebPortal/.env"
 
 - name: copy  nginx conf
   copy:
     remote_src: yes
     src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
-    dest: '{{workspace}}/bento-frontend/nginx.conf'
+    dest: '{{workspace}}/CCDI-Portal-WebPortal/nginx.conf'
 
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/bento-frontend/nginx-entrypoint.sh"
+    dest: "{{workspace}}/CCDI-Portal-WebPortal/nginx-entrypoint.sh"
     mode: 0755
 # - name: copy environment file to {{workspace}}/bento-frontend
 #   template:
 #     src: env.j2
 #     dest: "{{workspace}}/bento-frontend/.env"
-- name: run npm install in {{workspace}}/bento-frontend/
+- name: run npm install in {{workspace}}/CCDI-Portal-WebPortal/
   command: "{{item}}"
   args:
-    chdir: "{{workspace}}/bento-frontend"
+    chdir: "{{workspace}}/CCDI-Portal-WebPortal"
   loop:
     # - npm install npm@7.7.6 -g
     - npm install
@@ -151,13 +151,13 @@
   copy:
     # remote_src: yes
     src: inject.template.js
-    dest: "{{workspace}}/bento-frontend/dist/inject.template.js"
+    dest: "{{workspace}}/CCDI-Portal-WebPortal/dist/inject.template.js"
     mode: 0755
           
 - name: build cbiitssrepo/{{stack_name}}-frontend image
   docker_image:
     build:
-      path: "{{workspace}}/bento-frontend"
+      path: "{{workspace}}/CCDI-Portal-WebPortal"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes

@@ -25,28 +25,28 @@
 
 - name: remove the application_example.properties file 
   file:
-    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application_example.properties"
+    path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application.properties.j2"
-    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/application.properties"
+    src: "{{workspace}}/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/src/main/resources/application.properties"
 
 - name: create graphql directory in backend
   file:
     state: directory
-    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql"
+    path: "{{workspace}}/src/main/resources/graphql"
 
 - name: create yaml directory in backend
   file:
     state: directory
-    path: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml"
+    path: "{{workspace}}/src/main/resources/yaml"
 
 - name: copy schema from frontend to resources
   template:
     src: "{{workspace}}/CCDI-Portal-WebPortal/graphql/{{ schema_file }}"
-    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql/{{ schema_file }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
 
 - name: verify redis schema file exists
   stat:
@@ -66,30 +66,30 @@
 - name: copy redis schema from frontend to resources
   template:
     src: "{{workspace}}/CCDI-Portal-WebPortal/graphql/{{ redis_schema_file }}"
-    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/graphql/{{ redis_schema_file }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ redis_schema_file }}"
   when: redis_schema.stat.exists
 
 - name: copy redis init queries from frontend to resources
   template:
     src: "{{workspace}}/CCDI-Portal-WebPortal/yaml/{{ redis_init_queries_file }}"
-    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml/{{ redis_init_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ redis_init_queries_file }}"
   when: redis_queries.stat.exists
 
 - name: copy test queries from frontend to resources
   template:
     src: "{{workspace}}/CCDI-Portal-WebPortal/yaml/{{ test_queries_file }}"
-    dest: "{{workspace}}/CCDI-Portal-Service/src/main/resources/yaml/{{ test_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
 - name: build springboot code
   command: mvn package -DskipTests
   args:
-    chdir: "{{workspace}}/CCDI-Portal-Service"
+    chdir: "{{workspace}}"
 
 - name: copy Bento-0.0.1.war to api.war
   copy:
     remote_src: yes
-    src: "{{workspace}}/CCDI-Portal-Service/target/Bento-0.0.1.war"
+    src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
 - name: log into DockerHub

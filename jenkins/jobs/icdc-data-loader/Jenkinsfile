@@ -183,6 +183,7 @@ pipeline {
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-loader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+						credentialsId: 'commonsdocker',
             			colorized: true) 
  			}
  		}

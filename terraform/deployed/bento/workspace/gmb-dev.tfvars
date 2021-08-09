@@ -79,7 +79,7 @@ app_name = "gmb"
 app_port = 80
 
 #specify private ip of the db instance
-db_private_ip = "172.18.11.28"
+db_private_ip = "172.18.11.118"
 
 remote_state_bucket_name = "bento-terraform-remote-state"
 redis_node_group = 1

@@ -1,22 +1,19 @@
 ---
 # vars file for cicd
-#enable_redis: true
+stack_name: ins
+enable_redis: true
 platform: aws
 redis_host: 
-  dev: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  qa: "bento-qa-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  perf: "bento-perf-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  ctdc: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  gmb-dev: "gmb-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  dev: "ins-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
+  qa: "localhost"
+  perf: "localhost"
+  icdc: "localhost"
+  prod: "localhost"
 redis_password: ""
 redis_port: 6379
 #enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"
-use_cluster: 'true'
-
+use_cluster: 'false'
 tier: "{{ lookup('env','TIER') }}"
-es_host: "{{ lookup('env','ES_HOST') }}"
 version: "{{ lookup('env','VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"
@@ -27,14 +24,12 @@ newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-e
 sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
 sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
-app_name: "{{project}}-{{platform}}-{{tier}}"
+app_name: bento-{{platform}}-{{tier}}
 
 #### bento-icdc changes #########################################################################################################
-schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif project == 'ctdc' %}ctdc.graphql{% else %}bento-extended.graphql{% endif %}"
+schema_file: "{% if tier == 'icdc' %}icdc.graphql{% else %}bento-extended.graphql{% endif %}"
 #################################################################################################################################
 
-frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"
-backend_commit_id: "{{ lookup('env','BE_COMMIT') | default('', true) }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 bento_api_version: "{{ backend_version }}"
@@ -44,6 +39,5 @@ neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 neo4j_bearer: "{{ lookup('env','BEARER') }}"
 neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
 neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
-bearer: "{{ lookup('env','BEARER') }}"
 
 # hostname: "{{ansible_fqdn}}"

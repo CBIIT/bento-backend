@@ -89,8 +89,8 @@
 - name: copy Bento-0.0.1.war to api.war
   copy:
     remote_src: yes
-    src: "{{workspace}}//CCDI-Portal-Service/target/Bento-0.0.1.war"
-    dest: "{{workspace}}//CCDI-Portal-Service/target/ROOT.war"
+    src: "{{workspace}}/CCDI-Portal-Service/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
 
 - name: log into DockerHub
   docker_login:

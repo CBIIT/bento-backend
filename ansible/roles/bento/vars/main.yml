@@ -9,6 +9,7 @@ redis_host:
   icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   ctdc: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  gmb-dev: "gmb-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 redis_password: ""
 redis_port: 6379
 #enable_redis_filter: "{{ lookup('env','ENABLE_REDIS_FILTER') }}"

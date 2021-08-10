@@ -32,7 +32,7 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-			label 'cicd_microservice'
+			label 'cicd_ppdc'
 		}
 	}
 	parameters {
@@ -99,7 +99,7 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
-  			
+
 //			git branch: "${params.Backend_Tag}",
 //				url: 'https://github.com/CBIIT/bento-backend'
 

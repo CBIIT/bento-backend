@@ -13,6 +13,9 @@ localhost
 [ppdc-otp]
 localhost
 
+[ccdi]
+localhost
+
 [gke]
 localhost
 

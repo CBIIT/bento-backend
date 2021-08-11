@@ -231,6 +231,13 @@
     region: "{{region}}" 
   register: task_backend
 
+- name: query task definition - bento file downloader
+  ecs_taskdefinition_info:
+    task_definition: "{{stack_name }}-{{tier}}-file-downloader"
+    region: "{{region}}" 
+  register: task_file_downloader
+
+
 # - name: query task definition - sumologic syslog
 #   ecs_taskdefinition_info:
 #     task_definition: bento-{{tier}}-sumo_syslog
@@ -271,6 +278,14 @@
     region: "{{region}}"
   register: service_frontend
 
+  - name: query file downloader service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}"
+    service: "{{stack_name }}-{{tier}}-file-downloader"
+    details: true
+    region: "{{region}}"
+  register: service_file_downloader
+
 # - name: query sumologic syslog service
 #   ecs_service_info:
 #     cluster: bento-{{tier}}
@@ -302,8 +317,10 @@
     frontend_url: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/{% endif %}"
     frontend_revision: "{{task_frontend.revision}}"
     backend_revision: "{{task_backend.revision}}"
+    file_downloader_revision: "{{task_file_downloader.revision}}"
     task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
+    task_file_downloader_name: "{{task_file_downloader.family}}"
     # task_sumo_syslog_name: "{{task_sumo_syslog.family}}"
     # task_sumo_docker_name: "{{task_sumo_docker.family}}"
     # task_nr_docker_name: "{{task_nr_docker.family}}"
@@ -394,3 +411,20 @@
     load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"
   register: service_frontend_output
+
+
+- name: update file downloader service
+  ecs_service:
+    state: present
+    name: "{{stack_name }}-{{tier}}-file-downloader"
+    cluster: "{{stack_name }}-{{tier}}"
+    task_definition: "{{task_file_downloader_name}}:{{file_downloader_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_file_downloader_output

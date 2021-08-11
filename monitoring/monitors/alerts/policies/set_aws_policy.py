@@ -3,9 +3,9 @@
 import os
 import json
 import requests
-from monitors.alerts.conditions import set_disk_space_condition, set_memory_condition, set_cpu_condition
+from monitors.alerts.conditions import set_aws_redis_conditions
 
-def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
+def setawsalertpolicy(project, tier, email_id, slack_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
    policy_found = False
@@ -13,7 +13,7 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
    response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
 
    for x in response.json()['policies']:
-     if '{}-{}-db-policy'.format(project.lower(), tier.lower()) in x.get("name", "none").lower():
+     if '{}-{}-aws-policy'.format(project.lower(), tier.lower()) in x.get("name", "none").lower():
        policy_found = True
 
    if not policy_found:
@@ -25,7 +25,7 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
      data = {
        "policy": {
           "incident_preference": "PER_POLICY",
-          "name": '{}-{}-db-policy'.format(project, tier)
+          "name": '{}-{}-aws-policy'.format(project, tier)
        }
      }
 
@@ -33,16 +33,11 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
      print(response.text)
      policy_id = response.json()['policy'].get("id", "none")
 
-     # add disk space condition
-     set_disk_space_condition.setdiskspacecondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
-     
-     # add memory condition
-     set_memory_condition.setmemorycondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
-     
-     # add cpu condition
-     set_cpu_condition.setcpucondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
+     # add redis conditions
+     set_aws_redis_conditions.setawsredisconditions(key, project, tier, policy_id)
 
      # add notification channels
+
      data = {
        "policy_id": '{}'.format(policy_id),
        "channel_ids": '{},{}'.format(email_id, slack_id)
@@ -50,7 +45,7 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
 
      response = requests.put('https://api.newrelic.com/v2/alerts_policy_channels.json', headers=headers, data=json.dumps(data), allow_redirects=False)
      print(response.text)
-     print("Policy {}-{}-db-policy created".format(project, tier))
+     print("Policy {}-{}-aws-policy created".format(project, tier))
 
    else:
-     print("Policy {}-{}-db-policy already exists".format(project, tier))
+     print("Policy {}-{}-aws-policy already exists".format(project, tier))

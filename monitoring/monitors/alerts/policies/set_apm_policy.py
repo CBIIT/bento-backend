@@ -45,6 +45,7 @@ def setapmalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
 
      response = requests.put('https://api.newrelic.com/v2/alerts_policy_channels.json', headers=headers, data=json.dumps(data), allow_redirects=False)
      print(response.text)
+     print("Policy {}-{}-apm-policy created".format(project, tier))
 
    else:
-     print("Policy {}-{}-url-policy already exists".format(project, tier))
+     print("Policy {}-{}-apm-policy already exists".format(project, tier))

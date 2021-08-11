@@ -36,6 +36,7 @@ def setalertemail(project, tier, key):
 
      response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
      print(response.text)
+     print("Channel {}-{}-email-alerts created".format(project, tier))
      channel_id = response.json()['channels'][0].get('id')
    else:
      print("Channel {}-{}-email-alerts already exists".format(project, tier))

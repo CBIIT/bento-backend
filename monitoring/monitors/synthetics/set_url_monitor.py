@@ -63,6 +63,7 @@ def seturlmonitor(project, tier, key):
    # set tags on the monitor
    data = {"query":"{\n  actor {\n    entitySearch(query: \"name = \'" + url_monitor.get('name') + "\'\") {\n      query\n      results {\n        entities {\n          guid\n        }\n      }\n    }\n  }\n}\n", "variables":""}
    response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
+   print(response.text)
    guid = re.findall(r'^.*?\bguid\b\":\"([^$]*?)\"',response.text)[0]
    
    tagdefs = {

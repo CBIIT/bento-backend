@@ -287,38 +287,7 @@ pipeline {
       }
     }
     }
-	
-	stage('clear redis cache'){
-	  when {
-		expression { params.Flush_Redis }
-		}
-	
- 	  environment {
-		TIER = "${params.Environment}"
-		}
 
-	  steps{
-		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-			
-			script {
-              sh label: 'database-hosts', script: '''#!/bin/bash
-                echo "Creating inventory file"
-                echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/redis_hosts
-                echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/redis_hosts
-
-              '''
-
-            }
-			
-			ansiblePlaybook( 
-               playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml', 
-               inventory: '${WORKSPACE}/icdc-devops/ansible/redis_hosts', 
-               credentialsId: 'commonsdocker',
-			   colorized: true)
-			}
-		}
-	}
-	
   	stage('deploy'){
       environment {
         SLACK_URL = "${SLACK_URL}"
@@ -362,7 +331,38 @@ pipeline {
         }
       }
     }
-		
+
+	stage('clear redis cache'){
+	  when {
+		expression { params.Flush_Redis }
+		}
+	
+ 	  environment {
+		TIER = "${params.Environment}"
+		}
+
+	  steps{
+		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			
+			script {
+              sh label: 'database-hosts', script: '''#!/bin/bash
+                echo "Creating inventory file"
+                echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/redis_hosts
+                echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/redis_hosts
+
+              '''
+
+            }
+			
+			ansiblePlaybook( 
+               playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml', 
+               inventory: '${WORKSPACE}/icdc-devops/ansible/redis_hosts', 
+               credentialsId: 'commonsdocker',
+			   colorized: true)
+			}
+		}
+	}
+
   }
   post {
     always {

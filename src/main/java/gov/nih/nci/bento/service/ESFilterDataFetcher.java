@@ -1,9 +1,15 @@
 package gov.nih.nci.bento.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import graphql.schema.idl.RuntimeWiring;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.*;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -18,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +37,8 @@ public class ESFilterDataFetcher {
     private static final Logger logger = LogManager.getLogger(ESFilterDataFetcher.class);
 
     @Autowired ESService esService;
+
+    private Gson gson = new GsonBuilder().serializeNulls().create();
 
     public RuntimeWiring buildRuntimeWiring(){
         return RuntimeWiring.newRuntimeWiring()
@@ -43,42 +53,38 @@ public class ESFilterDataFetcher {
 
     private List<String> searchSubjects3(Map<String, Object> params) throws IOException {
         final String ID_FIELD = "subject_id";
-        final String DASHBOARD_INDEX = "dashboard";
+        final String DASHBOARD_END_POINT = "dashboard/_search";
+        Request request = new Request("GET", DASHBOARD_END_POINT);
+        Map<String, Object> query = buildQuery(params);
+        query.put("size", 10);
+        request.setJsonEntity(gson.toJson(query));
 
-        String[] includeFields = new String[] {ID_FIELD};
-
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-
-        TermsAggregationBuilder aggregation = AggregationBuilders.terms("by_study")
-                .field("studies");
-        sourceBuilder.aggregation(aggregation);
-
-        sourceBuilder.query(buildQuery(params));
-        sourceBuilder.fetchSource(includeFields, null);
-        sourceBuilder.sort(new FieldSortBuilder(ID_FIELD).order(SortOrder.ASC));
-        sourceBuilder.size(10000);
-        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
-
-        SearchRequest searchRequest = new SearchRequest(DASHBOARD_INDEX);
-        final Scroll scroll = new Scroll(TimeValue.timeValueSeconds(10L));
-        searchRequest.scroll(scroll);
-        searchRequest.source(sourceBuilder);
-
-        SearchResponse response = esService.search(searchRequest);
-        List<String> subject_ids = esService.collectAll(response, scroll, ID_FIELD);
+        List<String> subject_ids = esService.collectAll(request, ID_FIELD);
 
         return subject_ids;
     }
 
-    private QueryBuilder buildQuery(Map<String, Object> params) {
-        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+    private Map<String, Object> buildQuery(Map<String, Object> params) {
+        Map<String, Object> result = new HashMap<>();
+
+        Map<String, Object> query = new HashMap<String, Object>();
+        result.put("query", query);
+        Map<String, Object> bool = new HashMap<>();
+        query.put("bool", bool);
+        List<Object> filter = new ArrayList<>();
+        bool.put("filter", filter);
+
         for (var key: params.keySet()) {
             List<String> valueSet = (List<String>)params.get(key);
             if (valueSet.size() > 0) {
-                queryBuilder.filter(QueryBuilders.termsQuery(key, valueSet));
+                Map<String, Object> terms = new HashMap<>();
+                filter.add(terms);
+                Map<String, List<String>> field = new HashMap<>();
+                terms.put("terms", field);
+                field.put(key, valueSet);
             }
         }
 
-        return queryBuilder;
+        return result;
     }
 }

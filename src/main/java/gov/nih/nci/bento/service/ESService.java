@@ -1,17 +1,15 @@
 package gov.nih.nci.bento.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.http.HttpHost;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.*;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.CountRequest;
-import org.elasticsearch.client.core.CountResponse;
-import org.elasticsearch.search.Scroll;
-import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +26,15 @@ public class ESService {
     @Autowired
     private ConfigurationDAO config;
 
-    private RestHighLevelClient client;
+    private RestClient client;
+
+    private Gson gson = new GsonBuilder().serializeNulls().create();
 
     @PostConstruct
     public void init() {
         logger.info("Initializing Elasticsearch client");
         var lowLevelBuilder = RestClient.builder(new HttpHost(config.getEsHost(), config.getEsPort(), config.getEsScheme()));
-        client = new RestHighLevelClient( lowLevelBuilder );
+        client = lowLevelBuilder.build();
     }
 
     @PreDestroy
@@ -42,39 +42,51 @@ public class ESService {
         client.close();
     }
 
-    public SearchResponse search(SearchRequest request) throws IOException{
-        return client.search(request, RequestOptions.DEFAULT);
+    public Response send(Request request) throws IOException{
+        return client.performRequest(request);
     }
 
-
-    public CountResponse count(CountRequest request) throws IOException{
-        return client.count(request, RequestOptions.DEFAULT);
-    }
-
-    public List<String> collectAll(SearchResponse response, Scroll scroll, String fieldName) throws IOException {
+    public List<String> collectAll(Request request, String fieldName) throws IOException {
         List<String> results = new ArrayList<>();
 
+        request.addParameter("scroll", "10S");
+        Response response = send(request);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode != 200) {
+            // Todo: should add appropriate error messages, and return error also
+            logger.error("Elasticsearch returned code: " + statusCode);
+            return null;
+        }
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
 
-        String scrollId = response.getScrollId();
-        SearchHit[] searchHits = response.getHits().getHits();
+        JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
 
-        while (searchHits != null && searchHits.length > 0) {
-            for (var hit: searchHits) {
-                results.add((String)hit.getSourceAsMap().get(fieldName));
+        while (searchHits != null && searchHits.size() > 0) {
+            for (int i = 0; i < searchHits.size(); i++) {
+                String value = searchHits.get(i).getAsJsonObject().get("_source").getAsJsonObject().get(fieldName).getAsString();
+                results.add(value);
             }
 
-            SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
-            scrollRequest.scroll(scroll);
-            response = client.scroll(scrollRequest, RequestOptions.DEFAULT);
-            scrollId = response.getScrollId();
-            searchHits = response.getHits().getHits();
+            Request scrollRequest = new Request("POST", "/_search/scroll");
+            String scrollId = jsonObject.get("_scroll_id").getAsString();
+            String body = "{\"scroll\":\"10S\",\"scroll_id\":\"" + scrollId + "\"}";
+            scrollRequest.setJsonEntity(body);
+            response = send(scrollRequest);
+            responseBody = EntityUtils.toString(response.getEntity());
+            jsonObject = gson.fromJson(responseBody, JsonObject.class);
+            searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
         }
 
-        ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
-        clearScrollRequest.addScrollId(scrollId);
-        ClearScrollResponse clearScrollResponse = client.clearScroll(clearScrollRequest, RequestOptions.DEFAULT);
-        boolean succeeded = clearScrollResponse.isSucceeded();
+        String scrollId = jsonObject.get("_scroll_id").getAsString();
+        Request clearScrollRequest = new Request("DELETE", "/_search/scroll");
+        clearScrollRequest.setJsonEntity("{\"scroll_id\":\"" + scrollId +"\"}");
+        response = send(clearScrollRequest);
+        statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode != 200) {
+            logger.error("Elasticsearch returned code: " + statusCode + " when cleaning up scrolls");
+        }
+
         return results;
     }
-
 }

@@ -9,13 +9,15 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.Scroll;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,32 +41,33 @@ public class ESFilterDataFetcher {
                 .build();
     }
 
-    private List<String> searchSubjects3(Map<String, Object> params) throws FilterException {
+    private List<String> searchSubjects3(Map<String, Object> params) throws IOException {
         final String ID_FIELD = "subject_id";
         final String DASHBOARD_INDEX = "dashboard";
 
         String[] includeFields = new String[] {ID_FIELD};
-        try {
-            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-            sourceBuilder.query(buildQuery(params));
-            sourceBuilder.fetchSource(includeFields, null);
-            sourceBuilder.sort(new FieldSortBuilder(ID_FIELD).order(SortOrder.ASC));
-            sourceBuilder.size(10000);
-            sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
-            SearchRequest searchRequest = new SearchRequest(DASHBOARD_INDEX);
-            final Scroll scroll = new Scroll(TimeValue.timeValueSeconds(10L));
-            searchRequest.scroll(scroll);
-            searchRequest.source(sourceBuilder);
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
-            SearchResponse response = esService.query(searchRequest);
-            List<String> subject_ids = esService.collectAll(response, scroll, ID_FIELD);
+        TermsAggregationBuilder aggregation = AggregationBuilders.terms("by_study")
+                .field("studies");
+        sourceBuilder.aggregation(aggregation);
 
-            return subject_ids;
-        } catch (Exception e) {
-            logger.error(e);
-            return null;
-        }
+        sourceBuilder.query(buildQuery(params));
+        sourceBuilder.fetchSource(includeFields, null);
+        sourceBuilder.sort(new FieldSortBuilder(ID_FIELD).order(SortOrder.ASC));
+        sourceBuilder.size(10000);
+        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+
+        SearchRequest searchRequest = new SearchRequest(DASHBOARD_INDEX);
+        final Scroll scroll = new Scroll(TimeValue.timeValueSeconds(10L));
+        searchRequest.scroll(scroll);
+        searchRequest.source(sourceBuilder);
+
+        SearchResponse response = esService.search(searchRequest);
+        List<String> subject_ids = esService.collectAll(response, scroll, ID_FIELD);
+
+        return subject_ids;
     }
 
     private QueryBuilder buildQuery(Map<String, Object> params) {
@@ -77,28 +80,5 @@ public class ESFilterDataFetcher {
         }
 
         return queryBuilder;
-    }
-
-    private class FilterException extends Exception {
-        private String message = "";
-
-        FilterException(ArrayList<String> invalidGroups, ArrayList<String> invalidParams){
-            if (!invalidGroups.isEmpty()){
-                message = String.format("The following filter groups were not found by the initialization queries: %s",
-                        String.join(", ",invalidGroups));
-            }
-            if (!invalidParams.isEmpty()){
-                if (!message.isEmpty()){
-                    message += "; ";
-                }
-                message += String.format("The following parameters are not mapped to a filter group: %s",
-                        String.join(", ",invalidParams));
-            }
-        }
-
-        @Override
-        public String getMessage(){
-            return message;
-        }
     }
 }

@@ -8,6 +8,8 @@ import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +42,13 @@ public class ESService {
         client.close();
     }
 
-    public SearchResponse query(SearchRequest request) throws IOException{
+    public SearchResponse search(SearchRequest request) throws IOException{
         return client.search(request, RequestOptions.DEFAULT);
+    }
+
+
+    public CountResponse count(CountRequest request) throws IOException{
+        return client.count(request, RequestOptions.DEFAULT);
     }
 
     public List<String> collectAll(SearchResponse response, Scroll scroll, String fieldName) throws IOException {

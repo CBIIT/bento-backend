@@ -278,7 +278,7 @@
     region: "{{region}}"
   register: service_frontend
 
-  - name: query file downloader service
+- name: query file downloader service
   ecs_service_info:
     cluster: "{{stack_name }}-{{tier}}"
     service: "{{stack_name }}-{{tier}}-file-downloader"
@@ -411,7 +411,6 @@
     load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"
   register: service_frontend_output
-
 
 - name: update file downloader service
   ecs_service:

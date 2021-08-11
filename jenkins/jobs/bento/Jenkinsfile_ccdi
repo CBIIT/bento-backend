@@ -110,17 +110,17 @@ pipeline {
 				[[url: 'https://github.com/CBIIT/CCDI-Portal-WebPortal']]])
 
   			checkout( poll: false, 
-				changelog:false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+					changelog:false,
+					scm: [$class: 'GitSCM', 
+					branches: [[name: '*/master']], 
+					doGenerateSubmoduleConfigurations: false, 
+					extensions: [[$class: 'DisableRemotePoll'],
+					[$class: 'PathRestriction', excludedRegions: '*'], 
+					[$class: 'RelativeTargetDirectory', 
+					relativeTargetDir: 'icdc-devops']], 
+					submoduleCfg: [], 
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
 
         }
  

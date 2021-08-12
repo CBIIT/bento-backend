@@ -47,24 +47,6 @@ pipeline {
         description: 'Choose aws region to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1,us-west-1' )
-    gitParameter(branchFilter: 'origin/(.*)', 
-       defaultValue: 'master', 
-       name: 'Backend_Tag', 
-       type: 'PT_BRANCH_TAG',
-       quickFilterEnabled: false, 
-       selectedValue: 'DEFAULT', 
-       sortMode: 'ASCENDING_SMART', 
-       tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/CCDI-Portal-Service')
-    gitParameter(branchFilter: 'origin/(.*)', 
-       defaultValue: 'master', 
-       name: 'Frontend_Tag', 
-       type: 'PT_BRANCH_TAG',
-       quickFilterEnabled: false, 
-       selectedValue: 'DEFAULT', 
-       sortMode: 'ASCENDING_SMART', 
-       tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/CCDI-Portal-WebPortal')
   booleanParam(
     defaultValue: true,
     description: 'Use the Redis cache',

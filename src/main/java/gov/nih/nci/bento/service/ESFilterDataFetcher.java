@@ -2,24 +2,12 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import graphql.schema.idl.RuntimeWiring;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.Scroll;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
@@ -47,19 +34,24 @@ public class ESFilterDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects3(args);
                         })
+                        .dataFetcher("searchSubjects4", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return searchSubjects4(args);
+                        })
                 )
                 .build();
     }
 
     private List<String> searchSubjects3(Map<String, Object> params) throws IOException {
         final String ID_FIELD = "subject_id";
-        final String DASHBOARD_END_POINT = "dashboard/_search";
+        final String DASHBOARD_END_POINT = "subjects/_search";
         Request request = new Request("GET", DASHBOARD_END_POINT);
         Map<String, Object> query = buildQuery(params);
-        query.put("size", 10);
+        query.put("size", 10000);
+        query.put("sort", ID_FIELD);
         request.setJsonEntity(gson.toJson(query));
 
-        List<String> subject_ids = esService.collectAll(request, ID_FIELD);
+        List<String> subject_ids = esService.collectField(request, ID_FIELD);
 
         return subject_ids;
     }
@@ -86,5 +78,63 @@ public class ESFilterDataFetcher {
         }
 
         return result;
+    }
+
+    private Map<String, Object> searchSubjects4(Map<String, Object> params) throws IOException {
+        final String SUBJECT_ID = "subject_id";
+        final String SAMPLE_ID = "sample_id";
+        final String FILE_ID = "file_id";
+        final String SUBJECTS_END_POINT = "subjects/_search";
+        final String SAMPLES_END_POINT = "samples/_search";
+        final String FILES_END_POINT = "files/_search";
+        Request request = new Request("GET", FILES_END_POINT);
+        Map<String, Object> query = buildQuery(params);
+        query.put("size", 10000);
+        query.put("sort", FILE_ID);
+        request.setJsonEntity(gson.toJson(query));
+
+        // Collect file_ids
+        List<String> file_ids = esService.collectField(request, FILE_ID);
+
+        // Reuse query to collect sample_ids
+        request = new Request("GET", SAMPLES_END_POINT);
+        query.put("sort", SAMPLE_ID);
+        request.setJsonEntity(gson.toJson(query));
+        List<String> sample_ids = esService.collectField(request, SAMPLE_ID);
+
+        // Again, collect subject_ids
+        request = new Request("GET", SUBJECTS_END_POINT);
+        query.put("sort", SUBJECT_ID);
+        request.setJsonEntity(gson.toJson(query));
+        List<String> subject_ids = esService.collectField(request, SUBJECT_ID);
+
+        // Get aggregations
+        addAggregations(query);
+        request = new Request("GET", SUBJECTS_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        Map<String, JsonArray> aggs = esService.collectAggs(request, new String[]{"programs", "studies", "lab_procedures"});
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("numberOfPrograms", aggs.get("programs").size());
+        data.put("numberOfStudies", aggs.get("studies").size());
+        data.put("numberOfSubjects", subject_ids.size());
+        data.put("numberOfSamples", sample_ids.size());
+        data.put("numberOfLabProcedures", aggs.get("lab_procedures").size());
+        data.put("numberOfFiles", file_ids.size());
+        data.put("subjectIds", subject_ids);
+        data.put("sampleIds", sample_ids);
+        data.put("fileIds", file_ids);
+
+        return data;
+    }
+
+    private void addAggregations(Map<String, Object> query) {
+        query.put("size", 0);
+        Map<String, Object> aggs = Map.of(
+                "programs", Map.of("terms", Map.of("field", "programs")),
+                "studies", Map.of("terms", Map.of("field", "studies")),
+                "lab_procedures", Map.of("terms", Map.of("field", "lab_procedures"))
+        );
+        query.put("aggregations", aggs);
     }
 }

@@ -15,7 +15,7 @@ type SubjectOverview3 {
 }
 
 
-type SearchResult3 {
+type SearchResult2 {
     numberOfPrograms: Int
     numberOfStudies: Int
     numberOfSubjects: Int
@@ -50,6 +50,24 @@ type QueryType {
         association: [String] = [],
         file_type: [String] = []
     ): [String]
+
+    searchSubjects4(
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = []
+    ): SearchResult2
 }
 
 

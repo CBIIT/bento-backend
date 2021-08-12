@@ -1,23 +1,24 @@
 package gov.nih.nci.bento.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.*;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service("ESService")
 public class ESService {
@@ -43,26 +44,28 @@ public class ESService {
     }
 
     public Response send(Request request) throws IOException{
-        return client.performRequest(request);
+        Response response = client.performRequest(request);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode != 200) {
+            String msg = "Elasticsearch returned code: " + statusCode;
+            logger.error(msg);
+            throw new IOException(msg);
+        }
+        return response;
     }
 
-    public List<String> collectAll(Request request, String fieldName) throws IOException {
+    public List<String> collectField(Request request, String fieldName) throws IOException {
         List<String> results = new ArrayList<>();
 
         request.addParameter("scroll", "10S");
         Response response = send(request);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200) {
-            // Todo: should add appropriate error messages, and return error also
-            logger.error("Elasticsearch returned code: " + statusCode);
-            return null;
-        }
         String responseBody = EntityUtils.toString(response.getEntity());
         JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
 
         JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
 
         while (searchHits != null && searchHits.size() > 0) {
+            logger.info("Current " + fieldName + " records: " + results.size() + " collecting...");
             for (int i = 0; i < searchHits.size(); i++) {
                 String value = searchHits.get(i).getAsJsonObject().get("_source").getAsJsonObject().get(fieldName).getAsString();
                 results.add(value);
@@ -81,12 +84,20 @@ public class ESService {
         String scrollId = jsonObject.get("_scroll_id").getAsString();
         Request clearScrollRequest = new Request("DELETE", "/_search/scroll");
         clearScrollRequest.setJsonEntity("{\"scroll_id\":\"" + scrollId +"\"}");
-        response = send(clearScrollRequest);
-        statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200) {
-            logger.error("Elasticsearch returned code: " + statusCode + " when cleaning up scrolls");
-        }
+        send(clearScrollRequest);
 
         return results;
+    }
+
+    public Map<String, JsonArray> collectAggs(Request request, String[] aggNames) throws IOException{
+        Map<String, JsonArray> data = new HashMap<>();
+        Response response = send(request);
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
+        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
+        for (String aggName: aggNames) {
+            data.put(aggName, aggs.getAsJsonObject(aggName).getAsJsonArray("buckets"));
+        }
+        return data;
     }
 }

@@ -23,11 +23,15 @@
   template:
     src: newrelic-infra.yml.j2
     dest: /etc/newrelic-infra.yml
+    owner: nri-agent
+    group: nri-agent
 
 - name: copy nginx config file to /etc/newrelic-infra/integrations.d/
   template:
     src: nginx-config.yml.j2
     dest: /etc/newrelic-infra/integrations.d/nginx-config.yml
+    owner: nri-agent
+    group: nri-agent
   when: app_type == "app"
 
 - name: add nri-agent to docker group

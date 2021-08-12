@@ -1,0 +1,195 @@
+  # Indices settings
+Indices:
+  # First index
+  # Name of the index to be created, existing index with same name will be deleted
+  - index_name: subjects
+    # type mapping for each property of the index
+    mapping:
+      programs:
+        type: keyword
+      studies:
+        type: keyword
+      lab_procedures:
+        type: keyword
+      subject_id:
+        type: keyword
+      diagnoses:
+        type: keyword
+      rc_scores:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
+        type: keyword
+      tumor_grades:
+        type: keyword
+      er_status:
+        type: keyword
+      pr_status:
+        type: keyword
+      endo_therapies:
+        type: keyword
+      meno_status:
+        type: keyword
+      tissue_type:
+        type: keyword
+      composition:
+        type: keyword
+      association:
+        type: keyword
+      file_type:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      MATCH (ss)<-[*..2]-(parent)<--(f:file)
+      OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+      RETURN DISTINCT
+      p.program_acronym AS programs,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      lp.laboratory_procedure_id as lab_procedures,
+      ss.study_subject_id AS subject_id,
+      ss.disease_subtype AS diagnoses,
+      sf.grouped_recurrence_score AS rc_scores,
+      d.tumor_size_group AS tumor_sizes,
+      tp.chemotherapy_regimen AS chemo_regimen,
+      d.tumor_grade AS tumor_grades,
+      d.er_status AS er_status,
+      d.pr_status AS pr_status,
+      tp.endocrine_therapy_type AS endo_therapies,
+      demo.menopause_status AS  meno_status,
+      COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
+      COLLECT(DISTINCT samp.composition) AS composition,
+      COLLECT(DISTINCT head(labels(parent))) AS association,
+      COLLECT(DISTINCT f.file_type) AS file_type
+      "
+  - index_name: samples
+    # type mapping for each property of the index
+    mapping:
+      programs:
+        type: keyword
+      studies:
+        type: keyword
+      sample_id:
+        type: keyword
+      diagnoses:
+        type: keyword
+      rc_scores:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
+        type: keyword
+      tumor_grades:
+        type: keyword
+      er_status:
+        type: keyword
+      pr_status:
+        type: keyword
+      endo_therapies:
+        type: keyword
+      meno_status:
+        type: keyword
+      tissue_type:
+        type: keyword
+      composition:
+        type: keyword
+      association:
+        type: keyword
+      file_type:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      MATCH (ss)<-[*..2]-(parent)<--(f:file)
+      OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+      RETURN DISTINCT
+      p.program_acronym AS programs,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      samp.sample_id AS sample_id,
+      ss.disease_subtype AS diagnoses,
+      sf.grouped_recurrence_score AS rc_scores,
+      d.tumor_size_group AS tumor_sizes,
+      tp.chemotherapy_regimen AS chemo_regimen,
+      d.tumor_grade AS tumor_grades,
+      d.er_status AS er_status,
+      d.pr_status AS pr_status,
+      tp.endocrine_therapy_type AS endo_therapies,
+      demo.menopause_status AS  meno_status,
+      samp.tissue_type AS tissue_type,
+      samp.composition AS composition,
+      COLLECT(DISTINCT head(labels(parent))) AS association,
+      COLLECT(DISTINCT f.file_type) AS file_type
+      "
+  - index_name: files
+    # type mapping for each property of the index
+    mapping:
+      programs:
+        type: keyword
+      studies:
+        type: keyword
+      file_id:
+        type: keyword
+      diagnoses:
+        type: keyword
+      rc_scores:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
+        type: keyword
+      tumor_grades:
+        type: keyword
+      er_status:
+        type: keyword
+      pr_status:
+        type: keyword
+      endo_therapies:
+        type: keyword
+      meno_status:
+        type: keyword
+      tissue_type:
+        type: keyword
+      composition:
+        type: keyword
+      association:
+        type: keyword
+      file_type:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)<-[*..2]-(parent)<--(f:file)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+      MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      RETURN DISTINCT
+      p.program_acronym AS programs,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      f.file_id AS file_id,
+      ss.disease_subtype AS diagnoses,
+      sf.grouped_recurrence_score AS rc_scores,
+      d.tumor_size_group AS tumor_sizes,
+      tp.chemotherapy_regimen AS chemo_regimen,
+      d.tumor_grade AS tumor_grades,
+      d.er_status AS er_status,
+      d.pr_status AS pr_status,
+      tp.endocrine_therapy_type AS endo_therapies,
+      demo.menopause_status AS  meno_status,
+      samp.tissue_type AS tissue_type,
+      samp.composition AS composition,
+      head(labels(parent)) AS association,
+      f.file_type AS file_type
+      "

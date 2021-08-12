@@ -104,37 +104,36 @@ pipeline {
   stages{
     stage('checkout'){
       steps {
-
         checkout([$class: 'GitSCM', 
           branches: [[name: "${params.Backend_Tag}"]], 
           doGenerateSubmoduleConfigurations: 
           false, extensions: [], submoduleCfg: [], 
           userRemoteConfigs: 
-          [[url: 'https://github.com/CBIIT/bento-backend']]])
+          [[url: 'https://github.com/CBIIT/CCDI-Portal-Service']]])
 
-      checkout([$class: 'GitSCM',
-        branches: [[name: "${params.Frontend_Tag}"]],
-        doGenerateSubmoduleConfigurations: false,
-        extensions: [[$class: 'RelativeTargetDirectory',
-        relativeTargetDir: 'bento-frontend']],
-        submoduleCfg: [],
-        userRemoteConfigs: 
-        [[url: 'https://github.com/CBIIT/bento-frontend']]])
+        checkout([$class: 'GitSCM',
+          branches: [[name: "${params.Frontend_Tag}"]],
+          doGenerateSubmoduleConfigurations: false,
+          extensions: [[$class: 'RelativeTargetDirectory',
+          relativeTargetDir: 'bento-frontend']],
+          submoduleCfg: [],
+          userRemoteConfigs: 
+          [[url: 'https://github.com/CBIIT/CCDI-Portal-WebPortal']]])
 
-        checkout( poll: false, 
-        changelog:false,
-        scm: [$class: 'GitSCM', 
-        branches: [[name: '*/master']], 
-        doGenerateSubmoduleConfigurations: false, 
-        extensions: [[$class: 'DisableRemotePoll'],
-        [$class: 'PathRestriction', excludedRegions: '*'], 
-        [$class: 'RelativeTargetDirectory', 
-        relativeTargetDir: 'icdc-devops']], 
-        submoduleCfg: [], 
-        userRemoteConfigs: 
-        [[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+          checkout( poll: false, 
+          changelog:false,
+          scm: [$class: 'GitSCM', 
+          branches: [[name: '*/master']], 
+          doGenerateSubmoduleConfigurations: false, 
+          extensions: [[$class: 'DisableRemotePoll'],
+          [$class: 'PathRestriction', excludedRegions: '*'], 
+          [$class: 'RelativeTargetDirectory', 
+          relativeTargetDir: 'icdc-devops']], 
+          submoduleCfg: [], 
+          userRemoteConfigs: 
+          [[url: 'https://github.com/CBIIT/icdc-devops.git']]])
 
-        }
+          }
  
     }
 

@@ -28,6 +28,7 @@
   template:
     src: nginx-config.yml.j2
     dest: /etc/newrelic-infra/integrations.d/nginx-config.yml
+  when: app_type == "app"
 
 - name: add nri-agent to docker group
   user: 

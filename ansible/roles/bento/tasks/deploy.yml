@@ -194,7 +194,7 @@
         - name: NEW_RELIC_LABELS
           value: "Project:{{ project }};Environment:{{ tier }}"
         - name: STATUS_URL
-          value: "{% if tier == 'prod' %}https://bento-tools.org/nginx_status{% else %}https://{{ tier }}.bento-tools.org/nginx_status{% endif %}"
+          value: "{% if tier == 'prod' %}https://bento-tools.org/nginx_status{% else %}https://bento-{{ tier }}.bento-tools.org/nginx_status{% endif %}"
       entryPoint:
         - "/bin/ash"
         - "-c"

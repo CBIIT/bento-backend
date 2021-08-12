@@ -88,16 +88,4 @@ public class ESService {
 
         return results;
     }
-
-    public Map<String, JsonArray> collectAggs(Request request, String[] aggNames) throws IOException{
-        Map<String, JsonArray> data = new HashMap<>();
-        Response response = send(request);
-        String responseBody = EntityUtils.toString(response.getEntity());
-        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
-        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
-        for (String aggName: aggNames) {
-            data.put(aggName, aggs.getAsJsonObject(aggName).getAsJsonArray("buckets"));
-        }
-        return data;
-    }
 }

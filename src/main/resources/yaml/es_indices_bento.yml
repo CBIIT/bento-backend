@@ -7,7 +7,11 @@ Indices:
     mapping:
       programs:
         type: keyword
+      program_id:
+        type: keyword
       studies:
+        type: keyword
+      study_acronym:
         type: keyword
       lab_procedures:
         type: keyword
@@ -31,6 +35,12 @@ Indices:
         type: keyword
       meno_status:
         type: keyword
+      age_at_index:
+        type: keyword
+      survival_time:
+        type: keyword
+      survival_time_unit:
+        type: keyword
       tissue_type:
         type: keyword
       composition:
@@ -39,6 +49,7 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -51,7 +62,9 @@ Indices:
       OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
       RETURN DISTINCT
       p.program_acronym AS programs,
+      p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      s.study_acronym AS study_acronym,
       lp.laboratory_procedure_id as lab_procedures,
       ss.study_subject_id AS subject_id,
       ss.disease_subtype AS diagnoses,
@@ -63,6 +76,9 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
+      demo.survival_time AS survival_time,
+      demo.survival_time_unit AS survival_time_unit,
       COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
       COLLECT(DISTINCT samp.composition) AS composition,
       COLLECT(DISTINCT head(labels(parent))) AS association,

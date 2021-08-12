@@ -48,38 +48,56 @@ pipeline {
         description: 'Choose aws region to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1' )
-  booleanParam(
-    defaultValue: true,
-    description: 'Use the Redis cache',
-    name: 'Use_Redis')
-  booleanParam(
-    defaultValue: false,
-    description: 'Flush the Redis cache',
-    name: 'Flush_Redis')
-  booleanParam(
-    defaultValue: true,
-    description: 'Enable the Redis filter',
-    name: 'Enable_Redis_Filter')
-  string(
-      defaultValue: 'redis-schema.graphql',
-    description: 'The file to use when loading redis schema',
-    name: 'Redis_Schema_File')
-  string(
-      defaultValue: 'redis-filter-config.bento.yaml',
-    description: 'The file to use when loading redis queries',
-    name: 'Redis_Queries_File')
-  string(
-      defaultValue: 'test-queries.1k.bento.yaml',
-    description: 'The file to use when loading test queries',
-    name: 'Test_Queries_File')
-  string(
-      defaultValue: '',
-    description: 'The commit id to checkout for the frontend',
-    name: 'fe_commit_id')
-  string(
-      defaultValue: '',
-    description: 'The commit id to checkout for the backend',
-    name: 'be_commit_id')
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'master', 
+       name: 'Backend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/CCDI-Portal-Service')
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'master', 
+       name: 'Frontend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/CCDI-Portal-WebPortal')
+    booleanParam(
+      defaultValue: true,
+      description: 'Use the Redis cache',
+      name: 'Use_Redis')
+    booleanParam(
+      defaultValue: false,
+      description: 'Flush the Redis cache',
+      name: 'Flush_Redis')
+    booleanParam(
+      defaultValue: true,
+      description: 'Enable the Redis filter',
+      name: 'Enable_Redis_Filter')
+    string(
+        defaultValue: 'redis-schema.graphql',
+      description: 'The file to use when loading redis schema',
+      name: 'Redis_Schema_File')
+    string(
+        defaultValue: 'redis-filter-config.bento.yaml',
+      description: 'The file to use when loading redis queries',
+      name: 'Redis_Queries_File')
+    string(
+        defaultValue: 'test-queries.1k.bento.yaml',
+      description: 'The file to use when loading test queries',
+      name: 'Test_Queries_File')
+    string(
+        defaultValue: '',
+      description: 'The commit id to checkout for the frontend',
+      name: 'fe_commit_id')
+    string(
+        defaultValue: '',
+      description: 'The commit id to checkout for the backend',
+      name: 'be_commit_id')
 
   }
   options {

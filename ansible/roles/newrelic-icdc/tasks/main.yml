@@ -26,6 +26,13 @@
     owner: nri-agent
     group: nri-agent
 
+- name: install nri-nginx
+  package:
+    name:
+      - nri-nginx
+    state: installed
+  when: app_type == "app"
+
 - name: copy nginx config file to /etc/newrelic-infra/integrations.d/
   template:
     src: nginx-config.yml.j2

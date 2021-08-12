@@ -1,0 +1,12 @@
+integration_name: com.newrelic.nginx
+
+instances:
+    - name: nginx-server-metrics
+      command: metrics
+      arguments:
+          status_url: "{{ nginx_url }}"
+          status_module: discover
+          remote_monitoring: true
+      labels:
+          Project: {{ project }}
+          Environment: {{ env }}

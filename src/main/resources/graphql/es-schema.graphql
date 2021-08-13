@@ -33,6 +33,18 @@ type GroupCount2 {
     subjects: Int
 }
 
+type ArmInfo2 {
+    arm: String
+    size: Int
+    caseSize: Int
+}
+
+type ProgramArms2 {
+    program: String
+    caseSize: Int
+    children: [ArmInfo2]
+}
+
 schema {
     query: QueryType
 }
@@ -74,6 +86,25 @@ type QueryType {
         file_type: [String] = [],
         first: Int = 100
     ): SearchResult2
+
+    "Group counts"
+    subjectCountByProgram2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByStudy2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByDiagnoses2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByRecurrenceScore2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTumorSize2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTumorGrade2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByErStatus2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByPrStatus2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByChemotherapyRegimen2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByEndocrineTherapy2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByMenopauseStatus2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTissueType2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTissueComposition2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByFileAssociation2 (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByFileType2 (subject_ids: [String] = []): [GroupCount2]
+    armsByPrograms2 (subject_ids: [String] = []): [ProgramArms2]
+
 
     "Facet search counts"
     filterSubjectCountByProgram2 (

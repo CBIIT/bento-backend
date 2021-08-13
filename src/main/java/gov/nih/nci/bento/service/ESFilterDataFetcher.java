@@ -202,8 +202,8 @@ public class ESFilterDataFetcher {
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         // Query related values
-        final String SAMPLE_ID = "sample_id";
-        final String FILE_ID = "file_id";
+        final String SAMPLE_ID = "sample_ids";
+        final String FILE_ID = "file_ids";
         final String SAMPLES_END_POINT = "samples/_search";
         final String FILES_END_POINT = "files/_search";
         final String[] AGG_NAMES = new String[]{"programs", "studies", "lab_procedures"};

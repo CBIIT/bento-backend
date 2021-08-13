@@ -91,7 +91,9 @@ Indices:
         type: keyword
       studies:
         type: keyword
-      sample_id:
+      subject_ids:
+        type: keyword
+      sample_ids:
         type: keyword
       diagnoses:
         type: keyword
@@ -132,7 +134,8 @@ Indices:
       RETURN DISTINCT
       p.program_acronym AS programs,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
-      samp.sample_id AS sample_id,
+      samp.sample_id AS sample_ids,
+      ss.study_subject_id AS subject_ids,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_sizes,
@@ -154,7 +157,9 @@ Indices:
         type: keyword
       studies:
         type: keyword
-      file_id:
+      subject_ids:
+        type: keyword
+      file_ids:
         type: keyword
       diagnoses:
         type: keyword
@@ -194,7 +199,8 @@ Indices:
       RETURN DISTINCT
       p.program_acronym AS programs,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
-      f.file_id AS file_id,
+      ss.study_subject_id AS subject_ids,
+      f.file_id AS file_ids,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_sizes,

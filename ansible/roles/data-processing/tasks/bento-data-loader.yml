@@ -21,6 +21,20 @@
     property_file: "config/props-ctdc.yml"
   when: project == "ctdc"
 
+- name: set model files location for ctdc
+  set_fact:
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
+    property_file: "config/props-bento-ext.yml"
+  when: project == "gmb"
+
+- name: set model files location for ctdc
+  set_fact:
+    model_file1: "{{workspace}}/CCDI-Portal-ETL/model-desc/ccdi_portal_model_file.yaml"
+    model_file2: "{{workspace}}/ctdc-model/model-desc/ccdi_portal_model_properties.yaml"
+    property_file: "props-ccdi-portal.yml"
+  when: project == "ccdi"
+
 - name: Check if tmp directory exist
   stat:
     path: "{{workspace}}/tmp"

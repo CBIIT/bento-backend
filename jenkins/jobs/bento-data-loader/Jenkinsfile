@@ -25,7 +25,7 @@ pipeline {
         defaultValue: 'bento', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento' )
+        value: 'icdc,ctdc,bento,ccdi,gmb' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -80,6 +80,10 @@ pipeline {
           git branch: 'master',
           url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
         }
+        dir('ccdi-model'){
+          git branch: 'main',
+          url: 'https://github.com/CBIIT/CCDI-Portal-ETL.git'
+        }
   		}
  
   	}
@@ -100,8 +104,8 @@ pipeline {
                 }
               break
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_DEV_IP}"
+                withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.NEO4J_IP        = "${params.ProjectName}_${params.Environment}_neo4j_ip"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

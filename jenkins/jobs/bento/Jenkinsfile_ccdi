@@ -152,11 +152,13 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'ccdi_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([usernamePassword(credentialsId: 'ccdi_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER'),
+                string(credentialsId: 'ccdi_dev_bearer', variable: 'BEARER')]) {
                   env.NEO4J_IP    = "${ccdi_dev_neo4j_ip}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  env.BEARER = "${BEARER}"
 
                 }
         break
@@ -166,6 +168,7 @@ pipeline {
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  env.BEARER = "${BEARER}"
 
                 }
               break

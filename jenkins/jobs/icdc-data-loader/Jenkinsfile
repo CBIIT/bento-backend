@@ -236,4 +236,13 @@ pipeline {
 	}
 	
  }
+ post {
+   
+   cleanup {
+	
+		cleanWs()
+    
+	}
+	
+ }
 }

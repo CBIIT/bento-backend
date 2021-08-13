@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,20 +36,80 @@ public class ESFilterDataFetcher {
                 .type(newTypeWiring("QueryType")
                         .dataFetcher("searchSubjects3", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return searchSubjects3(args);
+                            return searchSubjects2(args);
                         })
                         .dataFetcher("searchSubjects4", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return searchSubjects4(args);
+                            return searchSubjects(args);
+                        })
+                        .dataFetcher("filterSubjectCountByProgram2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByProgram(args);
+                        })
+                        .dataFetcher("filterSubjectCountByStudy2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByStudy(args);
+                        })
+                        .dataFetcher("filterSubjectCountByDiagnoses2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByDiagnoses(args);
+                        })
+                        .dataFetcher("filterSubjectCountByRecurrenceScore2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByRecurrenceScore(args);
+                        })
+                        .dataFetcher("filterSubjectCountByTumorSize2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByTumorSize(args);
+                        })
+                        .dataFetcher("filterSubjectCountByTumorGrade2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByTumorGrade(args);
+                        })
+                        .dataFetcher("filterSubjectCountByErStatus2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByErStatus(args);
+                        })
+                        .dataFetcher("filterSubjectCountByPrStatus2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByPrStatus(args);
+                        })
+                        .dataFetcher("filterSubjectCountByChemotherapyRegimen2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByChemotherapyRegimen(args);
+                        })
+                        .dataFetcher("filterSubjectCountByEndocrineTherapy2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByEndocrineTherapy(args);
+                        })
+                        .dataFetcher("filterSubjectCountByMenopauseStatus2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByMenopauseStatus(args);
+                        })
+                        .dataFetcher("filterSubjectCountByTissueType2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByTissueType(args);
+                        })
+                        .dataFetcher("filterSubjectCountByTissueComposition2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByTissueComposition(args);
+                        })
+                        .dataFetcher("filterSubjectCountByFileAssociation2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByFileAssociation(args);
+                        })
+                        .dataFetcher("filterSubjectCountByFileType2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filterSubjectCountByFileType(args);
                         })
                 )
                 .build();
     }
 
-    private List<String> searchSubjects3(Map<String, Object> params) throws IOException {
+    private List<String> searchSubjects2(Map<String, Object> params) throws IOException {
         Request request = new Request("GET", SUBJECTS_END_POINT);
         Map<String, Object> query = buildQuery(params, Set.of(PAGE_SIZE));
-        query.put("size", 10000);
+        query.put("size", MAX_ES_SIZE);
         query.put("sort", SUBJECT_ID);
         request.setJsonEntity(gson.toJson(query));
 
@@ -86,7 +145,7 @@ public class ESFilterDataFetcher {
         return result;
     }
 
-    private Map<String, Object> searchSubjects4(Map<String, Object> params) throws IOException {
+    private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         // Query related values
         final String SAMPLE_ID = "sample_id";
         final String FILE_ID = "file_id";
@@ -203,4 +262,101 @@ public class ESFilterDataFetcher {
 
         return data;
     }
+
+    private List<Map<String, Object>> filterSubjectCountByProgram(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("programs", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByStudy(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("studies", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByDiagnoses(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("diagnoses", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByRecurrenceScore(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("rc_scores", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByTumorSize(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("tumor_sizes", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByTumorGrade(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("tumor_grades", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByErStatus(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("er_status", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByPrStatus(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("pr_status", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByChemotherapyRegimen(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("chemo_regimen", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByEndocrineTherapy(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("endo_therapies", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByMenopauseStatus(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("meno_status", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByTissueType(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("tissue_type", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountByTissueComposition(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("composition", params);
+
+    }
+    private List<Map<String, Object>> filterSubjectCountByFileAssociation(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("association", params);
+
+    }
+    private List<Map<String, Object>> filterSubjectCountByFileType(Map<String, Object> params) throws IOException {
+        return filterSubjectCountBy("file_type", params);
+
+    }
+
+    private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params) throws IOException {
+        String[] AGG_NAMES = new String[] {category};
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+        Map<String, Object> query = buildQuery(params, Set.of(PAGE_SIZE, category));
+        query.put("size", 0);
+        addAggregations(query, AGG_NAMES);
+        request.setJsonEntity(gson.toJson(query));
+        Response response = esService.send(request);
+        Map<String, Object> result = collectAggs(response, AGG_NAMES);
+        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(AGGS);
+        JsonArray buckets = aggs.get(category);
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (JsonElement group: buckets) {
+            data.add(Map.of("group", group.getAsJsonObject().get("key").getAsString(),
+                    "subjects", group.getAsJsonObject().get("doc_count").getAsInt()
+                    ));
+
+        }
+
+        return data;
+    }
+
 }

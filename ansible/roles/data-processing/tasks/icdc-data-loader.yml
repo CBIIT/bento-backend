@@ -56,17 +56,20 @@
   yum:
     name: python3
     state: installed
+  become: yes
 
 - name: pip install requirements
   pip:
     requirements: "{{workspace}}/requirements.txt"
     executable: pip3
+  become: yes
 
 - name: pip install requests 
   pip:
     name: urllib3
     executable: pip3
     state: latest
+  become: yes
 
 - name: loader data
   shell:

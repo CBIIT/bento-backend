@@ -3,15 +3,15 @@
 import os
 import json
 import requests
-from monitors.alerts.conditions import set_aws_redis_conditions
+from monitors.alerts.conditions import set_redis_conditions
 
-def setawsalertpolicy(project, tier, email_id, slack_id, key):
+def setredisalertpolicy(project, tier, email_id, slack_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
-   policy_name = '{}-{}-aws-policy'.format(project.lower(), tier.lower())
+   policy_name = '{}-{}-redis-policy'.format(project.lower(), tier.lower())
    policy_found = False
    headers = {'Api-Key': key}
-   
+
    try:
      response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
    except requests.exceptions.RequestException as e:
@@ -41,9 +41,10 @@ def setawsalertpolicy(project, tier, email_id, slack_id, key):
      policy_id = response.json()['policy'].get("id", "none")
 
      # add redis conditions
-     set_aws_redis_conditions.setawsredisconditions(key, project, tier, policy_id)
+     set_redis_conditions.setredisconditions(key, project, tier, policy_id)
 
      # add notification channels
+
      data = {
        "policy_id": '{}'.format(policy_id),
        "channel_ids": '{},{}'.format(email_id, slack_id)

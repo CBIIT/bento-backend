@@ -8,12 +8,17 @@ from monitors.alerts.conditions import set_disk_space_condition, set_memory_cond
 def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
+   policy_name = '{}-{}-db-policy'.format(project.lower(), tier.lower())
    policy_found = False
    headers = {'Api-Key': key}
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   
+   try:
+     response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    for x in response.json()['policies']:
-     if '{}-{}-db-policy'.format(project.lower(), tier.lower()) in x.get("name", "none").lower():
+     if policy_name in x.get("name", "none").lower():
        policy_found = True
 
    if not policy_found:
@@ -25,12 +30,14 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
      data = {
        "policy": {
           "incident_preference": "PER_POLICY",
-          "name": '{}-{}-db-policy'.format(project, tier)
+          "name": policy_name
        }
      }
 
-     response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
-     print(response.text)
+     try:
+       response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+     except requests.exceptions.RequestException as e:
+       raise SystemExit(e)
      policy_id = response.json()['policy'].get("id", "none")
 
      # add disk space condition
@@ -48,9 +55,11 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
        "channel_ids": '{},{}'.format(email_id, slack_id)
      }
 
-     response = requests.put('https://api.newrelic.com/v2/alerts_policy_channels.json', headers=headers, data=json.dumps(data), allow_redirects=False)
-     print(response.text)
-     print("Policy {}-{}-db-policy created".format(project, tier))
+     try:
+       response = requests.put('https://api.newrelic.com/v2/alerts_policy_channels.json', headers=headers, data=json.dumps(data), allow_redirects=False)
+     except requests.exceptions.RequestException as e:
+       raise SystemExit(e)
+     print('{} Created'.format(policy_name))
 
    else:
-     print("Policy {}-{}-db-policy already exists".format(project, tier))
+     print('{} already exists'.format(policy_name))

@@ -3,7 +3,7 @@
 import json
 import requests
 
-def setawsredisconditions(key, project, tier, policy_id):
+def setredisconditions(key, project, tier, policy_id):
    API_ENDPOINT = 'https://infra-api.newrelic.com/v2/alerts/conditions'
    
    headers = {
@@ -11,10 +11,10 @@ def setawsredisconditions(key, project, tier, policy_id):
        "Content-Type": "application/json"
    }
 
-   host_query = "(displayName LIKE '{}-{}-redis-cluster-%')".format(project, tier)
+   host_query = "(label.Project = '{}' AND label.Environment = '{}')".format(project, tier)
 
    # set redis system alerts
-   condition_name = '{}-{} AWS Redis Memory Condition'.format(project, tier)
+   condition_name = '{}-{} Redis Memory Condition'.format(project, tier)
    data = {
      "data":{
       "type":"infra_metric",
@@ -22,17 +22,16 @@ def setawsredisconditions(key, project, tier, policy_id):
       "enabled":True,
       "where_clause":host_query,
       "policy_id":policy_id,
-      "integration_provider":"ElastiCacheRedisCluster",
-      "event_type":"DatastoreSample",
-      "select_value":"provider.databaseMemoryUsagePercentage.Average",
-      "comparison":"above",
+      "event_type":"RedisSample",
+      "select_value":"system.totalSystemMemoryBytes",
+      "comparison":"below",
       "critical_threshold":{
-         "value":1,
+         "value":2000000000,
          "duration_minutes":5,
          "time_function":"any"
       },
       "warning_threshold":{
-         "value":0.8,
+         "value":4000000000,
          "duration_minutes":10,
          "time_function":"any"
       }
@@ -44,9 +43,9 @@ def setawsredisconditions(key, project, tier, policy_id):
    except requests.exceptions.RequestException as e:
      raise SystemExit(e)
    print('{} Created'.format(condition_name))
-   
+
    # set redis performance alerts
-   condition_name = '{}-{} AWS Redis Command Condition'.format(project, tier)
+   condition_name = '{}-{} Redis Command Condition'.format(project, tier)
    data = {
      "data":{
       "type":"infra_metric",
@@ -54,18 +53,43 @@ def setawsredisconditions(key, project, tier, policy_id):
       "enabled":True,
       "where_clause":host_query,
       "policy_id":policy_id,
-      "integration_provider":"ElastiCacheRedisNode",
-      "event_type":"DatastoreSample",
-      "select_value":"provider.stringBasedCmds.Average",
-      "comparison":"above",
+      "event_type":"RedisSample",
+      "select_value":"net.commandsProcessedPerSecond",
+      "comparison":"below",
       "critical_threshold":{
-         "value":10,
+         "value":0.1,
          "duration_minutes":5,
          "time_function":"any"
       },
       "warning_threshold":{
-         "value":5,
+         "value":0.2,
          "duration_minutes":10,
+         "time_function":"any"
+      }
+     }
+   }
+
+   try:
+     response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
+   print('{} Created'.format(condition_name))
+
+   # set redis error alerts
+   condition_name = '{}-{} Redis Error Condition'.format(project, tier)
+   data = {
+     "data":{
+      "type":"infra_metric",
+      "name":condition_name,
+      "enabled":True,
+      "where_clause":host_query,
+      "policy_id":policy_id,
+      "event_type":"RedisSample",
+      "select_value":"net.rejectedConnectionsPerSecond",
+      "comparison":"above",
+      "critical_threshold":{
+         "value":0,
+         "duration_minutes":5,
          "time_function":"any"
       }
      }

@@ -13,10 +13,11 @@ def setmemorycondition(key, host, policy_id):
    
    host_query = "(displayName IN ('{}'))".format(host)
    
+   condition_name = '{} Memory Used Condition'.format(host)
    data = {
      "data":{
       "type":"infra_metric",
-      "name":"Memory Used Condition",
+      "name":condition_name,
       "enabled":True,
       "where_clause":host_query,
       "policy_id":policy_id,
@@ -36,5 +37,8 @@ def setmemorycondition(key, host, policy_id):
      }
    }
 
-   response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
-   print(response.text)
+   try:
+     response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
+   print('{} Created'.format(condition_name))

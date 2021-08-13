@@ -11,15 +11,18 @@ def seturlmonitor(project, tier, key):
 
    if tier.lower() == 'prod':
      freq = 10
+     monitor_uri = 'https://{}'.format(DOMAIN)
    else:
      freq = 30
+     monitor_uri = 'https://{}-{}.{}'.format(project, tier, DOMAIN)
 
    # set monitor configuration
+   monitor_name = '{}-{}-url-monitor'.format(project.lower(), tier.lower())
    data = {
-       "name": '{}-{}-url-monitor'.format(project, tier),
+       "name": monitor_name,
        "type": "BROWSER",
        "frequency": freq,
-       "uri": 'https://{}-{}.{}'.format(project, tier, DOMAIN),
+       "uri": monitor_uri,
        "locations": [ "AWS_US_EAST_1" ],
        "status": "ENABLED",
        "slaThreshold": 7.0,
@@ -27,43 +30,53 @@ def seturlmonitor(project, tier, key):
    
    monitor_found = False
    headers = {'Api-Key': key}
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   
+   try:
+     response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    for x in response.json()['monitors']:
-     if '{}-{}-url-monitor'.format(project.lower(), tier.lower()) in x.get("name", "none").lower():
-       monitor_found = True
+     if monitor_name in x.get("name", "none").lower():
+       print('{} already exists - updating with current configuration'.format(monitor_name))
 
-   if not monitor_found:
-     headers = {
-         "Api-Key": key,
-         "Content-Type": "application/json"
-     }
+       headers = {
+           "Api-Key": key,
+           "Content-Type": "application/json"
+       }
 
-     response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
-     location = response.headers.get('location')
-     print(location)
+       try:
+         requests.put('{}/{}'.format(API_ENDPOINT, x.get("id", "none")), headers=headers, data=json.dumps(data), allow_redirects=False)
+       except requests.exceptions.RequestException as e:
+         raise SystemExit(e)
 
-   else:
-     print("Monitor {}-{}-url-monitor already exists - updating with current configuration".format(project, tier))
+     else:
+       headers = {
+           "Api-Key": key,
+           "Content-Type": "application/json"
+       }
 
-     headers = {
-         "Api-Key": key,
-         "Content-Type": "application/json"
-     }
-
-     requests.put('{}/{}'.format(API_ENDPOINT, x.get("id", "none")), headers=headers, data=json.dumps(data), allow_redirects=False)
-
+       try:
+         response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+       except requests.exceptions.RequestException as e:
+         raise SystemExit(e)
+     
    # get the newly created monitor
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   try:
+     response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    for x in response.json()['monitors']:
-     if '{}-{}-url-monitor'.format(project.lower(), tier.lower()) in x.get("name", "none").lower():
+     if monitor_name in x.get("name", "none").lower():
        url_monitor = x
 
    # set tags on the monitor
    data = {"query":"{\n  actor {\n    entitySearch(query: \"name = \'" + url_monitor.get('name') + "\'\") {\n      query\n      results {\n        entities {\n          guid\n        }\n      }\n    }\n  }\n}\n", "variables":""}
-   response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
-   print(response.text)
+   try:
+     response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
    guid = re.findall(r'^.*?\bguid\b\":\"([^$]*?)\"',response.text)[0]
    
    tagdefs = {
@@ -73,6 +86,9 @@ def seturlmonitor(project, tier, key):
    
    for tag in tagdefs:
      data = {"query":"mutation {\n  taggingAddTagsToEntity(guid: \"" + guid + "\", tags: { " + tag + " }) {\n    errors {\n      message\n    }\n  }\n}\n", "variables":""}
-     response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
+     try:
+       response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
+     except requests.exceptions.RequestException as e:
+       raise SystemExit(e)
 
    return(url_monitor.get('id'))

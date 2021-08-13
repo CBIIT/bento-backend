@@ -8,7 +8,10 @@ def getsumocollectors(project, tier, auth):
    
    headers = {'Authorization': '{}'.format(auth)}
    
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   try:
+     response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    print('Sumo Collectors:')
    print()

@@ -11,13 +11,17 @@ def setsyntheticscondition(project, tier, key, synthetics_id, policy_id):
        "Content-Type": "application/json"
    }
    
+   condition_name = '{}-{} Url Condition'.format(project, tier)
    data = {
      "synthetics_condition": {
-       "name": '{}-{}-url'.format(project, tier),
+       "name": condition_name,
        "monitor_id": synthetics_id,
        "enabled": True
      }
    }
 
-   response = requests.post('{}/{}.json'.format(API_ENDPOINT, policy_id), headers=headers, data=json.dumps(data), allow_redirects=False)
-   print(response.text)
+   try:
+     response = requests.post('{}/{}.json'.format(API_ENDPOINT, policy_id), headers=headers, data=json.dumps(data), allow_redirects=False)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
+   print('{} Created'.format(condition_name))

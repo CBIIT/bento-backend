@@ -1,4 +1,16 @@
 ---
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": "{{project}}-{{env}}-neo4j-4"
+      "instance-state-name": running
+      "tag:Environment": "{{env}}"
+  register: neo4j
+
+- name: set instance name
+  set_fact:
+    neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
 
 - name: set model files location for icdc
   set_fact:
@@ -30,9 +42,9 @@
 
 - name: set model files location for ctdc
   set_fact:
-    model_file1: "{{workspace}}/CCDI-Portal-ETL/model-desc/ccdi_portal_model_file.yaml"
-    model_file2: "{{workspace}}/ctdc-model/model-desc/ccdi_portal_model_properties.yaml"
-    property_file: "props-ccdi-portal.yml"
+    model_file1: "{{workspace}}/ccdi-model/model-desc/ccdi_portal_model_file.yaml"
+    model_file2: "{{workspace}}/ccdi-model/model-desc/ccdi_portal_model_properties.yaml"
+    property_file: "{{workspace}}/ccdi-model/model-desc/props-ccdi-portal.yml"
   when: project == "ccdi"
 
 - name: Check if tmp directory exist

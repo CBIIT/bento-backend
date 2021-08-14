@@ -43,6 +43,10 @@ public class ESFilterDataFetcher {
                             return searchSubjects(args);
                         })
                         // wire up "Group counts"
+                        .dataFetcher("armsByPrograms2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return armsByPrograms(args);
+                        })
                         .dataFetcher("subjectCountByProgram2", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByProgram(args);
@@ -274,11 +278,21 @@ public class ESFilterDataFetcher {
 
     private void addAggregations(Map<String, Object> query, String[] aggNames) {
         query.put("size", 0);
+        query.put("aggregations", getAllAggregations(aggNames));
+    }
+
+    private Map<String, Object> getAllAggregations(String[]  aggNames) {
         Map<String, Object> aggs = new HashMap<>();
         for (String aggName: aggNames) {
-            aggs.put(aggName, Map.of("terms", Map.of("field", aggName)));
+            aggs.put(aggName, getSingleAggregation(aggName));
         }
-        query.put("aggregations", aggs);
+        return aggs;
+    }
+
+    private Map<String, Object> getSingleAggregation(String aggName) {
+        Map<String, Object> agg = new HashMap<>();
+        agg.put("terms", Map.of("field", aggName));
+        return agg;
     }
 
     private Map<String, Object> collectAggs(Response response, String[] aggNames) throws IOException{
@@ -315,6 +329,49 @@ public class ESFilterDataFetcher {
             data.add(row);
         }
 
+        return data;
+    }
+
+    private void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subAggNames) {
+        Map<String, Object> mainAgg = (Map<String, Object>) ((Map<String, Object>) query.get("aggregations")).get(mainAggName);
+        Map<String, Object> subAggs = getAllAggregations(subAggNames);
+        mainAgg.put("aggregations", subAggs);
+    }
+
+    private List<Map<String, Object>> armsByPrograms(Map<String, Object> params) throws IOException {
+        final String category = "programs";
+        final String subCategory = "study_acronym";
+        String[] subCategories = new String[] { subCategory };
+        Map<String, Object> query = buildFilterQuery(params, Set.of(PAGE_SIZE));
+        String[] AGG_NAMES = new String[] {category};
+        addAggregations(query, AGG_NAMES);
+        addSubAggregations(query, category, subCategories);
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        Response response = esService.send(request);
+        Map<String, Object> result = collectAggs(response, AGG_NAMES);
+        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(AGGS);
+        JsonArray buckets = aggs.get(category);
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (JsonElement group: buckets) {
+            List<Map<String, Object>> studies = new ArrayList<>();
+
+            for (JsonElement studyElement: group.getAsJsonObject().get(subCategory).getAsJsonObject().get("buckets").getAsJsonArray()) {
+                JsonObject study = studyElement.getAsJsonObject();
+                int size = study.get("doc_count").getAsInt();
+                studies.add(Map.of(
+                        "arm", study.get("key").getAsString(),
+                        "caseSize", size,
+                        "size", size
+                ));
+            }
+            data.add(Map.of("program", group.getAsJsonObject().get("key").getAsString(),
+                    "caseSize", group.getAsJsonObject().get("doc_count").getAsInt(),
+                    "children", studies
+            ));
+
+        }
         return data;
     }
 
@@ -476,7 +533,6 @@ public class ESFilterDataFetcher {
 
     private List<Map<String, Object>> getGroupCount(String category, Map<String, Object> query) throws IOException {
         String[] AGG_NAMES = new String[] {category};
-        query.put("size", 0);
         addAggregations(query, AGG_NAMES);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));

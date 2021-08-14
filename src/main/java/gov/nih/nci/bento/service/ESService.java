@@ -43,7 +43,7 @@ public class ESService {
         client.close();
     }
 
-    public Response send(Request request) throws IOException{
+    public JsonObject send(Request request) throws IOException{
         Response response = client.performRequest(request);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != 200) {
@@ -51,7 +51,7 @@ public class ESService {
             logger.error(msg);
             throw new IOException(msg);
         }
-        return response;
+        return getJSonFromResponse(response);
     }
 
     public JsonObject getJSonFromResponse(Response response) throws IOException {
@@ -111,11 +111,9 @@ public class ESService {
         return agg;
     }
 
-    public Map<String, Object> collectAggs(Response response, String[] aggNames) throws IOException{
+    public Map<String, Object> collectAggs(JsonObject jsonObject, String[] aggNames) throws IOException{
         Map<String, Object> result = new HashMap<>();
         Map<String, JsonArray> data = new HashMap<>();
-        String responseBody = EntityUtils.toString(response.getEntity());
-        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
         result.put(JSON_OBJECT, jsonObject);
         JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
         for (String aggName: aggNames) {
@@ -131,10 +129,7 @@ public class ESService {
         List<String> results = new ArrayList<>();
 
         request.addParameter("scroll", "10S");
-        Response response = send(request);
-        String responseBody = EntityUtils.toString(response.getEntity());
-        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
-
+        JsonObject jsonObject = send(request);
         JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
 
         while (searchHits != null && searchHits.size() > 0) {
@@ -148,9 +143,7 @@ public class ESService {
             String scrollId = jsonObject.get("_scroll_id").getAsString();
             String body = "{\"scroll\":\"10S\",\"scroll_id\":\"" + scrollId + "\"}";
             scrollRequest.setJsonEntity(body);
-            response = send(scrollRequest);
-            responseBody = EntityUtils.toString(response.getEntity());
-            jsonObject = gson.fromJson(responseBody, JsonObject.class);
+            jsonObject = send(scrollRequest);
             searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
         }
 
@@ -168,6 +161,8 @@ public class ESService {
     }
 
     public List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, int pageSize, int offset) throws IOException {
+        // Todo: correct pagination
+
         List<Map<String, Object>> data = new ArrayList<>();
 
         JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");

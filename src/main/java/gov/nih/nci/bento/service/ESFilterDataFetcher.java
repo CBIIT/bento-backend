@@ -2,7 +2,6 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import graphql.schema.idl.RuntimeWiring;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Request;
@@ -44,7 +43,7 @@ public class ESFilterDataFetcher {
                         })
                         .dataFetcher("subjectOverViewPaged2", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return subjectOverViewPage(args);
+                            return subjectOverViewPaged(args);
                         })
                         // wire up "Group counts"
                         .dataFetcher("armsByPrograms2", env -> {
@@ -239,10 +238,10 @@ public class ESFilterDataFetcher {
         query.put("size", pageSize);
         request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
-        Response response = esService.send(request);
-        Map<String, Object> result = esService.collectAggs(response, AGG_NAMES);
+        JsonObject jsonObject = esService.send(request);
+        Map<String, Object> result = esService.collectAggs(jsonObject, AGG_NAMES);
         Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
-        JsonObject jsonObject = (JsonObject) result.get(esService.JSON_OBJECT);
+        jsonObject = (JsonObject) result.get(esService.JSON_OBJECT);
 
         List<Map<String, Object>> firstPage = esService.collectPage(jsonObject, PROPERTIES, pageSize);
 
@@ -261,7 +260,7 @@ public class ESFilterDataFetcher {
         return data;
     }
 
-    private List<Map<String, Object>> subjectOverViewPage(Map<String, Object> params) throws IOException {
+    private List<Map<String, Object>> subjectOverViewPaged(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"program", "programs"},
@@ -293,11 +292,10 @@ public class ESFilterDataFetcher {
         String order_by = (String)params.get(ORDER_BY);
         query.put("sort", mapSortOrder(order_by));
         request.setJsonEntity(gson.toJson(query));
-        Response response = esService.send(request);
-        JsonObject jsonObject = esService.getJSonFromResponse(response);
+        JsonObject jsonObject = esService.send(request);
 
-        // Todo: correct pagination
-        List<Map<String, Object>> page = esService.collectPage(jsonObject, PROPERTIES, pageSize);
+        int offset = (int) params.get(OFFSET);
+        List<Map<String, Object>> page = esService.collectPage(jsonObject, PROPERTIES, pageSize, offset);
         return page;
     }
 
@@ -341,8 +339,8 @@ public class ESFilterDataFetcher {
         esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
-        Response response = esService.send(request);
-        Map<String, Object> result = esService.collectAggs(response, AGG_NAMES);
+        JsonObject jsonObject = esService.send(request);
+        Map<String, Object> result = esService.collectAggs(jsonObject, AGG_NAMES);
         Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
         JsonArray buckets = aggs.get(category);
 
@@ -529,8 +527,8 @@ public class ESFilterDataFetcher {
         esService.addAggregations(query, AGG_NAMES);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
-        Response response = esService.send(request);
-        Map<String, Object> result = esService.collectAggs(response, AGG_NAMES);
+        JsonObject jsonObject = esService.send(request);
+        Map<String, Object> result = esService.collectAggs(jsonObject, AGG_NAMES);
         Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
         JsonArray buckets = aggs.get(category);
 

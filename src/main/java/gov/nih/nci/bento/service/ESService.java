@@ -15,13 +15,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service("ESService")
 public class ESService {
+    public final String JSON_OBJECT = "jsonObject";
+    public final String AGGS = "aggs";
+
     private static final Logger logger = LogManager.getLogger(RedisService.class);
 
     @Autowired
@@ -53,6 +53,79 @@ public class ESService {
         }
         return response;
     }
+
+    public JsonObject getJSonFromResponse(Response response) throws IOException {
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
+        return jsonObject;
+    }
+
+    public Map<String, Object> buildFilterQuery(Map<String, Object> params, Set<String> excludedParams) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<Object> filter = new ArrayList<>();
+        for (var key: params.keySet()) {
+            if (excludedParams.contains(key)) {
+                continue;
+            }
+            List<String> valueSet = (List<String>) params.get(key);
+            if (valueSet.size() > 0) {
+                // list with only one empty string [""] means return all records
+                if (valueSet.size() == 1) {
+                    if (valueSet.get(0).equals("")) {
+                        continue;
+                    }
+                }
+                filter.add(Map.of(
+                        "terms", Map.of( key, valueSet)
+                ));
+            }
+        }
+
+        result.put("query", Map.of("bool", Map.of("filter", filter)));
+        return result;
+    }
+
+    public void addAggregations(Map<String, Object> query, String[] aggNames) {
+        query.put("size", 0);
+        query.put("aggregations", getAllAggregations(aggNames));
+    }
+
+    public void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subAggNames) {
+        Map<String, Object> mainAgg = (Map<String, Object>) ((Map<String, Object>) query.get("aggregations")).get(mainAggName);
+        Map<String, Object> subAggs = getAllAggregations(subAggNames);
+        mainAgg.put("aggregations", subAggs);
+    }
+
+    private Map<String, Object> getAllAggregations(String[]  aggNames) {
+        Map<String, Object> aggs = new HashMap<>();
+        for (String aggName: aggNames) {
+            aggs.put(aggName, getSingleAggregation(aggName));
+        }
+        return aggs;
+    }
+
+    private Map<String, Object> getSingleAggregation(String aggName) {
+        Map<String, Object> agg = new HashMap<>();
+        agg.put("terms", Map.of("field", aggName));
+        return agg;
+    }
+
+    public Map<String, Object> collectAggs(Response response, String[] aggNames) throws IOException{
+        Map<String, Object> result = new HashMap<>();
+        Map<String, JsonArray> data = new HashMap<>();
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
+        result.put(JSON_OBJECT, jsonObject);
+        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
+        for (String aggName: aggNames) {
+            data.put(aggName, aggs.getAsJsonObject(aggName).getAsJsonArray("buckets"));
+        }
+        result.put(AGGS, data);
+        return result;
+    }
+
+
 
     public List<String> collectField(Request request, String fieldName) throws IOException {
         List<String> results = new ArrayList<>();
@@ -87,5 +160,51 @@ public class ESService {
         send(clearScrollRequest);
 
         return results;
+    }
+
+    public List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, int pageSize) throws IOException {
+        return collectPage(jsonObject, properties, pageSize, 0);
+
+    }
+
+    public List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, int pageSize, int offset) throws IOException {
+        List<Map<String, Object>> data = new ArrayList<>();
+
+        JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
+        int size = Math.min(searchHits.size(), pageSize);
+        for (int i = 0; i < size; i++) {
+            Map<String, Object> row = new HashMap<>();
+            for (String[] prop: properties) {
+                String propName = prop[0];
+                String dataField = prop[1];
+                JsonElement element = searchHits.get(i).getAsJsonObject().get("_source").getAsJsonObject().get(dataField);
+                row.put(propName, getValue(element));
+            }
+            data.add(row);
+        }
+
+        return data;
+    }
+
+    // Convert JsonElement into Java collections and primitives
+    private Object getValue(JsonElement element) {
+        Object value = null;
+        if (element == null) {
+            return null;
+        } else if (element.isJsonObject()) {
+            value = new HashMap<String, Object>();
+            JsonObject object = element.getAsJsonObject();
+            for (String key: object.keySet()) {
+                ((Map<String, Object>) value).put(key, getValue(object.get(key)));
+            }
+        } else if (element.isJsonArray()) {
+            value = new ArrayList<>();
+            for (JsonElement entry: element.getAsJsonArray()) {
+                ((List<Object>)value).add(getValue(entry));
+            }
+        } else {
+            value = element.getAsString();
+        }
+        return value;
     }
 }

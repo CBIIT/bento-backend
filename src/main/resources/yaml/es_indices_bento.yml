@@ -13,10 +13,14 @@ Indices:
         type: keyword
       study_acronym:
         type: keyword
+      study_short_description:
+        type: keyword
       lab_procedures:
         type: keyword
       subject_ids:
         type: keyword
+      subject_id_num:
+        type: integer
       diagnoses:
         type: keyword
       rc_scores:
@@ -49,6 +53,10 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+      samples:
+        type: keyword
+      files:
+        type: object
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
@@ -65,8 +73,10 @@ Indices:
       p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       s.study_acronym AS study_acronym,
-      lp.laboratory_procedure_id as lab_procedures,
+      s.study_short_description AS study_short_description,
+      COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
       ss.study_subject_id AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_sizes,
@@ -82,7 +92,10 @@ Indices:
       COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
       COLLECT(DISTINCT samp.composition) AS composition,
       COLLECT(DISTINCT head(labels(parent))) AS association,
-      COLLECT(DISTINCT f.file_type) AS file_type
+      COLLECT(DISTINCT f.file_type) AS file_type,
+      COLLECT(DISTINCT f { .file_id, .file_description, .file_format, .file_location, .file_name,
+                           .file_size, .file_status, .file_type, .md5sum }) AS files,
+      COLLECT(DISTINCT samp.sample_id) AS samples
       "
   - index_name: samples
     # type mapping for each property of the index

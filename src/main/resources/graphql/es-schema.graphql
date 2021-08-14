@@ -1,4 +1,4 @@
-type SubjectOverview3 {
+type SubjectOverview4 {
     subject_id: String
     program: String
     program_id: String
@@ -14,6 +14,43 @@ type SubjectOverview3 {
     survival_time_unit: String
 }
 
+type file2 {
+    file_id: String
+    file_description: String
+    file_format: String
+    file_location: String
+    file_name: String
+    file_size: Float
+    file_status: String
+    file_type: String
+    md5sum: String
+}
+
+
+type SubjectOverview3 {
+    subject_id: String
+    program: String
+    program_id: String
+    study_acronym: String
+    study_short_description: String
+    study_info: String
+    diagnosis: String
+    recurrence_score: String
+    tumor_size: String
+    tumor_grade: String
+    er_status: String
+    pr_status: String
+    chemotherapy: String
+    endocrine_therapy: String
+    menopause_status: String
+    age_at_index: Int
+    survival_time: Int
+    survival_time_unit: String
+    files: [file2]
+    samples: [String]
+    lab_procedures: [String]
+}
+
 
 type SearchResult2 {
     numberOfPrograms: Int
@@ -25,7 +62,7 @@ type SearchResult2 {
     subjectIds: [String]
     sampleIds: [String]
     fileIds: [String]
-    firstPage: [SubjectOverview3]
+    firstPage: [SubjectOverview4]
 }
 
 type GroupCount2 {
@@ -86,6 +123,8 @@ type QueryType {
         file_type: [String] = [],
         first: Int = 100
     ): SearchResult2
+
+    subjectOverViewPaged2(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
 
     "Group counts"
     subjectCountByProgram2 (subject_ids: [String] = []): [GroupCount2]

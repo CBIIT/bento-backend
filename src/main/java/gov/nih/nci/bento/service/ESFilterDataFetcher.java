@@ -21,11 +21,11 @@ public class ESFilterDataFetcher {
 
     // parameters used in queries
     final String PAGE_SIZE = "first";
+    final String OFFSET = "offset";
+    final String ORDER_BY = "order_by";
     final String SUBJECT_ID = "subject_ids";
     final String SUBJECTS_END_POINT = "subjects/_search";
     final int MAX_ES_SIZE = 10000;
-    final String JSON_OBJECT = "jsonObject";
-    final String AGGS = "aggs";
 
     @Autowired ESService esService;
 
@@ -41,6 +41,10 @@ public class ESFilterDataFetcher {
                         .dataFetcher("searchSubjects4", env -> {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects(args);
+                        })
+                        .dataFetcher("subjectOverViewPaged2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return subjectOverViewPage(args);
                         })
                         // wire up "Group counts"
                         .dataFetcher("armsByPrograms2", env -> {
@@ -174,7 +178,7 @@ public class ESFilterDataFetcher {
 
     private List<String> searchSubjects2(Map<String, Object> params) throws IOException {
         Request request = new Request("GET", SUBJECTS_END_POINT);
-        Map<String, Object> query = buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
         query.put("size", MAX_ES_SIZE);
         query.put("sort", SUBJECT_ID);
         request.setJsonEntity(gson.toJson(query));
@@ -184,25 +188,6 @@ public class ESFilterDataFetcher {
         return subject_ids;
     }
 
-    private Map<String, Object> buildFilterQuery(Map<String, Object> params, Set<String> excludedParams) {
-        Map<String, Object> result = new HashMap<>();
-
-        List<Object> filter = new ArrayList<>();
-        for (var key: params.keySet()) {
-            if (excludedParams.contains(key)) {
-                continue;
-            }
-            List<String> valueSet = (List<String>) params.get(key);
-            if (valueSet.size() > 0) {
-                filter.add(Map.of(
-                        "terms", Map.of( key, valueSet)
-                ));
-            }
-        }
-
-        result.put("query", Map.of("bool", Map.of("filter", filter)));
-        return result;
-    }
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         // Query related values
@@ -228,7 +213,7 @@ public class ESFilterDataFetcher {
         };
 
         Request request = new Request("GET", FILES_END_POINT);
-        Map<String, Object> query = buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
         query.put("size", MAX_ES_SIZE);
         query.put("sort", FILE_ID);
         request.setJsonEntity(gson.toJson(query));
@@ -249,17 +234,17 @@ public class ESFilterDataFetcher {
         List<String> subject_ids = esService.collectField(request, SUBJECT_ID);
 
         // Get aggregations
-        addAggregations(query, AGG_NAMES);
+        esService.addAggregations(query, AGG_NAMES);
         int pageSize = (int)params.get(PAGE_SIZE);
         query.put("size", pageSize);
         request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         Response response = esService.send(request);
-        Map<String, Object> result = collectAggs(response, AGG_NAMES);
-        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(AGGS);
-        JsonObject jsonObject = (JsonObject) result.get(JSON_OBJECT);
+        Map<String, Object> result = esService.collectAggs(response, AGG_NAMES);
+        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
+        JsonObject jsonObject = (JsonObject) result.get(esService.JSON_OBJECT);
 
-        List<Map<String, Object>> firstPage = collectFirstPage(jsonObject, PROPERTIES, pageSize);
+        List<Map<String, Object>> firstPage = esService.collectPage(jsonObject, PROPERTIES, pageSize);
 
         Map<String, Object> data = new HashMap<>();
         data.put("numberOfPrograms", aggs.get("programs").size());
@@ -276,81 +261,89 @@ public class ESFilterDataFetcher {
         return data;
     }
 
-    private void addAggregations(Map<String, Object> query, String[] aggNames) {
-        query.put("size", 0);
-        query.put("aggregations", getAllAggregations(aggNames));
+    private List<Map<String, Object>> subjectOverViewPage(Map<String, Object> params) throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"subject_id", "subject_ids"},
+                new String[]{"program", "programs"},
+                new String[]{"program_id", "program_id"},
+                new String[]{"study_acronym", "study_acronym"},
+                new String[]{"study_short_description", "study_short_description"},
+                new String[]{"study_info", "studies"},
+                new String[]{"diagnosis", "diagnoses"},
+                new String[]{"recurrence_score", "rc_scores"},
+                new String[]{"tumor_size", "tumor_sizes"},
+                new String[]{"tumor_grade", "tumor_grades"},
+                new String[]{"er_status", "er_status"},
+                new String[]{"pr_status", "pr_status"},
+                new String[]{"chemotherapy", "chemo_regimen"},
+                new String[]{"endocrine_therapy", "endo_therapies"},
+                new String[]{"menopause_status", "meno_status"},
+                new String[]{"age_at_index", "age_at_index"},
+                new String[]{"survival_time", "survival_time"},
+                new String[]{"survival_time_unit", "survival_time_unit"},
+                new String[]{"files", "files"},
+                new String[]{"samples", "samples"},
+                new String[]{"lab_procedures", "lab_procedures"},
+        };
+
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY));
+        int pageSize = (int)params.get(PAGE_SIZE);
+        query.put("size", pageSize);
+        String order_by = (String)params.get(ORDER_BY);
+        query.put("sort", mapSortOrder(order_by));
+        request.setJsonEntity(gson.toJson(query));
+        Response response = esService.send(request);
+        JsonObject jsonObject = esService.getJSonFromResponse(response);
+
+        // Todo: correct pagination
+        List<Map<String, Object>> page = esService.collectPage(jsonObject, PROPERTIES, pageSize);
+        return page;
     }
 
-    private Map<String, Object> getAllAggregations(String[]  aggNames) {
-        Map<String, Object> aggs = new HashMap<>();
-        for (String aggName: aggNames) {
-            aggs.put(aggName, getSingleAggregation(aggName));
+    private String mapSortOrder(String order_by) {
+        String sortOrder = "subject_id_num"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+               Map.entry("subject_id", "subject_id_num"),
+               Map.entry("program", "programs"),
+               Map.entry("program_id", "program_id"),
+               Map.entry("study_acronym", "study_acronym"),
+               Map.entry("study_short_description", "study_short_description"),
+               Map.entry("study_info", "studies"),
+               Map.entry("diagnosis", "diagnoses"),
+               Map.entry("recurrence_score", "rc_scores"),
+               Map.entry("tumor_size", "tumor_sizes"),
+               Map.entry("tumor_grade", "tumor_grades"),
+               Map.entry("er_status", "er_status"),
+               Map.entry("pr_status", "pr_status"),
+               Map.entry("chemotherapy", "chemo_regimen"),
+               Map.entry("endocrine_therapy", "endo_therapies"),
+               Map.entry("menopause_status", "meno_status"),
+               Map.entry("age_at_index", "age_at_index"),
+               Map.entry("survival_time", "survival_time")
+        );
+
+        if (mapping.containsKey(order_by)) {
+            sortOrder = mapping.get(order_by);
+        } else {
+            logger.info("Order: \"" + order_by + "\" not recognized, use default order");
         }
-        return aggs;
+        return sortOrder;
     }
-
-    private Map<String, Object> getSingleAggregation(String aggName) {
-        Map<String, Object> agg = new HashMap<>();
-        agg.put("terms", Map.of("field", aggName));
-        return agg;
-    }
-
-    private Map<String, Object> collectAggs(Response response, String[] aggNames) throws IOException{
-        Map<String, Object> result = new HashMap<>();
-        Map<String, JsonArray> data = new HashMap<>();
-        String responseBody = EntityUtils.toString(response.getEntity());
-        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
-        result.put(JSON_OBJECT, jsonObject);
-        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
-        for (String aggName: aggNames) {
-            data.put(aggName, aggs.getAsJsonObject(aggName).getAsJsonArray("buckets"));
-        }
-        result.put(AGGS, data);
-        return result;
-    }
-
-    private List<Map<String, Object>> collectFirstPage(JsonObject jsonObject, String[][] properties, int pageSize) throws IOException {
-        List<Map<String, Object>> data = new ArrayList<>();
-
-        JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
-        int size = Math.min(searchHits.size(), pageSize);
-        for (int i = 0; i < size; i++) {
-            Map<String, Object> row = new HashMap<>();
-            for (String[] prop: properties) {
-                String propName = prop[0];
-                String dataField = prop[1];
-                JsonElement element = searchHits.get(i).getAsJsonObject().get("_source").getAsJsonObject().get(dataField);
-                if (element != null) {
-                    row.put(propName, element.getAsString());
-                } else {
-                    row.put(propName, null);
-                }
-            }
-            data.add(row);
-        }
-
-        return data;
-    }
-
-    private void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subAggNames) {
-        Map<String, Object> mainAgg = (Map<String, Object>) ((Map<String, Object>) query.get("aggregations")).get(mainAggName);
-        Map<String, Object> subAggs = getAllAggregations(subAggNames);
-        mainAgg.put("aggregations", subAggs);
-    }
-
     private List<Map<String, Object>> armsByPrograms(Map<String, Object> params) throws IOException {
         final String category = "programs";
         final String subCategory = "study_acronym";
         String[] subCategories = new String[] { subCategory };
-        Map<String, Object> query = buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
         String[] AGG_NAMES = new String[] {category};
-        addAggregations(query, AGG_NAMES);
-        addSubAggregations(query, category, subCategories);
+        esService.addAggregations(query, AGG_NAMES);
+        esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         Response response = esService.send(request);
-        Map<String, Object> result = collectAggs(response, AGG_NAMES);
-        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(AGGS);
+        Map<String, Object> result = esService.collectAggs(response, AGG_NAMES);
+        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
         JsonArray buckets = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
@@ -523,22 +516,22 @@ public class ESFilterDataFetcher {
     }
 
     private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params) throws IOException {
-        Map<String, Object> query = buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
         return getGroupCount(category, query);
     }
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params) throws IOException {
-        Map<String, Object> query = buildFilterQuery(params, Set.of(PAGE_SIZE, category));
+        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE, category));
         return getGroupCount(category, query);
     }
 
     private List<Map<String, Object>> getGroupCount(String category, Map<String, Object> query) throws IOException {
         String[] AGG_NAMES = new String[] {category};
-        addAggregations(query, AGG_NAMES);
+        esService.addAggregations(query, AGG_NAMES);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         Response response = esService.send(request);
-        Map<String, Object> result = collectAggs(response, AGG_NAMES);
-        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(AGGS);
+        Map<String, Object> result = esService.collectAggs(response, AGG_NAMES);
+        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
         JsonArray buckets = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();

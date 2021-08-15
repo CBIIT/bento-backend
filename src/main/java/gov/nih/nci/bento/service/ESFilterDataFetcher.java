@@ -23,8 +23,14 @@ public class ESFilterDataFetcher {
     final String OFFSET = "offset";
     final String ORDER_BY = "order_by";
     final String SUBJECT_ID = "subject_ids";
+    final String SUBJECT_ID_NUM = "subject_id_num";
     final String SUBJECTS_END_POINT = "subjects/_search";
-    final int MAX_ES_SIZE = 10000;
+    final String SAMPLE_ID = "sample_ids";
+    final String SAMPLE_ID_NUM = "sample_id_num";
+    final String SAMPLES_END_POINT = "samples/_search";
+    final String FILE_ID = "file_ids";
+    final String FILE_ID_NUM = "file_id_num";
+    final String FILES_END_POINT = "files/_search";
 
     @Autowired ESService esService;
 
@@ -178,8 +184,8 @@ public class ESFilterDataFetcher {
     private List<String> searchSubjects2(Map<String, Object> params) throws IOException {
         Request request = new Request("GET", SUBJECTS_END_POINT);
         Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
-        query.put("size", MAX_ES_SIZE);
-        query.put("sort", SUBJECT_ID);
+        query.put("size", esService.MAX_ES_SIZE);
+        query.put("sort", SUBJECT_ID_NUM);
         request.setJsonEntity(gson.toJson(query));
 
         List<String> subject_ids = esService.collectField(request, SUBJECT_ID);
@@ -190,10 +196,6 @@ public class ESFilterDataFetcher {
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         // Query related values
-        final String SAMPLE_ID = "sample_ids";
-        final String FILE_ID = "file_ids";
-        final String SAMPLES_END_POINT = "samples/_search";
-        final String FILES_END_POINT = "files/_search";
         final String[] AGG_NAMES = new String[]{"programs", "studies", "lab_procedures"};
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"subject_id", "subject_ids"},
@@ -213,8 +215,8 @@ public class ESFilterDataFetcher {
 
         Request request = new Request("GET", FILES_END_POINT);
         Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
-        query.put("size", MAX_ES_SIZE);
-        query.put("sort", FILE_ID);
+        query.put("size", esService.MAX_ES_SIZE);
+        query.put("sort", FILE_ID_NUM);
         request.setJsonEntity(gson.toJson(query));
 
         // Collect file_ids
@@ -222,13 +224,13 @@ public class ESFilterDataFetcher {
 
         // Reuse query to collect sample_ids
         request = new Request("GET", SAMPLES_END_POINT);
-        query.put("sort", SAMPLE_ID);
+        query.put("sort", SAMPLE_ID_NUM);
         request.setJsonEntity(gson.toJson(query));
         List<String> sample_ids = esService.collectField(request, SAMPLE_ID);
 
         // Again, collect subject_ids
         request = new Request("GET", SUBJECTS_END_POINT);
-        query.put("sort", SUBJECT_ID);
+        query.put("sort", SUBJECT_ID_NUM);
         request.setJsonEntity(gson.toJson(query));
         List<String> subject_ids = esService.collectField(request, SUBJECT_ID);
 
@@ -287,15 +289,11 @@ public class ESFilterDataFetcher {
 
         Request request = new Request("GET", SUBJECTS_END_POINT);
         Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY));
-        int pageSize = (int)params.get(PAGE_SIZE);
-        query.put("size", pageSize);
         String order_by = (String)params.get(ORDER_BY);
         query.put("sort", mapSortOrder(order_by));
-        request.setJsonEntity(gson.toJson(query));
-        JsonObject jsonObject = esService.send(request);
-
+        int pageSize = (int)params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
-        List<Map<String, Object>> page = esService.collectPage(jsonObject, PROPERTIES, pageSize, offset);
+        List<Map<String, Object>> page = esService.collectPage(request, query, PROPERTIES, pageSize, offset);
         return page;
     }
 

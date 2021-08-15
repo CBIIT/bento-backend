@@ -76,7 +76,7 @@ Indices:
       s.study_short_description AS study_short_description,
       COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
       ss.study_subject_id AS subject_ids,
-      toInteger(split(ss.study_subject_id,'-')[2]) as subject_id_num,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_sizes,
@@ -107,6 +107,8 @@ Indices:
       subject_ids:
         type: keyword
       sample_ids:
+        type: keyword
+      sample_id_num:
         type: keyword
       diagnoses:
         type: keyword
@@ -148,6 +150,7 @@ Indices:
       p.program_acronym AS programs,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       samp.sample_id AS sample_ids,
+      toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       ss.study_subject_id AS subject_ids,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
@@ -173,6 +176,8 @@ Indices:
       subject_ids:
         type: keyword
       file_ids:
+        type: keyword
+      file_id_num:
         type: keyword
       diagnoses:
         type: keyword
@@ -214,6 +219,7 @@ Indices:
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       ss.study_subject_id AS subject_ids,
       f.file_id AS file_ids,
+      toInteger(split(f.file_id,'-')[2]) AS file_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_sizes,

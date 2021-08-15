@@ -102,6 +102,10 @@ Indices:
     mapping:
       programs:
         type: keyword
+      program_id:
+        type: keyword
+      study_acronym:
+        type: keyword
       studies:
         type: keyword
       subject_ids:
@@ -109,7 +113,7 @@ Indices:
       sample_ids:
         type: keyword
       sample_id_num:
-        type: keyword
+        type: integer
       diagnoses:
         type: keyword
       rc_scores:
@@ -132,6 +136,14 @@ Indices:
         type: keyword
       composition:
         type: keyword
+      sample_anatomic_site:
+        type: keyword
+      sample_procurement_method:
+        type: keyword
+      files:
+        type: keyword
+      platform:
+        type: keyword
       association:
         type: keyword
       file_type:
@@ -144,12 +156,18 @@ Indices:
       MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
       MATCH (ss)<-[:demographic_of_study_subject]-(demo)
       MATCH (ss)<-[:sample_of_study_subject]-(samp)
-      MATCH (ss)<-[*..2]-(parent)<--(f:file)
+      MATCH (samp)<-[*]-(f:file)
+      MATCH (parent)<--(f)
       OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
       RETURN DISTINCT
       p.program_acronym AS programs,
+      p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      s.study_acronym AS study_acronym,
       samp.sample_id AS sample_ids,
+      samp.sample_anatomic_site AS sample_anatomic_site,
+      samp.sample_procurement_method AS sample_procurement_method,
+      lp.test_name AS platform,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       ss.study_subject_id AS subject_ids,
       ss.disease_subtype AS diagnoses,
@@ -163,6 +181,7 @@ Indices:
       demo.menopause_status AS  meno_status,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,
+      COLLECT(DISTINCT f.file_id) AS files,
       COLLECT(DISTINCT head(labels(parent))) AS association,
       COLLECT(DISTINCT f.file_type) AS file_type
       "
@@ -173,11 +192,25 @@ Indices:
         type: keyword
       studies:
         type: keyword
+      study_acronym:
+        type: keyword
       subject_ids:
         type: keyword
+      sample_id:
+        type: keyword
+      sample_id_num:
+        type: integer
       file_ids:
         type: keyword
       file_id_num:
+        type: integer
+      file_name:
+        type: keyword
+      file_description:
+        type: keyword
+      file_format:
+        type: keyword
+      file_size:
         type: keyword
       diagnoses:
         type: keyword
@@ -213,12 +246,17 @@ Indices:
       MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
       MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
       MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      MATCH (f)-[*]->(samp:sample)
       RETURN DISTINCT
       p.program_acronym AS programs,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      s.study_acronym AS study_acronym,
       ss.study_subject_id AS subject_ids,
       f.file_id AS file_ids,
+      f.file_name AS file_name,
+      f.file_description AS file_description,
+      f.file_format AS file_format,
+      f.file_size AS file_size,
       toInteger(split(f.file_id,'-')[2]) AS file_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
@@ -229,8 +267,11 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
+      samp.sample_id AS sample_id,
+      toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,
       head(labels(parent)) AS association,
       f.file_type AS file_type
+      order by f.file_id
       "

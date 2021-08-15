@@ -5,7 +5,6 @@ import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +31,12 @@ public class ESFilterDataFetcher {
     final String FILE_ID_NUM = "file_id_num";
     final String FILES_END_POINT = "files/_search";
 
-    @Autowired ESService esService;
+    @Autowired
+    ESService esService;
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
-    public RuntimeWiring buildRuntimeWiring(){
+    public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
                         .dataFetcher("searchSubjects3", env -> {
@@ -50,6 +50,26 @@ public class ESFilterDataFetcher {
                         .dataFetcher("subjectOverViewPaged2", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectOverViewPaged(args);
+                        })
+                        .dataFetcher("subjectOverViewPagedDesc2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return subjectOverViewPagedDesc(args);
+                        })
+                        .dataFetcher("sampleOverview2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return sampleOverView(args);
+                        })
+                        .dataFetcher("sampleOverviewDesc2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return sampleOverViewDesc(args);
+                        })
+                        .dataFetcher("fileOverview2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return fileOverView(args);
+                        })
+                        .dataFetcher("fileOverviewDesc2", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return fileOverViewDesc(args);
                         })
                         // wire up "Group counts"
                         .dataFetcher("armsByPrograms2", env -> {
@@ -236,7 +256,7 @@ public class ESFilterDataFetcher {
 
         // Get aggregations
         esService.addAggregations(query, AGG_NAMES);
-        int pageSize = (int)params.get(PAGE_SIZE);
+        int pageSize = (int) params.get(PAGE_SIZE);
         query.put("size", pageSize);
         request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
@@ -263,6 +283,14 @@ public class ESFilterDataFetcher {
     }
 
     private List<Map<String, Object>> subjectOverViewPaged(Map<String, Object> params) throws IOException {
+        return subjectOverView(params, "asc");
+    }
+
+    private List<Map<String, Object>> subjectOverViewPagedDesc(Map<String, Object> params) throws IOException {
+        return subjectOverView(params, "desc");
+    }
+
+    private List<Map<String, Object>> subjectOverView(Map<String, Object> params, String direction) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"program", "programs"},
@@ -287,46 +315,143 @@ public class ESFilterDataFetcher {
                 new String[]{"lab_procedures", "lab_procedures"},
         };
 
-        Request request = new Request("GET", SUBJECTS_END_POINT);
+        String defaultSort = "subject_id_num"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("subject_id", "subject_id_num"),
+                Map.entry("program", "programs"),
+                Map.entry("program_id", "program_id"),
+                Map.entry("study_acronym", "study_acronym"),
+                Map.entry("study_short_description", "study_short_description"),
+                Map.entry("study_info", "studies"),
+                Map.entry("diagnosis", "diagnoses"),
+                Map.entry("recurrence_score", "rc_scores"),
+                Map.entry("tumor_size", "tumor_sizes"),
+                Map.entry("tumor_grade", "tumor_grades"),
+                Map.entry("er_status", "er_status"),
+                Map.entry("pr_status", "pr_status"),
+                Map.entry("chemotherapy", "chemo_regimen"),
+                Map.entry("endocrine_therapy", "endo_therapies"),
+                Map.entry("menopause_status", "meno_status"),
+                Map.entry("age_at_index", "age_at_index"),
+                Map.entry("survival_time", "survival_time")
+        );
+
+        return overView(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping, direction);
+    }
+
+    private List<Map<String, Object>> sampleOverView(Map<String, Object> params) throws IOException {
+        return sampleOverViewHelper(params, "asc");
+    }
+
+    private List<Map<String, Object>> sampleOverViewDesc(Map<String, Object> params) throws IOException {
+        return sampleOverViewHelper(params, "desc");
+    }
+
+    private List<Map<String, Object>> sampleOverViewHelper(Map<String, Object> params, String direction) throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"program", "programs"},
+                new String[]{"program_id", "program_id"},
+                new String[]{"arm", "study_acronym"},
+                new String[]{"subject_id", "subject_ids"},
+                new String[]{"sample_id", "sample_ids"},
+                new String[]{"diagnosis", "diagnoses"},
+                new String[]{"tissue_type", "tissue_type"},
+                new String[]{"tissue_composition", "composition"},
+                new String[]{"sample_anatomic_site", "sample_anatomic_site"},
+                new String[]{"sample_procurement_method", "sample_procurement_method"},
+                new String[]{"platform", "platform"},
+                new String[]{"files", "files"}
+        };
+
+        String defaultSort = "sample_id_num"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("program", "programs"),
+                Map.entry("arm", "study_acronym"),
+                Map.entry("subject_id", "subject_id_num"),
+                Map.entry("sample_id", "sample_id_num"),
+                Map.entry("diagnosis", "diagnoses"),
+                Map.entry("tissue_type", "tissue_type"),
+                Map.entry("tissue_composition", "composition"),
+                Map.entry("sample_anatomic_site", "sample_anatomic_site"),
+                Map.entry("sample_procurement_method", "sample_procurement_method"),
+                Map.entry("platform", "platform")
+        );
+
+        return overView(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping, direction);
+    }
+
+    private List<Map<String, Object>> fileOverView(Map<String, Object> params) throws IOException {
+        return fileOverViewHelper(params, "asc");
+    }
+
+    private List<Map<String, Object>> fileOverViewDesc(Map<String, Object> params) throws IOException {
+        return fileOverViewHelper(params, "desc");
+    }
+
+    private List<Map<String, Object>> fileOverViewHelper(Map<String, Object> params, String direction) throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"program", "programs"},
+                new String[]{"program_id", "program_id"},
+                new String[]{"arm", "study_acronym"},
+                new String[]{"subject_id", "subject_ids"},
+                new String[]{"sample_id", "sample_id"},
+                new String[]{"file_id", "file_ids"},
+                new String[]{"file_name", "file_name"},
+                new String[]{"association", "association"},
+                new String[]{"file_description", "file_description"},
+                new String[]{"file_format", "file_format"},
+                new String[]{"file_size", "file_size"},
+                new String[]{"diagnosis", "diagnoses"}
+        };
+
+        String defaultSort = "file_name"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("program", "programs"),
+                Map.entry("arm", "study_acronym"),
+                Map.entry("subject_id", "subject_id_num"),
+                Map.entry("sample_id", "sample_id_num"),
+                Map.entry("file_id", "file_id_num"),
+                Map.entry("file_name", "file_name"),
+                Map.entry("association", "association"),
+                Map.entry("file_description", "file_description"),
+                Map.entry("file_format", "file_format"),
+                Map.entry("file_size", "file_size"),
+                Map.entry("diagnosis", "diagnoses")
+        );
+
+        return overView(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping, direction);
+    }
+
+    private List<Map<String, Object>> overView(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping, String direction) throws IOException {
+        Request request = new Request("GET", endpoint);
         Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY));
         String order_by = (String)params.get(ORDER_BY);
-        query.put("sort", mapSortOrder(order_by));
-        int pageSize = (int)params.get(PAGE_SIZE);
+        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
-        List<Map<String, Object>> page = esService.collectPage(request, query, PROPERTIES, pageSize, offset);
+        List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
         return page;
     }
 
-    private String mapSortOrder(String order_by) {
-        String sortOrder = "subject_id_num"; // Default sort order
 
-        Map<String, String> mapping = Map.ofEntries(
-               Map.entry("subject_id", "subject_id_num"),
-               Map.entry("program", "programs"),
-               Map.entry("program_id", "program_id"),
-               Map.entry("study_acronym", "study_acronym"),
-               Map.entry("study_short_description", "study_short_description"),
-               Map.entry("study_info", "studies"),
-               Map.entry("diagnosis", "diagnoses"),
-               Map.entry("recurrence_score", "rc_scores"),
-               Map.entry("tumor_size", "tumor_sizes"),
-               Map.entry("tumor_grade", "tumor_grades"),
-               Map.entry("er_status", "er_status"),
-               Map.entry("pr_status", "pr_status"),
-               Map.entry("chemotherapy", "chemo_regimen"),
-               Map.entry("endocrine_therapy", "endo_therapies"),
-               Map.entry("menopause_status", "meno_status"),
-               Map.entry("age_at_index", "age_at_index"),
-               Map.entry("survival_time", "survival_time")
-        );
+    private Map<String, String> mapSortOrder(String order_by, String direction, String defaultSort, Map<String, String> mapping) {
+        String sortDirection = direction;
+        if (!sortDirection.equalsIgnoreCase("asc") && !sortDirection.equalsIgnoreCase("desc")) {
+            sortDirection = "asc";
+        }
 
+        String sortOrder = defaultSort; // Default sort order
         if (mapping.containsKey(order_by)) {
             sortOrder = mapping.get(order_by);
         } else {
             logger.info("Order: \"" + order_by + "\" not recognized, use default order");
         }
-        return sortOrder;
+        return Map.of(sortOrder, sortDirection);
     }
+
     private List<Map<String, Object>> armsByPrograms(Map<String, Object> params) throws IOException {
         final String category = "programs";
         final String subCategory = "study_acronym";

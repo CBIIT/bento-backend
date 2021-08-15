@@ -51,6 +51,35 @@ type SubjectOverview3 {
     lab_procedures: [String]
 }
 
+type SampleOverview2 {
+    program: String
+    program_id: String
+    arm: String
+    subject_id: String
+    sample_id: String
+    diagnosis: String
+    tissue_type: String
+    tissue_composition: String
+    sample_anatomic_site: String
+    sample_procurement_method: String
+    platform: String
+    files: [String]
+}
+
+type FileOverview2 {
+    program: String
+    program_id: String
+    arm: String
+    subject_id: String
+    sample_id: String
+    file_id: String
+    file_name: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    diagnosis: String
+}
 
 type SearchResult2 {
     numberOfPrograms: Int
@@ -125,6 +154,13 @@ type QueryType {
     ): SearchResult2
 
     subjectOverViewPaged2(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
+    subjectOverViewPagedDesc2(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
+    sampleOverview2(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
+    sampleOverviewDesc2(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
+    fileOverview2(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
+    fileOverviewDesc2(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
+
+
 
     "Group counts"
     subjectCountByProgram2 (subject_ids: [String] = []): [GroupCount2]

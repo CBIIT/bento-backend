@@ -250,7 +250,7 @@ public class ESService {
     // Convert JsonElement into Java collections and primitives
     private Object getValue(JsonElement element) {
         Object value = null;
-        if (element == null) {
+        if (element == null || element.isJsonNull()) {
             return null;
         } else if (element.isJsonObject()) {
             value = new HashMap<String, Object>();

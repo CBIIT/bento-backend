@@ -72,10 +72,6 @@ pipeline {
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
 		name: 'Test_Queries_File')
-	string(
-	    defaultValue: '',
-		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
-		name: 'Test_Params')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -176,13 +172,20 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
-
+//			git branch: "${params.Backend_Tag}",
+//				url: 'https://github.com/CBIIT/bento-backend'
+				
   			checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Backend_Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/bento-backend']]])
+
+//			dir('bento-frontend'){
+//				git branch: "${params.Frontend_Tag}",
+//				url: 'https://github.com/CBIIT/bento-frontend'
+//				}
 
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Tag}"]],
@@ -220,27 +223,23 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
-                	string(credentialsId: 'es_dev_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER'),
-                	string(credentialsId: 'es_qa_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
@@ -434,7 +433,8 @@ pipeline {
 	success {
 
 		script {
-			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			//withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
 				
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
@@ -442,7 +442,8 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
-				git push https://${git_user}:${git_password}@${gitURL} --tags
+				//git push https://${git_user}:${git_password}@${gitURL} --tags
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''
 			
@@ -450,7 +451,8 @@ pipeline {
 			}
 		
 		script {
-			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			//withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
 				
 				cd ${WORKSPACE}/bento-frontend
@@ -459,21 +461,13 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
-				git push https://${git_user}:${git_password}@${gitURL} --tags
+				//git push https://${git_user}:${git_password}@${gitURL} --tags
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''
 			
 				}
 			}
-		
-		script {
-			if ("${params.Test_Params}"?.trim()) {
-				echo 'Run Bento Katalon Tests'
-				def params = "[${params.Test_Params}]"
-				def list_params = evaluate(params)
-				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
-			    }
-		    }
 		
 		}
 

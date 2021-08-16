@@ -300,16 +300,15 @@ pipeline {
     success {
 
     script {
-      withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+      withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
         sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
-        
-		//cd ${WORKSPACE}/bento-backend
+
         gitURL=$(git config remote.origin.url | sed 's|^.*//||')
         echo "Applying tag $Backend_Tag to URL:  $gitURL"
         git config user.email "jenkins@bento-tools.org"
         git config user.name "Bento Jenkins"
         git tag --no-sign -a ${Backend_Tag}-icdc-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
-        git push https://${git_user}:${git_password}@${gitURL} --tags
+        git push https://${git_token}:x-oauth-basic@${gitURL} --tags
         
         '''
       
@@ -317,7 +316,7 @@ pipeline {
       }
     
     script {
-      withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+      withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
         sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
         
 		cd ${WORKSPACE}/bento-frontend
@@ -326,14 +325,14 @@ pipeline {
         git config user.email "jenkins@bento-tools.org"
         git config user.name "Bento Jenkins"
         git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
-        git push https://${git_user}:${git_password}@${gitURL} --tags
+        git push https://${git_token}:x-oauth-basic@${gitURL} --tags
         
         '''
       
         }
       }
     script {
-      withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+      withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
         sh label: 'GIT-Tag Files', script: '''#!/bin/bash
 
         cd ${WORKSPACE}/bento-files
@@ -342,7 +341,7 @@ pipeline {
         git config user.email "jenkins@bento-tools.org"
         git config user.name "Bento Jenkins"
         git tag --no-sign -a ${File_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${File_Tag}-${BUILD_NUMBER}"
-        git push https://${git_user}:${git_password}@${gitURL} --tags
+        git push https://${git_token}:x-oauth-basic@${gitURL} --tags
         
         '''
       

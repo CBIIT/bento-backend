@@ -433,7 +433,6 @@ pipeline {
 	success {
 
 		script {
-			//withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
 				
@@ -442,7 +441,6 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
-				//git push https://${git_user}:${git_password}@${gitURL} --tags
 				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''
@@ -451,7 +449,6 @@ pipeline {
 			}
 		
 		script {
-			//withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
 				
@@ -461,7 +458,6 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
-				//git push https://${git_user}:${git_password}@${gitURL} --tags
 				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''

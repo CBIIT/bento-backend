@@ -36,6 +36,8 @@
           value: "{{ redis_port }}"
         - name: REDIS_FILTER_ENABLE
           value: "{{ enable_redis_filter }}"
+        - name: ES_FILTER_ENABLED
+          value: "{{ enable_es_filter }}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

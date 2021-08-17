@@ -4,6 +4,7 @@ import os
 import json
 import requests
 import re
+from tags import set_tags_nrql
 
 def seturlmonitor(project, tier, key):
    API_ENDPOINT = 'https://synthetics.newrelic.com/synthetics/api/v3/monitors'
@@ -72,23 +73,6 @@ def seturlmonitor(project, tier, key):
        url_monitor = x
 
    # set tags on the monitor
-   data = {"query":"{\n  actor {\n    entitySearch(query: \"name = \'" + url_monitor.get('name') + "\'\") {\n      query\n      results {\n        entities {\n          guid\n        }\n      }\n    }\n  }\n}\n", "variables":""}
-   try:
-     response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
-   except requests.exceptions.RequestException as e:
-     raise SystemExit(e)
-   guid = re.findall(r'^.*?\bguid\b\":\"([^$]*?)\"',response.text)[0]
-   
-   tagdefs = {
-       'key: "Environment", values: "{}"'.format(tier),
-       'key: "Project", values: "{}"'.format(project)
-   }
-   
-   for tag in tagdefs:
-     data = {"query":"mutation {\n  taggingAddTagsToEntity(guid: \"" + guid + "\", tags: { " + tag + " }) {\n    errors {\n      message\n    }\n  }\n}\n", "variables":""}
-     try:
-       response = requests.post('https://api.newrelic.com/graphql', headers=headers, data=json.dumps(data), allow_redirects=False)
-     except requests.exceptions.RequestException as e:
-       raise SystemExit(e)
+   set_tags_nrql.settagsnrql(project, tier, url_monitor.get('name'), key)
 
    return(url_monitor.get('id'))

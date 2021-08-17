@@ -61,7 +61,7 @@ pipeline {
 		description: 'Enable the Redis filter',
 		name: 'Enable_Redis_Filter')
 	booleanParam(
-		defaultValue: true,
+		defaultValue: false,
 		description: 'Enable the Elasticsearch filter',
 		name: 'Enable_ES_Filter')
 	string(

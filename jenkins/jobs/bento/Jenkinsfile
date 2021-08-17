@@ -60,6 +60,10 @@ pipeline {
 		defaultValue: true,
 		description: 'Enable the Redis filter',
 		name: 'Enable_Redis_Filter')
+	booleanParam(
+		defaultValue: false,
+		description: 'Enable the Elasticsearch filter',
+		name: 'Enable_ES_Filter')
 	string(
 	    defaultValue: 'redis-schema.graphql',
 		description: 'The file to use when loading redis schema',
@@ -376,6 +380,7 @@ pipeline {
             		extraVars: [
                     enable_redis: "${params.Use_Redis}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}",
+					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)
   			}

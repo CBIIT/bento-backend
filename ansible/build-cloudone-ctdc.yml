@@ -6,7 +6,7 @@
  
 
   tasks:
-    - name: build bento-icdc application
+    - name: build ctdc application
       include_role:
-        name: bento-icdc
+        name: bento-ctdc
         tasks_from: build

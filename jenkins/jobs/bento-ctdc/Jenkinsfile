@@ -104,15 +104,6 @@ pipeline {
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/ctdc-frontend']]])
-
-        checkout([$class: 'GitSCM',
-                branches: [[name: "${params.File_Tag}"]],
-                doGenerateSubmoduleConfigurations: false,
-                extensions: [[$class: 'RelativeTargetDirectory',
-                relativeTargetDir: 'bento-files']],
-                submoduleCfg: [],
-                userRemoteConfigs: 
-                [[url: 'https://github.com/CBIIT/bento-files']]])
         
   		 checkout( poll: false, 
 				changelog:false,
@@ -204,7 +195,7 @@ pipeline {
           sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
           sh "echo ${TLS_HOSTNAME}"
           ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento.yml', 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-cloudone-ctdc.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                   extraVars: [
                     project: 'ctdc',
@@ -267,7 +258,7 @@ pipeline {
 			 string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
 			 ]){
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-cloudone-ctdc.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 credentialsId: 'commonsdocker',
                 extraVars: [

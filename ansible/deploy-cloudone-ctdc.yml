@@ -1,11 +1,11 @@
 ---
 - name: deploy stage of bento pipeline
-  hosts: icdc-{{tier}}
+  hosts: ctdc-{{tier}}
   gather_facts: yes
   become: yes
     
   tasks:
-    - name: deploy bento-icdc
+    - name: deploy bento-ctdc
       include_role:
         name: bento-icdc
         tasks_from: deploy

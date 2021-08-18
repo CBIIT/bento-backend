@@ -4,7 +4,7 @@ import json
 import requests
 from datetime import datetime
 
-def setapmrelease(project, tier, key):
+def setapmrelease(project, tier, version, key):
 
    # get apm app ids
    API_ENDPOINT = 'https://api.newrelic.com/v2/applications.json'
@@ -23,8 +23,8 @@ def setapmrelease(project, tier, key):
    #set release for apm apps
    API_ENDPOINT = 'https://api.newrelic.com/v2/applications/{}/deployments.json'.format(apm_id)
 
-   revision_name = '{}-{}-apdex'.format(project, tier)
-   revision_description = ''
+   revision_name = '{}-{}-{}'.format(project, tier, version)
+   revision_description = '{} {} updated to v{}'.format(project, tier, version)
    revision_time = datetime.utcnow()
    headers = {
        "Api-Key": key,
@@ -32,15 +32,14 @@ def setapmrelease(project, tier, key):
    }
    
    data = {
-  "deployment": {
-    "revision": revision_name,
-    "description": revision_description,
-    "timestamp": revision_time
-  }
-}
+     "deployment": {
+       "revision": revision_name,
+       "description": revision_description,
+     }
+   }
 
    try:
-     response = requests.post('{}/{}.json'.format(API_ENDPOINT, policy_id), headers=headers, data=json.dumps(data), allow_redirects=False)
+     response = requests.post(API_ENDPOINT, headers=headers, data=json.dumps(data), allow_redirects=False)
    except requests.exceptions.RequestException as e:
      raise SystemExit(e)
-   print('{} Created'.format(condition_name))
+   print('{} Created'.format(revision_name))

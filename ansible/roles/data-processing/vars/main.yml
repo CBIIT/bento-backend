@@ -34,6 +34,6 @@ data_bucket: "{{bucket[project]}}"
 bucket:
   bento: bento-metadata-dev
   ccdi: ccdi-metadata-dev
-  gmb:  bento-metadata-dev
-  ctdc: bento-metadata-dev
+  gmb:  bento-gmb-metadata
+  ctdc: bento-ctdc-metadata
 

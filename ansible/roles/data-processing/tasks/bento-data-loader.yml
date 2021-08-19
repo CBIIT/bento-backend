@@ -35,8 +35,8 @@
 
 - name: set model files location for ctdc
   set_fact:
-    model_file1: "{{workspace}}/gmb-model/model-desc/bento_tailorx_model_file.yaml"
-    model_file2: "{{workspace}}/gmb-model/model-desc/bento_tailorx_model_properties.yaml"
+    model_file1: "{{workspace}}/gmb-model/model-desc/000048_Model.yml"
+    model_file2: "{{workspace}}/gmb-model/model-desc/000048_Model_Props.yml"
     property_file: "/config/props-gmb-mock.yml"
   when: project == "gmb"
 

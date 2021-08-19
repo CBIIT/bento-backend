@@ -25,7 +25,7 @@ def setapmrelease(project, tier, version, key):
 
    revision_name = '{}-{}-{}'.format(project, tier, version)
    revision_description = '{} {} updated to v{}'.format(project, tier, version)
-   revision_time = datetime.utcnow()
+   #revision_time = datetime.utcnow()
    headers = {
        "Api-Key": key,
        "Content-Type": "application/json"
@@ -35,7 +35,7 @@ def setapmrelease(project, tier, version, key):
      "deployment": {
        "revision": revision_name,
        "description": revision_description,
-       "timestamp": revision_time.isoformat(),
+       #"timestamp": revision_time.isoformat(),
      }
    }
 

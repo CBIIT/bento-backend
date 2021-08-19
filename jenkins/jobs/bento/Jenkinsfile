@@ -384,6 +384,24 @@ pipeline {
                     ],
 					colorized: true)
   			}
+			
+			script {
+
+              sh label: 'Env-Updates', script: '''#!/bin/bash
+
+		      yum -y install python3
+		  
+			  cd icdc-devops/monitoring
+		      pip3 install -r requirements.txt
+
+              '''
+		  
+		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
+			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+	          }
+
+            }
+			
 		  }
   		}
   	}

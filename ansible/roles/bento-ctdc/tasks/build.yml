@@ -55,7 +55,7 @@
 
 - name: copy redis schema from frontend to resources
   template:
-    src: "{{workspace}}/icdc-frontend/graphql/{{ redis_schema_file }}"
+    src: "{{workspace}}/ctdc-frontend/graphql/{{ redis_schema_file }}"
     dest: "{{workspace}}/src/main/resources/graphql/{{ redis_schema_file }}"
   when: redis_schema.stat.exists
 
@@ -66,7 +66,7 @@
 
 - name: copy redis init queries from frontend to resources
   template:
-    src: "{{workspace}}/icdc-frontend/yaml/{{ redis_init_queries_file }}"
+    src: "{{workspace}}/ctdc-frontend/yaml/{{ redis_init_queries_file }}"
     dest: "{{workspace}}/src/main/resources/yaml/{{ redis_init_queries_file }}"
   when: redis_queries.stat.exists
 
@@ -77,7 +77,7 @@
 
 - name: copy test queries from frontend to resources
   template:
-    src: "{{workspace}}/icdc-frontend/yaml/{{ test_queries_file }}"
+    src: "{{workspace}}/ctdc-frontend/yaml/{{ test_queries_file }}"
     dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 

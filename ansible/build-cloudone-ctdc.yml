@@ -1,6 +1,6 @@
 ---
 - name: icdc cicd pipeline
-  hosts: icdc-local
+  hosts: ctdc-local
   gather_facts: no
   connection: local
  

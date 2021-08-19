@@ -373,13 +373,17 @@ pipeline {
 
 		      yum -y install python3
 		  
-		      cd monitoring
+		      pwd
+			  ls -la
+			  echo $WORKSPACE
+			  
+			  cd $WORKSPACE/monitoring
 		      pip3 install -r requirements.txt
 
               '''
 		  
 		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
-			    sh "python3 monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+			    sh "python3 $WORKSPACE/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
 	          }
 
             }

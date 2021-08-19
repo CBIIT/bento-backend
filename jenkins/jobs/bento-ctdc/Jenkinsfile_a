@@ -1,0 +1,327 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'commons-docker-ncias-p2236-v'
+      // label 'docker-maven'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod')
+    booleanParam(
+		defaultValue: true,
+		description: 'Flush the Redis cache',
+		name: 'Flush_Redis')
+	booleanParam(
+		defaultValue: true,
+		description: 'Enable the Redis filter',
+		name: 'Enable_Redis_Filter')
+	string(
+	    defaultValue: 'redis-schema.graphql',
+		description: 'The file to use when loading redis schema',
+		name: 'Redis_Schema_File')
+	string(
+	    defaultValue: 'redis-filter-config.bento.yaml',
+		description: 'The file to use when loading redis queries',
+		name: 'Redis_Queries_File')
+	string(
+	    defaultValue: 'test-queries.1k.bento.yaml',
+		description: 'The file to use when loading test queries',
+		name: 'Test_Queries_File')
+	string(
+	    defaultValue: '',
+		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
+		name: 'Test_Params')
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+				
+  	    checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Backend_Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/bento-backend']]])
+
+			 checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'ctdc-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
+        
+  		 checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+    stage('Set Environment'){
+      environment {
+        ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+      }
+        steps {
+
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_dev_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CDTC_DEV_IP}"
+                  env.TIER  = "${params.Environment}"
+                  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  
+                }
+              break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_qa_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CTDC_QA_IP}"
+                  env.TIER  = "${params.Environment}"
+				          env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  
+                }
+              break
+              case "stage":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_stage_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CTDC_STAGE_IP}"
+                  env.TIER  = "${params.Environment}"
+				          env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  
+                }
+              break
+              case "prod":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_prod_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CTDC_PROD_IP}"
+                  env.TIER  = "${params.Environment}"
+				          env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  
+                }
+              break
+              default:
+                withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_dev_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP    = "${NEO4J_CTDC_DEV_IP}"
+                  env.TIER  = "${params.Environment}"
+				          env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  
+                }
+              break
+            }
+          }
+        }
+    }
+  	stage('build'){
+      environment{
+        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+      }
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
+          string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+          string(credentialsId: 'docker_host', variable: 'DOCKER_HOST'),
+          string(credentialsId: 'tls_hostname', variable: 'TLS_HOSTNAME')
+          ])
+        {
+          sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+          ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-cloudone-ctdc.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                  extraVars: [
+					          redis_schema_file: "${params.Redis_Schema_File}",
+					          redis_init_queries_file: "${params.Redis_Queries_File}",
+                    test_queries_file: "${params.Test_Queries_File}",
+                    project: "ctdc"
+                  ],
+            			colorized: true
+                  ) 
+ 				}
+ 			}
+ 		}
+  	}
+	
+  	stage('deploy'){
+      environment {
+        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+      }
+
+  		steps{
+  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+		   withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+		     string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
+			 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+			 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+			 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+			 ]){
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-cloudone-ctdc.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'commonsdocker',
+                extraVars: [
+                    tier: "${params.Environment}",
+                    release: "${params.Release}",
+                    project: 'ctdc',
+                    frontend_version: "${params.Frontend_Tag}-${BUILD_NUMBER}",
+                    backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
+                    backend_git_tag: "${params.Backend_Tag}",
+                    frontend_git_tag: "${params.Frontend_Tag}",
+					enable_redis_filter: "${params.Enable_Redis_Filter}"
+                    ],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+           }
+           
+          
+  			}
+  		}
+  	}
+	
+	// stage('clear redis cache'){
+	//   when {
+	// 	expression { params.Flush_Redis }
+	// 	}
+	
+ // 	  environment {
+	// 	TIER = "${params.Environment}"
+	// 	}
+
+	//   steps{
+	// 	wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			
+	// 		script {
+ //              sh label: 'database-hosts', script: '''#!/bin/bash
+ //                echo "Creating inventory file"
+ //                echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/redis_hosts
+ //                echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/redis_hosts
+
+ //              '''
+
+ //            }
+			
+	// 		ansiblePlaybook( 
+ //               playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml', 
+ //               inventory: '${WORKSPACE}/icdc-devops/ansible/redis_hosts',
+	// 		   credentialsId: 'commonsdocker',			   
+ //               colorized: true)
+	// 		}
+	// 	}
+	// }
+
+  }
+  post {
+    always {
+      sendSlackMessage()
+    }
+   // success {
+
+  //   script {
+  //     withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
+  //       sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
+
+  //       gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+  //       echo "Applying tag $Backend_Tag to URL:  $gitURL"
+  //       git config user.email "jenkins@bento-tools.org"
+  //       git config user.name "Bento Jenkins"
+  //       git tag --no-sign -a ${Backend_Tag}-icdc-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
+  //       git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+        
+  //       '''
+      
+  //       }
+  //     }
+    
+  //   script {
+  //     withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
+  //       sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
+        
+  //       cd ${WORKSPACE}/icdc-frontend
+  //       gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+  //       echo "Applying tag $Frontend_Tag to URL:  $gitURL"
+  //       git config user.email "jenkins@bento-tools.org"
+  //       git config user.name "Bento Jenkins"
+  //       git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
+  //       git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+        
+  //       '''
+      
+  //       }
+  //     }
+    
+  //   script {
+	 //  if ("${params.Test_Params}"?.trim()) {
+		// echo 'Run Bento Katalon Tests'
+		// def params = "[${params.Test_Params}]"
+		// def list_params = evaluate(params)
+		// build quietPeriod: 300, wait: false, job: '_default/_lower/Test_Automation/Katalon_Prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
+	 //    }
+	 //  }
+
+   // }
+    cleanup {
+  
+    cleanWs()
+    
+  }
+  }
+}

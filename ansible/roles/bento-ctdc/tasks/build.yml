@@ -177,7 +177,7 @@
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-ctdc-dockerfile"
       pull: yes
       nocache: yes
-    name: ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend
+    name: ncidockerhub.nci.nih.gov/icdc/ctdc-frontend
     tag: "{{frontend_version}}"
     push: yes
     force_source: yes
@@ -191,8 +191,8 @@
 
 - name: Add tag latest to cbiitssrepo/ctdc-frontend image
   docker_image:
-    name: "ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend:{{frontend_version}}"
-    repository: ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend:latest
+    name: "ncidockerhub.nci.nih.gov/icdc/ctdc-frontend:{{frontend_version}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/ctdc-frontend:latest
     force_tag: yes
     push: yes
     source: local

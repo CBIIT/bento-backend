@@ -111,7 +111,7 @@
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-ctdc-dockerfile"
       pull: yes
       nocache: yes
-    name: ncidockerhub.nci.nih.gov/ctdc/ctdc-backend
+    name: ncidockerhub.nci.nih.gov/icdc/ctdc-backend
     tag: "{{backend_version}}"
     push: yes
     force_source: yes
@@ -125,8 +125,8 @@
 
 - name: Add tag latest to cbiitssrepo/ctdc-backend image
   docker_image:
-    name: "ncidockerhub.nci.nih.gov/ctdc/ctdc-backend:{{backend_version}}"
-    repository: ncidockerhub.nci.nih.gov/ctdc/ctdc-backend:latest
+    name: "ncidockerhub.nci.nih.gov/icdc/ctdc-backend:{{backend_version}}"
+    repository: ncidockerhub.nci.nih.gov/icdc/ctdc-backend:latest
     force_tag: yes
     push: yes
     source: local

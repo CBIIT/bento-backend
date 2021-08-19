@@ -2,3 +2,4 @@
 # defaults file for cicd
 project: bento
 enable_redis: true
+enable_es_filter: true

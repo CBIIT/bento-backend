@@ -30,7 +30,7 @@ frontend_git_tag: "{{ lookup('env','FRONTEND_GIT_TAG') }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 backend_git_tag: "{{ lookup('env','BACKEND_GIT_TAG') }}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
-bento_api_version: {{ backend_version }}
+bento_api_version: "{{ backend_version }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 
 # docker

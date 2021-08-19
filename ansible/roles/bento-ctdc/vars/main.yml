@@ -50,7 +50,7 @@ sumo_access_key: "{{ lookup('env','SUMO_ACCESS_KEY')}}"
 syslog_host: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
 
 # backend
-schema_file: icdc.graphql
+schema_file: ctdc.graphql
 backend_user_info: https://caninecommons.cancer.gov/fence/login/
 backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{ fence_id }}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
 backend_fence_logout: https://caninecommons.cancer.gov/fence/logout

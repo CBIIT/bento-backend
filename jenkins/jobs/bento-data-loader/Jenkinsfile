@@ -187,32 +187,32 @@ pipeline {
           }
         }
     }
-  	stage('loader-data'){
- 		environment {
- 			SLACK_URL = "${SLACK_URL}"
- 		}
- 		steps {
- 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 					ansiblePlaybook( 
-            			playbook: '${WORKSPACE}/icdc-devops/ansible/bento-data-loader.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            			colorized: true) 
- 			}
- 		}
-    }
-    stage('flush_redis'){
-	  environment {
-       TIER = "${params.Environment}"
-      }
-      steps{
-        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-          ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                colorized: true)
-        }
-      }
-    }
+  	// stage('loader-data'){
+ 		// environment {
+ 		// 	SLACK_URL = "${SLACK_URL}"
+ 		// }
+ 		// steps {
+ 		// 	wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 		// 			ansiblePlaybook( 
+   //          			playbook: '${WORKSPACE}/icdc-devops/ansible/bento-data-loader.yml', 
+   //          			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+   //          			colorized: true) 
+ 		// 	}
+ 		// }
+   //  }
+   //  stage('flush_redis'){
+	  // environment {
+   //     TIER = "${params.Environment}"
+   //    }
+   //    steps{
+   //      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+   //        ansiblePlaybook( 
+   //              playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+   //              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+   //              colorized: true)
+   //      }
+   //    }
+   //  }
   }
   post {
     always {

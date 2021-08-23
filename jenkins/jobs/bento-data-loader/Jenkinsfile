@@ -85,7 +85,7 @@ pipeline {
           url: 'https://github.com/CBIIT/CCDI-Portal-ETL.git'
         }
         dir('gmb-model'){
-          git branch: 'main',
+          git branch: 'utf8',
           url: 'https://github.com/CBIIT/gmb-model.git'
         }
   		}

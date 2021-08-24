@@ -32,10 +32,13 @@ app_name: "{{project}}-{{platform}}-{{tier}}"
 #### bento-icdc changes #########################################################################################################
 #schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif project == 'ctdc' %}ctdc.graphql{% else %}bento-extended.graphql{% endif %}"
 #################################################################################################################################
-schema_file:
-  icdc: icdc.graphql
-  bento: bento-extended.graphql
-  gmb: bento-gmb.graphql
+schemas:
+  icdc: "icdc.graphql"
+  bento: "bento-extended.graphql"
+  gmb: "bento-gmb.graphql"
+
+schema_file: "{{schemas.project}}"
+  
 
 
 frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"

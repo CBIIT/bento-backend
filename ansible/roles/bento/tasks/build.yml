@@ -1,6 +1,6 @@
 ---
 - name: get db ip
-  include_tasks: neo4j-ip.yml
+  include: neo4j-ip.yml
 
 # - name: set dev environment facts
 #   set_fact:

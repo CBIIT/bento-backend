@@ -166,7 +166,7 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-						project: "${params.ProjectName},
+						project: "${params.ProjectName}",
                         redis_schema_file: "${params.Redis_Schema_File}",
 						redis_init_queries_file: "${params.Redis_Queries_File}",
                         test_queries_file: "${params.Test_Queries_File}",

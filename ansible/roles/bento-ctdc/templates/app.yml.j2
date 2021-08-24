@@ -6,7 +6,7 @@ services:
 ################################################
   bento-backend:
     container_name: backend
-    image: ncidockerhub.nci.nih.gov/ctdc/ctdc-backend:{{backend_version}}
+    image: ncidockerhub.nci.nih.gov/icdc/ctdc-backend:{{backend_version}}
     environment:
       NEO4J_URL: bolt://{{ neo4j_ip }}:7687
       NEO4J_USER: "{{ neo4j_user }}"
@@ -37,7 +37,7 @@ services:
 
   bento-frontend:
     container_name: frontend
-    image: ncidockerhub.nci.nih.gov/ctdc/ctdc-frontend:{{frontend_version}}
+    image: ncidockerhub.nci.nih.gov/icdc/ctdc-frontend:{{frontend_version}}
     environment:
       REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
@@ -52,7 +52,7 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
-      REACT_APP_FILE_SERVICE_API: "{% if tier == 'prod' %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
+      REACT_APP_FILE_SERVICE_API: "{% if tier == prod %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
     volumes:
       - "/local/content/k9dc/nginx:/var/log/nginx"
     ports:

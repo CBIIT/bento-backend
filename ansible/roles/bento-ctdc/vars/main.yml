@@ -37,7 +37,6 @@ build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 docker_host: "{{ lookup('env','DOCKER_HOST') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"
 docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
-docker_host: "{{ lookup('env','DOCKER_HOST') }}"
 tls_hostname: "{{ lookup('env','TLS_HOSTNAME') }}"
 
 # neo4j

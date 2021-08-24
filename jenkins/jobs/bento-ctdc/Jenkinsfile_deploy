@@ -189,9 +189,11 @@ pipeline {
         wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
        withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
          string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
-		 string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
-		 string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
-		 string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+		     string(credentialsId: 'sumo_access_id', variable: 'SUMO_ACCESS_ID'),
+		     string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
+		     string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
+         string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
+         string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')
          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
          ]){
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
@@ -207,6 +209,7 @@ pipeline {
                     backend_version: "${params.Backend_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
+                    fence_id: "${FENCE_ID}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}"
                     ],
                 become: true,

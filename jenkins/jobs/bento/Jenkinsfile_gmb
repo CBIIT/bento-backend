@@ -42,12 +42,10 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev' )
-    extendedChoice( 
-        name: 'Region', 
-        defaultValue: 'us-east-1', 
-        description: 'Choose aws region to build', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'us-east-1' )
+  string(
+	    defaultValue: 'gmb',
+		description: 'Project Name',
+		name: 'ProjectName')
 	booleanParam(
 		defaultValue: true,
 		description: 'Use the Redis cache',

@@ -166,7 +166,7 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-						project: 'bento',
+						project: "${params.ProjectName},
                         redis_schema_file: "${params.Redis_Schema_File}",
 						redis_init_queries_file: "${params.Redis_Queries_File}",
                         test_queries_file: "${params.Test_Queries_File}",
@@ -240,7 +240,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-					project: 'bento',
+					project: "${params.ProjectName},
                     enable_redis: "${params.Use_Redis}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}",
                     ],

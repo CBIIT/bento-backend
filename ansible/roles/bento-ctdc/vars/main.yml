@@ -53,7 +53,7 @@ syslog_host: "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses
 # backend
 schema_file: ctdc.graphql
 backend_user_info: https://caninecommons.cancer.gov/fence/login/
-#backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{ fence_id }}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
+backend_fence_login: https://nci-crdc-staging.datacommons.io/user/oauth2/authorize?client_id={{ fence_id }}&response_type=code&redirect_uri=https%3A%2F%2Fcaninecommons.cancer.gov%2F&scope=openid%20user
 backend_fence_logout: https://caninecommons.cancer.gov/fence/logout
 backend_content_url: "{% if tier == prod %}https://raw.githubusercontent.com/CBIIT/ctdc-frontend/master/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/ctdc-frontend/master/src/content/pre-prod/aboutPagesContent.yaml{% endif %}"
 indexd_url: "{{ indexd_url }}"

@@ -193,7 +193,7 @@ pipeline {
 		     string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
 		     string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
          string(credentialsId: 'fence-id', variable: 'FENCE_ID'),
-         string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL')
+         string(credentialsId: 'fence-credential', variable: 'FENCE_CREDENTIAL'),
          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
          ]){
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"

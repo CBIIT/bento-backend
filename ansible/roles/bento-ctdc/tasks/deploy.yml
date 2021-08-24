@@ -1,9 +1,8 @@
 ---
 - name: ensure libselinux-python3 is installed
   yum:
-    name:
-      - libselinux-python3
-    state: installed
+    name: libselinux-python3
+    state: present
     
 - name: log into DockerHub
   docker_login:

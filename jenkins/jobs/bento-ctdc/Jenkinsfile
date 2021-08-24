@@ -227,7 +227,7 @@ pipeline {
                     backend_version: "${params.Backend_Tag}-${BUILD_NUMBER}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
-                    fence_id: "${FENCE_ID}"
+                    fence_id: "${FENCE_ID}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}"
                     ],
                 become: true,

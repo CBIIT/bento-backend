@@ -1,9 +1,12 @@
 ---
-- name: set dev environment facts
-  set_fact:
-    neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
-    bearer: "{{ lookup('env','BEARER') }}"
-  when: tier == "dev"
+- name: get db ip
+  include_tasks: neo4j-ip.yml
+
+# - name: set dev environment facts
+#   set_fact:
+#     neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
+#     bearer: "{{ lookup('env','BEARER') }}"
+#   when: tier == "dev"
 
 #- name: set qa environment facts
 #  set_fact:

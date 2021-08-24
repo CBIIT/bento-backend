@@ -84,8 +84,8 @@
 
 - name: copy schema from frontend to resources
   template:
-    src: "{{workspace}}/{{ project }}-frontend/graphql/{{ schema_file }}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file }}"
+    src: "{{workspace}}/{{ project }}-frontend/graphql/{{ schema_file[project] }}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file[project] }}"
 
 - name: verify redis schema file exists
   stat:

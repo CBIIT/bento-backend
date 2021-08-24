@@ -277,9 +277,9 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					extraVars: [
                     env: "${params.Environment}",
-					app_type: 'database',
-					app_name: 'neo4j',
-                    project: 'bento',
+										app_type: 'database',
+										app_name: 'neo4j',
+                    project: "${params.ProjectName}",
 					log_path: '/var/log/neo4j/*.log',
                     ],
             		colorized: true)

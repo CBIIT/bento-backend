@@ -30,13 +30,13 @@ syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 app_name: "{{project}}-{{platform}}-{{tier}}"
 
 #### bento-icdc changes ################################################################################################################################################
-#schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif project == 'ctdc' %}ctdc.graphql{% elif project == 'ins' %}ins.graphql{% else %}bento-extended.graphql{% endif %}"
+#schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif project == 'ctdc' %}ctdc.graphql{% else %}bento-extended.graphql{% endif %}"
 ########################################################################################################################################################################
 schemas:
   icdc: "icdc.graphql"
   bento: "bento-extended.graphql"
   gmb: "bento-gmb.graphql"
-  ins: "ins.graphql"
+  ins: "bento-extended.graphql"
 
 schema_file: "{{schemas[project]}}"
   

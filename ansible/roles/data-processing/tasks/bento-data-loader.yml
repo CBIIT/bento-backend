@@ -47,6 +47,13 @@
     property_file: "{{workspace}}/ccdi-model/model-desc/props-ccdi-portal.yml"
   when: project == "ccdi"
 
+- name: set model files location for ins
+  set_fact:
+    model_file1: "{{workspace}}/ins-model/data_loading/model-desc/ins_model_file.yaml"
+    model_file2: "{{workspace}}/ins-model/data_loading/model-desc/ins_model_properties.yaml"
+    property_file: "{{workspace}}/ins-model/data_loading/model-desc/props-ins.yml"
+  when: project == "ins"
+
 - name: Check if tmp directory exist
   stat:
     path: "{{workspace}}/tmp"

@@ -25,7 +25,7 @@ pipeline {
         defaultValue: 'bento', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento,ccdi,gmb' )
+        value: 'icdc,ctdc,bento,ccdi,gmb,ins' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -87,6 +87,10 @@ pipeline {
         dir('gmb-model'){
           git branch: 'utf8',
           url: 'https://github.com/CBIIT/gmb-model.git'
+        }
+        dir('ins-model'){
+          git branch: 'main',
+          url: 'https://github.com/CBIIT/INS-ETL.git'
         }
   		}
  

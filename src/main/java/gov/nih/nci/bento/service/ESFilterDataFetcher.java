@@ -203,7 +203,7 @@ public class ESFilterDataFetcher {
 
     private List<String> searchSubjects2(Map<String, Object> params) throws IOException {
         Request request = new Request("GET", SUBJECTS_END_POINT);
-        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
         query.put("size", esService.MAX_ES_SIZE);
         query.put("sort", SUBJECT_ID_NUM);
         request.setJsonEntity(gson.toJson(query));
@@ -234,7 +234,7 @@ public class ESFilterDataFetcher {
         };
 
         Request request = new Request("GET", FILES_END_POINT);
-        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
         query.put("size", esService.MAX_ES_SIZE);
         query.put("sort", FILE_ID_NUM);
         request.setJsonEntity(gson.toJson(query));
@@ -427,7 +427,7 @@ public class ESFilterDataFetcher {
 
     private List<Map<String, Object>> overView(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping, String direction) throws IOException {
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY));
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY));
         String order_by = (String)params.get(ORDER_BY);
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
         int pageSize = (int) params.get(PAGE_SIZE);
@@ -456,7 +456,7 @@ public class ESFilterDataFetcher {
         final String category = "programs";
         final String subCategory = "study_acronym";
         String[] subCategories = new String[] { subCategory };
-        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
         String[] AGG_NAMES = new String[] {category};
         esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
@@ -637,11 +637,11 @@ public class ESFilterDataFetcher {
     }
 
     private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params) throws IOException {
-        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
         return getGroupCount(category, query);
     }
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params) throws IOException {
-        Map<String, Object> query = esService.buildFilterQuery(params, Set.of(PAGE_SIZE, category));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE, category));
         return getGroupCount(category, query);
     }
 

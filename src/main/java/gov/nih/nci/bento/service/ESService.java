@@ -62,7 +62,35 @@ public class ESService {
         return jsonObject;
     }
 
-    public Map<String, Object> buildFilterQuery(Map<String, Object> params, Set<String> excludedParams) {
+    // This function build queries with following rules:
+    //  - If a list is empty, query will return empty dataset
+    //  - If a list has only one element which is empty string, query will return all data available
+    //  - If a list is null, query will return all data available
+    public Map<String, Object> buildListQuery(Map<String, Object> params, Set<String> excludedParams) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<Object> filter = new ArrayList<>();
+        for (var key: params.keySet()) {
+            if (excludedParams.contains(key)) {
+                continue;
+            }
+            List<String> valueSet = (List<String>) params.get(key);
+            // list with only one empty string [""] means return all records
+            if (valueSet.size() == 1) {
+                if (valueSet.get(0).equals("")) {
+                    continue;
+                }
+            }
+            filter.add(Map.of(
+                    "terms", Map.of( key, valueSet)
+            ));
+        }
+
+        result.put("query", Map.of("bool", Map.of("filter", filter)));
+        return result;
+    }
+
+    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params, Set<String> excludedParams) {
         Map<String, Object> result = new HashMap<>();
 
         List<Object> filter = new ArrayList<>();
@@ -72,12 +100,6 @@ public class ESService {
             }
             List<String> valueSet = (List<String>) params.get(key);
             if (valueSet.size() > 0) {
-                // list with only one empty string [""] means return all records
-                if (valueSet.size() == 1) {
-                    if (valueSet.get(0).equals("")) {
-                        continue;
-                    }
-                }
                 filter.add(Map.of(
                         "terms", Map.of( key, valueSet)
                 ));

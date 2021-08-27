@@ -183,6 +183,9 @@ pipeline {
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-loader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+						extraVars: [
+                          neo4j_ip: "${NEO4J_IP}",
+                        ],
 						credentialsId: 'commonsdocker',
             			colorized: true) 
  			}

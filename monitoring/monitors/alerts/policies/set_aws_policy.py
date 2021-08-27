@@ -5,7 +5,7 @@ import json
 import requests
 from monitors.alerts.conditions import set_aws_redis_conditions
 
-def setawsalertpolicy(project, tier, email_id, slack_id, key):
+def setawsalertpolicy(project, tier, email_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
    policy_name = '{}-{}-aws-policy'.format(project.lower(), tier.lower())
@@ -46,7 +46,7 @@ def setawsalertpolicy(project, tier, email_id, slack_id, key):
      # add notification channels
      data = {
        "policy_id": '{}'.format(policy_id),
-       "channel_ids": '{},{}'.format(email_id, slack_id)
+       "channel_ids": '{}'.format(email_id
      }
 
      try:

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, getopt
-from tags import set_release
+import set_release
 
 def main(argv):
 

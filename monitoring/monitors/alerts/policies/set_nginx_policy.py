@@ -5,7 +5,7 @@ import json
 import requests
 from monitors.alerts.conditions import set_nginx_conditions
 
-def setnginxalertpolicy(project, tier, email_id, slack_id, key):
+def setnginxalertpolicy(project, tier, email_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
    policy_name = '{}-{}-nginx-policy'.format(project.lower(), tier.lower())
@@ -47,7 +47,7 @@ def setnginxalertpolicy(project, tier, email_id, slack_id, key):
 
      data = {
        "policy_id": '{}'.format(policy_id),
-       "channel_ids": '{},{}'.format(email_id, slack_id)
+       "channel_ids": '{}'.format(email_id)
      }
 
      try:

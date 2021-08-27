@@ -5,7 +5,7 @@ import json
 import requests
 from monitors.alerts.conditions import set_disk_space_condition, set_memory_condition, set_cpu_condition
 
-def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
+def setdbalertpolicy(project, tier, email_id, synthetics_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
    policy_name = '{}-{}-db-policy'.format(project.lower(), tier.lower())
@@ -52,7 +52,7 @@ def setdbalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
      # add notification channels
      data = {
        "policy_id": '{}'.format(policy_id),
-       "channel_ids": '{},{}'.format(email_id, slack_id)
+       "channel_ids": '{}'.format(email_id)
      }
 
      try:

@@ -5,6 +5,7 @@ import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Request;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,13 @@ public class ESFilterDataFetcher {
     final String FILE_ID = "file_ids";
     final String FILE_ID_NUM = "file_id_num";
     final String FILES_END_POINT = "files/_search";
+    final String GS_END_POINT = "global_search/_search";
+    final int GS_LIMIT = 10;
+    final String GS_RESULT_FIELD = "result_field";
+    final String GS_SEARCH_FIELD = "search_field";
+    final String GS_COLLECT_FIELD = "collect_field";
+    final String GS_AGG_LIST = "list";
+
 
     @Autowired
     ESService esService;
@@ -196,6 +204,10 @@ public class ESFilterDataFetcher {
                         .dataFetcher("filterSubjectCountByFileType2", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByFileType(args);
+                        })
+                        .dataFetcher("globalSearch", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return globalSearch(args);
                         })
                 )
                 .build();
@@ -666,4 +678,72 @@ public class ESFilterDataFetcher {
         return data;
     }
 
+    private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        String input = (String) params.get("input");
+        List<Map<String, String>> fieldNames = new ArrayList<>();
+        fieldNames.add(Map.of(
+                GS_RESULT_FIELD, "program_ids",
+                GS_SEARCH_FIELD,"program_id",
+                GS_COLLECT_FIELD,"program_id_kw"
+
+        ));
+        fieldNames.add(Map.of(
+                GS_RESULT_FIELD, "arm_ids",
+                GS_SEARCH_FIELD,"arm_id",
+                GS_COLLECT_FIELD,"arm_id_kw"
+
+        ));
+        fieldNames.add(Map.of(
+                GS_RESULT_FIELD, "subject_ids",
+                GS_SEARCH_FIELD,"subject_id",
+                GS_COLLECT_FIELD,"subject_id_kw"
+
+        ));
+        fieldNames.add(Map.of(
+                GS_RESULT_FIELD, "sample_ids",
+                GS_SEARCH_FIELD,"sample_id",
+                GS_COLLECT_FIELD,"sample_id_kw"
+
+        ));
+        fieldNames.add(Map.of(
+                GS_RESULT_FIELD, "file_ids",
+                GS_SEARCH_FIELD,"file_id",
+                GS_COLLECT_FIELD,"file_id_kw"
+
+        ));
+        Map<String, Map<String, Object>> queries = getGlobalSearchQuery(input, fieldNames);
+
+        for (String resultFieldName: queries.keySet()) {
+            Map<String, Object> query = queries.get(resultFieldName);
+            Request request = new Request("GET", GS_END_POINT);
+            request.setJsonEntity(gson.toJson(query));
+            JsonObject jsonObject = esService.send(request);
+            Map<String, Object> aggs = esService.collectAggs(jsonObject, new String[]{GS_AGG_LIST});
+            var buckets = ((Map<String, JsonArray>) aggs.get("aggs")).get(GS_AGG_LIST);
+            result.put(resultFieldName, esService.collectBucketKeys(buckets));
+        }
+
+        return result;
+    }
+
+    private Map<String, Map<String, Object>> getGlobalSearchQuery(String input, List<Map<String, String>> fieldNames) {
+        Map<String, Map<String, Object>> result = new HashMap<>();
+        for (var field: fieldNames) {
+            String searchFieldName = field.get(GS_SEARCH_FIELD);
+            String collectFieldName = field.get(GS_COLLECT_FIELD);
+            String resultFieldName = field.get(GS_RESULT_FIELD);
+            result.put(
+                    resultFieldName,
+                    Map.of(
+                        "query", Map.of("match_phrase_prefix", Map.of(searchFieldName, input)),
+                        "_source", false,
+                        "aggs", Map.of(GS_AGG_LIST, Map.of("terms", Map.of("field", collectFieldName))),
+                         "size", GS_LIMIT
+                    )
+            );
+        }
+
+        return result;
+    }
 }

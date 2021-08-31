@@ -147,7 +147,13 @@ public class ESService {
         return result;
     }
 
-
+    public List<String> collectBucketKeys(JsonArray buckets) {
+        List<String> keys = new ArrayList<>();
+        for (var bucket: buckets) {
+            keys.add(bucket.getAsJsonObject().get("key").getAsString());
+        }
+        return keys;
+    }
 
     public List<String> collectField(Request request, String fieldName) throws IOException {
         List<String> results = new ArrayList<>();

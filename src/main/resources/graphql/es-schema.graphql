@@ -111,6 +111,14 @@ type ProgramArms2 {
     children: [ArmInfo2]
 }
 
+type GlobalSearchResult {
+    program_ids: [String]
+    arm_ids: [String]
+    subject_ids: [String]
+    sample_ids: [String]
+    file_ids: [String]
+}
+
 schema {
     query: QueryType
 }
@@ -452,6 +460,6 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
+    globalSearch (input: String): GlobalSearchResult
+
 }
-
-

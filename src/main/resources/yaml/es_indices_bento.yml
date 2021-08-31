@@ -282,10 +282,14 @@ Indices:
         type: search_as_you_type
       program_id:
         type: search_as_you_type
+      program_id_kw:
+        type: keyword
       program_file_names:
         type: search_as_you_type
-      arm_code:
+      arm_id:
         type: search_as_you_type
+      arm_id_kw:
+        type: keyword
       arm_name:
         type: search_as_you_type
       study_file_names:
@@ -351,9 +355,11 @@ Indices:
       RETURN DISTINCT
         p.program_acronym AS program,
         p.program_id AS program_id,
+        p.program_id AS program_id_kw,
         COLLECT(DISTINCT pf.file_name) AS program_file_names,
 
-        s.study_acronym AS arm_code,
+        s.study_acronym AS arm_id,
+        s.study_acronym AS arm_id_kw,
         s.study_name AS arm_name,
         COLLECT(DISTINCT sf.file_name) AS study_file_names,
 

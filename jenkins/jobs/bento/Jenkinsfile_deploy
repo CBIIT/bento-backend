@@ -256,6 +256,8 @@ pipeline {
                   env.TIER  = "perf"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  // UPDATE THIS TO USE CREDENTIALS WHEN PERF ES IS ENABLED
+				  env.ES_HOST = "placeholder"
 
                 }
               break

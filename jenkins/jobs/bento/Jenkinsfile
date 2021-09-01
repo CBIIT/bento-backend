@@ -238,6 +238,7 @@ pipeline {
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
@@ -250,6 +251,7 @@ pipeline {
                   env.TIER  = "qa"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break

@@ -37,6 +37,7 @@ schemas:
   bento: "bento-extended.graphql"
   gmb: "bento-gmb.graphql"
   ins: "bento-extended.graphql"
+  ccdi: "bento-extended.graphql"
 
 schema_file: "{{schemas[project]}}"
   

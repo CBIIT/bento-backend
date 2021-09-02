@@ -18,6 +18,10 @@
     cloudfront_domain_name: "{{dist_info.stdout_lines | map('trim') | list |first}}"
     cloudfront_key_group_id: "{{key_group.stdout_lines | map('trim') | list |first}}"
 
+- name: show cloudfront_key_group_name
+  debug:
+    msg: "{{cloudfront_key_group_id}}"
+
 - name: create task definition - bento filedownloader
   ecs_taskdefinition:
     containers:

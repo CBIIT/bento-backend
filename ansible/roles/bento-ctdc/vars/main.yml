@@ -59,3 +59,6 @@ backend_fence_logout: https://caninecommons.cancer.gov/fence/logout
 backend_content_url: "{% if tier == prod %}https://raw.githubusercontent.com/CBIIT/ctdc-frontend/master/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/ctdc-frontend/master/src/content/pre-prod/aboutPagesContent.yaml{% endif %}"
 indexd_url: "{{ indexd_url }}"
 backend_google_analytics_id: UA-154442677-1
+
+#frontend url
+frontend_url: "{% if tier == 'prod' %}https://https://trialcommons.cancer.gov//{% else %}https://trialcommons-{{ tier }}.cancer.gov/{% endif %}" 

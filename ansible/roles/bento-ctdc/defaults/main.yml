@@ -3,4 +3,5 @@
 platform: aws
 release: fail
 project: ctdc
+prod: prod
 

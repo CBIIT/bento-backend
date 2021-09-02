@@ -52,7 +52,7 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
-      REACT_APP_FILE_SERVICE_API: "{% if tier == prod %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
+      REACT_APP_FILE_SERVICE_API: "{% if tier == 'prod' %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
     volumes:
       - "/local/content/ctdc/nginx:/var/log/nginx"
     ports:

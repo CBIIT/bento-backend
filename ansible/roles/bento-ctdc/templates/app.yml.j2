@@ -42,7 +42,7 @@ services:
       REACT_APP_BACKEND_GETUSERINFO_API: "{{ backend_user_info }}"
       REACT_APP_LOGIN_URL: "{{ backend_fence_login }}"
       REACT_APP_USER_LOGOUT_URL: "{{ backend_fence_logout }}"
-      REACT_APP_BACKEND_API: "{% if tier = prod %}https://trialcommons.cancer.gov/v1/graphql/{% else %}https://trialcommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}"
+      REACT_APP_BACKEND_API: "{% if tier == prod %}https://trialcommons.cancer.gov/v1/graphql/{% else %}https://trialcommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}"
       REACT_APP_ABOUT_CONTENT_URL: "{{ backend_content_url }}"
       REACT_APP_BE_VERSION: "{{ backend_version }}"
       REACT_APP_FE_VERSION: "{{ frontend_version }}"
@@ -52,7 +52,7 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
-      REACT_APP_FILE_SERVICE_API: "{% if tier = prod %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
+      REACT_APP_FILE_SERVICE_API: "{% if tier == prod %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
     volumes:
       - "/local/content/ctdc/nginx:/var/log/nginx"
     ports:

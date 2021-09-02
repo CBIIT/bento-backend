@@ -35,10 +35,10 @@
     state: directory
     owner: "{{item.owner}}"
   loop:
-    - { dest: '/local/content/docker', owner: 'root'
-    - { dest: '/local/content/ctdc/logs',owner: 'tomcat'
-    - { dest: '/local/content/ctdc/file-downloader', owner: 'root'
-    - { dest: '/local/content/ctdc/nginx', owner: 'root'
+    - { dest: '/local/content/docker', owner: 'root' }
+    - { dest: '/local/content/ctdc/logs',owner: 'tomcat' }
+    - { dest: '/local/content/ctdc/file-downloader', owner: 'root' }
+    - { dest: '/local/content/ctdc/nginx', owner: 'root' }
 
 
 

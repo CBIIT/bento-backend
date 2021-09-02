@@ -1,6 +1,6 @@
 #create s3 bucket to store the logs
 resource "aws_s3_bucket" "kinesis_log" {
-  bucket = "${var.stack_name}-${terraform.workspace}-kenesis-firehose-steam"
+  bucket = "${var.stack_name}-${terraform.workspace}-kinesis-firehose-stream"
   acl    = "private"
 }
 resource "aws_iam_role" "firehose_role" {
@@ -15,7 +15,7 @@ resource "aws_iam_role_policy" "firehose_policy" {
 }
 
 resource "aws_kinesis_firehose_delivery_stream" "firehose_stream" {
-  name        = "aws-waf-logs-${var.stack_name}-${terraform.workspace}-kenesis-firehose-steam"
+  name        = "aws-waf-logs-${var.stack_name}-${terraform.workspace}-kinesis-firehose-stream"
   destination = "s3"
 
   s3_configuration {

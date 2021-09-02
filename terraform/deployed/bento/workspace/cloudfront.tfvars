@@ -22,3 +22,14 @@ app_name = "bento"
 cloudfront_distribution_bucket_name = "bento-files"
 
 env = "prod"
+
+alarms = {
+  error4xx = {
+    name = "4xxErrorRate"
+    threshold = 5
+  }
+  error5xx = {
+    name = "5xxErrorRate"
+    threshold = 1
+  }
+}

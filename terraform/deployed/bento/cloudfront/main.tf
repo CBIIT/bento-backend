@@ -1,21 +1,5 @@
-terraform {
-  required_version = ">= 0.12"
-}
 
-provider "aws" {
-  profile = var.profile
-  region = var.region
-}
-#set the backend for state file
-terraform {
-  backend "s3" {
-    bucket = "bento-terraform-remote-state"
-    key = "bento/ppdc/terraform.tfstate"
-    workspace_key_prefix = "env"
-    region = "us-east-1"
-    encrypt = true
-  }
-}
+
 locals {
   s3_origin_id = "${var.stack_name}_files_origin_id"
 }
@@ -124,6 +108,7 @@ resource "aws_wafv2_web_acl" "waf" {
     metric_name                = "${var.stack_name}-files-request-ip"
     sampled_requests_enabled   = true
   }
+
 }
 
 #create public key
@@ -138,3 +123,29 @@ resource "aws_cloudfront_key_group" "key_group" {
   items   = [aws_cloudfront_public_key.public_key.id]
   name    = "${var.stack_name}-${var.env}-key-group"
 }
+
+resource "aws_wafv2_web_acl_logging_configuration" "waf_logging" {
+  log_destination_configs = [
+    aws_kinesis_firehose_delivery_stream.firehose_stream.arn]
+  resource_arn = aws_wafv2_web_acl.waf.arn
+  redacted_fields {
+    single_header {
+      name = "user-agent"
+    }
+  }
+  logging_filter {
+    default_behavior = "DROP"
+
+    filter {
+      behavior = "KEEP"
+
+      condition {
+        action_condition {
+          action = "BLOCK"
+        }
+      }
+      requirement = "MEETS_ALL"
+    }
+  }
+}
+

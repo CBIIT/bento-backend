@@ -21,7 +21,8 @@ redis_host:
   qa: "10.208.9.72"
   stage: "10.208.21.143"
   prod: "10.208.25.49"
- 
+
+es_host: ""
 redis_password: ""
 redis_port: 6379
 

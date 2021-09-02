@@ -17,5 +17,5 @@ app_name: bento-{{platform}}-{{tier}}
 downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
 #cloudfront variables
 cloudfront_origin_id: bento_files_origin_id
-cloudfront_key_group_name: test-test-key-group
+cloudfront_key_group_name: bento-prod-key-group
 cloudfront_private_key: "{{ lookup('aws_ssm', 'bento_files_cloudfront_private_key', region='us-east-1' ) }}"

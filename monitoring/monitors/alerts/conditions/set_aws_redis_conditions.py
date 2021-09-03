@@ -14,7 +14,7 @@ def setawsredisconditions(key, project, tier, policy_id):
    host_query = "(displayName LIKE '{}-{}-redis-cluster-%')".format(project, tier)
 
    # set redis system alerts
-   condition_name = '{}-{} AWS Redis Memory Condition'.format(project, tier)
+   condition_name = '{}-{} AWS Redis Memory Condition'.format(project.title(), tier.title())
    data = {
      "data":{
       "type":"infra_metric",
@@ -46,7 +46,7 @@ def setawsredisconditions(key, project, tier, policy_id):
    print('{} Created'.format(condition_name))
    
    # set redis performance alerts
-   condition_name = '{}-{} AWS Redis Command Condition'.format(project, tier)
+   condition_name = '{}-{} AWS Redis Command Condition'.format(project.title(), tier.title())
    data = {
      "data":{
       "type":"infra_metric",

@@ -8,7 +8,7 @@ from monitors.alerts.conditions import set_redis_conditions
 def setredisalertpolicy(project, tier, email_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
-   policy_name = '{}-{}-redis-policy'.format(project.lower(), tier.lower())
+   policy_name = '{}-{} Redis Policy'.format(project.title(), tier.title())
    policy_found = False
    headers = {'Api-Key': key}
 
@@ -18,7 +18,7 @@ def setredisalertpolicy(project, tier, email_id, key):
      raise SystemExit(e)
 
    for x in response.json()['policies']:
-     if policy_name in x.get("name", "none").lower():
+     if policy_name in x.get("name", "none"):
        policy_found = True
 
    if not policy_found:

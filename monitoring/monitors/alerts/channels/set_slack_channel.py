@@ -9,7 +9,7 @@ def setalertslack(project, tier, key):
    DEVOPS_SLACK_URL = os.getenv('SLACK_URL')
    DEVOPS_SLACK_CHANNEL = os.getenv('SLACK_CHANNEL')
 
-   channel_name = '{}-{}-slack-alerts'.format(project.lower(), tier.lower())
+   channel_name = '{}-{} Slack Alerts'.format(project.title(), tier.title())
    channel_found = False
    headers = {'Api-Key': key}
    
@@ -19,7 +19,7 @@ def setalertslack(project, tier, key):
      raise SystemExit(e)
 
    for x in response.json()['channels']:
-     if channel_name in x.get("name", "none").lower():
+     if channel_name in x.get("name", "none"):
        channel_found = True
        channel_id = x.get('id')
 

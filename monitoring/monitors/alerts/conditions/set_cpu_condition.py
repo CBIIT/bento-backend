@@ -13,7 +13,7 @@ def setcpucondition(key, host, policy_id):
    
    host_query = "(displayName IN ('{}'))".format(host)
    
-   condition_name = '{} CPU Used Condition'.format(host)
+   condition_name = '{} CPU Used Condition'.format(host.title())
    data = {
      "data":{
       "type":"infra_metric",

@@ -14,7 +14,7 @@ def setredisconditions(key, project, tier, policy_id):
    host_query = "(label.Project = '{}' AND label.Environment = '{}')".format(project, tier)
 
    # set redis system alerts
-   condition_name = '{}-{} Redis Memory Condition'.format(project, tier)
+   condition_name = '{}-{} Redis Memory Condition'.format(project.title(), tier.title())
    data = {
      "data":{
       "type":"infra_metric",
@@ -45,7 +45,7 @@ def setredisconditions(key, project, tier, policy_id):
    print('{} Created'.format(condition_name))
 
    # set redis performance alerts
-   condition_name = '{}-{} Redis Command Condition'.format(project, tier)
+   condition_name = '{}-{} Redis Command Condition'.format(project.title(), tier.title())
    data = {
      "data":{
       "type":"infra_metric",
@@ -76,7 +76,7 @@ def setredisconditions(key, project, tier, policy_id):
    print('{} Created'.format(condition_name))
 
    # set redis error alerts
-   condition_name = '{}-{} Redis Error Condition'.format(project, tier)
+   condition_name = '{}-{} Redis Error Condition'.format(project.title(), tier.title())
    data = {
      "data":{
       "type":"infra_metric",

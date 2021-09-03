@@ -8,7 +8,7 @@ def setalertemail(project, tier, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_channels.json'
    DEVOPS_EMAIL = os.getenv('EMAIL')
 
-   channel_name = '{}-{}-email-alerts'.format(project.lower(), tier.lower())
+   channel_name = '{}-{} Email Alerts'.format(project.title(), tier.title())
    channel_found = False
    headers = {'Api-Key': key}
    
@@ -18,7 +18,7 @@ def setalertemail(project, tier, key):
      raise SystemExit(e)
 
    for x in response.json()['channels']:
-     if channel_name in x.get("name", "none").lower():
+     if channel_name in x.get("name", "none"):
        channel_found = True
        channel_id = x.get('id')
 

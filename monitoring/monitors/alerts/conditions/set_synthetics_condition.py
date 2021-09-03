@@ -11,7 +11,7 @@ def setsyntheticscondition(project, tier, key, synthetics_id, policy_id):
        "Content-Type": "application/json"
    }
    
-   condition_name = '{}-{} Url Condition'.format(project, tier)
+   condition_name = '{}-{} Url Condition'.format(project.title(), tier.title())
    data = {
      "synthetics_condition": {
        "name": condition_name,

@@ -16,14 +16,15 @@ def setapdexcondition(project, tier, key, policy_id):
    except requests.exceptions.RequestException as e:
      raise SystemExit(e)
    
+   apm_id=[]
    for x in response.json()['applications']:
      if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():
-       apm_id = x.get("id", "none")
+       apm_id.append(x.get("id", "none"))
 
    #set apdex for apm apps
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_conditions/policies'
 
-   condition_name = '{}-{}-apdex'.format(project, tier)
+   condition_name = '{}-{} APM Apdex'.format(project.title(), tier.title())
    headers = {
        "Api-Key": key,
        "Content-Type": "application/json"
@@ -34,9 +35,7 @@ def setapdexcondition(project, tier, key, policy_id):
        "type": "apm_app_metric",
        "name": condition_name,
        "enabled": True,
-       "entities": [
-         apm_id
-       ],
+       "entities": apm_id,
        "metric": "apdex",
        "condition_scope": "application",
        "terms": [

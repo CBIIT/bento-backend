@@ -18,7 +18,7 @@ def seturlmonitor(project, tier, key):
      monitor_uri = 'https://{}-{}.{}'.format(project, tier, DOMAIN)
 
    # set monitor configuration
-   monitor_name = '{}-{}-url-monitor'.format(project.lower(), tier.lower())
+   monitor_name = '{}-{} Url Monitor'.format(project.title(), tier.title())
    data = {
        "name": monitor_name,
        "type": "BROWSER",
@@ -38,7 +38,7 @@ def seturlmonitor(project, tier, key):
      raise SystemExit(e)
 
    for x in response.json()['monitors']:
-     if monitor_name in x.get("name", "none").lower():
+     if monitor_name in x.get("name", "none"):
        print('{} already exists - updating with current configuration'.format(monitor_name))
 
        headers = {
@@ -69,7 +69,7 @@ def seturlmonitor(project, tier, key):
      raise SystemExit(e)
 
    for x in response.json()['monitors']:
-     if monitor_name in x.get("name", "none").lower():
+     if monitor_name in x.get("name", "none"):
        url_monitor = x
 
    # set tags on the monitor

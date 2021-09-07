@@ -34,4 +34,13 @@ variable "alarms" {
   type = map(map(string))
 }
 
+variable "slack_secret_name" {
+  type = string
+  description = "name of cloudfront slack secret"
+}
+variable "cloudfront_slack_channel_name" {
+  type = string
+  description = "cloudfront slack name"
+}
+
 

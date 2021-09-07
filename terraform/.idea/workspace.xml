@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="57253ec0-05d0-41f4-a004-9c287a06db71" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/backend.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/cloudwatch.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/kenesis.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/provider.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ansible/roles/bento-ctdc/defaults/main.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ansible/roles/bento-ctdc/defaults/main.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployed/bento/cloudfront/data.tf" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/data.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployed/bento/cloudfront/main.tf" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/main.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployed/bento/cloudfront/variables.tf" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/variables.tf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployed/bento/workspace/cloudfront.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/workspace/cloudfront.tfvars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployed/bento/cloudfront/cloudwatch.tf" beforeDir="false" afterPath="$PROJECT_DIR$/deployed/bento/cloudfront/cloudwatch.tf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +24,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="full.screen.before.presentation.mode" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
@@ -48,5 +42,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

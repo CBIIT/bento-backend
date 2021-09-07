@@ -55,3 +55,45 @@ data "aws_iam_policy_document" "firehose_policy" {
     resources = ["arn:aws:iam::*:role/aws-service-role/wafv2.amazonaws.com/AWSServiceRoleForWAFV2Logging"]
   }
 }
+data "aws_secretsmanager_secret_version" "slack_url" {
+  secret_id = var.slack_secret_name
+}
+
+data "aws_iam_policy_document" "lambda_assume_policy" {
+  statement {
+    sid = ""
+    effect = "Allow"
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = ["lambda.amazonaws.com"]
+      type = "Service"
+    }
+  }
+}
+
+data "aws_iam_policy_document" "lambda_s3_policy" {
+  statement {
+    sid = ""
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:GetObjectVersion",
+    ]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.kinesis_log.bucket}/*"]
+  }
+  statement {
+    sid = ""
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket"
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.kinesis_log.bucket}"
+    ]
+  }
+}
+
+

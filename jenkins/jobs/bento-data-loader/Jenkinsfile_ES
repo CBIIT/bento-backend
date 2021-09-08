@@ -102,15 +102,6 @@ pipeline {
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  					
-			script {
-				sh label: 'database-hosts', script: '''#!/bin/bash
-					echo "Creating inventory file"
-					echo "[neo4j]" > ${WORKSPACE}/icdc-devops/ansible/hosts
-					echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
-					'''
-
-			}
-					
 			ansiblePlaybook( 
             	playbook: '${WORKSPACE}/icdc-devops/ansible/bento-es-loader.yml', 
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

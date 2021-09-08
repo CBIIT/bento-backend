@@ -30,5 +30,3 @@ ctdc_base_url: "https://trialcommons-dev.cancer.gov"
 s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
 manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
 
-# vars for elasticsearch loader
-es_host: "{{ lookup('env','ES_HOST') }}"

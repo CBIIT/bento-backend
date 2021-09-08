@@ -1,6 +1,6 @@
 ---
 - name: load data to elasticsearch
-  hosts: neo4j
+  hosts: all
   connection: local
   become: yes
   gather_facts: yes

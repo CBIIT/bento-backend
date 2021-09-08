@@ -1,0 +1,33 @@
+---
+
+- name: update indices file
+  template:
+    dest: "{{workspace}}/config/es_indices_bento.yml"
+    src: "{{workspace}}/bento-backend/src/main/resources/yaml/es_indices_bento.yml"
+
+- name: update server config file
+  template:
+    dest: "{{workspace}}/config/es_loader_bento.yml"
+    src: "{{workspace}}/config/es_loader.yml.j2"
+
+- name: install python3
+  yum:
+    name: python3
+    state: installed
+
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/requirements.txt"
+    executable: pip3
+
+
+- name: load data
+  shell:
+    cmd: >
+      python3 es_loader.py config/es_indices_bento.yml config/es_loader_bento.yml
+    chdir: "{{workspace}}"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

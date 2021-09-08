@@ -250,6 +250,7 @@ pipeline {
               break
               case "perf":
                 withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER'),
+				string(credentialsId: 'es_perf_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_PERF_IP}"
                   env.BEARER = "${BEARER}"
@@ -257,7 +258,7 @@ pipeline {
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 				  // UPDATE THIS TO USE CREDENTIALS WHEN PERF ES IS ENABLED
-				  env.ES_HOST = "placeholder"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break

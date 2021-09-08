@@ -78,8 +78,8 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "qa":
-                withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')],
-				     [string(credentialsId: 'qa_es_host', variable: 'ES_HOST')]) {
+                withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+				     string(credentialsId: 'qa_es_host', variable: 'ES_HOST')]) {
                   env.ES_HOST        = "${ES_HOST}"
 				  env.NEO4J_PASSWORD = "${neo4j_password}"
                 }

@@ -7,7 +7,6 @@
   set_fact:
     model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
     model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
-  when: project == "ctdc"
 
 - name: Check if tmp directory exist
   stat:

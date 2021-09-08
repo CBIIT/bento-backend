@@ -81,7 +81,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
 				     string(credentialsId: 'qa_es_host', variable: 'ES_HOST')]) {
                   env.ES_HOST        = "${ES_HOST}"
-				  env.PROJECT         = "bento"
+				  env.PROJECT        = "bento"
+				  env.TIER           = "${params.Environment}"
 				  env.NEO4J_PASSWORD = "${neo4j_password}"
                 }
               break

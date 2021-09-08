@@ -40,9 +40,9 @@ Indices:
       meno_status:
         type: keyword
       age_at_index:
-        type: keyword
+        type: integer
       survival_time:
-        type: keyword
+        type: integer
       survival_time_unit:
         type: keyword
       tissue_type:
@@ -110,6 +110,8 @@ Indices:
         type: keyword
       subject_ids:
         type: keyword
+      subject_id_num:
+        type: keyword
       sample_ids:
         type: keyword
       sample_id_num:
@@ -170,6 +172,7 @@ Indices:
       lp.test_name AS platform,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       ss.study_subject_id AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_sizes,
@@ -196,6 +199,8 @@ Indices:
         type: keyword
       subject_ids:
         type: keyword
+      subject_id_num:
+        type: integer
       sample_id:
         type: keyword
       sample_id_num:
@@ -211,7 +216,7 @@ Indices:
       file_format:
         type: keyword
       file_size:
-        type: keyword
+        type: double
       diagnoses:
         type: keyword
       rc_scores:
@@ -252,6 +257,7 @@ Indices:
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       s.study_acronym AS study_acronym,
       ss.study_subject_id AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       f.file_id AS file_ids,
       f.file_name AS file_name,
       f.file_description AS file_description,

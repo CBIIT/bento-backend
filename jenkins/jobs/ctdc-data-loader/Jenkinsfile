@@ -95,7 +95,7 @@ pipeline {
               break
               case "dev":
                 withCredentials([string(credentialsId: 'neo4j_ctdc_dev_cred', variable: 'neo4j_password')]) {
-                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.NEO4J_IP        = "${NEO4J_CTDC_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -107,7 +107,7 @@ pipeline {
               break
               case "qa":
                 withCredentials([string(credentialsId: 'neo4j_ctdc_qa_cred', variable: 'neo4j_password')]) {
-                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.NEO4J_IP        = "${NEO4J_QA_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -119,7 +119,7 @@ pipeline {
               break
               case "stage":
                 withCredentials([string(credentialsId: 'neo4j_ctdc_stage_cred', variable: 'neo4j_password')]) {
-                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.NEO4J_IP        = "${NEO4J_STAGE_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -131,7 +131,7 @@ pipeline {
               break
               case "prod":
                 withCredentials([string(credentialsId: 'neo4j_ctdc_prod_cred', variable: 'neo4j_password')]) {
-                  env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+                  env.NEO4J_IP        = "${NEO4J_PROD_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

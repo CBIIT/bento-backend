@@ -4,7 +4,7 @@ neo4j_password: "{{ lookup('env','NEO4J_PASSWORD') }}"
 neo4j_user: neo4j
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
-#neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
 s3_folder: "{{ lookup('env','S3_FOLDER') }}"
 wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
@@ -29,12 +29,6 @@ cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
 ctdc_base_url: "https://trialcommons-dev.cancer.gov"
 s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
 manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
-data_bucket: "{{bucket[project]}}"
 
-bucket:
-  bento: bento-metadata-dev
-  ccdi: ccdi-metadata-dev
-  ins: ins-metadata-dev
-  gmb:  bento-gmb-metadata
-  ctdc: bento-ctdc-metadata
-
+# vars for elasticsearch loader
+es_host: "{{ lookup('env','ES_HOST') }}"

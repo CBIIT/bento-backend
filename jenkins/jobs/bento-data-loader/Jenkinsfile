@@ -92,6 +92,10 @@ pipeline {
           git branch: 'main',
           url: 'https://github.com/CBIIT/INS-ETL.git'
         }
+       dir('ctdc-model'){
+          git branch: 'master',
+          url: 'https://github.com/CBIIT/ctdc-model'
+        }
   		}
  
   	}

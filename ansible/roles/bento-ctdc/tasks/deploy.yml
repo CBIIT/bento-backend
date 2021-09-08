@@ -31,12 +31,16 @@
 
 - name: ensure log and docker directory exists
   file: 
-    path: "{{item}}"
+    path: "{{item.dest}}"
     state: directory
+    owner: "{{item.owner}}"
   loop:
-    - /local/content/docker
-    - /local/content/ctdc/file-downloader
-    - /local/content/ctdc/nginx
+    - { dest: '/local/content/docker', owner: 'root' }
+    - { dest: '/local/content/ctdc/logs',owner: 'tomcat' }
+    - { dest: '/local/content/ctdc/file-downloader', owner: 'root' }
+    - { dest: '/local/content/ctdc/nginx', owner: 'root' }
+
+
 
 - name: update serivces and compose files
   template:

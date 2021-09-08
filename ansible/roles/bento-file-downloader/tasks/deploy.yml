@@ -10,13 +10,17 @@
   register: dist_info
 
 - name: retrieve key group id 
-  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]" --output text
+  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]" --output text --region us-east-1
   register: key_group
 
 - name: set facts distribution DomainName and key_group id
   set_fact:
     cloudfront_domain_name: "{{dist_info.stdout_lines | map('trim') | list |first}}"
     cloudfront_key_group_id: "{{key_group.stdout_lines | map('trim') | list |first}}"
+
+- name: show cloudfront_key_group_name
+  debug:
+    msg: "{{cloudfront_key_group_id}}"
 
 - name: create task definition - bento filedownloader
   ecs_taskdefinition:

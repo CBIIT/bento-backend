@@ -26,7 +26,7 @@ services:
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
     entrypoint: ["/bin/ash", "-c", 'if [ ! -f /usr/local/tomcat/newrelic/newrelic.jar ]; then wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip; fi && bin/catalina.sh run']
     volumes:
-      - /local/content/k9dc/logs:/usr/local/tomcat/logs
+      - /local/content/ctdc/logs:/usr/local/tomcat/logs
     ports:
       - "8080:8080"
     restart: always
@@ -54,7 +54,7 @@ services:
       NEW_RELIC_NO_CONFIG_FILE: "true"
       REACT_APP_FILE_SERVICE_API: "{% if tier == prod %}https://trialcommons.cancer.gov/api/files/{% else %}https://trialcommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
     volumes:
-      - "/local/content/k9dc/nginx:/var/log/nginx"
+      - "/local/content/ctdc/nginx:/var/log/nginx"
     ports:
       - "80:80"
     restart: always

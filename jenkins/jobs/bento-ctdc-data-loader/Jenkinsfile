@@ -89,7 +89,7 @@ pipeline {
             switch("${params.Environment}") {
                 case "dev":
                 withCredentials([usernamePassword(credentialsId: 'ctdc_dev_neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP        = "${CTDC_NEO4J_DEV_IP}"
+                  // env.NEO4J_IP        = "${CTDC_NEO4J_DEV_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

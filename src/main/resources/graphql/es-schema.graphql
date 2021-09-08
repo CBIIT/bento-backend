@@ -124,7 +124,7 @@ schema {
 }
 
 type QueryType {
-    searchSubjects3 (
+    searchSubjects2 (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -142,7 +142,7 @@ type QueryType {
         file_type: [String] = []
     ): [String]
 
-    searchSubjects4 (
+    searchSubjects (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -161,36 +161,36 @@ type QueryType {
         first: Int = 100
     ): SearchResult2
 
-    subjectOverViewPaged2(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
-    subjectOverViewPagedDesc2(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
-    sampleOverview2(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
-    sampleOverviewDesc2(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
-    fileOverview2(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
-    fileOverviewDesc2(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
+    subjectOverViewPaged(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
+    subjectOverViewPagedDesc(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
+    sampleOverview(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
+    sampleOverviewDesc(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
+    fileOverview(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
+    fileOverviewDesc(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
 
 
 
     "Group counts"
-    subjectCountByProgram2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByStudy2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByDiagnoses2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByRecurrenceScore2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByTumorSize2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByTumorGrade2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByErStatus2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByPrStatus2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByChemotherapyRegimen2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByEndocrineTherapy2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByMenopauseStatus2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByTissueType2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByTissueComposition2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByFileAssociation2 (subject_ids: [String] = []): [GroupCount2]
-    subjectCountByFileType2 (subject_ids: [String] = []): [GroupCount2]
-    armsByPrograms2 (subject_ids: [String] = []): [ProgramArms2]
+    subjectCountByProgram (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByStudy (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByDiagnoses (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByRecurrenceScore (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTumorSize (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTumorGrade (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByErStatus (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByPrStatus (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByChemotherapyRegimen (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByEndocrineTherapy (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByMenopauseStatus (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTissueType (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByTissueComposition (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByFileAssociation (subject_ids: [String] = []): [GroupCount2]
+    subjectCountByFileType (subject_ids: [String] = []): [GroupCount2]
+    armsByPrograms (subject_ids: [String] = []): [ProgramArms2]
 
 
     "Facet search counts"
-    filterSubjectCountByProgram2 (
+    filterSubjectCountByProgram (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -208,7 +208,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByStudy2 (
+    filterSubjectCountByStudy (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -226,7 +226,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByDiagnoses2 (
+    filterSubjectCountByDiagnoses (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -244,7 +244,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByRecurrenceScore2 (
+    filterSubjectCountByRecurrenceScore (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -262,7 +262,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByTumorSize2 (
+    filterSubjectCountByTumorSize (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -280,7 +280,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByTumorGrade2 (
+    filterSubjectCountByTumorGrade (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -298,7 +298,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByErStatus2 (
+    filterSubjectCountByErStatus (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -316,7 +316,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByPrStatus2 (
+    filterSubjectCountByPrStatus (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -334,7 +334,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByChemotherapyRegimen2 (
+    filterSubjectCountByChemotherapyRegimen (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -352,7 +352,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByEndocrineTherapy2 (
+    filterSubjectCountByEndocrineTherapy (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -370,7 +370,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByMenopauseStatus2 (
+    filterSubjectCountByMenopauseStatus (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -388,7 +388,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByTissueType2 (
+    filterSubjectCountByTissueType (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -406,7 +406,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByTissueComposition2 (
+    filterSubjectCountByTissueComposition (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -424,7 +424,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByFileAssociation2 (
+    filterSubjectCountByFileAssociation (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -442,7 +442,7 @@ type QueryType {
         file_type: [String] = []
     ): [GroupCount2]
 
-    filterSubjectCountByFileType2 (
+    filterSubjectCountByFileType (
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],

@@ -47,161 +47,161 @@ public class ESFilterDataFetcher {
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
-                        .dataFetcher("searchSubjects3", env -> {
+                        .dataFetcher("searchSubjects2", env -> {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects2(args);
                         })
-                        .dataFetcher("searchSubjects4", env -> {
+                        .dataFetcher("searchSubjects", env -> {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects(args);
                         })
-                        .dataFetcher("subjectOverViewPaged2", env -> {
+                        .dataFetcher("subjectOverViewPaged", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectOverViewPaged(args);
                         })
-                        .dataFetcher("subjectOverViewPagedDesc2", env -> {
+                        .dataFetcher("subjectOverViewPagedDesc", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectOverViewPagedDesc(args);
                         })
-                        .dataFetcher("sampleOverview2", env -> {
+                        .dataFetcher("sampleOverview", env -> {
                             Map<String, Object> args = env.getArguments();
                             return sampleOverView(args);
                         })
-                        .dataFetcher("sampleOverviewDesc2", env -> {
+                        .dataFetcher("sampleOverviewDesc", env -> {
                             Map<String, Object> args = env.getArguments();
                             return sampleOverViewDesc(args);
                         })
-                        .dataFetcher("fileOverview2", env -> {
+                        .dataFetcher("fileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
                             return fileOverView(args);
                         })
-                        .dataFetcher("fileOverviewDesc2", env -> {
+                        .dataFetcher("fileOverviewDesc", env -> {
                             Map<String, Object> args = env.getArguments();
                             return fileOverViewDesc(args);
                         })
                         // wire up "Group counts"
-                        .dataFetcher("armsByPrograms2", env -> {
+                        .dataFetcher("armsByPrograms", env -> {
                             Map<String, Object> args = env.getArguments();
                             return armsByPrograms(args);
                         })
-                        .dataFetcher("subjectCountByProgram2", env -> {
+                        .dataFetcher("subjectCountByProgram", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByProgram(args);
                         })
-                        .dataFetcher("subjectCountByStudy2", env -> {
+                        .dataFetcher("subjectCountByStudy", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByStudy(args);
                         })
-                        .dataFetcher("subjectCountByDiagnoses2", env -> {
+                        .dataFetcher("subjectCountByDiagnoses", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByDiagnoses(args);
                         })
-                        .dataFetcher("subjectCountByRecurrenceScore2", env -> {
+                        .dataFetcher("subjectCountByRecurrenceScore", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByRecurrenceScore(args);
                         })
-                        .dataFetcher("subjectCountByTumorSize2", env -> {
+                        .dataFetcher("subjectCountByTumorSize", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByTumorSize(args);
                         })
-                        .dataFetcher("subjectCountByTumorGrade2", env -> {
+                        .dataFetcher("subjectCountByTumorGrade", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByTumorGrade(args);
                         })
-                        .dataFetcher("subjectCountByErStatus2", env -> {
+                        .dataFetcher("subjectCountByErStatus", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByErStatus(args);
                         })
-                        .dataFetcher("subjectCountByPrStatus2", env -> {
+                        .dataFetcher("subjectCountByPrStatus", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByPrStatus(args);
                         })
-                        .dataFetcher("subjectCountByChemotherapyRegimen2", env -> {
+                        .dataFetcher("subjectCountByChemotherapyRegimen", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByChemotherapyRegimen(args);
                         })
-                        .dataFetcher("subjectCountByEndocrineTherapy2", env -> {
+                        .dataFetcher("subjectCountByEndocrineTherapy", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByEndocrineTherapy(args);
                         })
-                        .dataFetcher("subjectCountByMenopauseStatus2", env -> {
+                        .dataFetcher("subjectCountByMenopauseStatus", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByMenopauseStatus(args);
                         })
-                        .dataFetcher("subjectCountByTissueType2", env -> {
+                        .dataFetcher("subjectCountByTissueType", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByTissueType(args);
                         })
-                        .dataFetcher("subjectCountByTissueComposition2", env -> {
+                        .dataFetcher("subjectCountByTissueComposition", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByTissueComposition(args);
                         })
-                        .dataFetcher("subjectCountByFileAssociation2", env -> {
+                        .dataFetcher("subjectCountByFileAssociation", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByFileAssociation(args);
                         })
-                        .dataFetcher("subjectCountByFileType2", env -> {
+                        .dataFetcher("subjectCountByFileType", env -> {
                             Map<String, Object> args = env.getArguments();
                             return subjectCountByFileType(args);
                         })
                         // wire up Facet search counts
-                        .dataFetcher("filterSubjectCountByProgram2", env -> {
+                        .dataFetcher("filterSubjectCountByProgram", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByProgram(args);
                         })
-                        .dataFetcher("filterSubjectCountByStudy2", env -> {
+                        .dataFetcher("filterSubjectCountByStudy", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByStudy(args);
                         })
-                        .dataFetcher("filterSubjectCountByDiagnoses2", env -> {
+                        .dataFetcher("filterSubjectCountByDiagnoses", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByDiagnoses(args);
                         })
-                        .dataFetcher("filterSubjectCountByRecurrenceScore2", env -> {
+                        .dataFetcher("filterSubjectCountByRecurrenceScore", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByRecurrenceScore(args);
                         })
-                        .dataFetcher("filterSubjectCountByTumorSize2", env -> {
+                        .dataFetcher("filterSubjectCountByTumorSize", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByTumorSize(args);
                         })
-                        .dataFetcher("filterSubjectCountByTumorGrade2", env -> {
+                        .dataFetcher("filterSubjectCountByTumorGrade", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByTumorGrade(args);
                         })
-                        .dataFetcher("filterSubjectCountByErStatus2", env -> {
+                        .dataFetcher("filterSubjectCountByErStatus", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByErStatus(args);
                         })
-                        .dataFetcher("filterSubjectCountByPrStatus2", env -> {
+                        .dataFetcher("filterSubjectCountByPrStatus", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByPrStatus(args);
                         })
-                        .dataFetcher("filterSubjectCountByChemotherapyRegimen2", env -> {
+                        .dataFetcher("filterSubjectCountByChemotherapyRegimen", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByChemotherapyRegimen(args);
                         })
-                        .dataFetcher("filterSubjectCountByEndocrineTherapy2", env -> {
+                        .dataFetcher("filterSubjectCountByEndocrineTherapy", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByEndocrineTherapy(args);
                         })
-                        .dataFetcher("filterSubjectCountByMenopauseStatus2", env -> {
+                        .dataFetcher("filterSubjectCountByMenopauseStatus", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByMenopauseStatus(args);
                         })
-                        .dataFetcher("filterSubjectCountByTissueType2", env -> {
+                        .dataFetcher("filterSubjectCountByTissueType", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByTissueType(args);
                         })
-                        .dataFetcher("filterSubjectCountByTissueComposition2", env -> {
+                        .dataFetcher("filterSubjectCountByTissueComposition", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByTissueComposition(args);
                         })
-                        .dataFetcher("filterSubjectCountByFileAssociation2", env -> {
+                        .dataFetcher("filterSubjectCountByFileAssociation", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByFileAssociation(args);
                         })
-                        .dataFetcher("filterSubjectCountByFileType2", env -> {
+                        .dataFetcher("filterSubjectCountByFileType", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filterSubjectCountByFileType(args);
                         })

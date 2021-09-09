@@ -106,8 +106,7 @@ pipeline {
                             }
                         break
 					case "PERF_PROD":
-						//WIKI_PAGE="442632045"
-						WIKI_PAGE="289178160"
+						WIKI_PAGE="442632045"
 						WIKI_NAME="Bento"
 						withCredentials([string(credentialsId: 'Box_Email_PERF_BENTO', variable: 'box_email'),
 						  string(credentialsId: 'Box_Url_PERF_BENTO', variable: 'box_url'),

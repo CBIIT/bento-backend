@@ -131,7 +131,7 @@ public class ESService {
 
     private Map<String, Object> getSingleAggregation(String aggName) {
         Map<String, Object> agg = new HashMap<>();
-        agg.put("terms", Map.of("field", aggName));
+        agg.put("terms", Map.of("field", aggName, "size", MAX_ES_SIZE));
         return agg;
     }
 

@@ -19,13 +19,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,stage,prod' )
-    extendedChoice( 
-        name: 'ProjectName', 
-        defaultValue: 'bento', 
-        description: 'Choose the project', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento' )
+        value: 'dev')
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -87,76 +81,15 @@ pipeline {
         steps {
           script {
             switch("${params.Environment}") {
-                case "dev":
-                withCredentials([usernamePassword(credentialsId: 'ctdc_dev_neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
-                  // env.NEO4J_IP        = "${CTDC_NEO4J_DEV_IP}"
-                  env.S3_FOLDER       = "${params.S3Folder}"
-                  env.TIER            = "${params.Environment}"
-                  env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${NEO4J_PASSWORD}"
-                  env.CHEAT_MODE      = "${params.CheatMode}"
-                  env.PROJECT         = "${params.ProjectName}"
-                  env.SPLIT           = "${params.SplitTransactions}"
-                }
-              break
-              case "gdc":
-                withCredentials([usernamePassword(credentialsId: 'gdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_GDC_IP}"
+              case "dev":
+                withCredentials([string(credentialsId: 'neo4j_ctdc_dev_cred', variable: 'neo4j_password')]) {
+                  env.NEO4J_IP        = "${NEO4J_CTDC_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.CHEAT_MODE      = "${params.CheatMode}"
-                  env.PROJECT         = "${params.ProjectName}"
-                  env.SPLIT           = "${params.SplitTransactions}"
-                }
-              break
-              case "qa":
-                withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_QA_IP}"
-                  env.S3_FOLDER       = "${params.S3Folder}"
-                  env.TIER            = "${params.Environment}"
-                  env.TIER            = "dev"
-                  env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.CHEAT_MODE      = "${params.CheatMode}"
-                  env.PROJECT         = "${params.ProjectName}"
-                  env.SPLIT           = "${params.SplitTransactions}"
-                }
-              break
-              case "perf":
-                withCredentials([usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_PERF_IP}"
-                  env.S3_FOLDER       = "${params.S3Folder}"
-                  env.TIER            = "${params.Environment}"
-                  env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.CHEAT_MODE      = "${params.CheatMode}"
-                  env.PROJECT         = "${params.ProjectName}"
-                  env.SPLIT           = "${params.SplitTransactions}"
-                }
-              break
-			  case "icdc":
-                withCredentials([usernamePassword(credentialsId: 'icdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_ICDC_IP}"
-                  env.S3_FOLDER       = "${params.S3Folder}"
-                  env.TIER            = "${params.Environment}"
-                  env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.CHEAT_MODE      = "${params.CheatMode}"
-                  env.PROJECT         = "${params.ProjectName}"
-                  env.SPLIT           = "${params.SplitTransactions}"
-                }
-              break
-              case "prod":
-                withCredentials([usernamePassword(credentialsId: 'prod_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_PROD_IP}"
-                  env.S3_FOLDER       = "${params.S3Folder}"
-                  env.TIER            = "${params.Environment}"
-                  env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
-                  env.CHEAT_MODE      = "${params.CheatMode}"
-                  env.PROJECT         = "${params.ProjectName}"
+				  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "ctdc"
                   env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
@@ -167,7 +100,7 @@ pipeline {
           }
         }
     }
-  	stage('loader-data'){
+  	stage('load-data'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"
  		}
@@ -195,9 +128,8 @@ pipeline {
     }
   }
   post {
-    always {
-      sh "echo hello"
-	  // cleanWs()
+    cleanup {
+	  cleanWs()
     }
   }
 }

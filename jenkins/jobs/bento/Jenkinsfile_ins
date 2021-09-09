@@ -66,6 +66,10 @@ pipeline {
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
        useRepository: ' https://github.com/CBIIT/INS-WebPortal')
+    string(
+      defaultValue: 'ins',
+    description: 'Project Name',
+    name: 'ProjectName')
     booleanParam(
       defaultValue: true,
       description: 'Use the Redis cache',

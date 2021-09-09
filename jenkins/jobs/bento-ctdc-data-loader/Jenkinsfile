@@ -82,12 +82,12 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([string(credentialsId: 'neo4j_ctdc_dev_cred', variable: 'neo4j_password')]) {
+                withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP        = "${NEO4J_CTDC_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
-                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.NEO4J_PASSWORD  = "${NEO4J_PASS}"
 				  env.CHEAT_MODE      = "${params.CheatMode}"
                   env.PROJECT         = "ctdc"
                   env.SPLIT           = "${params.SplitTransactions}"

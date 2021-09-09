@@ -68,8 +68,8 @@ pipeline {
        useRepository: ' https://github.com/CBIIT/INS-WebPortal')
     string(
       defaultValue: 'ins',
-    description: 'Project Name',
-    name: 'ProjectName')
+      description: 'Project Name',
+      name: 'ProjectName')
     booleanParam(
       defaultValue: true,
       description: 'Use the Redis cache',
@@ -158,7 +158,7 @@ pipeline {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER'),
                 string(credentialsId: 'ins_dev_bearer', variable: 'BEARER')]) {
-                  env.NEO4J_IP    = "${ins_dev_neo4j_ip}"
+                  #env.NEO4J_IP    = "${ins_dev_neo4j_ip}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
@@ -168,7 +168,7 @@ pipeline {
         break
               default:
                 withCredentials([usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${ins_dev_neo4j_ip}"
+                  #env.NEO4J_IP    = "${ins_dev_neo4j_ip}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"

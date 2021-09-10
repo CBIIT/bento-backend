@@ -94,7 +94,6 @@ pipeline {
                 script {
                     switch("${params.Profile}") {
                     case "QA_ICDC":
-						//WIKI_PAGE="434110502"
 						WIKI_PAGE="289178264"
 						WIKI_NAME="ICDC"
 						withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email'),
@@ -107,7 +106,7 @@ pipeline {
                             }
                         break
                     case "QA_CTDC":
-						WIKI_PAGE="434110839"
+						WIKI_PAGE="289178298"
 						WIKI_NAME="CTDC"
 						withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email'),
 						  string(credentialsId: 'Box_Url_QA_CTDC', variable: 'box_url'),
@@ -216,13 +215,11 @@ pipeline {
 						failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
 						errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
 						pageMessage="<p>Test results from the latest Katalon Test: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
-						#curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
 						curlCMD="curl -D- -u $creds https://collaborate.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
 						pageText=$(eval $curlCMD)
 						pageMessage="$pageMessage $pageText </p>"
 						
 						# get page version
-						#curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=version.number | grep -oP '(?<=number\\\":).*' | awk -F, '{print \\$1}'"
 						curlCMD="curl -D- -u $creds https://collaborate.nci.nih.gov/rest/api/content/$pageID?expand=version.number | grep -oP '(?<=number\\\":).*' | awk -F, '{print \\$1}'"
 						pageVer=$(eval $curlCMD)
 						pageVer="$((pageVer+1))"
@@ -233,7 +230,6 @@ pipeline {
 						echo "Confluence Error:   $curlError"
 						
 						# add latest results as attachment
-						#resultsURL="https://wiki.nci.nih.gov/rest/api/content/$pageID/child/attachment"
 						resultsURL="https://collaborate.nci.nih.gov/rest/api/content/$pageID/child/attachment"
 						resultsFile=$(basename results/*.html)
 						curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"

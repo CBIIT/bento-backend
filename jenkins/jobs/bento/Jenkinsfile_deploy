@@ -64,6 +64,10 @@ pipeline {
 		defaultValue: false,
 		description: 'Enable the Elasticsearch filter',
 		name: 'Enable_ES_Filter')
+	booleanParam(
+		defaultValue: false,
+		description: 'Reload Elasticsearch data',
+		name: 'Reload_ES_Data')
 	string(
 	    defaultValue: '',
 		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
@@ -445,6 +449,13 @@ pipeline {
 				def params = "[${params.Test_Params}]"
 				def list_params = evaluate(params)
 				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
+			}
+		}
+
+		script {
+			if ("${params.Reload_ES_Data}") {
+				echo 'Reload data to Elasticsearch'
+				build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Image}"), extendedChoice(name: 'Environment', value: ""${params.Environment})]
 			}
 		}
 		

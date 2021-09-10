@@ -453,9 +453,9 @@ pipeline {
 		}
 
 		script {
-			if ("${params.Reload_ES_Data}") {
+			if (params.Reload_ES_Data) {
 				echo 'Reload data to Elasticsearch'
-				build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Image}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+				build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "refs/tags/${params.Backend_Image}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
 			}
 		}
 		

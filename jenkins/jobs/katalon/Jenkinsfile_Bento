@@ -219,6 +219,7 @@ pipeline {
 
 						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
 						resultsFile=$(basename results/*.zip)
+						tier=''' + TIER + '''
 						pageID=''' + WIKI_PAGE + '''
 						pageName=''' + WIKI_NAME + '''
 						pageName="$pageName Automated Test Results"
@@ -229,7 +230,7 @@ pipeline {
 						passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
 						failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
 						errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
-						pageMessage="<p>Test results from the latest Katalon Test on $Tier: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
+						pageMessage="<p>Test results from the latest Katalon Test on $tier: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
 						curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
 						pageText=$(eval $curlCMD)
 						pageMessage="$pageMessage $pageText </p>"
@@ -261,6 +262,7 @@ pipeline {
 				
 				    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
 				
+					tier=''' + TIER + '''
 					inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
 
 					# Get test stats
@@ -271,7 +273,7 @@ pipeline {
 				
 					# function to read output file: JUnit.xml
 					parse_results_xml(){
-						error_message="Katalon Test results for the latest run on $Tier (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
+						error_message="Katalon Test results for the latest run on $tier (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
 
 						IFS=$'\\n'
 						for line in $(grep '<testcase' $inputFile)
@@ -326,6 +328,7 @@ pipeline {
 				
 				    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
 				
+					tier=''' + TIER + '''
 					inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
 
 					# Get test stats
@@ -336,7 +339,7 @@ pipeline {
 				
 					# function to read output file: JUnit.xml
 					parse_results_xml(){
-						error_message="Katalon Test results for the latest run on $Tier (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
+						error_message="Katalon Test results for the latest run on $tier (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
 
 						IFS=$'\\n'
 						for line in $(grep '<testcase' $inputFile)

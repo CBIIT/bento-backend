@@ -3,17 +3,68 @@ import boto3
 import json
 import os
 from io import StringIO
-from slack import send_slack_message
+from notification import send_blocked_ips_report
 
 # list holding blocked ips
 block_ip_file_name = 'blocked_ip/ips.txt'
+waf_scope = 'CLOUDFRONT'
 s3_bucket_name = 'bento-cloudfront-kinesis-firehose-stream'
-# d = datetime.datetime.today() - datetime.timedelta(days=3)
-d = datetime.datetime.today()
-local_blocked_ip_file_name = 'blocked_ip.txt'
+d = datetime.datetime.today() - datetime.timedelta(days=1)
+# d = datetime.datetime.today()
+local_blocked_ip_file_name = '/tmp/blocked_ip.txt'
 key_prefix = '{:04d}'.format(d.year) + "/" + '{:02d}'.format(d.month) + "/" + '{:02d}'.format(d.day)
-session = boto3.session.Session(profile_name='bento')
+session = boto3.session.Session()
 s3 = session.resource('s3')
+wafv2 = session.client('wafv2', region_name='us-east-1')
+
+name_of_blocked_ip_list = "dev_ip_blocked_from_cloudfront"
+
+
+def create_blocked_ip_list(name, ips: list):
+    response = wafv2.create_ip_set(
+        Name=name,
+        Scope=waf_scope,
+        Description="List of ip blocked from cloudfront for violating files download limit",
+        IPAddressVersion="IPV4",
+        Addresses=ips
+    )
+    return response
+
+
+def get_blocked_ip_list(name):
+    id_blocked_ip_list = get_blocked_ip_list_id(name)
+    response = wafv2.get_ip_set(
+        Name=name,
+        Scope=waf_scope,
+        Id=id_blocked_ip_list
+    )
+    addresses = response['IPSet']['Addresses']
+    lock_token = response['LockToken']
+    return lock_token,addresses
+
+
+def update_blocked_ip_list(name, ip_addresses: list):
+    id_blocked_ip_list = get_blocked_ip_list_id(name)
+    lock_token, blocked_ips = get_blocked_ip_list(name)
+    for i in ip_addresses:
+        blocked_ips.append(i + '/32')
+    wafv2.update_ip_set(
+        Name=name,
+        Scope=waf_scope,
+        Id=id_blocked_ip_list,
+        Addresses=blocked_ips,
+        LockToken=lock_token
+    )
+
+
+def get_blocked_ip_list_id(name):
+    response = wafv2.list_ip_sets(
+        Scope="CLOUDFRONT"
+    )
+    ip_sets = response['IPSets']
+    for ip_set in ip_sets:
+        if ip_set['Name'] == name:
+            return ip_set['Id']
 
 
 def read_s3_object(bucket_name, key):
@@ -28,8 +79,10 @@ def read_blocked_ips(bucket_name, key):
     file_contents = read_s3_object(bucket_name, key)
     for content in file_contents:
         content = json.loads(content)
+        if not content["httpRequest"]["clientIp"]:
+            continue
         ips.append(content["httpRequest"]["clientIp"])
-    return list(set(ips))
+    return ips
 
 
 def write_blocked_ips(bucket_name, key, blocked_ips: list):
@@ -54,19 +107,29 @@ def get_newly_blocked_ips(bucket_name, prefix):
     return list(set(blocked_ips))
 
 
+def remove_item(items: list, item):
+    for i in items:
+        if i == item:
+            items.remove(i)
+    return items
+
+
 def get_all_blocked_ips(bucket_name, key, prefix, file_name):
-    old_blocked_ips = read_s3_object(bucket_name, key)
-    newly_blocked_ips = []
-    old_blocked_ips = [i for i in old_blocked_ips if i]
-    blocked_ips = get_newly_blocked_ips(bucket_name, prefix)
-    for ip in blocked_ips:
-        if ip not in old_blocked_ips:
-            newly_blocked_ips.append(ip)
-            old_blocked_ips.append(ip)
-    with open(file_name, 'w') as f:
-        for line in old_blocked_ips:
-            f.write(line + '\n')
-    return newly_blocked_ips
+    black_listed_ips = []
+    all_blocked_ips = read_s3_object(bucket_name, key)
+    if all_blocked_ips:
+        all_blocked_ips = [i.strip() for i in all_blocked_ips if not i == '\n' or i == '']
+    new_blocked_ips = get_newly_blocked_ips(bucket_name, prefix)
+    all_blocked_ips.extend(new_blocked_ips)
+    for ip in all_blocked_ips:
+        if all_blocked_ips.count(ip) >= 2:
+            black_listed_ips.append(ip)
+            all_blocked_ips = remove_item(all_blocked_ips, ip)
+    if len(all_blocked_ips) >= 1:
+        with open(file_name, 'w') as f:
+            for line in all_blocked_ips:
+                f.write(line + '\n')
+    return black_listed_ips
 
 
 def upload_blocked_ips(bucket_name, key, file_name):
@@ -78,4 +141,6 @@ def upload_blocked_ips(bucket_name, key, file_name):
 def handler(event, context):
     waf_blocked_ips = get_all_blocked_ips(s3_bucket_name, block_ip_file_name, key_prefix, local_blocked_ip_file_name)
     upload_blocked_ips(s3_bucket_name, block_ip_file_name, local_blocked_ip_file_name)
-    send_slack_message(waf_blocked_ips)
+    update_blocked_ip_list(name_of_blocked_ip_list, waf_blocked_ips)
+    send_blocked_ips_report(waf_blocked_ips)
+

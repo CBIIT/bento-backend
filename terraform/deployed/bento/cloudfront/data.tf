@@ -94,6 +94,16 @@ data "aws_iam_policy_document" "lambda_s3_policy" {
       "arn:aws:s3:::${aws_s3_bucket.kinesis_log.bucket}"
     ]
   }
+  statement {
+    sid = ""
+    effect = "Allow"
+    actions = [
+      "wafv2:ListIPSets",
+      "wafv2:UpdateIPSet",
+      "wafv2:GetIPSets",
+    ]
+    resources = ["*"]
+  }
 }
 
 

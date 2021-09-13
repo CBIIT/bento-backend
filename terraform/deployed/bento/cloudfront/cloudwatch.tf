@@ -15,7 +15,7 @@ resource "aws_cloudwatch_metric_alarm" "cloudfront_alarm" {
     Region         = "Global"
   }
   alarm_actions       = [aws_sns_topic.cloudfront_alarm_topic.arn]
-  ok_actions          = [aws_sns_topic.cloudfront_alarm_topic.arn]
+//  ok_actions          = [aws_sns_topic.cloudfront_alarm_topic.arn]
 }
 
 

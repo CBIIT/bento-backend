@@ -80,7 +80,7 @@ resource "aws_wafv2_web_acl" "waf" {
   }
 
   rule {
-    name     = "rule-1"
+    name     = "${var.stack_name}-${terraform.workspace}-ip-rate-rule"
     priority = 1
 
     action {
@@ -91,12 +91,24 @@ resource "aws_wafv2_web_acl" "waf" {
       rate_based_statement {
         limit              = 100
         aggregate_key_type = "IP"
+//        scope_down_statement {
+//          regex_pattern_set_reference_statement {
+//            arn = aws_wafv2_regex_pattern_set.api_files_pattern.arn
+//            text_transformation {
+//              priority = 1
+//              type = "NONE"
+//            }
+//            field_to_match {
+//              uri_path {}
+//            }
+//          }
+//        }
       }
     }
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "${var.stack_name}-cloudfront-ip-rate-metrics"
+      metric_name                = "${var.stack_name}-${terraform.workspace}-ip-rate-metrics"
       sampled_requests_enabled   = true
     }
   }
@@ -105,16 +117,28 @@ resource "aws_wafv2_web_acl" "waf" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "${var.stack_name}-files-request-ip"
+    metric_name                = "${var.stack_name}-${terraform.workspace}files-request-ip"
     sampled_requests_enabled   = true
   }
 
 }
 
+
+resource "aws_wafv2_regex_pattern_set" "api_files_pattern" {
+  name        =  "${var.stack_name}-${terraform.workspace}-api-files-pattern"
+  scope       = "CLOUDFRONT"
+
+  regular_expression {
+    regex_string = "^/api/files/*"
+  }
+  tags = var.tags
+}
+
+
 #create public key
 resource "aws_cloudfront_public_key" "public_key" {
   comment     = "bento files public key"
-  encoded_key = file("cloudfront_public_key.pem")
+  encoded_key = file("${path.module}/cloudfront_public_key.pem")
   name        = "${var.stack_name}-${var.env}-pub-key"
 }
 

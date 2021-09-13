@@ -49,14 +49,19 @@ pipeline {
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
   			
-			checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Backend_Branch}"]],
-				doGenerateSubmoduleConfigurations: false,
-				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-backend']],
-				submoduleCfg: [],
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-backend']]])
+			//checkout([$class: 'GitSCM',
+			//	branches: [[name: "${params.Backend_Branch}"]],
+			//	doGenerateSubmoduleConfigurations: false,
+			//	extensions: [[$class: 'RelativeTargetDirectory',
+			//	relativeTargetDir: 'bento-backend']],
+			//	submoduleCfg: [],
+			//	userRemoteConfigs: 
+			//	[[url: 'https://github.com/CBIIT/bento-backend']]])
+			
+			dir('bento-backend'){
+              git branch: "${params.Backend_Branch}",
+              url: 'https://github.com/CBIIT/bento-backend'
+            }
             
 			sh 'git submodule update --init'
   			

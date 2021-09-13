@@ -56,4 +56,10 @@ neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
 neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
 bearer: "{{ lookup('env','BEARER') }}"
 
+about_content_url:
+  gmb:  https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/develop/src/content/{{tier}}/aboutPagesContent.yaml
+  bento: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
+  ctdc: https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml
+
+
 # hostname: "{{ansible_fqdn}}"

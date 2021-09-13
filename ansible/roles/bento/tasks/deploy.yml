@@ -92,7 +92,8 @@
         - name: REACT_APP_FE_VERSION
           value: "{{frontend_version}}"
         - name: REACT_APP_ABOUT_CONTENT_URL
-          value: "{{ backend_content_url if project !='ctdc' else 'https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml' }}"
+          # value: "{{ backend_content_url if project !='ctdc' else 'https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml' }}"
+          value: "{{about_content_url[project]}}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

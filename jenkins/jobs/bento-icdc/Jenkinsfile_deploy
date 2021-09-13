@@ -274,7 +274,7 @@ pipeline {
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-        withCredentials([usernamePassword(credentialsId: 'git_credential_token',variable: 'git_token'),
+        withCredentials([String(credentialsId: 'git_credential_token',variable: 'git_token'),
         ]) {
 
           ansiblePlaybook( 

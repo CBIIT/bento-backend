@@ -49,23 +49,27 @@ pipeline {
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
   			
+			//checkout([$class: 'GitSCM',
+			//	branches: [[name: "${params.Backend_Branch}"]],
+			//	doGenerateSubmoduleConfigurations: false,
+			//	extensions: [[$class: 'RelativeTargetDirectory',
+			//	relativeTargetDir: 'bento-backend'],
+			//	[$class: 'CloneOption',
+			//	noTags: false,
+			//	shallow: false]],
+			//	submoduleCfg: [],
+			//	userRemoteConfigs: 
+			//	[[refspec: '+refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/remotes/origin/tags/*',
+			//	url: 'https://github.com/CBIIT/bento-backend']]])
+			
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-backend'],
-				[$class: 'CloneOption',
-				noTags: false,
-				shallow: false]],
+				relativeTargetDir: 'bento-backend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[refspec: '+refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/remotes/origin/tags/*',
-				url: 'https://github.com/CBIIT/bento-backend']]])
-			
-			//dir('bento-backend'){
-            //  git branch: "${params.Backend_Branch}",
-            //  url: 'https://github.com/CBIIT/bento-backend'
-            //}
+				[[url: 'https://github.com/CBIIT/bento-backend']]])
             
 			sh 'git submodule update --init'
   			

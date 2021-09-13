@@ -26,6 +26,10 @@ pipeline {
     string(defaultValue: "", 
         description: 'Name of the dump file to use', 
         name: 'DumpFileName')
+	string(
+	    defaultValue: '',
+		description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
+		name: 'ES_Backend_Branch')
     
   }
   // options {
@@ -190,8 +194,22 @@ pipeline {
 	
   }
   post {
-    always {
+  
+    success {
+
+      	script {
+			if ("${params.ES_Backend_Branch}"?.trim()) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.ES_Backend_Branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+	}
+	
+	cleanup {
+	
 	  cleanWs()
-    }
+    
+	}
+	
   }
 }

@@ -52,7 +52,11 @@ pipeline {
         quoteValue: false,
         multiSelectDelimiter: ',',
         value: 'false,true',
-        type: 'PT_SINGLE_SELECT')   
+        type: 'PT_SINGLE_SELECT')
+	string(
+	    defaultValue: '',
+		description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
+		name: 'ES_Backend_Branch')
   }
   // options {
   // 	ansiColor('xterm')
@@ -223,8 +227,20 @@ pipeline {
     }
   }
   post {
-    always {
+    success {
+
+      	script {
+			if ("${params.ES_Backend_Branch}"?.trim()) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.ES_Backend_Branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+	}
+	
+	cleanup {
+	
 	  cleanWs()
-    }
+    
+	}
   }
 }

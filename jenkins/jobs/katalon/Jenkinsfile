@@ -60,7 +60,7 @@ pipeline {
         defaultValue: 'QA_ICDC', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_ICDC,QA_CTDC' )
+        value: 'QA_ICDC,STAGE_ICDC,QA_CTDC' )
 
 	string(defaultValue: "", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
@@ -106,7 +106,20 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
-                    case "QA_CTDC":
+                    case "STAGE_ICDC":
+						WIKI_PAGE="289178264"
+						PROJECT="ICDC"
+						TIER="STAGE"
+						withCredentials([string(credentialsId: 'Box_Email_STAGE_ICDC', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_STAGE_ICDC', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_STAGE_ICDC', variable: 'pass_file')]) {
+                            BOX_URL="${box_url}"
+							BOX_EMAIL="${box_email}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
+                            }
+                        break
+					case "QA_CTDC":
 						WIKI_PAGE="289178298"
 						PROJECT="CTDC"
 						TIER="QA"

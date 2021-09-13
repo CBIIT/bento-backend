@@ -457,8 +457,7 @@ pipeline {
 				echo 'Reload data to Elasticsearch'
 				String tag = "${params.Backend_Image}"
 				String branch = "${tag}".substring(0, "${tag}".lastIndexOf("-")) + "-bento" + "${tag}".substring("${tag}".lastIndexOf("-"), "${tag}".length())
-				echo "${branch}"
-				//build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Image}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+				build job: 'Bento/BentoDataLoaderES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
 			}
 		}
 		

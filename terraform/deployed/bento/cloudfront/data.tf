@@ -100,7 +100,8 @@ data "aws_iam_policy_document" "lambda_s3_policy" {
     actions = [
       "wafv2:ListIPSets",
       "wafv2:UpdateIPSet",
-      "wafv2:GetIPSets",
+      "wafv2:GetIPSet",
+
     ]
     resources = ["*"]
   }

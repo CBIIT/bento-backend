@@ -38,7 +38,7 @@ resource "aws_lambda_function" "slack_lambda" {
 resource "aws_lambda_permission" "lambda_invoke_sns" {
   statement_id  = "allow_sns_function_invocation"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.slack_lambda.arn
+  function_name = aws_lambda_function.slack_lambda.function_name
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.cloudfront_alarm_topic.arn
 }
@@ -77,7 +77,7 @@ resource "aws_cloudwatch_event_target" "run_waf_report_every_7am" {
 resource "aws_lambda_permission" "cloudwatch_invoke_lambda" {
   statement_id = "AllowExecutionFromCloudWatch"
   action = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.slack_lambda.function_name
+  function_name = aws_lambda_function.slack_waf.function_name
   principal = "events.amazonaws.com"
   source_arn = aws_cloudwatch_event_rule.every_7am.arn
 }

@@ -99,12 +99,11 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                withCredentials([string(credentialsId: 'newrelic_license_key', variable: 'NEW_RELIC_LICENSE_KEY'),string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
                   env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_DEV_IP}"
                   env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_DEV_IP}"
                   env.PLAY_PORT = "${PLAY_PORT}"
                   env.NEW_RELIC_APP_NAME = "PPDC_AWS_BACKEND_DEV"
-                  env.NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
                   env.NEW_RELIC_HOST = "gov-collector.newrelic.com"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
@@ -113,12 +112,11 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                withCredentials([string(credentialsId: 'newrelic_license_key', variable: 'NEW_RELIC_LICENSE_KEY'),string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
                   env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_QA_IP}"
                   env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_QA_IP}"
                   env.PLAY_PORT = "${PLAY_PORT}"
                   env.NEW_RELIC_APP_NAME = "PPDC_AWS_BACKEND_QA"
-                  env.NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
                   env.NEW_RELIC_HOST = "gov-collector.newrelic.com"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
@@ -128,12 +126,11 @@ pipeline {
                 }
               break
               case "stage":
-                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
+                withCredentials([string(credentialsId: 'newrelic_license_key', variable: 'NEW_RELIC_LICENSE_KEY'),string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
                   env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_STAGE_IP}"
                   env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_STAGE_IP}"
                   env.PLAY_PORT = "${PLAY_PORT}"
                   env.NEW_RELIC_APP_NAME = "PPDC_AWS_BACKEND_STAGE"
-                  env.NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
                   env.NEW_RELIC_HOST = "gov-collector.newrelic.com"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "stage"

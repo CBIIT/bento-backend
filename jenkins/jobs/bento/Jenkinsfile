@@ -58,24 +58,12 @@ pipeline {
 		name: 'Flush_Redis')
 	booleanParam(
 		defaultValue: true,
-		description: 'Enable the Redis filter',
-		name: 'Enable_Redis_Filter')
-	booleanParam(
-		defaultValue: false,
 		description: 'Enable the Elasticsearch filter',
 		name: 'Enable_ES_Filter')
 	booleanParam(
-		defaultValue: false,
+		defaultValue: true,
 		description: 'Reload Elasticsearch data',
 		name: 'Reload_ES_Data')
-	string(
-	    defaultValue: 'redis-schema.graphql',
-		description: 'The file to use when loading redis schema',
-		name: 'Redis_Schema_File')
-	string(
-	    defaultValue: 'redis-filter-config.bento.yaml',
-		description: 'The file to use when loading redis queries',
-		name: 'Redis_Queries_File')
 	string(
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
@@ -321,8 +309,6 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-                        redis_schema_file: "${params.Redis_Schema_File}",
-						redis_init_queries_file: "${params.Redis_Queries_File}",
                         test_queries_file: "${params.Test_Queries_File}",
                         ],
 						colorized: true)
@@ -393,7 +379,6 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     enable_redis: "${params.Use_Redis}",
-					enable_redis_filter: "${params.Enable_Redis_Filter}",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)

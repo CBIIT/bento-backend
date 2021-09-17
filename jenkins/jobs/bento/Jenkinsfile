@@ -309,6 +309,7 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
+                        redis_schema_file: "",
                         test_queries_file: "${params.Test_Queries_File}",
                         ],
 						colorized: true)

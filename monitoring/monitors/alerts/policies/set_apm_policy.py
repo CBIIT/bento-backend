@@ -3,15 +3,14 @@
 import os
 import json
 import requests
-from monitors.alerts.conditions import set_synthetics_condition
+from monitors.alerts.conditions import set_apdex_condition
 
-def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
+def setapmalertpolicy(project, tier, email_id, slack_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
-   policy_name = '{}-{} Url Policy'.format(project.title(), tier.title())
+   policy_name = '{}-{} APM Policy'.format(project.title(), tier.title())
    policy_found = False
    headers = {'Api-Key': key}
-   
    try:
      response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
    except requests.exceptions.RequestException as e:
@@ -26,7 +25,7 @@ def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
          "Api-Key": key,
          "Content-Type": "application/json"
      }
-   
+
      data = {
        "policy": {
           "incident_preference": "PER_POLICY",
@@ -40,8 +39,8 @@ def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
        raise SystemExit(e)
      policy_id = response.json()['policy'].get("id", "none")
 
-     # add synthetics condition
-     set_synthetics_condition.setsyntheticscondition(project, tier, key, synthetics_id, policy_id)
+     # add apdex condition
+     set_apdex_condition.setapdexcondition(project, tier, key, policy_id)
 
      # add notification channels
 
@@ -54,7 +53,7 @@ def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
        response = requests.put('https://api.newrelic.com/v2/alerts_policy_channels.json', headers=headers, data=json.dumps(data), allow_redirects=False)
      except requests.exceptions.RequestException as e:
        raise SystemExit(e)
-     print('{} Created'.format(policy_name))
+     print("{} Created".format(policy_name))
 
    else:
-     print('{} already exists'.format(policy_name))
+     print("{} already exists".format(policy_name))

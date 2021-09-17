@@ -3,15 +3,15 @@
 import os
 import json
 import requests
-from monitors.alerts.conditions import set_synthetics_condition
+from monitors.alerts.conditions import set_redis_conditions
 
-def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
+def setredisalertpolicy(project, tier, email_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
-   policy_name = '{}-{} Url Policy'.format(project.title(), tier.title())
+   policy_name = '{}-{} Redis Policy'.format(project.title(), tier.title())
    policy_found = False
    headers = {'Api-Key': key}
-   
+
    try:
      response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
    except requests.exceptions.RequestException as e:
@@ -40,14 +40,14 @@ def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
        raise SystemExit(e)
      policy_id = response.json()['policy'].get("id", "none")
 
-     # add synthetics condition
-     set_synthetics_condition.setsyntheticscondition(project, tier, key, synthetics_id, policy_id)
+     # add redis conditions
+     set_redis_conditions.setredisconditions(key, project, tier, policy_id)
 
      # add notification channels
 
      data = {
        "policy_id": '{}'.format(policy_id),
-       "channel_ids": '{},{}'.format(email_id, slack_id)
+       "channel_ids": '{}'.format(email_id)
      }
 
      try:

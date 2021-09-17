@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 import sys, getopt
-from monitors.alerts.channels import email_channel, slack_channel
-from monitors.alerts.policies import url_policy
-from monitors.synthetics import url_monitor
+from monitors.alerts.channels import set_email_channel, set_slack_channel
+from monitors.alerts.policies import set_url_policy, set_apm_policy, set_db_policy, set_aws_policy, set_redis_policy, set_nginx_policy
+from monitors.synthetics import set_url_monitor
 
 def main(argv):
 
@@ -32,8 +32,6 @@ def main(argv):
          key = arg
       elif opt in ("-a", "--auth"):
          auth = arg
-   #print('Project is ', project)
-   #print('Tier is ', tier)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
@@ -42,7 +40,15 @@ if __name__ == "__main__":
    print('Adding Monitor Configuration For: {} {}'.format(project, tier))
    print()
    
-   email_id = email_channel.setalertemail(project, tier, key)
-   slack_id = slack_channel.setalertslack(project, tier, key)
-   synthetics_id = url_monitor.seturlmonitor(project, tier, key)
-   url_policy.setalertpolicy(project, tier, email_id, slack_id, synthetics_id, key)
+   email_id = set_email_channel.setalertemail(project, tier, key)
+   slack_id = set_slack_channel.setalertslack(project, tier, key)
+   synthetics_id = set_url_monitor.seturlmonitor(project, tier, key)
+   set_url_policy.seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key)
+   set_apm_policy.setapmalertpolicy(project, tier, email_id, slack_id, key)
+   set_db_policy.setdbalertpolicy(project, tier, email_id, synthetics_id, key)
+   set_nginx_policy.setnginxalertpolicy(project, tier, email_id, key)
+   
+   if project.lower() == 'bento':
+     set_aws_policy.setawsalertpolicy(project, tier, email_id, key)
+   else:
+     set_redis_policy.setredisalertpolicy(project, tier, email_id, key)

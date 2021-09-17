@@ -310,6 +310,7 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         redis_schema_file: "",
+						redis_init_queries_file: "",
                         test_queries_file: "${params.Test_Queries_File}",
                         ],
 						colorized: true)

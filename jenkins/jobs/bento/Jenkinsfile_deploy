@@ -373,6 +373,25 @@ pipeline {
                     ],
 					colorized: true)
   			}
+			
+			script {
+
+              sh label: 'Env-Updates', script: '''#!/bin/bash
+
+		      yum -y install python3
+		  
+			  cd icdc-devops/monitoring
+		      pip3 install -r requirements.txt
+
+              '''
+		  
+		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
+			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p bento -t $TIER -k $API_KEY"
+				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p bento -t $TIER -k $API_KEY"
+	          }
+
+            }
 
 		  }
   		}
@@ -443,25 +462,6 @@ pipeline {
 				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
 			}
 		}
-
-		script {
-
-              sh label: 'Env-Updates', script: '''#!/bin/bash
-
-		      yum -y install python3
-		  
-			  cd icdc-devops/monitoring
-		      pip3 install -r requirements.txt
-
-              '''
-		  
-		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
-			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
-				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p bento -t $TIER -k $API_KEY"
-				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p bento -t $TIER -k $API_KEY"
-	          }
-
-        }
 
 	}
 

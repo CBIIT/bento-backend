@@ -152,6 +152,7 @@ public class GraphQLController {
 		return ResponseEntity.status(status).body(error);
 	}
 
+	@PostConstruct
 	private void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
 		GraphQLSchema esSchema = getEsSchema();

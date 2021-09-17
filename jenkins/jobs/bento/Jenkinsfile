@@ -60,6 +60,14 @@ pipeline {
 		defaultValue: true,
 		description: 'Enable the Redis filter',
 		name: 'Enable_Redis_Filter')
+	booleanParam(
+		defaultValue: false,
+		description: 'Enable the Elasticsearch filter',
+		name: 'Enable_ES_Filter')
+	booleanParam(
+		defaultValue: false,
+		description: 'Reload Elasticsearch data',
+		name: 'Reload_ES_Data')
 	string(
 	    defaultValue: 'redis-schema.graphql',
 		description: 'The file to use when loading redis schema',
@@ -72,6 +80,10 @@ pipeline {
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
 		name: 'Test_Queries_File')
+	string(
+	    defaultValue: '',
+		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
+		name: 'Test_Params')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -223,34 +235,40 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER'),
+				string(credentialsId: 'es_dev_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER'),
+				string(credentialsId: 'es_qa_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
               case "perf":
                 withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER'),
+				string(credentialsId: 'es_perf_host', variable: 'ES_HOST'),
 				    usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_PERF_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "perf"
                   env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
@@ -376,9 +394,28 @@ pipeline {
             		extraVars: [
                     enable_redis: "${params.Use_Redis}",
 					enable_redis_filter: "${params.Enable_Redis_Filter}",
+					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)
   			}
+			
+			script {
+
+              sh label: 'Env-Updates', script: '''#!/bin/bash
+
+		      yum -y install python3
+		  
+			  cd icdc-devops/monitoring
+		      pip3 install -r requirements.txt
+
+              '''
+		  
+		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
+			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+	          }
+
+            }
+			
 		  }
   		}
   	}
@@ -433,7 +470,7 @@ pipeline {
 	success {
 
 		script {
-			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
 				
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
@@ -441,7 +478,7 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
-				git push https://${git_user}:${git_password}@${gitURL} --tags
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''
 			
@@ -449,7 +486,7 @@ pipeline {
 			}
 		
 		script {
-			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
 				
 				cd ${WORKSPACE}/bento-frontend
@@ -458,13 +495,29 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
-				git push https://${git_user}:${git_password}@${gitURL} --tags
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''
 			
 				}
 			}
 		
+		script {
+			if ("${params.Test_Params}"?.trim()) {
+				echo 'Run Bento Katalon Tests'
+				def params = "[${params.Test_Params}]"
+				def list_params = evaluate(params)
+				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
+			}
+		}
+
+		script {
+			if (params.Reload_ES_Data) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Tag}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+
 		}
 
 	cleanup {

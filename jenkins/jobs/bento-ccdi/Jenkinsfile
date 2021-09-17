@@ -48,6 +48,24 @@ pipeline {
         description: 'Choose aws region to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1,us-west-1' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'master', 
+       name: 'Backend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/CCDI-Portal-Service')
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'master', 
+       name: 'Frontend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/CCDI-Portal-WebPortal')
 	booleanParam(
 		defaultValue: true,
 		description: 'Flush the Redis cache',
@@ -81,42 +99,53 @@ pipeline {
   stages{
   	stage('checkout'){
   		steps {
+
 //			git branch: "${params.Backend_Tag}",
 //				url: 'https://github.com/CBIIT/bento-backend'
+
+        checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Backend_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					//extensions: [[$class: 'RelativeTargetDirectory',
+					extensions: [], submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/CCDI-Portal-Service']]])
+
 				
-  			checkout([$class: 'GitSCM', 
-  				branches: [[name: "${params.Backend_Tag}"]], 
-  				doGenerateSubmoduleConfigurations: 
-  				false, extensions: [], submoduleCfg: [], 
-  				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/bento-backend']]])
+  			//checkout([$class: 'GitSCM', 
+  			//	branches: [[name: "${params.Backend_Tag}"]], 
+  			//	doGenerateSubmoduleConfigurations: 
+  			//	false, extensions: [], submoduleCfg: [], 
+  		  //	userRemoteConfigs: 
+  			//	[[url: 'https://github.com/CBIIT/CCDI-Portal-Service']]])
+  				//[[url: 'https://github.com/CBIIT/bento-backend']]])
 
 //			dir('bento-frontend'){
 //				git branch: "${params.Frontend_Tag}",
 //				url: 'https://github.com/CBIIT/bento-frontend'
 //				}
 
-			checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Frontend_Tag}"]],
-				doGenerateSubmoduleConfigurations: false,
-				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-frontend']],
-				submoduleCfg: [],
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+				checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Frontend_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [[$class: 'RelativeTargetDirectory',
+					relativeTargetDir: 'CCDI-Portal-WebPortal']],
+					submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/CCDI-Portal-WebPortal']]])
 
   			checkout( poll: false, 
-				changelog:false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+					changelog:false,
+					scm: [$class: 'GitSCM', 
+					branches: [[name: '*/master']], 
+					doGenerateSubmoduleConfigurations: false, 
+					extensions: [[$class: 'DisableRemotePoll'],
+					[$class: 'PathRestriction', excludedRegions: '*'], 
+					[$class: 'RelativeTargetDirectory', 
+					relativeTargetDir: 'icdc-devops']], 
+					submoduleCfg: [], 
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
 
         }
  
@@ -250,17 +279,24 @@ pipeline {
 	// }
 
   	stage('deploy'){
-	  environment {
+
+  		agent {
+        node {
+          label 'bastion-host'
+        }
+      }
+	    environment {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
+
   		steps{
-  		  node('cicd_microservice') {
+  		  /**node('cicd_microservice') {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
+				branches: [[name: 'master']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -269,20 +305,27 @@ pipeline {
 				submoduleCfg: [], 
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
+				]) **/
 			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-ccdi.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+       file(credentialsId: 'ccdi_ansible_host_file', variable: 'host_file'),
+       ]){
+             sh "cp ${host_file} ${WORKSPACE}/ansible/hosts"
+  				   ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/ansible/deploy-bento-ccdi.yml', 
+            		inventory: '${WORKSPACE}/ansible/hosts', 
+            		credentialsId: 'server_ssh_key',
             		extraVars: [
                     enable_redis_filter: "${params.Enable_Redis_Filter}",
                     ],
-					colorized: true)
-  			}
-		  }
-  		}
-  	}
+                become: true,
+                hostKeyChecking: false,
+					      colorized: true)
+  			  }
+        }
+      }
+    }
 
 	// stage('update database monitoring agents'){
 	// 	steps{

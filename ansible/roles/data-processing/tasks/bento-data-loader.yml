@@ -1,4 +1,16 @@
 ---
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": "{{project}}-{{tier}}-neo4j-4"
+      "instance-state-name": running
+      "tag:Environment": "{{tier}}"
+  register: neo4j
+
+- name: set instance name
+  set_fact:
+    neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
 
 - name: set model files location for icdc
   set_fact:
@@ -20,6 +32,27 @@
     model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
     property_file: "config/props-ctdc.yml"
   when: project == "ctdc"
+
+- name: set model files location for gmb
+  set_fact:
+    model_file1: "{{workspace}}/gmb-model/model-desc/000048_Model.yml"
+    model_file2: "{{workspace}}/gmb-model/model-desc/000048_Model_Props.yml"
+    property_file: "config/props-gmb-mock.yml"
+  when: project == "gmb"
+
+- name: set model files location for ccdi
+  set_fact:
+    model_file1: "{{workspace}}/ccdi-model/model-desc/ccdi_portal_model_file.yaml"
+    model_file2: "{{workspace}}/ccdi-model/model-desc/ccdi_portal_model_properties.yaml"
+    property_file: "{{workspace}}/ccdi-model/model-desc/props-ccdi-portal.yml"
+  when: project == "ccdi"
+
+- name: set model files location for ins
+  set_fact:
+    model_file1: "{{workspace}}/ins-model/data_loading/model-desc/ins_model_file.yaml"
+    model_file2: "{{workspace}}/ins-model/data_loading/model-desc/ins_model_properties.yaml"
+    property_file: "{{workspace}}/ins-model/data_loading/model-desc/props-ins.yml"
+  when: project == "ins"
 
 - name: Check if tmp directory exist
   stat:

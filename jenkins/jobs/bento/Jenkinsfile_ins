@@ -1,0 +1,299 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+  agent {
+    node {
+      label 'cicd_microservice'
+    }
+  }
+  parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev' )
+    extendedChoice( 
+        name: 'Region', 
+        defaultValue: 'us-east-1', 
+        description: 'Choose aws region to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'us-east-1' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Backend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: ' https://github.com/CBIIT/INS-WebService')
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Frontend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: ' https://github.com/CBIIT/INS-WebPortal')
+    string(
+      defaultValue: 'ins',
+      description: 'Project Name',
+      name: 'ProjectName')
+    booleanParam(
+      defaultValue: true,
+      description: 'Use the Redis cache',
+      name: 'Use_Redis')
+    booleanParam(
+      defaultValue: false,
+      description: 'Flush the Redis cache',
+      name: 'Flush_Redis')
+    booleanParam(
+      defaultValue: true,
+      description: 'Enable the Redis filter',
+      name: 'Enable_Redis_Filter')
+    string(
+        defaultValue: 'redis-schema.graphql',
+      description: 'The file to use when loading redis schema',
+      name: 'Redis_Schema_File')
+    string(
+        defaultValue: 'redis-filter-config.bento.yaml',
+      description: 'The file to use when loading redis queries',
+      name: 'Redis_Queries_File')
+    string(
+        defaultValue: 'test-queries.1k.bento.yaml',
+      description: 'The file to use when loading test queries',
+      name: 'Test_Queries_File')
+    string(
+        defaultValue: '',
+      description: 'The commit id to checkout for the frontend',
+      name: 'fe_commit_id')
+    string(
+        defaultValue: '',
+      description: 'The commit id to checkout for the backend',
+      name: 'be_commit_id')
+
+  }
+  options {
+    ansiColor('xterm')
+  }
+  tools {
+    maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+    stage('checkout'){
+      steps {
+
+        checkout([$class: 'GitSCM', 
+          branches: [[name: "${params.Backend_Tag}"]], 
+          doGenerateSubmoduleConfigurations: 
+          false, extensions: [], submoduleCfg: [], 
+          userRemoteConfigs: 
+          [[url: 'https://github.com/CBIIT/bento-backend']]])
+
+      checkout([$class: 'GitSCM',
+        branches: [[name: "${params.Frontend_Tag}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'RelativeTargetDirectory',
+        relativeTargetDir: 'ins-frontend']],
+        submoduleCfg: [],
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/INS-WebPortal']]])
+
+        checkout( poll: false, 
+        changelog:false,
+        scm: [$class: 'GitSCM', 
+        branches: [[name: '*/master']], 
+        doGenerateSubmoduleConfigurations: false, 
+        extensions: [[$class: 'DisableRemotePoll'],
+        [$class: 'PathRestriction', excludedRegions: '*'], 
+        [$class: 'RelativeTargetDirectory', 
+        relativeTargetDir: 'icdc-devops']], 
+        submoduleCfg: [], 
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+    }
+    stage('Set Environment'){
+      environment {
+        SLACK_URL = "${SLACK_URL}"
+        VERSION = "${params.Frontend_Tag}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER'),
+                string(credentialsId: 'ins_dev_bearer', variable: 'BEARER')]) {
+                  env.TIER  = "dev"
+                  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  env.BEARER = "${BEARER}"
+
+                }
+        break
+              default:
+                withCredentials([usernamePassword(credentialsId: 'ins_dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.TIER  = "dev"
+                  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_PASS  = "${NEO4J_PASS}"
+                  env.BEARER = "${BEARER}"
+
+                }
+              break
+            }
+          }
+        }
+    }
+
+    stage('build'){
+      environment {
+       VERSION = "${params.Frontend_Tag}"
+       FE_VERSION = "${params.Frontend_Tag}"
+       BE_VERSION = "${params.Backend_Tag}"
+      }
+    steps {
+
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+        withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  ansiblePlaybook(        
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            extraVars: [
+            project: 'ins',
+                        redis_schema_file: "${params.Redis_Schema_File}",
+            redis_init_queries_file: "${params.Redis_Queries_File}",
+                        test_queries_file: "${params.Test_Queries_File}",
+            frontend_commit_id: "${params.fe_commit_id}",
+            backend_commit_id: "${params.be_commit_id}",
+                        ],
+            colorized: true)
+        }
+      }
+    }
+    }
+
+  stage('clear redis cache'){
+    agent { label 'data-loader' }
+    when {
+      expression { params.Flush_Redis }
+      }
+  
+      environment {
+      TIER = "${params.Environment}"
+      }
+
+    steps{
+      checkout( changelog:false,
+        poll: false,
+        scm: [$class: 'GitSCM', 
+        branches: [[name: '*/master']], 
+        doGenerateSubmoduleConfigurations: false, 
+        extensions: [[$class: 'DisableRemotePoll'],
+        [$class: 'PathRestriction', excludedRegions: '*'], 
+        [$class: 'RelativeTargetDirectory', 
+        relativeTargetDir: 'icdc-devops']], 
+        submoduleCfg: [], 
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/icdc-devops.git']]
+        ])
+        
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+        ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                colorized: true)
+      }
+    }
+  }
+
+    stage('deploy'){
+    environment {
+       VERSION = "${params.Frontend_Tag}"
+       FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+       BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+      }
+      steps{
+        node('cicd_microservice') {
+        checkout( changelog:false,
+        poll: false,
+        scm: [$class: 'GitSCM', 
+        branches: [[name: '*/master']], 
+        doGenerateSubmoduleConfigurations: false, 
+        extensions: [[$class: 'DisableRemotePoll'],
+        [$class: 'PathRestriction', excludedRegions: '*'], 
+        [$class: 'RelativeTargetDirectory', 
+        relativeTargetDir: 'icdc-devops']], 
+        submoduleCfg: [], 
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/icdc-devops.git']]
+        ])
+      
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+          ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                extraVars: [
+          project: 'ins',
+                    enable_redis: "${params.Use_Redis}",
+          enable_redis_filter: "${params.Enable_Redis_Filter}",
+                    ],
+          colorized: true)
+        }
+      }
+      }
+    }
+
+
+
+  }
+  post {
+
+  always {
+
+      sendSlackMessage()
+
+    }
+
+
+  cleanup {
+  
+    cleanWs()
+    
+  }
+
+  }
+}

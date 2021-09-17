@@ -23,7 +23,7 @@ def setapmrelease(project, tier, version, key):
    #set release for apm apps
    API_ENDPOINT = 'https://api.newrelic.com/v2/applications/{}/deployments.json'.format(apm_id)
 
-   revision_name = '{}-{}-{}'.format(project, tier, version)
+   revision_name = '{}'.format(version)
    revision_description = '{} {} updated to v{}'.format(project, tier, version)
    #revision_time = datetime.utcnow()
    headers = {

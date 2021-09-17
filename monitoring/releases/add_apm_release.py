@@ -36,7 +36,7 @@ if __name__ == "__main__":
    main(sys.argv[1:])
    
    print()
-   print('Adding APM Release For: {} {} v{}'.format(project, tier, version))
+   print('Adding APM Release For: {} {} {}'.format(project, tier, version))
    print()
 
    set_release.setapmrelease(project, tier, version, key)

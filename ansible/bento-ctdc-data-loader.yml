@@ -9,7 +9,7 @@
     - name: perform data loading
       include_role:
         name: data-processing
-        tasks_from: bento-ctdc-data-loader
+        tasks_from: ctdc-data-loader
   
       vars:
     

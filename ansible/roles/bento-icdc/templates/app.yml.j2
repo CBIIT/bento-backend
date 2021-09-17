@@ -20,10 +20,11 @@ services:
       REDIS_PORT: "{{ redis_port }}"
       REDIS_FILTER_ENABLE: "{{ enable_redis_filter }}"
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-      NEW_RELIC_APP_NAME: "{{ app_name }}-backend-{{ inventory_hostname }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-backend"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_LOG_FILE_NAME: "STDOUT"
+      NEW_RELIC_LABELS: "Project:{{ project }};Environment:{{ tier }}"
       JAVA_OPTS: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
     entrypoint: ["/bin/ash", "-c", 'if [ ! -f /usr/local/tomcat/newrelic/newrelic.jar ]; then wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && unzip newrelic-java.zip; fi && bin/catalina.sh run']
     volumes:
@@ -49,10 +50,11 @@ services:
       REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
       REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
-      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend-{{ inventory_hostname }}"
+      NEW_RELIC_APP_NAME: "{{ app_name }}-frontend"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
+      NEW_RELIC_LABELS: "Project:{{ project }};Environment:{{ tier }}"
       REACT_APP_FILE_SERVICE_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
     volumes:
       - "/local/content/k9dc/nginx:/var/log/nginx"

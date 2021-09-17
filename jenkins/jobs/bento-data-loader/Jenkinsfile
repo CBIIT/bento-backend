@@ -25,7 +25,7 @@ pipeline {
         defaultValue: 'bento', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento' )
+        value: 'icdc,ctdc,bento,ccdi,gmb,ins' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -52,7 +52,11 @@ pipeline {
         quoteValue: false,
         multiSelectDelimiter: ',',
         value: 'false,true',
-        type: 'PT_SINGLE_SELECT')   
+        type: 'PT_SINGLE_SELECT')
+	string(
+	    defaultValue: '',
+		description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
+		name: 'ES_Backend_Branch')
   }
   // options {
   // 	ansiColor('xterm')
@@ -80,6 +84,22 @@ pipeline {
           git branch: 'master',
           url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
         }
+        dir('ccdi-model'){
+          git branch: 'main',
+          url: 'https://github.com/CBIIT/CCDI-Portal-ETL.git'
+        }
+        dir('gmb-model'){
+          git branch: 'utf8',
+          url: 'https://github.com/CBIIT/gmb-model.git'
+        }
+        dir('ins-model'){
+          git branch: 'main',
+          url: 'https://github.com/CBIIT/INS-ETL.git'
+        }
+       dir('ctdc-model'){
+          git branch: 'master',
+          url: 'https://github.com/CBIIT/ctdc-model'
+        }
   		}
  
   	}
@@ -100,8 +120,8 @@ pipeline {
                 }
               break
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_DEV_IP}"
+                withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  // env.NEO4J_IP        = "${${params.ProjectName}_${params.Environment}_neo4j_ip}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -113,7 +133,7 @@ pipeline {
               break
               case "gdc":
                 withCredentials([usernamePassword(credentialsId: 'gdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_GDC_IP}"
+                  // env.NEO4J_IP        = "${NEO4J_GDC_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -125,7 +145,7 @@ pipeline {
               break
               case "qa":
                 withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_QA_IP}"
+                  // env.NEO4J_IP        = "${NEO4J_QA_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.TIER            = "dev"
@@ -138,7 +158,7 @@ pipeline {
               break
               case "perf":
                 withCredentials([usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_PERF_IP}"
+                  // env.NEO4J_IP        = "${NEO4J_PERF_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -150,7 +170,7 @@ pipeline {
               break
 			  case "icdc":
                 withCredentials([usernamePassword(credentialsId: 'icdc_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
-                  env.NEO4J_IP        = "${NEO4J_ICDC_IP}"
+                  // env.NEO4J_IP        = "${NEO4J_ICDC_IP}"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"
@@ -207,8 +227,20 @@ pipeline {
     }
   }
   post {
-    always {
+    success {
+
+      	script {
+			if ("${params.ES_Backend_Branch}"?.trim()) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.ES_Backend_Branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+	}
+	
+	cleanup {
+	
 	  cleanWs()
-    }
+    
+	}
   }
 }

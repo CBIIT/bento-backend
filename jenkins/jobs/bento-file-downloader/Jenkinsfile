@@ -208,7 +208,7 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Downloader_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
-				git push https://${git_user}:${git_password}@${gitURL} --tags
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
 				'''
 			

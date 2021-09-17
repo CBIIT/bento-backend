@@ -41,12 +41,13 @@ resource "aws_security_group" "es" {
 }
 
 resource "aws_iam_service_linked_role" "es" {
+  count = var.create_es_service_role ? 1: 0
   aws_service_name = "es.amazonaws.com"
 }
 
 resource "aws_elasticsearch_domain" "es" {
-  domain_name = var.domain_name
-  elasticsearch_version = "7.8"
+  domain_name = "${var.stack_name}-${terraform.workspace}-elasticsearch"
+  elasticsearch_version = var.elasticsearch_version
 
   cluster_config {
     instance_count = 2

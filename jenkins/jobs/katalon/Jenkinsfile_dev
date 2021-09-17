@@ -19,10 +19,11 @@
 pipeline {
 	agent {
         node {
-            label "docker-katalon-ch"
-			//label "${AGENT_LABEL}"
+            //label "${AGENT_LABEL}"
+			label "docker-katalon-ch"
             }
         }
+
 	environment { 
         katalonVer = '7.2.6'
 		chromedriverVer = '83.0.4103.39'
@@ -84,10 +85,6 @@ pipeline {
 					submoduleCfg: [], 
                     userRemoteConfigs: [[url: 'https://github.com/CBIIT/Commons_Automation']]])
 
-                dir('icdc-devops'){
-                    git branch: 'master',
-                    url: 'https://github.com/CBIIT/icdc-devops.git'}
-
                 }
             }
 		stage('set Profile'){
@@ -129,7 +126,7 @@ pipeline {
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
                             PROFILE="${pass_file}"
-							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
 					case "Katalon_Dev_CTDC":
@@ -138,7 +135,7 @@ pipeline {
                     //        }
                         withCredentials([file(credentialsId: 'Katalon_Dev_CTDC', variable: 'pass_file')]) {
                             PROFILE="${pass_file}"
-							sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                        }
@@ -156,40 +153,35 @@ pipeline {
             steps {
 
 				script {
-					withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key'),
-					    string(credentialsId: 'Katalon_Org_ID', variable: 'org_id')]) {
+						withCredentials([string(credentialsId: 'Katalon_API_Key', variable: 'api_key'),
+						    string(credentialsId: 'Katalon_Org_ID', variable: 'org_id')]) {
 
-						sh label: 'Katalon-Tests', script: '''#!/bin/bash
+							sh label: 'Katalon-Tests', script: '''#!/bin/bash
+								
+								# Set datestamp for results file
+								dateStamp=$(date +%Y%m%d)
+								reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
 
-							### TEST - verify plugins
-							plugin=$(ls -la plugins | grep report)
-							echo "report plugin = $plugin"
+								# Recreate the results directory
+								rm -rf results && mkdir results
 								
-							# Set datestamp for results file
-							dateStamp=$(date +%Y%m%d)
-							reportFile="${KATALON_PROFILE}_${dateStamp}_build_${BUILD_NUMBER}"
+								# Create the output files directory (required for writing excel files)
+								rm -rf OutputFiles && mkdir OutputFiles
+								
+								# Update profile filename
+								profile_file=$(basename $PROFILE_FILE)
+								profile_name="${profile_file%.*}"
+								#cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
+								
+								#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
+								
+								# Run Katalon Tests
+								katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
 
-							# Recreate the results directory
-							rm -rf results && mkdir results
-								
-							# Create the output files directory (required for writing excel files)
-							rm -rf OutputFiles && mkdir OutputFiles
-								
-							# Update profile filename
-							profile_file=$(basename $PROFILE_FILE)
-							profile_name="${profile_file%.*}"
-							cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
-								
-							#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
-								
-							# Run Katalon Tests
-							katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
+								'''
 
-							'''
-
+							}
 						}
-
-					}
 
                 }
             }
@@ -204,8 +196,25 @@ pipeline {
 					reportFiles: '*.html',
 					reportName: 'HTML Report',
 					reportTitles: ''])
+				
+				script {
 
-				emailext(attachmentsPattern: 'results/*.html',
+					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
+
+					apt-get update && apt-get install -y zip
+					
+					resultsFile=$(basename results/*.html)
+					zipFile=$(basename -s .html results/*.html)
+					
+					zip -r results/$zipFile.zip OutputFiles
+					zip -u results/$zipFile.zip results/$resultsFile
+
+					'''
+
+				}
+
+				//emailext(attachmentsPattern: 'results/*.html',
+				emailext(attachmentsPattern: 'results/*.zip',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results',
                     to: "${BOX_EMAIL}")

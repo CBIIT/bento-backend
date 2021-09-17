@@ -1,10 +1,21 @@
 FROM alpine:latest
 
 ENV JAVA_HOME="/usr/lib/jvm/default-jvm/"
-RUN apk add openjdk11 bash
+RUN apk add openjdk11 bash curl
 
 ENV PATH=$PATH:${JAVA_HOME}/bin
+ENV JAVA_OPTS="$JAVA_OPTS -javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+
+RUN cd /tmp \
+&& curl -O https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip \
+&& unzip /tmp/newrelic-java.zip \
+&& mkdir -p /usr/local/tomcat/newrelic \
+&& cp /tmp/newrelic/newrelic.jar /usr/local/tomcat/newrelic/newrelic.jar \
+&& cp /tmp/newrelic/newrelic.yml /usr/local/tomcat/newrelic/newrelic.yml \
+&& sed -i -e "s/license_key:.*/license_key: ${NEW_RELIC_LICENSE_KEY}/g" /usr/local/tomcat/newrelic/newrelic.yml \
+&& sed -i -e "s/app_name:.*/app_name: ${NEW_RELIC_APP_NAME}/g" /usr/local/tomcat/newrelic/newrelic.yml
+
 
 COPY app /app
 EXPOSE 8080
-CMD /app/bin/start -Dhttp.port="8080" -Dplay.http.secret.key="chslslkdangethisssksksaosometkdakdhingsecretkslakdd" -Dconfig.file=/app/conf/production.conf -Dlogger.file=/app/conf/production.xml
+CMD /app/bin/start -Dhttp.port="8080" -Dplay.http.secret.key="chslslkdangethisssksksaosometkdakdhingsecretkslakdd" -Dconfig.file=/app/conf/production.conf -Dlogger.file=/app/conf/production.xml -Dnewrelic.config.app_name='PPDC_AWS_BACKEND_DEV' -J-javaagent:/usr/local/tomcat/newrelic/newrelic.jar

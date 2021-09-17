@@ -62,6 +62,11 @@
     requirements: "{{workspace}}/requirements.txt"
     executable: pip3
 
+- name: pip install requests 
+  pip:
+    name: urllib3
+    executable: pip3
+    state: latest
 
 - name: loader data
   shell:

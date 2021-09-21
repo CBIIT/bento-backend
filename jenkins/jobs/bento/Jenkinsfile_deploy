@@ -214,6 +214,7 @@ pipeline {
         SLACK_URL = "${SLACK_URL}"
 		SLACK_CHANNEL = "#system-alerts"
         VERSION = "${params.Frontend_Image}"
+		URL_DOMAIN = "bento-tools.org"
       }
 		steps {
 

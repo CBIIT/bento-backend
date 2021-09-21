@@ -212,6 +212,7 @@ pipeline {
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
+		SLACK_CHANNEL = "#system-alerts"
         VERSION = "${params.Frontend_Image}"
       }
 		steps {
@@ -270,6 +271,7 @@ pipeline {
                   env.TIER  = "prod"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.SLACK_CHANNEL = "#system-alerts-prod"
 
                 }
               break

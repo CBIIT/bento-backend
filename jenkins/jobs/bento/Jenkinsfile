@@ -215,9 +215,7 @@ pipeline {
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
-		SLACK_CHANNEL = "#system-alerts"
         VERSION = "${params.Frontend_Tag}"
-		URL_DOMAIN = "bento-tools.org"
       }
         steps {
           script {
@@ -361,6 +359,8 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+	   SLACK_CHANNEL = "#system-alerts"
+	   URL_DOMAIN = "bento-tools.org"
       }
   		steps{
   		  node('cicd_microservice') {

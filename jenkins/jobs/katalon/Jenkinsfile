@@ -62,7 +62,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'QA_ICDC,STAGE_ICDC,PROD_ICDC,QA_CTDC' )
 
-	string(defaultValue: "", 
+	string(defaultValue: "gayathri.radhakrishnan@nih.gov,laxmi.lolla@nih.gov,sohil.sohil@nih.gov", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
         name: 'EmailRecipients')
 

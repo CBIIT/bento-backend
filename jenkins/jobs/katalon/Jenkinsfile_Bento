@@ -62,7 +62,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'QA_PROD,PERF_PROD,BENTO_ICDC' )
 
-	string(defaultValue: "", 
+	string(defaultValue: "gayathri.radhakrishnan@nih.gov,laxmi.lolla@nih.gov,sohil.sohil@nih.gov", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
         name: 'EmailRecipients')
 

@@ -133,7 +133,7 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.TIER  = "${params.Environment}"
+                  env.TIER  = "${params.ProjectName}-${params.Environment}"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 
@@ -141,7 +141,7 @@ pipeline {
 			  break
               default:
                 withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.TIER  = "${params.Environment}"
+                  env.TIER  = "${params.ProjectName}-${params.Environment}"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 
@@ -186,7 +186,7 @@ pipeline {
 			}
 	
   		environment {
-			TIER = "${params.Environment}"
+			TIER = "${params.ProjectName}-${params.Environment}"
 			}
 
 		steps{

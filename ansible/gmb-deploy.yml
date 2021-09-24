@@ -1,0 +1,14 @@
+---
+- name: deploy stage of bento pipeline
+  hosts: bento
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: bento
+        tasks_from: deploy
+        vars_from: gmb
+      vars:
+        data_bucket: nci-cbiit-ctdc-{{tier}}

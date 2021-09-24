@@ -1,36 +1,13 @@
 ---
+
+############################################################################################################################
+
+#     Set Environment
+
+############################################################################################################################
+
 - name: get db ip
   include_tasks: neo4j-ip.yml
-
-# - name: set dev environment facts
-#   set_fact:
-#     neo4j_ip: "{{ lookup('env','NEO4J_DEV_IP') }}"
-#     bearer: "{{ lookup('env','BEARER') }}"
-#   when: tier == "dev"
-
-#- name: set qa environment facts
-#  set_fact:
-#    neo4j_ip: "{{ lookup('env','NEO4J_QA_IP') }}"
-#    bearer: "{{ lookup('env','BEARER') }}"
-#  when: tier == "qa"
-
-#- name: set stage environment facts
-#  set_fact:
-#    neo4j_ip: "{{ lookup('env','NEO4J_PERF_IP') }}"
-#    bearer: "{{ lookup('env','BEARER') }}"
-#  when: tier == "perf"
-
-#- name: set prod environment facts
-#  set_fact:
-#    neo4j_ip: "{{ lookup('env','NEO4J_PROD_IP') }}"
-#    bearer: "{{ lookup('env','BEARER') }}"
-#  when: tier == "prod"
-
-#- name: set icdc environment facts
-#  set_fact:
-#    neo4j_ip: "{{ lookup('env','NEO4J_ICDC_IP') }}"
-#    bearer: "{{ lookup('env','BEARER') }}"
-#  when: tier == "icdc"
 
 - name: checkout specified commit - backend
   shell: "git checkout {{ backend_commit_id }}"
@@ -61,6 +38,12 @@
 - name: echo frontend id
   debug:
     msg: "{{ frontend_id.stdout_lines }}"
+
+############################################################################################################################
+
+#     Backend Build
+
+############################################################################################################################
 
 - name: remove the application_example.properties file 
   file:
@@ -134,7 +117,13 @@
     force_tag: yes
     push: yes
     source: local
-###########################################
+
+############################################################################################################################
+
+#     Frontend Build
+
+############################################################################################################################
+
 - name: remove .env
   file:
     state: absent
@@ -151,22 +140,17 @@
     src: "nginx-entrypoint.sh"
     dest: "{{workspace}}/{{ project }}-frontend/nginx-entrypoint.sh"
     mode: 0755
-# - name: copy environment file to {{workspace}}/{{ project }}-frontend
-#   template:
-#     src: env.j2
-#     dest: "{{workspace}}/{{ project }}-frontend/.env"
+
 - name: run npm install in {{workspace}}/{{ project }}-frontend/
   command: "{{item}}"
   args:
     chdir: "{{workspace}}/{{ project }}-frontend"
   loop:
-    #  
     - npm install
     - npm run build
 
 - name: copy env to dist
   copy:
-    # remote_src: yes
     src: inject.template.js
     dest: "{{workspace}}/{{ project }}-frontend/dist/inject.template.js"
     mode: 0755
@@ -191,21 +175,3 @@
     force_tag: yes
     push: yes
     source: local
-
-# - name: post schemas
-#   uri:
-#     url: http://{{neo4j_ip}}:7474/graphql/idl/
-#     method: POST
-#     body: "{{ lookup('file','{{workspace}}/src/main/resources/graphql/{{ project }}-extended.graphql') }}"
-#     headers:
-#       Accept: "application/json"
-#       Authorization: "{{bearer}}"
-#   register: schema
-
-# - name: post schema
-#   command: "curl -X POST http://{{neo4j_ip}}:7474/graphql/idl/ -H 'Accept: application/json' -H 'Authorization: {{bearer}}' -d @{{workspace}}/{{ project }}-backend/src/main/resources/graphql/ctdc.graphql"
-#   register: schema
-
-
-
-    

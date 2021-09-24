@@ -34,7 +34,7 @@
         - name: REDIS_USE_CLUSTER
           value: "{{ use_cluster }}"
         - name: REDIS_HOST
-          value: "{{ redis_host[redis_tier_name] }}"
+          value: "{{ redis_host[tier] }}"
         - name: REDIS_PORT
           value: "{{ redis_port }}"
         - name: REDIS_FILTER_ENABLE
@@ -92,8 +92,7 @@
         - name: REACT_APP_FE_VERSION
           value: "{{frontend_version}}"
         - name: REACT_APP_ABOUT_CONTENT_URL
-          # value: "{{ backend_content_url if project !='ctdc' else 'https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml' }}"
-          value: "{{about_content_url[project]}}"
+          value: "{{about_content_url}}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

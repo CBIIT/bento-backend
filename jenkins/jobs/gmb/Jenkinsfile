@@ -126,7 +126,6 @@ pipeline {
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
-        VERSION = "${params.Frontend_Tag}"
       }
         steps {
           script {
@@ -156,7 +155,6 @@ pipeline {
 
   	stage('build'){
       environment {
-       VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
       }
@@ -217,7 +215,6 @@ pipeline {
 
   	stage('deploy'){
 	  environment {
-       VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }

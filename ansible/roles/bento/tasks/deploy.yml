@@ -23,8 +23,6 @@
           value: "{{ neo4j_password }}"
         - name: NEO4J_GRAPHQL_ENDPOINT
           value: http://{{ neo4j_ip }}:7474/graphql/
-        - name: NEO4J_AUTHORIZATION
-          value: "{{ neo4j_bearer }}"
         - name: BENTO_API_VERSION
           value: "{{backend_version}}"
         - name: ES_HOST

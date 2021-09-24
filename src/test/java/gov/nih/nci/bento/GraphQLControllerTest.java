@@ -14,8 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(GraphQLController.class)
@@ -39,10 +38,13 @@ public class GraphQLControllerTest {
     @Test
     public void versionEndpointTestGET() throws Exception {
         String expectedVersion = "Bento API Version: "+configurationDAO.getBentoApiVersion();
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/version"))
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/version"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json;charset=utf-8"))
-                .andExpect(MockMvcResultMatchers.content().string(expectedVersion));
+                .andExpect(MockMvcResultMatchers.content().string(expectedVersion))
+                .andReturn();
+        //assert method to satisfy codacy requirement, this statement will not be reached if the test fails
+        assertNotNull(result);
     }
 
     /**
@@ -53,8 +55,11 @@ public class GraphQLControllerTest {
      */
     @Test
     public void versionEndpointTestPOST() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/version"))
-                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/version"))
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed())
+                .andReturn();
+        //assert method to satisfy codacy requirement, this statement will not be reached if the test fails
+        assertNotNull(result);
     }
 
     /**
@@ -66,8 +71,11 @@ public class GraphQLControllerTest {
      */
     @Test
     public void graphQLEndpointTestGET() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/v1/graphql/"))
-                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/v1/graphql/"))
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed())
+                .andReturn();
+        //assert method to satisfy codacy requirement, this statement will not be reached if the test fails
+        assertNotNull(result);
     }
 
     /**
@@ -79,11 +87,14 @@ public class GraphQLControllerTest {
      */
     @Test
     public void graphQLEndpointTestPOSTEmptyRequest() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
                         .post("/v1/graphql/")
                         .contentType("application/json")
                         .content("{\"query\":\"\",\"variables\":{}}"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+        //assert method to satisfy codacy requirement, this statement will not be reached if the test fails
+        assertNotNull(result);
     }
 
     /**

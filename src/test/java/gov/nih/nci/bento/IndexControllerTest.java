@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(IndexController.class)
@@ -27,10 +31,13 @@ public class IndexControllerTest {
      */
     @Test
     public void pingEndpointTestGET() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/ping"))
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.get("/ping"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("text/plain;charset=ISO-8859-1"))
-                .andExpect(MockMvcResultMatchers.content().string("pong"));
+                .andExpect(MockMvcResultMatchers.content().string("pong"))
+                .andReturn();
+        //assert method to satisfy codacy requirement, this statement will not be reached if the test fails
+        assertNotNull(result);
     }
 
     /**
@@ -41,8 +48,11 @@ public class IndexControllerTest {
      */
     @Test
     public void pingEndpointTestPOST() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/ping"))
-                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/ping"))
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed())
+                .andReturn();
+        //assert method to satisfy codacy requirement, this statement will not be reached if the test fails
+        assertNotNull(result);
     }
 
 }

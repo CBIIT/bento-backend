@@ -110,7 +110,7 @@ pipeline {
   			checkout( poll: false, 
 				changelog:false,
 				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
+				branches: [[name: '*/Ansible_Bento_Reorg']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 

@@ -39,6 +39,18 @@
   debug:
     msg: "{{ frontend_id.stdout_lines }}"
 
+- name: echo redis_host
+  debug:
+    msg: "{{ redis_host }}"
+
+- name: echo schema_file
+  debug:
+    msg: "{{ schema_file }}"
+
+- name: echo about_content_url
+  debug:
+    msg: "{{ about_content_url }}"
+
 ############################################################################################################################
 
 #     Backend Build

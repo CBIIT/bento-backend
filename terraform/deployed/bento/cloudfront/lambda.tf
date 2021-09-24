@@ -10,7 +10,7 @@ resource "aws_iam_policy" "lambda_iam_policy" {
 }
 
 resource "aws_iam_policy" "cloudwatch_log_iam_policy" {
-  policy = data.aws_iam_policy_document.lambda_exec_role_policy
+  policy = data.aws_iam_policy_document.lambda_exec_role_policy.json
   name = "${var.stack_name}-${terraform.workspace}-cloudwatch-log-policy"
 
 }

@@ -58,14 +58,10 @@ pipeline {
 		name: 'Flush_Redis')
 	booleanParam(
 		defaultValue: true,
-		description: 'Enable the Redis filter',
-		name: 'Enable_Redis_Filter')
-	booleanParam(
-		defaultValue: false,
 		description: 'Enable the Elasticsearch filter',
 		name: 'Enable_ES_Filter')
 	booleanParam(
-		defaultValue: false,
+		defaultValue: true,
 		description: 'Reload Elasticsearch data',
 		name: 'Reload_ES_Data')
 	string(
@@ -274,6 +270,7 @@ pipeline {
                   env.TIER  = "prod"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.SLACK_CHANNEL = "#system-alerts-prod"
 
                 }
               break
@@ -345,6 +342,8 @@ pipeline {
 	   VERSION = "${params.Frontend_Image}"
        FE_VERSION = "${params.Frontend_Image}"
        BE_VERSION = "${params.Backend_Image}"
+	   SLACK_CHANNEL = "#system-alerts"
+	   URL_DOMAIN = "bento-tools.org"
       }
   		steps{
 		  node('cicd_microservice') {
@@ -368,7 +367,6 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     enable_redis: "${params.Use_Redis}",
-					enable_redis_filter: "${params.Enable_Redis_Filter}",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)
@@ -387,10 +385,12 @@ pipeline {
 		  
 		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
 			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p bento -t $TIER -k $API_KEY"
+				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p bento -t $TIER -k $API_KEY"
 	          }
 
             }
-			
+
 		  }
   		}
   	}
@@ -460,7 +460,7 @@ pipeline {
 				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
 			}
 		}
-		
+
 	}
 
 	cleanup {

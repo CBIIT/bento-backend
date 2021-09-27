@@ -48,3 +48,15 @@ resource "aws_sns_topic_subscription" "subscribe_slack_endpoint" {
   endpoint_auto_confirms = true
   topic_arn              = aws_sns_topic.cloudfront_alarm_topic.arn
 }
+
+resource "aws_cloudwatch_log_group" "log_group_waf" {
+  name              = "/aws/lambda/${aws_lambda_function.slack_waf.function_name}"
+  retention_in_days = 30
+  tags = var.tags
+}
+
+resource "aws_cloudwatch_log_group" "log_group_slack" {
+  name              = "/aws/lambda/${aws_lambda_function.slack_lambda.function_name}"
+  retention_in_days = 30
+  tags = var.tags
+}

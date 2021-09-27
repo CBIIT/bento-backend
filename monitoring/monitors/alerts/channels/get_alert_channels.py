@@ -8,7 +8,10 @@ def getalertchannels(project, tier, key):
 
    headers = {'Api-Key': key}
 
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   try:
+     response = requests.get('{}'.format(API_ENDPOINT), headers=headers)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    print('Alert Channels:')
    for x in response.json()['channels']:

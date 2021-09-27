@@ -14,6 +14,11 @@ data "aws_iam_policy_document" "s3_policy" {
   }
 }
 
+#get managed s3cors policy
+data "aws_cloudfront_origin_request_policy" "s3_cors" {
+  name = "CORS-S3Origin"
+}
+
 #get managed cloudfront distribution
 data "aws_cloudfront_cache_policy" "managed_cache" {
   name = "Managed-CachingOptimized"
@@ -107,4 +112,16 @@ data "aws_iam_policy_document" "lambda_s3_policy" {
   }
 }
 
+data "aws_iam_policy_document" "lambda_exec_role_policy" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:*:*:*"
+    ]
+  }
+}
 

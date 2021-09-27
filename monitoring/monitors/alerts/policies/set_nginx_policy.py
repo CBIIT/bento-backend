@@ -3,12 +3,12 @@
 import os
 import json
 import requests
-from monitors.alerts.conditions import set_synthetics_condition
+from monitors.alerts.conditions import set_nginx_conditions
 
-def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
+def setnginxalertpolicy(project, tier, email_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
-   policy_name = '{}-{} Url Policy'.format(project.title(), tier.title())
+   policy_name = '{}-{} Nginx Policy'.format(project.title(), tier.title())
    policy_found = False
    headers = {'Api-Key': key}
    
@@ -40,21 +40,21 @@ def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
        raise SystemExit(e)
      policy_id = response.json()['policy'].get("id", "none")
 
-     # add synthetics condition
-     set_synthetics_condition.setsyntheticscondition(project, tier, key, synthetics_id, policy_id)
+     # add nginx conditions
+     set_nginx_conditions.setnginxconditions(key, project, tier, policy_id)
 
      # add notification channels
 
      data = {
        "policy_id": '{}'.format(policy_id),
-       "channel_ids": '{},{}'.format(email_id, slack_id)
+       "channel_ids": '{}'.format(email_id)
      }
 
      try:
        response = requests.put('https://api.newrelic.com/v2/alerts_policy_channels.json', headers=headers, data=json.dumps(data), allow_redirects=False)
      except requests.exceptions.RequestException as e:
        raise SystemExit(e)
-     print('{} Created'.format(policy_name))
+     print("Policy {} created".format(policy_name))
 
    else:
-     print('{} already exists'.format(policy_name))
+     print("Policy {} already exists".format(policy_name))

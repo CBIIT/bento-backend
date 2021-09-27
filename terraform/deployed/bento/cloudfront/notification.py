@@ -10,6 +10,7 @@ epoch_time = int(time.time())
 http = urllib3.PoolManager()
 
 
+#This function constructs the field arguments of slack message body. It takes a list of blocked ips as input
 def get_blocked_ips(blocked_ips):
     fields = []
     for ip in blocked_ips:
@@ -23,6 +24,7 @@ def get_blocked_ips(blocked_ips):
     return fields
 
 
+#This function sends slack message. The input argument is list of blocked ip
 def send_blocked_ips_report(blocked_ips):
     url = slack_url
     msg = {

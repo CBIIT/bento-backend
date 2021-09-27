@@ -50,11 +50,13 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = local.s3_origin_id
     cache_policy_id = data.aws_cloudfront_cache_policy.managed_cache.id
+
     trusted_key_groups = [aws_cloudfront_key_group.key_group.id]
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
+
   }
 
   viewer_certificate {
@@ -173,3 +175,11 @@ resource "aws_wafv2_web_acl_logging_configuration" "waf_logging" {
   }
 }
 
+resource "aws_wafv2_ip_set" "ip_sets" {
+  name               = "${var.stack_name}-${terraform.workspace}-ips-blocked-cloudfront"
+  description        = "ips to blocked as result of violation of cloudfront waf rule"
+  scope              = "CLOUDFRONT"
+  ip_address_version = "IPV4"
+  addresses          = ["127.0.0.1/32"]
+  tags = var.tags
+}

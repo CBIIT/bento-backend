@@ -9,7 +9,10 @@ def getnrqlconditions(policy, key):
    headers = {'Api-Key': key}
    data = {'policy_id': policy}
 
-   response = requests.get('{}'.format(API_ENDPOINT), headers=headers, data=data)
+   try:
+     response = requests.get('{}'.format(API_ENDPOINT), headers=headers, data=data)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    if response.json()['nrql_conditions']:
      print('    Alert NRQL Conditions:')

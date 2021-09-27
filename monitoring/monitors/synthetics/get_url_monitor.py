@@ -8,7 +8,10 @@ def geturlmonitor(project, tier, key):
 
    headers = {'Api-Key': key}
 
-   response = requests.get('{}/v3/monitors'.format(API_ENDPOINT), headers=headers)
+   try:
+     response = requests.get('{}/v3/monitors'.format(API_ENDPOINT), headers=headers)
+   except requests.exceptions.RequestException as e:
+     raise SystemExit(e)
 
    print('Synthetics Monitors:')
    for x in response.json()['monitors']:

@@ -9,11 +9,24 @@ resource "aws_iam_policy" "lambda_iam_policy" {
 
 }
 
+resource "aws_iam_policy" "cloudwatch_log_iam_policy" {
+  policy = data.aws_iam_policy_document.lambda_exec_role_policy.json
+  name = "${var.stack_name}-${terraform.workspace}-cloudwatch-log-policy"
+
+}
+
 resource "aws_iam_policy_attachment" "lambda_s3_policy_attachment" {
   name = "${var.stack_name}-${terraform.workspace}-lambda-s3-attachement"
   policy_arn = aws_iam_policy.lambda_iam_policy.arn
   roles = [aws_iam_role.lambda_role.name]
 }
+
+resource "aws_iam_policy_attachment" "cloudwatch_log_policy_attachment" {
+  name = "${var.stack_name}-${terraform.workspace}-cloudwatch-log-attachement"
+  policy_arn = aws_iam_policy.cloudwatch_log_iam_policy.arn
+  roles = [aws_iam_role.lambda_role.name]
+}
+
 
 resource "aws_lambda_function" "slack_lambda" {
   filename = "${path.module}/send-slack.zip"
@@ -58,6 +71,11 @@ resource "aws_lambda_function" "slack_waf" {
     variables = {
       "SLACK_URL" = jsondecode(data.aws_secretsmanager_secret_version.slack_url.secret_string)["cloud-front-slack-url"]
       "SLACK_CHANNEL" = var.cloudfront_slack_channel_name
+      "BLOCK_IP_FILE_NAME" = "blocked_ip/ips.txt"
+      "WAF_SCOPE" = "CLOUDFRONT"
+      "S3_BUCKET_NAME" = aws_s3_bucket.kinesis_log.bucket
+      "TMP_FILE_NAME" = "/tmp/blocked_ip.txt"
+      "IP_SETS_NAME" = aws_wafv2_ip_set.ip_sets.name
     }
   }
 }

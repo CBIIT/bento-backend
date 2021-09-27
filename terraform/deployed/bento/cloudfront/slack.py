@@ -17,12 +17,13 @@ slack_colors =  {
 http = urllib3.PoolManager()
 def handler(event, context):
     url = slack_url
-
-    alarm_type = event['Records'][0]['Sns']['Message']['NewStateValue']
-    alarm_changed = event['Records'][0]['Sns']['Message']['StateChangeTime']
-    alarm_new_state = event['Records'][0]['Sns']['Message']['NewStateReason']
-    alarm_name = event['Records'][0]['Sns']['Message']['AlarmName']
-
+    message = event['Records'][0]['Sns']['Message']
+    message = json.loads(message)
+    alarm_type = message['NewStateValue']
+    alarm_changed = message['StateChangeTime']
+    alarm_new_state = message['NewStateReason']
+    alarm_name = message['AlarmName']
+    # msg = "ok"
     msg = {
         "channel": slack_channel,
         "icon_emoji": ":alert:",
@@ -43,4 +44,5 @@ def handler(event, context):
 
     msg = json.dumps(msg).encode('utf-8')
     http.request('POST',url, body=msg)
+
 

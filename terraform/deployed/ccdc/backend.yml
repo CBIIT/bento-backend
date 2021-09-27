@@ -1,8 +1,0 @@
----
-- name: backend
-  image: cbiitssrepo/CCDC-WebService:release
-  essential: true
-  portMappings:
-    - protocol: tcp
-      containerPort: 8080
-      hostPort: 8080

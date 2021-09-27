@@ -1,0 +1,8 @@
+---
+- name: frontend
+  image: cbiitssrepo/CCDC-WebPortal:release
+  essential: true
+  portMappings:
+    - protocol: tcp
+      containerPort: 80
+      hostPort: 80

@@ -54,8 +54,7 @@ fronted_instance_type = "t3.xlarge"
 #provide the name of the admin user for ssh login
 ssh_user = "bento"
 
-#specify the aws compute instance type for the database
-database_instance_type =  "t3.medium"
+
 
 #name of the database
 database_name = "ccdc"
@@ -67,9 +66,6 @@ db_instance_volume_size = 80
 # values needs to be changed. need to check what values to be used.
 availability_zones = ["us-east-1b","us-east-1c"]
 rds_private_subnets = ["172.18.10.0/24","172.18.11.0/24"]
-rds_public_subnets = ["172.18.0.0/24","172.18.1.0/24"]
-rds_vpc_cidr = "172.18.0.0/16"
-vpc_id = "vpc-08f154f94dc8a0e34"
 
 #alb priority rule number. This can be left as default
 alb_rule_priority = 121
@@ -96,7 +92,7 @@ redis_node_type = "cache.t3.small"
 create = true
 identifier = "ccdc-dev-rds"
 allocated_storage = "1500"
-storage_type = "standard"
+storage_type = "gp2"
 storage_encrypted = true
 
 iam_database_authentication_enabled = true
@@ -109,16 +105,11 @@ instance_class = "db.t3.medium"
 
 name = "ccdc-dev-rds-mssql"
 
-database_user = "admin"
-
-database_password = "admin_password"
-
-database_port = 3306
+database_user = "ccdc-admin"
 
 multi_az = true
 
 apply_immediately = true
 
-deletion_protection = false
 
-publicly_accessible = false
+

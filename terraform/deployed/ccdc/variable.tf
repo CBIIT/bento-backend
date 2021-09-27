@@ -30,19 +30,10 @@ variable "database_user" {
   description = "Username for the master DB user"
 }
 
-variable "database_password" {
-  type        = string
-  description = "Password for the master DB user"
-}
-
-variable "database_port" {
-  type        = number
-  description = "Database port (_e.g._ `3306` for `MySQL`). Used in the DB Security Group to allow access to the DB instance from the provided `security_group_ids`"
-}
-
 variable "deletion_protection" {
   type        = bool
   description = "Set to true to enable deletion protection on the RDS instance"
+  default = true
 }
 
 variable "multi_az" {
@@ -95,6 +86,7 @@ variable "db_parameter_group" {
 variable "publicly_accessible" {
   type        = bool
   description = "Determines if database can be publicly available (NOT recommended)"
+  default = false
 }
 
 variable "apply_immediately" {

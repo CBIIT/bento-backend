@@ -7,10 +7,7 @@ locals {
   all_ips  = ["0.0.0.0/0"]
   ssh_user = var.ssh_user
   bastion_port = 22
-  db_http = 7474
-  db_https = 7473
-  db_bolt = 7687
-  redis = "6379"
+  rds_port = 3306
   ssm_iam_policy_arn = aws_iam_policy.ssm-policy.arn
   my_account = format("arn:aws:iam::%s:root", data.aws_caller_identity.account.account_id)
 }

@@ -30,8 +30,6 @@ frontend_container_port = 80
 #This a port number for bento-backend
 backend_container_port = 8080
 
-#This a port number for bento-backend
-downloader_container_port = 8081
 
 #specify the maximum and minimun number of instances in auto-scalling group
 max_size = 1
@@ -68,7 +66,7 @@ availability_zones = ["us-east-1b","us-east-1c"]
 rds_private_subnets = ["172.18.10.0/24","172.18.11.0/24"]
 
 #alb priority rule number. This can be left as default
-alb_rule_priority = 121
+
 frontend_rule_priority = 121
 backend_rule_priority = 120
 downloader_rule_priority = 119
@@ -76,9 +74,6 @@ env = "dev"
 
 #specify domain name
 domain_name = "bento-tools.org"
-#name of the application
-app_name = "ccdc"
-
 #specify private ip of the db instance
 db_private_ip = "172.18.11.142"
 
@@ -100,7 +95,7 @@ instance_class = "db.t3.medium"
 
 name = "ccdc-dev-rds-mssql"
 
-database_user = "ccdc-admin"
+database_user = "ccdc_admin"
 
 multi_az = true
 

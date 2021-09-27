@@ -79,15 +79,10 @@ domain_name = "bento-tools.org"
 #name of the application
 app_name = "ccdc"
 
-#the port on which the frontend app listens
-app_port = 80
-
 #specify private ip of the db instance
 db_private_ip = "172.18.11.142"
 
 remote_state_bucket_name = "bento-terraform-remote-state"
-redis_node_group = 1
-redis_node_type = "cache.t3.small"
 
 create = true
 identifier = "ccdc-dev-rds"

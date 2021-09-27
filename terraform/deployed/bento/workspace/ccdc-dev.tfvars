@@ -71,8 +71,6 @@ rds_public_subnets = ["172.18.0.0/24","172.18.1.0/24"]
 rds_vpc_cidr = "172.18.0.0/16"
 vpc_id = "vpc-08f154f94dc8a0e34"
 
-
-
 #alb priority rule number. This can be left as default
 alb_rule_priority = 121
 frontend_rule_priority = 121

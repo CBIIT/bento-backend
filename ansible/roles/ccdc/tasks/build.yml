@@ -23,7 +23,7 @@
     chdir: "{{workspace}}/{{project}}"
   loop:
     - npm install
-    - npm run build
+    - CI=false npm run build
 
 - name: copy env to dist
   copy:

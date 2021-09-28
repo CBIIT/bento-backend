@@ -234,51 +234,35 @@ public class ESFilterDataFetcher {
                 new String[]{"survival_time_unit", "survival_time_unit"}
         };
 
-        Request request = new Request("GET", FILES_END_POINT);
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
-        query.put("size", esService.MAX_ES_SIZE);
-        query.put("sort", FILE_ID_NUM);
-        request.setJsonEntity(gson.toJson(query));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        query.put("size", 0);
+        Request sampleRequest = new Request("GET", SAMPLES_END_POINT);
+        sampleRequest.setJsonEntity(gson.toJson(query));
+        JsonObject sampleResult = esService.send(sampleRequest);
+        int numberOfSamples = esService.getTotalHits(sampleResult);
 
-        // Collect file_ids
-        List<String> file_ids = esService.collectField(request, FILE_ID);
+        Request fileRequest = new Request("GET", FILES_END_POINT);
+        fileRequest.setJsonEntity(gson.toJson(query));
+        JsonObject fileResult = esService.send(fileRequest);
+        int numberOfFiles = esService.getTotalHits(fileResult);
 
-        // Reuse query to collect sample_ids
-        request = new Request("GET", SAMPLES_END_POINT);
-        query.put("sort", SAMPLE_ID_NUM);
-        request.setJsonEntity(gson.toJson(query));
-        List<String> sample_ids = esService.collectField(request, SAMPLE_ID);
-
-        // Again, collect subject_ids
-        request = new Request("GET", SUBJECTS_END_POINT);
-        query.put("sort", SUBJECT_ID_NUM);
-        request.setJsonEntity(gson.toJson(query));
-        List<String> subject_ids = esService.collectField(request, SUBJECT_ID);
 
         // Get aggregations
-        esService.addAggregations(query, AGG_NAMES);
-        int pageSize = (int) params.get(PAGE_SIZE);
-        query.put("size", pageSize);
-        request = new Request("GET", SUBJECTS_END_POINT);
-        request.setJsonEntity(gson.toJson(query));
-        JsonObject jsonObject = esService.send(request);
-        Map<String, Object> result = esService.collectAggs(jsonObject, AGG_NAMES);
-        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
-        jsonObject = (JsonObject) result.get(esService.JSON_OBJECT);
-
-        List<Map<String, Object>> firstPage = esService.collectPage(jsonObject, PROPERTIES, pageSize);
+        Map<String, Object> aggQuery = esService.addAggregations(query, AGG_NAMES);
+        Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
+        subjectRequest.setJsonEntity(gson.toJson(aggQuery));
+        JsonObject subjectResult = esService.send(subjectRequest);
+        int numberOfSubjects = esService.getTotalHits(subjectResult);
+        Map<String, JsonArray> aggs = esService.collectAggs(subjectResult, AGG_NAMES);
 
         Map<String, Object> data = new HashMap<>();
         data.put("numberOfPrograms", aggs.get("programs").size());
         data.put("numberOfStudies", aggs.get("studies").size());
-        data.put("numberOfSubjects", subject_ids.size());
-        data.put("numberOfSamples", sample_ids.size());
         data.put("numberOfLabProcedures", aggs.get("lab_procedures").size());
-        data.put("numberOfFiles", file_ids.size());
-        data.put("subjectIds", subject_ids);
-        data.put("sampleIds", sample_ids);
-        data.put("fileIds", file_ids);
-        data.put("firstPage", firstPage);
+
+        data.put("numberOfSubjects", numberOfSubjects);
+        data.put("numberOfSamples", numberOfSamples);
+        data.put("numberOfFiles", numberOfFiles);
 
         return data;
     }
@@ -435,13 +419,12 @@ public class ESFilterDataFetcher {
         String[] subCategories = new String[] { subCategory };
         Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
         String[] AGG_NAMES = new String[] {category};
-        esService.addAggregations(query, AGG_NAMES);
+        query = esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
-        Map<String, Object> result = esService.collectAggs(jsonObject, AGG_NAMES);
-        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
+        Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
@@ -624,12 +607,11 @@ public class ESFilterDataFetcher {
 
     private List<Map<String, Object>> getGroupCount(String category, Map<String, Object> query) throws IOException {
         String[] AGG_NAMES = new String[] {category};
-        esService.addAggregations(query, AGG_NAMES);
+        query = esService.addAggregations(query, AGG_NAMES);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
-        Map<String, Object> result = esService.collectAggs(jsonObject, AGG_NAMES);
-        Map<String, JsonArray> aggs = (Map<String, JsonArray>) result.get(esService.AGGS);
+        Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
@@ -684,8 +666,8 @@ public class ESFilterDataFetcher {
             Request request = new Request("GET", GS_END_POINT);
             request.setJsonEntity(gson.toJson(query));
             JsonObject jsonObject = esService.send(request);
-            Map<String, Object> aggs = esService.collectAggs(jsonObject, new String[]{GS_AGG_LIST});
-            var buckets = ((Map<String, JsonArray>) aggs.get("aggs")).get(GS_AGG_LIST);
+            Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, new String[]{GS_AGG_LIST});
+            var buckets = aggs.get(GS_AGG_LIST);
             result.put(resultFieldName, esService.collectBucketKeys(buckets));
         }
 

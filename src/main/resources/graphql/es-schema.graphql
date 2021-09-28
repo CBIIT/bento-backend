@@ -88,10 +88,6 @@ type SearchResult2 {
     numberOfSamples: Int
     numberOfLabProcedures: Int
     numberOfFiles: Int
-    subjectIds: [String]
-    sampleIds: [String]
-    fileIds: [String]
-    firstPage: [SubjectOverview4]
 }
 
 type GroupCount2 {
@@ -157,8 +153,7 @@ type QueryType {
         tissue_type: [String] = [],
         composition: [String] = [],
         association: [String] = [],
-        file_type: [String] = [],
-        first: Int = 100
+        file_type: [String] = []
     ): SearchResult2
 
     subjectOverview (

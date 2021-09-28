@@ -90,6 +90,10 @@ public class ESService {
         return result;
     }
 
+    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params) {
+        return buildFacetFilterQuery(params, Set.of());
+    }
+
     public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params, Set<String> excludedParams) {
         Map<String, Object> result = new HashMap<>();
 
@@ -110,9 +114,11 @@ public class ESService {
         return result;
     }
 
-    public void addAggregations(Map<String, Object> query, String[] aggNames) {
-        query.put("size", 0);
-        query.put("aggregations", getAllAggregations(aggNames));
+    public Map<String, Object> addAggregations(Map<String, Object> query, String[] aggNames) {
+        Map<String, Object> newQuery = new HashMap<>(query);
+        newQuery.put("size", 0);
+        newQuery.put("aggregations", getAllAggregations(aggNames));
+        return newQuery;
     }
 
     public void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subAggNames) {
@@ -135,16 +141,13 @@ public class ESService {
         return agg;
     }
 
-    public Map<String, Object> collectAggs(JsonObject jsonObject, String[] aggNames) throws IOException{
-        Map<String, Object> result = new HashMap<>();
+    public Map<String, JsonArray> collectAggs(JsonObject jsonObject, String[] aggNames) throws IOException{
         Map<String, JsonArray> data = new HashMap<>();
-        result.put(JSON_OBJECT, jsonObject);
         JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
         for (String aggName: aggNames) {
             data.put(aggName, aggs.getAsJsonObject(aggName).getAsJsonArray("buckets"));
         }
-        result.put(AGGS, data);
-        return result;
+        return data;
     }
 
     public List<String> collectBucketKeys(JsonArray buckets) {
@@ -186,6 +189,10 @@ public class ESService {
         send(clearScrollRequest);
 
         return results;
+    }
+
+    public int getTotalHits(JsonObject jsonObject) {
+        return jsonObject.get("hits").getAsJsonObject().get("total").getAsJsonObject().get("value").getAsInt();
     }
 
     public List<Map<String, Object>> collectPage(Request request, Map<String, Object> query, String[][] properties, int pageSize, int offset) throws IOException {

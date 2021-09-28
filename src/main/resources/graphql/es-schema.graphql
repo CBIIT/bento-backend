@@ -161,14 +161,71 @@ type QueryType {
         first: Int = 100
     ): SearchResult2
 
-    subjectOverViewPaged(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
-    subjectOverViewPagedDesc(subject_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SubjectOverview3]
-    sampleOverview(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
-    sampleOverviewDesc(subject_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverview2]
-    fileOverview(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
-    fileOverviewDesc(subject_ids: [String] = [""], file_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [FileOverview2]
+    subjectOverview (
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectOverview3]
 
+    sampleOverview (
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SampleOverview2]
 
+    fileOverview (
+        programs: [String] = [],
+        studies: [String] = [],
+        diagnoses: [String] = [],
+        rc_scores: [String] = [],
+        tumor_sizes: [String] = [],
+        chemo_regimen: [String] = [],
+        tumor_grades: [String] = [],
+        er_status: [String] = [],
+        pr_status: [String] = [],
+        endo_therapies: [String] = [],
+        meno_status: [String] = [],
+        tissue_type: [String] = [],
+        composition: [String] = [],
+        association: [String] = [],
+        file_type: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverview2]
 
     "Group counts"
     subjectCountByProgram (subject_ids: [String] = []): [GroupCount2]

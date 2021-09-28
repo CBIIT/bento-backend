@@ -1,11 +1,11 @@
-package gov.nih.nci.bento.service;
+package gov.nih.nci.bento.model;
 
 import com.google.gson.*;
+import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.Request;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +22,7 @@ public class ESFilterDataFetcher {
     final String PAGE_SIZE = "first";
     final String OFFSET = "offset";
     final String ORDER_BY = "order_by";
+    final String SORT_DIRECTION = "sort_direction";
     final String SUBJECT_ID = "subject_ids";
     final String SUBJECT_ID_NUM = "subject_id_num";
     final String SUBJECTS_END_POINT = "/subjects/_search";
@@ -55,29 +56,17 @@ public class ESFilterDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects(args);
                         })
-                        .dataFetcher("subjectOverViewPaged", env -> {
+                        .dataFetcher("subjectOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return subjectOverViewPaged(args);
-                        })
-                        .dataFetcher("subjectOverViewPagedDesc", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return subjectOverViewPagedDesc(args);
+                            return subjectOverview(args);
                         })
                         .dataFetcher("sampleOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return sampleOverView(args);
-                        })
-                        .dataFetcher("sampleOverviewDesc", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return sampleOverViewDesc(args);
+                            return sampleOverview(args);
                         })
                         .dataFetcher("fileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return fileOverView(args);
-                        })
-                        .dataFetcher("fileOverviewDesc", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return fileOverViewDesc(args);
+                            return fileOverview(args);
                         })
                         // wire up "Group counts"
                         .dataFetcher("armsByPrograms", env -> {
@@ -294,15 +283,7 @@ public class ESFilterDataFetcher {
         return data;
     }
 
-    private List<Map<String, Object>> subjectOverViewPaged(Map<String, Object> params) throws IOException {
-        return subjectOverView(params, "asc");
-    }
-
-    private List<Map<String, Object>> subjectOverViewPagedDesc(Map<String, Object> params) throws IOException {
-        return subjectOverView(params, "desc");
-    }
-
-    private List<Map<String, Object>> subjectOverView(Map<String, Object> params, String direction) throws IOException {
+    private List<Map<String, Object>> subjectOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"program", "programs"},
@@ -349,18 +330,10 @@ public class ESFilterDataFetcher {
                 Map.entry("survival_time", "survival_time")
         );
 
-        return overView(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping, direction);
+        return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private List<Map<String, Object>> sampleOverView(Map<String, Object> params) throws IOException {
-        return sampleOverViewHelper(params, "asc");
-    }
-
-    private List<Map<String, Object>> sampleOverViewDesc(Map<String, Object> params) throws IOException {
-        return sampleOverViewHelper(params, "desc");
-    }
-
-    private List<Map<String, Object>> sampleOverViewHelper(Map<String, Object> params, String direction) throws IOException {
+    private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"program", "programs"},
                 new String[]{"program_id", "program_id"},
@@ -391,18 +364,10 @@ public class ESFilterDataFetcher {
                 Map.entry("platform", "platform")
         );
 
-        return overView(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping, direction);
+        return overview(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private List<Map<String, Object>> fileOverView(Map<String, Object> params) throws IOException {
-        return fileOverViewHelper(params, "asc");
-    }
-
-    private List<Map<String, Object>> fileOverViewDesc(Map<String, Object> params) throws IOException {
-        return fileOverViewHelper(params, "desc");
-    }
-
-    private List<Map<String, Object>> fileOverViewHelper(Map<String, Object> params, String direction) throws IOException {
+    private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"program", "programs"},
                 new String[]{"program_id", "program_id"},
@@ -434,20 +399,20 @@ public class ESFilterDataFetcher {
                 Map.entry("diagnosis", "diagnoses")
         );
 
-        return overView(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping, direction);
+        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private List<Map<String, Object>> overView(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping, String direction) throws IOException {
+    private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
+        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
         int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
         List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
         return page;
     }
-
 
     private Map<String, String> mapSortOrder(String order_by, String direction, String defaultSort, Map<String, String> mapping) {
         String sortDirection = direction;

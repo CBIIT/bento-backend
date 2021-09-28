@@ -49,6 +49,9 @@ resource "random_password" "rds_password" {
   length           = 12
   special          = true
   override_special = "_%@"
+  keepers = {
+    keep = true
+  }
 }
 
 

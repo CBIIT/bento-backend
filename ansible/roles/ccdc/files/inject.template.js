@@ -1,0 +1,4 @@
+window.injectedEnv = {
+    REACT_APP_ENVIRONMENT: '${REACT_APP_ENVIRONMENT}',
+    REACT_APP_API_URL: '${REACT_APP_API_URL}',
+};

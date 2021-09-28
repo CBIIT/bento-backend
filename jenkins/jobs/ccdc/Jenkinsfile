@@ -1,0 +1,203 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod' )
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+				
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Backend_Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/CCDC-WebService']]])
+
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'CCDC-WebPortal']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/CCDC-WebPortal']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+   
+  	stage('build'){
+      environment {
+       VERSION = "${params.Frontend_Tag}"
+       FE_VERSION = "${params.Frontend_Tag}"
+       BE_VERSION = "${params.Backend_Tag}"
+      }
+ 		steps {
+
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  ansiblePlaybook(  			
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/ccdc-build.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						extraVars: [
+                        redis_schema_file: "",
+            ],
+						colorized: true)
+ 				}
+ 			}
+ 		}
+  }
+  	stage('deploy'){
+	  environment {
+       VERSION = "${params.Frontend_Tag}"
+       FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+       BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+	   	 SLACK_CHANNEL = "#system-alerts"
+	   	URL_DOMAIN = "bento-tools.org"
+      }
+  		steps{
+  		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/ccdc-deploy.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		extraVars: [
+                    enable_redis: ""
+                    ],
+					colorized: true)
+  			}
+
+		  }
+  		}
+  	}
+
+  }
+  post {
+
+	always {
+
+      sendSlackMessage()
+
+    }
+
+	success {
+
+		// script {
+		// 	withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+		// 		sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
+				
+		// 		gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+		// 		echo "Applying tag $Backend_Tag to URL:  $gitURL"
+		// 		git config user.email "jenkins@bento-tools.org"
+		// 		git config user.name "Bento Jenkins"
+		// 		git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
+		// 		git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+				
+		// 		'''
+			
+		// 		}
+		// 	}
+		
+		script {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+				sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
+				
+				cd ${WORKSPACE}/CCDC-WebPortal
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Applying tag $Frontend_Tag to URL:  $gitURL"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+				
+				'''
+			
+				}
+			}
+
+		}
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

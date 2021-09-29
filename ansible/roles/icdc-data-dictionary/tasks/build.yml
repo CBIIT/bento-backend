@@ -21,6 +21,14 @@
     - npm install
     - npm run build
 
+
+- name: show 
+  command:  "ls -l {{workspace}}/{{project}}"
+  register: output
+- name: show build directionary
+  debug:
+    msg: "{{output.stdout_lines}}"
+  
 - name: rename build to dist
   copy: 
     remote_src: True 

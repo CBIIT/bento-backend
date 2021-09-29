@@ -1,0 +1,4 @@
+window.injectedEnv = {
+    REACT_APP_MODEL_URL: '${REACT_APP_MODEL_URL}',
+    REACT_APP_MODEL_PROPS_URL: '${REACT_APP_MODEL_PROPS_URL}',
+};

@@ -1,0 +1,19 @@
+---
+# vars file for cicd
+docker_host: "{{ lookup('env','DOCKER_HOST') }}"
+tls_hostname: "{{ lookup('env','TLS_HOSTNAME') }}"
+indexd_url: "{{ indexd_url }}"
+stack_name: icdc
+tier: "{{ lookup('env','TIER') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}"
+dictionary_version: "{{ lookup('env','DICTIONARY_VERSION') }}"
+license_key: "{{ lookup('env','NEWRELIC_LIC_KEY') }}"
+react_app_model_url: https://raw.githubusercontent.com/CBIIT/icdc-model-tool/master/model-desc/icdc-model.yml
+react_app_model_props_url: https://raw.githubusercontent.com/CBIIT/icdc-model-tool/master/model-desc/icdc-model-props.yml
+
+
+
+

@@ -1,0 +1,12 @@
+---
+- name: deploy stage of bento pipeline
+  hosts: icdc-{{tier}}
+  gather_facts: yes
+  become: yes
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: icdc-file-downloader
+        tasks_from: deploy
+    

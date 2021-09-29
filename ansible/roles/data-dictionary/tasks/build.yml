@@ -22,7 +22,6 @@
   args:
     chdir: "{{workspace}}/{{project}}"
   loop:
-    - unset CI
     - npm install
     - npm run build
 

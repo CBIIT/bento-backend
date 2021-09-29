@@ -5,7 +5,7 @@
     containers:
     - name: frontend
       essential: true
-      image: "cbiitssrepo/{{project | lower}:{{frontend_version}}"
+      image: "cbiitssrepo/{{project | lower}}:{{frontend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 

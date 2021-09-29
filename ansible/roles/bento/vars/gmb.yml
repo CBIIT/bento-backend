@@ -1,0 +1,8 @@
+---
+# vars file for gmb
+redis_host: 
+  dev: "gmb-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+
+schema_file: "bento-gmb.graphql"
+
+about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/develop/src/content/{{tier}}/aboutPagesContent.yaml"

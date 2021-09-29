@@ -126,7 +126,6 @@ pipeline {
     stage('Set Environment'){
       environment {
         SLACK_URL = "${SLACK_URL}"
-        VERSION = "${params.Frontend_Tag}"
       }
         steps {
           script {
@@ -156,7 +155,6 @@ pipeline {
 
   	stage('build'){
       environment {
-       VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
       }
@@ -165,7 +163,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
 						project: "${params.ProjectName}",
@@ -217,7 +215,6 @@ pipeline {
 
   	stage('deploy'){
 	  environment {
-       VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
@@ -239,7 +236,7 @@ pipeline {
 			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
 					project: "${params.ProjectName}",

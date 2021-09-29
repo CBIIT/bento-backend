@@ -41,13 +41,13 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,test,qa,perf,icdc,prod' )
+        value: 'dev' )
     extendedChoice( 
         name: 'Region', 
         defaultValue: 'us-east-1', 
         description: 'Choose aws region to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'us-east-1,us-west-1' )
+        value: 'us-east-1' )
 	booleanParam(
 		defaultValue: true,
 		description: 'Use the Redis cache',
@@ -232,48 +232,6 @@ pipeline {
 
                 }
               break
-              case "qa":
-                withCredentials([string(credentialsId: 'es_qa_host', variable: 'ES_HOST'),
-				    usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_QA_IP}"
-                  env.TIER  = "qa"
-                  env.NEO4J_USER = "${NEO4J_USER}"
-                  env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  env.ES_HOST = "${ES_HOST}"
-
-                }
-              break
-              case "perf":
-                withCredentials([string(credentialsId: 'es_perf_host', variable: 'ES_HOST'),
-				    usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_PERF_IP}"
-                  env.TIER  = "perf"
-                  env.NEO4J_USER = "${NEO4J_USER}"
-                  env.NEO4J_PASS  = "${NEO4J_PASS}"
-				  // UPDATE THIS TO USE CREDENTIALS WHEN PERF ES IS ENABLED
-				  env.ES_HOST = "${ES_HOST}"
-
-                }
-              break
-              case "prod":
-                withCredentials([usernamePassword(credentialsId: 'prod_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_PROD_IP}"
-                  env.TIER  = "prod"
-				  env.NEO4J_USER = "${NEO4J_USER}"
-                  env.NEO4J_PASS  = "${NEO4J_PASS}"
-				  env.SLACK_CHANNEL = "#system-alerts-prod"
-
-                }
-              break
-              case "icdc":
-                withCredentials([usernamePassword(credentialsId: 'icdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
-                  env.NEO4J_IP    = "${NEO4J_ICDC_IP}"
-                  env.TIER  = "icdc"
-				  env.NEO4J_USER = "${NEO4J_USER}"
-                  env.NEO4J_PASS  = "${NEO4J_PASS}"
-
-                }
-			  break
               default:
                 withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_DEV_IP}"
@@ -325,7 +283,8 @@ pipeline {
   	stage('deploy'){
 	  environment {
 	   SLACK_URL = "${SLACK_URL}"
-       TIER = "${params.Environment}"
+       PROJECT = "${params.ProjectName}",
+	   TIER = "${params.Environment}"
        FE_VERSION = "${params.Frontend_Image}"
        BE_VERSION = "${params.Backend_Image}"
 	   SLACK_CHANNEL = "#system-alerts"
@@ -349,10 +308,11 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                    enable_redis: "${params.Use_Redis}",
+                    project: "${params.ProjectName}",
+					enable_redis: "${params.Use_Redis}",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)
@@ -370,9 +330,9 @@ pipeline {
               '''
 		  
 		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
-			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
-				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p bento -t $TIER -k $API_KEY"
-				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p bento -t $TIER -k $API_KEY"
+			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p $PROJECT -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p $PROJECT -t $TIER -k $API_KEY"
+				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p $PROJECT -t $TIER -k $API_KEY"
 	          }
 
             }
@@ -410,7 +370,7 @@ pipeline {
                     env: "${params.Environment}",
 					app_type: 'database',
 					app_name: 'neo4j',
-                    project: 'bento',
+                    project: "${params.ProjectName}",
 					log_path: '/var/log/neo4j/*.log',
                     ],
             		colorized: true)
@@ -431,7 +391,7 @@ pipeline {
 
 		script {
 			if ("${params.Test_Params}"?.trim()) {
-				echo 'Run Bento Katalon Tests'
+				echo 'Run Katalon Tests'
 				def params = "[${params.Test_Params}]"
 				def list_params = evaluate(params)
 				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]

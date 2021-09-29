@@ -33,7 +33,7 @@
     ports:
       - "81:81"
     volumes:
-      - "/local/content/k9dc/data-dictionary:/var/log"
+      - "/local/content/k9dc/data-dictionary:/var/log/nginx"
 
 # - name: "wait for data-dictionary service to become available"
 #   uri:

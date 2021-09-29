@@ -28,7 +28,7 @@
 - name: copy env to project
   copy:
     src: inject.template.js
-    dest: "{{workspace}}/{{project}}/inject.template.js"
+    dest: "{{workspace}}/{{project}}/dist/inject.template.js"
     mode: 0755
           
 - name: build cbiitssrepo/{{project | lower}} image

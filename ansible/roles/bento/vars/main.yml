@@ -11,7 +11,6 @@ redis_host:
   bento-ctdc: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   bento-prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   gmb-dev: "gmb-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  ins-dev: "ins-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 redis_password: ""
 redis_port: 6379
 use_cluster: 'true'
@@ -59,7 +58,5 @@ about_content_url:
   gmb:  https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/develop/src/content/{{tier}}/aboutPagesContent.yaml
   bento: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
   ctdc: https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml
-  ins:  https://raw.githubusercontent.com/CBIIT/bento-ins-frontend/master/src/content/{{tier}}/aboutPagesContent.yaml
-
-
+ 
 # hostname: "{{ansible_fqdn}}"

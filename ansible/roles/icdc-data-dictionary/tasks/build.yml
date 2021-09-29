@@ -21,6 +21,12 @@
     - npm install
     - npm run build
 
+- name: rename build to dist
+  copy: 
+    remote_src: True 
+    src: "{{workspace}}/{{project}}/buid"
+    dest: "{{workspace}}/{{project}}/dist"
+
 - name: copy env to dist
   copy:
     src: inject.template.js

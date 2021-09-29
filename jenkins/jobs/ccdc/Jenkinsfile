@@ -157,42 +157,42 @@ pipeline {
 
     }
 
-	success {
+	// success {
 
-		// script {
-		// 	withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
-		// 		sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
+	// 	// script {
+	// 	// 	withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+	// 	// 		sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
 				
-		// 		gitURL=$(git config remote.origin.url | sed 's|^.*//||')
-		// 		echo "Applying tag $Backend_Tag to URL:  $gitURL"
-		// 		git config user.email "jenkins@bento-tools.org"
-		// 		git config user.name "Bento Jenkins"
-		// 		git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
-		// 		git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+	// 	// 		gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+	// 	// 		echo "Applying tag $Backend_Tag to URL:  $gitURL"
+	// 	// 		git config user.email "jenkins@bento-tools.org"
+	// 	// 		git config user.name "Bento Jenkins"
+	// 	// 		git tag --no-sign -a ${Backend_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Backend_Tag}-${BUILD_NUMBER}"
+	// 	// 		git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
-		// 		'''
+	// 	// 		'''
 			
-		// 		}
-		// 	}
+	// 	// 		}
+	// 	// 	}
 		
-		script {
-			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
-				sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
+	// 	script {
+	// 		withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+	// 			sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
 				
-				cd ${WORKSPACE}/CCDC-WebPortal
-				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
-				echo "Applying tag $Frontend_Tag to URL:  $gitURL"
-				git config user.email "jenkins@bento-tools.org"
-				git config user.name "Bento Jenkins"
-				git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
-				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+	// 			cd ${WORKSPACE}/CCDC-WebPortal
+	// 			gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+	// 			echo "Applying tag $Frontend_Tag to URL:  $gitURL"
+	// 			git config user.email "jenkins@bento-tools.org"
+	// 			git config user.name "Bento Jenkins"
+	// 			git tag --no-sign -a ${Frontend_Tag}-${BUILD_NUMBER} -m "Jenkins tag: ${Frontend_Tag}-${BUILD_NUMBER}"
+	// 			git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				
-				'''
+	// 			'''
 			
-				}
-			}
+	// 			}
+	// 		}
 
-		}
+	// 	}
 
 	cleanup {
 	

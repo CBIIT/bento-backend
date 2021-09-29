@@ -23,7 +23,7 @@
 
   
 - name: rename build to dist
-  command: 
+  copy: 
     remote_src: True 
     src: "{{workspace}}/{{project}}/build"
     dest: "{{workspace}}/{{project}}/dist"

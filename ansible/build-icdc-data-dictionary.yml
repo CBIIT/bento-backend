@@ -7,5 +7,5 @@
   tasks:
     - name: This is a build stage
       include_role:
-        name: icdc-file-downloader
+        name: icdc-data-dictionary
         tasks_from: build

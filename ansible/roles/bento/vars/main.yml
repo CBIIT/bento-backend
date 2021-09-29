@@ -59,6 +59,7 @@ about_content_url:
   gmb:  https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/develop/src/content/{{tier}}/aboutPagesContent.yaml
   bento: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
   ctdc: https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml
+  ins:  https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{tier}}/aboutPagesContent.yaml
 
 
 # hostname: "{{ansible_fqdn}}"

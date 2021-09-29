@@ -15,3 +15,4 @@ app_name: "{{stack_name}}-{{platform}}-{{tier}}"
 project: CCDC-WebPortal
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
+region: us-east-1

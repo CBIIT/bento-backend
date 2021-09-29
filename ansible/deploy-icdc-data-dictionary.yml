@@ -1,0 +1,12 @@
+---
+- name: deploy stage of icdc pipeline
+  hosts: icdc-{{tier}}
+  gather_facts: yes
+  become: yes
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: icdc-data-dictionary
+        tasks_from: deploy
+    

@@ -1,0 +1,46 @@
+---
+- name: log into DockerHub
+  docker_login:
+    username: "{{ docker_user }}"
+    password: "{{ docker_password }}"
+    registry: https://ncidockerhub.nci.nih.gov
+
+- name: remove data directionary container
+  docker_container:
+    name: data-dictionary
+    state: absent
+
+- name: clean up 
+  command: docker system prune -a -f
+
+- name: ensure log and docker directory exists
+  file: 
+    path: /local/content/k9dc/data-dictionary
+    state: directory
+
+- name: launch the new data-dictionary
+  docker_container:
+    name: data-dictionary
+    image: ncidockerhub.nci.nih.gov/icdc/data-dictionary:{{dictionary_version}}
+    env:
+      REACT_APP_MODEL_URL: "{{react_app_model_url}}" 
+      REACT_APP_MODEL_PROPS_URL: "{{react_app_model_props_url}}"
+      VERSION: "{{dictionary_version}}" 
+      DATE: "{{ansible_date_time.date}}"
+      NEW_RELIC_APP_NAME: "{{stack_name}}-{{tier}}data-dictionary-{{ansible_hostname}}"
+      NEW_RELIC_LICENSE_KEY: "{{license_key}}"
+    restart_policy: always
+    ports:
+      - "81:81"
+    volumes:
+      - "/local/content/k9dc/data-dictionary:/var/log/nginx"
+
+# - name: "wait for data-dictionary service to become available"
+#   uri:
+#    url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/ping{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/ping{% endif %}"
+#    follow_redirects: none
+#    method: GET
+#   register: _result
+#   until: ('status' in _result) and (_result.status == 200)
+#   retries: 100
+#   delay: 10

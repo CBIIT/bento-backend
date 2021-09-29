@@ -88,6 +88,39 @@ type SearchResult2 {
     numberOfSamples: Int
     numberOfLabProcedures: Int
     numberOfFiles: Int
+
+    subjectCountByProgram: [GroupCount2]
+    subjectCountByStudy: [GroupCount2]
+    subjectCountByDiagnoses: [GroupCount2]
+    subjectCountByRecurrenceScore: [GroupCount2]
+    subjectCountByTumorSize: [GroupCount2]
+    subjectCountByTumorGrade: [GroupCount2]
+    subjectCountByErStatus: [GroupCount2]
+    subjectCountByPrStatus: [GroupCount2]
+    subjectCountByChemotherapyRegimen: [GroupCount2]
+    subjectCountByEndocrineTherapy: [GroupCount2]
+    subjectCountByMenopauseStatus: [GroupCount2]
+    subjectCountByTissueType: [GroupCount2]
+    subjectCountByTissueComposition: [GroupCount2]
+    subjectCountByFileAssociation: [GroupCount2]
+    subjectCountByFileType: [GroupCount2]
+    armsByPrograms: [ProgramArms2]
+
+    filterSubjectCountByProgram: [GroupCount2]
+    filterSubjectCountByStudy: [GroupCount2]
+    filterSubjectCountByDiagnoses: [GroupCount2]
+    filterSubjectCountByRecurrenceScore: [GroupCount2]
+    filterSubjectCountByTumorSize: [GroupCount2]
+    filterSubjectCountByTumorGrade: [GroupCount2]
+    filterSubjectCountByErStatus: [GroupCount2]
+    filterSubjectCountByPrStatus: [GroupCount2]
+    filterSubjectCountByChemotherapyRegimen: [GroupCount2]
+    filterSubjectCountByEndocrineTherapy: [GroupCount2]
+    filterSubjectCountByMenopauseStatus: [GroupCount2]
+    filterSubjectCountByTissueType: [GroupCount2]
+    filterSubjectCountByTissueComposition: [GroupCount2]
+    filterSubjectCountByFileAssociation: [GroupCount2]
+    filterSubjectCountByFileType: [GroupCount2]
 }
 
 type GroupCount2 {

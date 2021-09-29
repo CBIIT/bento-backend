@@ -217,22 +217,25 @@ public class ESFilterDataFetcher {
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         // Query related values
-        final String[] AGG_NAMES = new String[]{"programs", "studies", "lab_procedures"};
-        final String[][] PROPERTIES = new String[][]{
-                new String[]{"subject_id", "subject_ids"},
-                new String[]{"program", "programs"},
-                new String[]{"program_id", "program_id"},
-                new String[]{"study_acronym", "study_acronym"},
-                new String[]{"diagnosis", "diagnoses"},
-                new String[]{"recurrence_score", "rc_scores"},
-                new String[]{"tumor_size", "tumor_sizes"},
-                new String[]{"tumor_grade", "tumor_grades"},
-                new String[]{"er_status", "er_status"},
-                new String[]{"pr_status", "pr_status"},
-                new String[]{"age_at_index", "age_at_index"},
-                new String[]{"survival_time", "survival_time"},
-                new String[]{"survival_time_unit", "survival_time_unit"}
-        };
+        final Map<String, List<String>> AGGS = new HashMap<>();
+        AGGS.put("programs", List.of("subjectCountByProgram", "filterSubjectCountByProgram"));
+        AGGS.put("studies", List.of("subjectCountByStudy", "filterSubjectCountByStudy"));
+        AGGS.put("diagnoses", List.of("subjectCountByDiagnoses", "filterSubjectCountByDiagnoses"));
+        AGGS.put("rc_scores", List.of("subjectCountByRecurrenceScore", "filterSubjectCountByRecurrenceScore"));
+        AGGS.put("tumor_sizes", List.of("subjectCountByTumorSize", "filterSubjectCountByTumorSize"));
+        AGGS.put("tumor_grades", List.of("subjectCountByTumorGrade", "filterSubjectCountByTumorGrade"));
+        AGGS.put("er_status", List.of("subjectCountByErStatus", "filterSubjectCountByErStatus"));
+        AGGS.put("pr_status", List.of("subjectCountByPrStatus", "filterSubjectCountByPrStatus"));
+        AGGS.put("chemo_regimen", List.of("subjectCountByChemotherapyRegimen", "filterSubjectCountByChemotherapyRegimen"));
+        AGGS.put("endo_therapies", List.of("subjectCountByEndocrineTherapy", "filterSubjectCountByEndocrineTherapy"));
+        AGGS.put("meno_status", List.of("subjectCountByMenopauseStatus", "filterSubjectCountByMenopauseStatus"));
+        AGGS.put("tissue_type", List.of("subjectCountByTissueType", "filterSubjectCountByTissueType"));
+        AGGS.put("composition", List.of("subjectCountByTissueComposition", "filterSubjectCountByTissueComposition"));
+        AGGS.put("association", List.of("subjectCountByFileAssociation", "filterSubjectCountByFileAssociation"));
+        AGGS.put("file_type", List.of("subjectCountByFileType", "filterSubjectCountByFileType"));
+        AGGS.put("lab_procedures", List.of("subjectCountByLabProcedures", "filterSubjectCountByLabProcedures"));
+
+        final String[] AGG_NAMES = AGGS.keySet().toArray(new String[0]);
 
         Map<String, Object> query = esService.buildFacetFilterQuery(params);
         query.put("size", 0);
@@ -259,10 +262,23 @@ public class ESFilterDataFetcher {
         data.put("numberOfPrograms", aggs.get("programs").size());
         data.put("numberOfStudies", aggs.get("studies").size());
         data.put("numberOfLabProcedures", aggs.get("lab_procedures").size());
-
         data.put("numberOfSubjects", numberOfSubjects);
         data.put("numberOfSamples", numberOfSamples);
         data.put("numberOfFiles", numberOfFiles);
+
+        data.put("armsByPrograms", armsByPrograms(params));
+        for (String field: AGG_NAMES) {
+            String widgetQueryName = AGGS.get(field).get(0);
+            String filterCountQueryName = AGGS.get(field).get(1);
+            List<Map<String, Object>> widgetData = getGroupCountHelper(aggs.get(field));
+            data.put(widgetQueryName, widgetData);
+            if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
+                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params);;
+                data.put(filterCountQueryName, filterCount);
+            } else {
+                data.put(filterCountQueryName, widgetData);
+            }
+        }
 
         return data;
     }
@@ -614,14 +630,17 @@ public class ESFilterDataFetcher {
         Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
 
+        return getGroupCountHelper(buckets);
+    }
+
+    private List<Map<String, Object>> getGroupCountHelper(JsonArray buckets) throws IOException {
         List<Map<String, Object>> data = new ArrayList<>();
         for (JsonElement group: buckets) {
             data.add(Map.of("group", group.getAsJsonObject().get("key").getAsString(),
                     "subjects", group.getAsJsonObject().get("doc_count").getAsInt()
-                    ));
+            ));
 
         }
-
         return data;
     }
 

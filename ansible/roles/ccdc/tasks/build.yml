@@ -34,7 +34,7 @@
 - name: build cbiitssrepo/{{project | lower}} image
   docker_image:
     build:
-      path: "{{workspace}}/{{{project}}"
+      path: "{{workspace}}/{{project}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-frontend-dockerfile"
       pull: yes
       nocache: yes

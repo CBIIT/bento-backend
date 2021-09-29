@@ -1,7 +1,7 @@
 ---
 # vars file for cicd
 stack_name: ccdc
-platform: aw
+platform: aws
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"

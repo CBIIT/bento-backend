@@ -102,7 +102,8 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/ccdc-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-                        redis_schema_file: "",
+                        tier: "${params.Environment}",
+
             ],
 						colorized: true)
  				}
@@ -138,7 +139,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ccdc-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                    enable_redis: ""
+                    tier: "${params.Environment}",
                     ],
 					colorized: true)
   			}

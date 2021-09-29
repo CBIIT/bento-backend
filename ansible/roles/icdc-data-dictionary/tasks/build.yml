@@ -23,7 +23,10 @@
 
   
 - name: rename build to dist
-  command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist
+  command: 
+    remote_src: True 
+    src: "{{workspace}}/{{project}}/build"
+    dest: "{{workspace}}/{{project}}/dist"
 
 - name: copy env to dist
   copy:
@@ -48,7 +51,7 @@
 - name: build cbiitssrepo/{{project | lower}} image
   docker_image:
     build:
-      path: "{{workspace}}/{{workspace}}"
+      path: "{{workspace}}/{{project}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/data-dictionary-dockerfile"
       pull: yes
       nocache: yes

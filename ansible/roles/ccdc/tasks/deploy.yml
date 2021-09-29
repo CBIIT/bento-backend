@@ -115,7 +115,7 @@
         - name: STATUS_URL
           value: "{% if tier == 'prod' %}https://bento-tools.org/nginx_status{% else %}https://{{ tier }}.bento-tools.org/nginx_status{% endif %}"
       entryPoint:
-        - "/bin/ash"
+        - "/bin/bash"
         - "-c"
         - 'echo -e "integrations:\n  - name: nri-nginx\n    env:\n      REMOTE_MONITORING: true\n      METRICS: 1" > /etc/newrelic-infra/integrations.d/nginx-config.yml && /sbin/tini -- /usr/bin/newrelic-infra-service'
       mountPoints:

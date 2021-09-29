@@ -54,7 +54,6 @@ pipeline {
   	stage('deploy'){
 	  environment {
 	     SLACK_URL = "${ICDC_SLACK_URL}"
-       TIER = "${params.Environment}"
 	     DICTIONARY_VERSION = "${params.Dictionary_Tag}"
       }
   		steps{
@@ -81,7 +80,9 @@ pipeline {
             ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-data-dictionary.yml', 
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                  //extraVars: [],
+                  extraVars: [
+                    tier: "${params.Environment}"
+                  ],
             colorized: true)
         }
         }

@@ -120,7 +120,6 @@ pipeline {
 	  environment {
        DICTIONARY_VERSION = "${params.Dictionary_Tag}-${BUILD_NUMBER}"
        SLACK_URL = "${ICDC_SLACK_URL}"
-       TIER = "${params.Environment}"
       }
   		steps{
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -133,9 +132,9 @@ pipeline {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-data-dictionary.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            		// extraVars: [
-          
-              //       ],
+            		extraVars: [
+                      tier: "${params.Environment}"
+                    ],
 					colorized: true)
   			}
 		   }

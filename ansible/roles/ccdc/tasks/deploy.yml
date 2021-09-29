@@ -183,13 +183,13 @@
 
 ############################################################################################################################
 
-# - name: query backend service
-#   ecs_service_info:
-#     cluster: "{{stack_name }}-{{tier}}"
-#     service: "{{stack_name }}-{{tier}}-backend"
-#     details: true
-#     region: "{{region}}"
-#   register: service_backend
+- name: query backend service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}"
+    service: "{{stack_name }}-{{tier}}-backend"
+    details: true
+    region: "{{region}}"
+  register: service_backend
 
 - name: query ecs service
   ecs_service_info:
@@ -198,6 +198,7 @@
     details: true
     region: "{{region}}"
   register: service_frontend
+
 
 
 - name: query sumologic syslog service

@@ -1,4 +1,32 @@
 ---
+- name: create task definition - {{stack_name}}-backend
+  ecs_taskdefinition:
+    containers:
+    - name: backend
+      essential: true
+      image: "cbiitssrepo/{{project | lower}}:{{backend_version}}"
+      environment:
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}-backend"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: true
+      portMappings:
+      - containerPort: "8080"
+        hostPort: "8080"
+    network_mode: bridge
+    family: "{{stack_name }}-{{tier}}-backend"
+    memory: '1024'
+    cpu: '512'
+    state: present
+    region: "{{region}}"
+  register: task_output
+
 
 - name: create task definition - {{project}}
   ecs_taskdefinition:

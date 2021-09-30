@@ -10,4 +10,4 @@ RUN npm ci --only=production
 COPY . .
 
 EXPOSE 81
-CMD [ "node", "./bin/www" ]
+CMD [ "npm", "start" ]

@@ -1,35 +1,35 @@
 ---
 #################################################################################################
 
-- name: copy  nginx conf
-  copy:
-    remote_src: yes
-    src: '{{workspace}}/icdc-devops/docker/dockerfiles/data-dictionary-nginx.conf'
-    dest: '{{workspace}}/{{project}}/nginx.conf'
+# - name: copy  nginx conf
+#   copy:
+#     remote_src: yes
+#     src: '{{workspace}}/icdc-devops/docker/dockerfiles/data-dictionary-nginx.conf'
+#     dest: '{{workspace}}/{{project}}/nginx.conf'
 
-- name: copy entrypoint.sh to workspace
-  copy:
-    src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/{{project}}/nginx-entrypoint.sh"
-    mode: 0755
+# - name: copy entrypoint.sh to workspace
+#   copy:
+#     src: "nginx-entrypoint.sh"
+#     dest: "{{workspace}}/{{project}}/nginx-entrypoint.sh"
+#     mode: 0755
 
-- name: run npm install in {{workspace}}/{{project}}
-  command: "{{item}}"
-  args:
-    chdir: "{{workspace}}/{{project}}"
-  loop:
-    - npm install
-    - npm run build
+# - name: run npm install in {{workspace}}/{{project}}
+#   command: "{{item}}"
+#   args:
+#     chdir: "{{workspace}}/{{project}}"
+#   loop:
+#     - npm install
+#     - npm run build
 
   
-- name: rename build to dist
-  command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist
+# - name: rename build to dist
+#   command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist
 
-- name: copy env to dist
-  copy:
-    src: inject.template.js
-    dest: "{{workspace}}/{{project}}/dist/inject.template.js"
-    mode: 0755
+# - name: copy env to dist
+#   copy:
+#     src: inject.template.js
+#     dest: "{{workspace}}/{{project}}/dist/inject.template.js"
+#     mode: 0755
 
 
 - name: log into ncidockerhub

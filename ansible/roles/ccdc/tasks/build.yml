@@ -105,23 +105,23 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/{{backend | lower}} image
+- name: build cbiitssrepo/{{ backend | lower}} image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{ backend }}
+    name: cbiitssrepo/{{ backend | lower}}
     tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/{{ backend | lower }} image
+- name: Add tag latest to cbiitssrepo/{{ backend | lower}} image
   docker_image:
-    name: "cbiitssrepo/{{ backend }}:{{backend_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ project | lower }}:latest
+    name: "cbiitssrepo/{{ backend | lower}}:{{backend_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ backend | lower}}:latest
     force_tag: yes
     push: yes
     source: local

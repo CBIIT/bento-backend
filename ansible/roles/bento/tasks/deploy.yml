@@ -13,7 +13,7 @@
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/{{ project }}-backend:{{backend_version}}"
+      image: "cbiitssrepo/{{ project }}-backend:{{bento_api_version}}"
       environment:
         - name: NEO4J_URL
           value: bolt://{{ neo4j_ip }}:7687
@@ -24,7 +24,7 @@
         - name: NEO4J_GRAPHQL_ENDPOINT
           value: http://{{ neo4j_ip }}:7474/graphql/
         - name: BENTO_API_VERSION
-          value: "{{backend_version}}"
+          value: "{{bento_api_version}}"
         - name: ES_HOST
           value: "{{es_host}}"
         - name: REDIS_ENABLE
@@ -86,7 +86,7 @@
         - name: REACT_APP_FILE_SERVICE_API
           value: "{% if tier == 'prod' %}https://{{project}}.bento-tools.org/api/files/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
         - name: REACT_APP_BE_VERSION
-          value: "{{backend_version}}"
+          value: "{{bento_api_version}}"
         - name: REACT_APP_FE_VERSION
           value: "{{frontend_version}}"
         - name: REACT_APP_ABOUT_CONTENT_URL

@@ -14,7 +14,7 @@ docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"
 backend_commit_id: "{{ lookup('env','BE_COMMIT') | default('', true) }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
-backend_version: "{{ lookup('env','BE_VERSION') }}"
+bento_api_version: "{{ lookup('env','BE_VERSION') }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 

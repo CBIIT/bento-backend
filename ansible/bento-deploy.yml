@@ -9,5 +9,6 @@
       include_role:
         name: bento
         tasks_from: deploy
+        vars_from: bento
       vars:
         data_bucket: nci-cbiit-ctdc-{{tier}}

@@ -61,4 +61,19 @@ services:
     ports:
       - "80:80"
     restart: always
+    links:
+     - "data-dictionary:dictionary"
+
+  data-dictionary:
+    container_name: data-dictionary
+    image: ncidockerhub.nci.nih.gov/icdc/data-dictionary:master-26
+    environment:
+      REACT_APP_MODEL_URL: "{{react_app_model_url}}" 
+      REACT_APP_MODEL_PROPS_URL: "{{react_app_model_props_url}}"      
+    volumes:
+      - "/local/content/k9dc/data-dictionary:/var/log/nginx"
+    ports:
+      - "81:81"
+    restart: always
+    
 

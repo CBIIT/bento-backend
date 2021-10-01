@@ -176,7 +176,7 @@
 - name: copy  nginx conf
   copy:
     remote_src: yes
-    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
+    src: '{{workspace}}/icdc-devops/docker/dockerfiles/icdc-nginx.conf'
     dest: '{{workspace}}/icdc-frontend/nginx.conf'
 
 - name: copy entrypoint.sh to workspace

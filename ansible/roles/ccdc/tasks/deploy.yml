@@ -1,10 +1,10 @@
 ---
-- name: create task definition - {{stack_name}}-backend
+- name: create task definition - {{backend}}
   ecs_taskdefinition:
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/{{project | lower}}:{{backend_version}}"
+      image: "cbiitssrepo/{{backend | lower}}:{{backend_version}}"
       environment:
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"

@@ -2,7 +2,7 @@ import os
 from configparser import ConfigParser
 from aws_cdk import core
 from aws_cdk import core as cdk
-from aws import iam, vpc, ecr, ecsCluster, ecsService, alb, albListener, ec2, route53, vpcPeering
+from aws import iam, vpc, ecr, ecsCluster, ecsService, alb, albListener, ec2, route53, vpcPeering, osCluster
 
 
 class BentoStack(cdk.Stack):
@@ -42,6 +42,12 @@ class BentoStack(cdk.Stack):
 
     # VPC Peering
     bentoVPCPeering = vpcPeering.VPCPeering.createResources(self, ns)
+
+    # Redis
+#    bentoVPCPeering = vpcPeering.VPCPeering.createResources(self, ns)
+
+    # Opensearch
+    bentoOSCluster = osCluster.OSCluster.createResources(self, ns)
 
     # Outputs
     cdk.CfnOutput(self, "Database-IP",

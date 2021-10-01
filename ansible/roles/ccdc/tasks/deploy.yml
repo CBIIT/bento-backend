@@ -180,11 +180,11 @@
     region: "{{region}}" 
   register: task_frontend
 
-# - name: query task definition - bento backend
-#   ecs_taskdefinition_info:
-#     task_definition: "{{stack_name }}-{{tier}}-backend"
-#     region: "{{region}}" 
-#   register: task_backend
+- name: query task definition - {{backend | lower}} 
+  ecs_taskdefinition_info:
+    task_definition: "{{stack_name }}-{{tier}}-backend"
+    region: "{{region}}" 
+  register: task_backend
 
 
 - name: query task definition - sumologic syslog
@@ -259,14 +259,14 @@
   set_fact:
     frontend_url: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/{% endif %}"
     frontend_revision: "{{task_frontend.revision}}"
-    # backend_revision: "{{task_backend.revision}}"
-    # task_backend_name: "{{task_backend.family}}"
+    backend_revision: "{{task_backend.revision}}"
+    task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
     task_sumo_syslog_name: "{{task_sumo_syslog.family}}"
     task_sumo_docker_name: "{{task_sumo_docker.family}}"
     task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
-    # lb_backend: "{{service_backend.services[0].loadBalancers}}"
+    lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
 
@@ -318,21 +318,21 @@
     region: "{{region}}"
   register: service_nr_docker_output
 
-# - name: update backend service
-#   ecs_service:
-#     state: present
-#     name: "{{stack_name }}-{{tier}}-backend"
-#     cluster: "{{stack_name }}-{{tier}}"
-#     task_definition: "{{task_backend_name}}:{{backend_revision}}"
-#     role: "{{role_arn}}"
-#     force_new_deployment: yes
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     load_balancers: "{{ lb_backend }}"
-#     region: "{{region}}"
-#   register: service_backend_output
+- name: update backend service
+  ecs_service:
+    state: present
+    name: "{{stack_name }}-{{tier}}-backend"
+    cluster: "{{stack_name }}-{{tier}}"
+    task_definition: "{{task_backend_name}}:{{backend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_backend }}"
+    region: "{{region}}"
+  register: service_backend_output
 
 - name: update frontend service
   ecs_service:

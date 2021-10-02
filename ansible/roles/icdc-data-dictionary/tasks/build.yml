@@ -26,7 +26,7 @@
   args:
     chdir: "{{workspace}}/{{project}}"
   loop:
-    - yarn build
+    - npm run build
 
 - name: rename build to dist
   command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist

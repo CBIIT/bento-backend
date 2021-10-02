@@ -109,7 +109,7 @@
   docker_image:
     build:
       path: "{{workspace}}"
-      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-backend-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/{{ backend | lower}}

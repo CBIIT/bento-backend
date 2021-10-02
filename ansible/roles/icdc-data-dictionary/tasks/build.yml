@@ -25,6 +25,7 @@
   command: "{{item}}"
   args:
     chdir: "{{workspace}}/{{project}}"
+  loop:
     - npm run build
 
 - name: rename build to dist

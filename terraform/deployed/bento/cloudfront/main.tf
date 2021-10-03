@@ -1,4 +1,7 @@
-
+resource "aws_s3_bucket" "files_bucket" {
+  bucket = "${var.stack_name}-${terraform.workspace}-files"
+  acl    = "private"
+}
 
 locals {
   s3_origin_id = "${var.stack_name}_files_origin_id"
@@ -10,14 +13,14 @@ resource "aws_cloudfront_origin_access_identity" "origin_access" {
 
 #create bucket for logs
 resource "aws_s3_bucket" "access_logs" {
-  bucket =  "${data.aws_s3_bucket.bento_files.bucket}-cloudfront-logs"
+  bucket =  "${aws_s3_bucket.files_bucket.bucket}-cloudfront-logs"
   acl    = "private"
   tags = var.tags
 }
 
 #create s3 bucket policy
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = data.aws_s3_bucket.bento_files.id
+  bucket = aws_s3_bucket.files_bucket.bucket
   policy = data.aws_iam_policy_document.s3_policy.json
 }
 
@@ -31,7 +34,7 @@ resource "aws_cloudfront_distribution" "bento_distribution" {
   web_acl_id = aws_wafv2_web_acl.waf.arn
 
   origin {
-    domain_name = data.aws_s3_bucket.bento_files.bucket_domain_name
+    domain_name = aws_s3_bucket.files_bucket.bucket_domain_name
     origin_id   = local.s3_origin_id
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.origin_access.cloudfront_access_identity_path

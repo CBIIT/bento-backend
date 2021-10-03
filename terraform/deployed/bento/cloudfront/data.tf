@@ -1,11 +1,11 @@
-data "aws_s3_bucket" "bento_files" {
-  bucket = var.cloudfront_distribution_bucket_name
-}
+//data "aws_s3_bucket" "bento_files" {
+//  bucket = var.cloudfront_distribution_bucket_name
+//}
 
 data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions   = ["s3:GetObject"]
-    resources = ["${data.aws_s3_bucket.bento_files.arn}/*"]
+    resources = ["${aws_s3_bucket.files_bucket.arn}/*"]
 
     principals {
       type        = "AWS"

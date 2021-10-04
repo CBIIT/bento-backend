@@ -70,7 +70,7 @@ pipeline {
 				branches: [[name: "${params.Dictionary_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'visualiser-standalone']],
+				relativeTargetDir: 'bentoWindMillReengineer']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/wfy1997/bentoWindMillReengineer.git']]])

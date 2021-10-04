@@ -108,7 +108,7 @@ pipeline {
               playbook: '${WORKSPACE}/icdc-devops/ansible/build-icdc-data-dictionary.yml', 
             	inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						  extraVars: [
-                       		tier: "${params.Environment}"
+                       		tier: "${params.Environment}",
                         ],
 						colorized: true)
  				}
@@ -133,7 +133,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-data-dictionary.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                      tier: "${params.Environment}"
+                      tier: "${params.Environment}",
                     ],
 					colorized: true)
   			}

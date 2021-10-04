@@ -50,7 +50,9 @@ pipeline {
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/visualiser-standalone')
+       useRepository: 'https://github.com/wfy1997/bentoWindMillReengineer.git')
+       
+       //https://github.com/CBIIT/visualiser-standalone
 
   }
 
@@ -71,7 +73,7 @@ pipeline {
 				relativeTargetDir: 'visualiser-standalone']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/visualiser-standalone']]])
+				[[url: 'https://github.com/wfy1997/bentoWindMillReengineer.git']]])
 
   			checkout( poll: false, 
 				changelog:false,
@@ -133,7 +135,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-data-dictionary.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                      tier: "${params.Environment}",
+                      tier: "${params.Environment}"
                     ],
 					colorized: true)
   			}

@@ -13,7 +13,7 @@ dictionary_version: "{{ lookup('env','DICTIONARY_VERSION') }}"
 license_key: "{{ lookup('env','NEWRELIC_LIC_KEY') }}"
 react_app_model_url: https://raw.githubusercontent.com/CBIIT/icdc-model-tool/master/model-desc/icdc-model.yml
 react_app_model_props_url: https://raw.githubusercontent.com/CBIIT/icdc-model-tool/master/model-desc/icdc-model-props.yml
-#project: visualiser-standalone
-project: bentoWindMillReengineer
+project: visualiser-standalone
+
 
 

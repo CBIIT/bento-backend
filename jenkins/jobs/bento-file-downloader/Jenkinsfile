@@ -163,7 +163,7 @@ pipeline {
 		script {
 			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
-				
+				cd ${WORKSPACE}/bento-files
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
 				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
 				git config user.email "jenkins@bento-tools.org"

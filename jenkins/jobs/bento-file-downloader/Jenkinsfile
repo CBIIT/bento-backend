@@ -108,7 +108,8 @@ pipeline {
                     playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-file-downloader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
-                       		tier: "${params.Environment}"
+                       		tier: "${params.Environment}",
+                          project: "${params.Project}"
                         ],
 						colorized: true)
  				}
@@ -142,7 +143,8 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                     tier: "${params.Environment}"
+                     tier: "${params.Environment}",
+                     project: "${params.Project}"
                     ],
 					colorized: true)
   			}

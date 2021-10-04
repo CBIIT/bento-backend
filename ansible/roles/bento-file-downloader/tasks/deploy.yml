@@ -59,7 +59,7 @@
           tag: "{{ app_name }}-file-downloader"
           syslog-format: "rfc5424micro"
     network_mode: bridge
-    family: bento-{{tier}}-file-downloader
+    family: "{{project}}-{{tier}}-file-downloader"
     state: present
     memory: '128'
     cpu: '128'
@@ -74,7 +74,7 @@
 
 - name: query task definition - bento filedownloader
   ecs_taskdefinition_info:
-    task_definition: bento-{{tier}}-file-downloader
+    task_definition: "{{project}}-{{tier}}-file-downloader"
     region: "{{region}}" 
   register: task_downloader
 
@@ -86,8 +86,8 @@
 
 - name: query filedownloader service
   ecs_service_info:
-    cluster: bento-{{tier}}
-    service: bento-{{tier}}-file-downloader
+    cluster: "{{project}}-{{tier}}"
+    service:  "{{project}}-{{tier}}-file-downloader"
     details: true
     region: "{{region}}"
   register: service_downloader
@@ -110,8 +110,8 @@
 - name: update filedownloader service
   ecs_service:
     state: present
-    name: bento-{{tier}}-file-downloader
-    cluster: bento-{{tier}}
+    name: "{{project}}-{{tier}}-file-downloader"
+    cluster: "{{project}}-{{tier}}"
     task_definition: "{{task_downloader_name}}:{{downloader_revision}}"
     role: "{{role_arn}}"
     force_new_deployment: yes

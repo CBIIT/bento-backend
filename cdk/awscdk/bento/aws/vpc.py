@@ -6,4 +6,5 @@ class VPCResources:
     # VPC
     self.bentoVPC = ec2.Vpc(self,
         "{}-vpc".format(ns),
+        max_azs=2,
         cidr=self.config[ns]['vpc_cidr_block'])

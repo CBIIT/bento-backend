@@ -6,6 +6,10 @@
       essential: true
       image: "cbiitssrepo/{{backend | lower}}:{{backend_version}}"
       environment:
+        - name: REACT_APP_BACKEND_API
+          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 
+        - name: REACT_APP_ENVIRONMENT
+          value: "{{tier}}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
@@ -16,6 +20,18 @@
           value: "gov-collector.newrelic.com"
         - name: NEW_RELIC_NO_CONFIG_FILE
           value: true
+        - name: RDB_HOST
+          value: "{{ rds_host }}"
+        - name: RDB_PORT
+          value: "{{ rds_port }}"
+        - name: RDB_USER
+          value: "{{ rds_user }}"
+        - name: RDB_PASSWORD
+          value: "{{ rds_password }}"
+        - name: ES_HOST
+          value: "{{ es_host }}"
+        - name: ES_PORT
+          value: "{{ es_port }}"
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"

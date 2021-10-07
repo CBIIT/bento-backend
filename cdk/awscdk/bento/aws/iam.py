@@ -135,3 +135,10 @@ class IAMResources:
                 "ecr:UploadLayerPart",
                 "ecr:CompleteLayerUpload"],
             principals=[iam.AccountRootPrincipal()])
+            
+    # Opensearch
+    self.osPolicyStatement = iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=["es:*"],
+            principals=[iam.AnyPrincipal()],
+            resources=["arn:aws:es:{}:{}:domain/{}-es/*".format(core.Stack.of(self).region, core.Stack.of(self).account, ns)])

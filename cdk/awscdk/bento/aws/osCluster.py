@@ -1,6 +1,5 @@
 from aws_cdk import aws_opensearchservice as os
 from aws_cdk import aws_ec2 as ec2
-from aws_cdk import core as cdk
 
 class OSCluster:
   def createResources(self, ns):
@@ -10,7 +9,7 @@ class OSCluster:
     # OS Cluster
     self.osDomain = os.Domain(self, "bento-{}-elasticsearch".format(ns),
         version=os.EngineVersion.ELASTICSEARCH_7_10,
-        domain_name="bento-{}-es".format(ns),
+        domain_name="{}-es".format(ns),
         vpc=self.bentoVPC,
         capacity={
             "data_node_instance_type": "t3.medium.search",

@@ -194,8 +194,8 @@ pipeline {
 		when {
 		    allOf {
 
-		        not {params.Environment 'stage'}
-				not {params.Environment 'prod'}
+		        not { expression { params.Environment == 'stage' } }
+				not { expression { params.Environment == 'prod' } }
 				expression { params.Flush_Redis }
 			    
 				}

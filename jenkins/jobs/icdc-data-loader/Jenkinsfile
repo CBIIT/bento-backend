@@ -101,7 +101,6 @@ pipeline {
                   env.PROJECT         = "${params.ProjectName}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-                  
                 }
               break
               case "dev":
@@ -193,14 +192,7 @@ pipeline {
 	stage('clear redis cache'){
 		agent { label 'commons-docker-ncias-p2236-v' }
 		when {
-		    allOf {
-
-		        not {params.Environment 'stage'};
-				not {params.Environment 'prod'};
 				expression { params.Flush_Redis }
-			    
-				} 
-
 			}
 	
   		environment {

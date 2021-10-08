@@ -101,7 +101,6 @@ pipeline {
                   env.PROJECT         = "${params.ProjectName}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-				  env.FLUSH_REDIS     = "${params.Flush_Redis}"
                   
                 }
               break
@@ -115,7 +114,6 @@ pipeline {
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-				  env.FLUSH_REDIS     = "${params.Flush_Redis}"
                 }
               break
               case "ecs-dev":
@@ -128,7 +126,6 @@ pipeline {
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-				  env.FLUSH_REDIS     = "${params.Flush_Redis}"
                 }
               break
               case "qa":
@@ -142,7 +139,6 @@ pipeline {
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-				  env.FLUSH_REDIS     = "${params.Flush_Redis}"
                 }
               break
               case "stage":
@@ -155,7 +151,6 @@ pipeline {
                   env.CHEAT_MODE      = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-				  env.FLUSH_REDIS     = false
                 }
               break
               case "prod":
@@ -168,7 +163,6 @@ pipeline {
                   env.CHEAT_MODE        = "${params.CheatMode}"
                   env.NEO4J_PASSWORD  = "${neo4j_password}"
                   env.SPLIT           = "${params.SplitTransactions}"
-				  env.FLUSH_REDIS     = false
                 }
               break
               default:
@@ -199,7 +193,14 @@ pipeline {
 	stage('clear redis cache'){
 		agent { label 'commons-docker-ncias-p2236-v' }
 		when {
-			expression { env.FLUSH_REDIS }
+		    allOf {
+
+		        not {params.Environment 'stage'};
+				not {params.Environment 'prod'};
+				expression { params.Flush_Redis }
+			    
+				} 
+
 			}
 	
   		environment {

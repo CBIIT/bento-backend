@@ -26,5 +26,4 @@
         ts: "{{ansible_date_time.epoch }}"
         mrkdwn_in: "{{mkdown}}"
         fallback: "File Service Monitor"
-
-
+  when: result.status != 200

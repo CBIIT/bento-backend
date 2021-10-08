@@ -192,7 +192,14 @@ pipeline {
 	stage('clear redis cache'){
 		agent { label 'commons-docker-ncias-p2236-v' }
 		when {
+		    allOf {
+
+		        not {params.Environment 'stage'}
+				not {params.Environment 'prod'}
 				expression { params.Flush_Redis }
+			    
+				}
+
 			}
 	
   		environment {

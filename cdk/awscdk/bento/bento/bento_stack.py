@@ -2,7 +2,7 @@ import os
 from configparser import ConfigParser
 from aws_cdk import core
 from aws_cdk import core as cdk
-from aws import iam, vpc, ecr, ecsCluster, ecsService, alb, albListener, ec2, route53, vpcPeering
+from aws import iam, vpc, ecr, ecsCluster, ecsService, alb, albListener, ec2, route53, vpcPeering, osCluster, redisCluster
 
 
 class BentoStack(cdk.Stack):
@@ -43,8 +43,29 @@ class BentoStack(cdk.Stack):
     # VPC Peering
     bentoVPCPeering = vpcPeering.VPCPeering.createResources(self, ns)
 
+    # Redis
+    bentoRedisCluster = redisCluster.RedisCluster.createResources(self, ns)
+
+    # Opensearch
+    bentoOSCluster = osCluster.OSCluster.createResources(self, ns)
+
     # Outputs
     cdk.CfnOutput(self, "Database-IP",
         value=self.DBInstance.instance_private_ip,
         description="The IP address assigned to the DB Instance",
         export_name="dbipaddress")
+
+    cdk.CfnOutput(self, "Redis Endpoint",
+        value=self.ecCluster.attr_primary_end_point_address,
+        description="The Redis Endpoint for this stack",
+        export_name="redisendpoint")
+
+    cdk.CfnOutput(self, "Redis Port",
+        value=self.ecCluster.attr_primary_end_point_port,
+        description="The Redis Port for this stack",
+        export_name="redisport")
+
+    cdk.CfnOutput(self, "Elasticsearch Endpoint",
+        value=self.osDomain.domain_endpoint,
+        description="The Elasticsearch Endpoint for this stack",
+        export_name="osendpoint")

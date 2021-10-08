@@ -19,7 +19,7 @@ setuptools.setup(
     packages=setuptools.find_packages(where="bento"),
 
     install_requires=[
-        "aws-cdk.core==1.98.0",
+        "aws-cdk.core==1.126.0",
     ],
 
     python_requires=">=3.6",

@@ -4,5 +4,7 @@ aws-cdk.aws_iam
 aws-cdk.aws_ec2
 aws-cdk.aws_ecr
 aws-cdk.aws_ecs
+aws-cdk.aws_opensearchservice
+aws-cdk.aws_elasticache
 configparser
 boto3

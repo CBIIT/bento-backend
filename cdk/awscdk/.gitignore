@@ -3,9 +3,10 @@ dist/
 *.pyc
 creds/*
 imports/*
-*/*.egg-info
+*.egg-info/
 !imports/__init__.py
 .venv
 .env
 */test.py
 cdk.out
+cdk.context.json

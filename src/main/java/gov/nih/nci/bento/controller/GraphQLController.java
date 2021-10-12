@@ -22,8 +22,6 @@ import graphql.schema.idl.SchemaParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,17 +38,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -153,7 +147,7 @@ public class GraphQLController {
 	}
 
 	@PostConstruct
-	private void initGraphQL() throws IOException {
+	public void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
 		GraphQLSchema esSchema = getEsSchema();
 		GraphQLSchema newSchema = mergeSchema(neo4jSchema, esSchema);

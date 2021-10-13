@@ -304,7 +304,7 @@
 
 - name: Print service_etl
   debug:
-    msg: "service_etl Version: {{ service_etl.stdout }}"
+    msg: "service_etl Version: {{ service_etl }}"
 
 - name: query sumologic syslog service
   ecs_service_info:

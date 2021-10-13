@@ -125,3 +125,67 @@
     force_tag: yes
     push: yes
     source: local
+
+
+
+############################################################################################################################
+
+#     Database Build
+
+############################################################################################################################
+---
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
+    dest: '{{workspace}}/{{project}}/nginx.conf'
+
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{workspace}}/{{project}}/nginx-entrypoint.sh"
+    mode: 0755
+
+- name: run npm install in {{workspace}}/{{project}}
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/{{project}}"
+  loop:
+    - npm install
+    - npm run build
+
+- name: rename build to dist
+  command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist
+
+- name: copy env to project
+  copy:
+    src: inject.template.js
+    dest: "{{workspace}}/{{project}}/dist/inject.template.js"
+    mode: 0755
+          
+- name: build cbiitssrepo/{{database | lower}} image
+  docker_image:
+    build:
+      path: "{{workspace}}/{{project}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{database | lower}}
+    tag: "{{frontend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to cbiitssrepo/{{ database | lower }} image
+  docker_image:
+    name: "cbiitssrepo/{{ database | lower }}:{{database_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ database | lower }}:latest
+    force_tag: yes
+    push: yes
+    source: local

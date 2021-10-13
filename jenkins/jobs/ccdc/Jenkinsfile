@@ -42,6 +42,9 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod' )
+    string(defaultValue: "", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
 
   }
   options {
@@ -103,7 +106,7 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         tier: "${params.Environment}",
-
+                        s3_folder: "${params.S3Folder}"
             ],
 						colorized: true)
  				}

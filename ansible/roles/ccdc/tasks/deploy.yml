@@ -333,13 +333,16 @@
     frontend_url: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/{% endif %}"
     frontend_revision: "{{task_frontend.revision}}"
     backend_revision: "{{task_backend.revision}}"
+    etl_revision: "{{task_etl.revision}}"
     task_backend_name: "{{task_backend.family}}"
     task_frontend_name: "{{task_frontend.family}}"
+    task_etl_name: "{{task_etl.family}}"
     task_sumo_syslog_name: "{{task_sumo_syslog.family}}"
     task_sumo_docker_name: "{{task_sumo_docker.family}}"
     task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
+    lb_etl: "{{service_etl.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
 
@@ -422,3 +425,19 @@
     load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"
   register: service_frontend_output
+
+- name: update etl service
+  ecs_service:
+    state: present
+    name: "{{stack_name }}-{{tier}}-etl"
+    cluster: "{{stack_name }}-{{tier}}"
+    task_definition: "{{task_etl_name}}:{{etl_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_etl }}"
+    region: "{{region}}"
+  register: service_etl_output

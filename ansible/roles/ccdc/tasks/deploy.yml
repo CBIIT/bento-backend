@@ -87,7 +87,7 @@
     containers:
     - name: etl
       essential: true
-      image: "cbiitssrepo/{{etl | lower}}:{{etl_version}}"
+      image: "cbiitssrepo/{{etl | lower}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 

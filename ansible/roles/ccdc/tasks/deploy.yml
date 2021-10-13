@@ -302,6 +302,9 @@
     region: "{{region}}"
   register: service_etl
 
+- debug:
+  var: service_etl
+
 - name: query sumologic syslog service
   ecs_service_info:
     cluster: bento-{{tier}}
@@ -437,6 +440,5 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers: "{{ lb_etl }}"
     region: "{{region}}"
   register: service_etl_output

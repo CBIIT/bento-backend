@@ -65,14 +65,23 @@ pipeline {
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/CCDC-WebService']]])
 
-			checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Frontend_Tag}"]],
-				doGenerateSubmoduleConfigurations: false,
-				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'CCDC-WebPortal']],
-				submoduleCfg: [],
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/CCDC-WebPortal']]])
+				checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Frontend_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [[$class: 'RelativeTargetDirectory',
+					relativeTargetDir: 'CCDC-WebPortal']],
+					submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/CCDC-WebPortal']]])
+
+				checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Frontend_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [[$class: 'RelativeTargetDirectory',
+					relativeTargetDir: 'CCDC-ETL']],
+					submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/CCDC-ETL']]])
 
   			checkout( poll: false, 
 				changelog:false,

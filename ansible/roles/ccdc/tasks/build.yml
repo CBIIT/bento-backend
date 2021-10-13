@@ -157,7 +157,6 @@
     chdir: "{{workspace}}/{{etl}}"
   loop:
     - npm install
-    - npm run build
 
 - name: build cbiitssrepo/{{etl | lower}} image
   docker_image:

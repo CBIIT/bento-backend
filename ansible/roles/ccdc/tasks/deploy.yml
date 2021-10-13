@@ -302,7 +302,9 @@
     region: "{{region}}"
   register: service_etl
 
-- debug:
+- name: Print service_etl
+  debug:
+    msg: "service_etl Version: {{ service_etl.stdout }}"
   var: service_etl
 
 - name: query sumologic syslog service

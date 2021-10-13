@@ -168,23 +168,23 @@
     dest: "{{workspace}}/{{project}}/dist/inject.template.js"
     mode: 0755
           
-- name: build cbiitssrepo/{{database | lower}} image
+- name: build cbiitssrepo/{{etl | lower}} image
   docker_image:
     build:
       path: "{{workspace}}/{{project}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{database | lower}}
+    name: cbiitssrepo/{{etl | lower}}
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/{{ database | lower }} image
+- name: Add tag latest to cbiitssrepo/{{ etl | lower }} image
   docker_image:
     name: "cbiitssrepo/{{ database | lower }}:{{database_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ database | lower }}:latest
+    repository: cbiitssrepo/{{ etl | lower }}:latest
     force_tag: yes
     push: yes
     source: local

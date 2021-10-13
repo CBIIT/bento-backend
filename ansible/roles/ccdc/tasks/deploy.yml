@@ -96,7 +96,7 @@
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
-          value: "{{ app_name }}-backend"
+          value: "{{ app_name }}-etl"
         - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
           value: true
         - name: NEW_RELIC_HOST
@@ -248,6 +248,11 @@
     region: "{{region}}" 
   register: task_backend
 
+- name: query task definition - {{etl | lower}} 
+  ecs_taskdefinition_info:
+    task_definition: "{{stack_name }}-{{tier}}-etl"
+    region: "{{region}}" 
+  register: task_etl
 
 - name: query task definition - sumologic syslog
   ecs_taskdefinition_info:
@@ -289,7 +294,13 @@
     region: "{{region}}"
   register: service_frontend
 
-
+- name: query etl service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}"
+    service: "{{stack_name }}-{{tier}}-etl"
+    details: true
+    region: "{{region}}"
+  register: service_etl
 
 - name: query sumologic syslog service
   ecs_service_info:

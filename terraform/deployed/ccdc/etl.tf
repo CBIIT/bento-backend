@@ -41,7 +41,7 @@ resource "aws_lb_target_group" "etl_target_group" {
     enabled = true
   }
   health_check {
-    path = "/api/files/ping"
+    path = "/"
     protocol = "HTTP"
     matcher = "200"
     interval = 15
@@ -83,7 +83,7 @@ resource "aws_lb_listener_rule" "etl_alb_listener_prod" {
   }
   condition {
     path_pattern  {
-      values = ["/api/files/*"]
+      values = ["/*"]
     }
   }
 }

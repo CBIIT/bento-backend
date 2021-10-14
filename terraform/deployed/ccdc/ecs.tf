@@ -44,6 +44,8 @@ resource "aws_ecs_service" "ecs_service_backend" {
    depends_on = [module.alb]
  }
 
+
+
 resource "aws_ecs_task_definition" "frontend" {
   family        = "${var.stack_name}-${var.env}-frontend"
   network_mode  = "bridge"

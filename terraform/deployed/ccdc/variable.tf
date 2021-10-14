@@ -246,3 +246,13 @@ variable "db_private_ip" {
 variable "db_instance_volume_size" {
   default = ""
 }
+
+variable "etl_container_port" {
+  description = "port on which the container listens"
+  type = number
+}
+variable "etl_rule_priority" {
+  description = "priority number to assign to alb rule"
+  type = number
+  default = 91
+}

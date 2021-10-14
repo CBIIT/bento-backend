@@ -42,6 +42,33 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Backend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: ' https://github.com/CBIIT/CCDC-WebService')
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Frontend_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: ' https://github.com/CBIIT/CCDC-WebPortal')
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Etl_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: ' https://github.com/CBIIT/CCDC-ETL')
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')

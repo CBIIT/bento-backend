@@ -45,7 +45,6 @@ pipeline {
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
-
   }
   options {
   	ansiColor('xterm')
@@ -152,6 +151,7 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     tier: "${params.Environment}",
+                    s3_folder: "${params.S3Folder}"
                     ],
 					colorized: true)
   			}

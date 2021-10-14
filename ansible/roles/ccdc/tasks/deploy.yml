@@ -354,6 +354,7 @@
     task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
+    lb_etl: "{{service_etl.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
 
@@ -449,5 +450,6 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
+    load_balancers: "{{ lb_etl }}"
     region: "{{region}}"
   register: service_etl_output

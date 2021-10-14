@@ -128,6 +128,10 @@
     region: "{{region}}"
   register: task_output
 
+- name: Print task etl
+  debug:
+    msg: "task_output Version: {{ task_output }}"
+
 - name: create task definition - sumo syslog
   ecs_taskdefinition:
     containers:
@@ -253,6 +257,10 @@
     task_definition: "{{stack_name }}-{{tier}}-etl"
     region: "{{region}}" 
   register: task_etl
+
+- name: Print query task etl
+  debug:
+    msg: "task_etl Version: {{ task_etl }}"
 
 - name: query task definition - sumologic syslog
   ecs_taskdefinition_info:

@@ -116,7 +116,7 @@
         - name: ES_PORT
           value: "{{ es_port }}"
         - name: DIGEST_FILE_FOLDER
-          value: "{{ digest_file_folder}}"
+          value: "{{ digest_file_folder }}"
       portMappings:
       - containerPort: "8081"
         hostPort: "8081"

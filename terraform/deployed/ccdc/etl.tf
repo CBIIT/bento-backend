@@ -104,7 +104,7 @@ resource "aws_lb_listener_rule" "etl_alb_listener" {
   }
   condition {
     path_pattern  {
-      values = ["/api/files/*"]
+      values = ["/"]
     }
   }
 

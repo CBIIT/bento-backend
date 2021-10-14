@@ -128,7 +128,7 @@
     --tlscacert /local/home/commonsdocker/.docker/ca.pem
     --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem
     --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
-    -H {{tls_hostname}}"
+    -H {{tls_hostname}}
     system prune -a -f 
 
 - name: restart docker

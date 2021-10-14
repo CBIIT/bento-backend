@@ -69,7 +69,7 @@ pipeline {
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
        useRepository: ' https://github.com/CBIIT/CCDC-ETL')
-    string(defaultValue: "", 
+    string(defaultValue: "etl-digest-files", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
   }

@@ -121,6 +121,19 @@
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
+- name: clean agent
+  command: |
+    docker 
+    --tlscacert /local/home/commonsdocker/.docker/ca.pem
+    --tlscert /local/home/commonsdocker/.docker/jenkinscert.pem
+    --tlskey /local/home/commonsdocker/.docker/jenkinskey.pem
+    system prune -a -f 
+
+- name: restart docker
+  service:
+    name: docker 
+    state: restarted
+    
 - name: log into ncidockerhub
   docker_login:
     username: "{{docker_user}}"

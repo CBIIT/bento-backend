@@ -74,7 +74,7 @@ pipeline {
 					[[url: 'https://github.com/CBIIT/CCDC-WebPortal']]])
 
 				checkout([$class: 'GitSCM',
-					branches: [[name: "${params.Frontend_Tag}"]],
+					branches: [[name: "${params.Etl_Tag}"]],
 					doGenerateSubmoduleConfigurations: false,
 					extensions: [[$class: 'RelativeTargetDirectory',
 					relativeTargetDir: 'CCDC-ETL']],
@@ -104,6 +104,7 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
+       ETL_VERSION = "${params.Etl_Tag}"
       }
  		steps {
 
@@ -126,6 +127,7 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+       ETL_VERSION = "${params.Etl_Tag}-${BUILD_NUMBER}"
 	   	 SLACK_CHANNEL = "#system-alerts"
 	   	URL_DOMAIN = "bento-tools.org"
       }

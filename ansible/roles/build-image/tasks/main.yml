@@ -37,7 +37,8 @@
 - name: build all the docker images
   docker_image:
     build:
-      path: ../docker
+      #path: ../docker
+      path: ../bento/icdc
       dockerfile: "{{ item.1 | basename}}"
       nocache: yes
       force: yes

@@ -143,6 +143,11 @@
   loop:
     - npm install
 
+- name: create digest_file_folder 
+  file: 
+    path: "{{workspace}}/{{etl}}/{{ digest_file_folder }}"
+    state: directory
+
 - name: Get list of files from S3
   aws_s3:
     mode: list

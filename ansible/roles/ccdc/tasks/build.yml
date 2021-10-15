@@ -150,7 +150,6 @@
     #aws_secret_key: "{{ aws_secret_access_key }}"
     bucket: "{{ aws_storage_bucket_name }}"
     prefix: "{{ digest_file_folder }}"
-    marker: "{{ digest_file_folder }}"
   register: s3_bucket_items
 
 - name: Print s3_bucket_items
@@ -163,7 +162,7 @@
     #aws_access_key: "{{ aws_access_key_id }}"
     #aws_secret_key: "{{ aws_secret_access_key }}"
     bucket: "{{ aws_storage_bucket_name }}"
-    object: "{{ digest_file_folder }}/{{ item }}"
+    object: "{{ item }}"
     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item | basename }}"
   with_items: "{{ s3_bucket_items.s3_keys }}"
 

@@ -153,6 +153,8 @@
     mode: list
     bucket: "{{ aws_storage_bucket_name }}"
     prefix: "{{ digest_file_folder }}/"
+    marker: "{{ digest_file_folder }}/"
+
   register: s3_bucket_items
 
 - name: Print s3_bucket_items
@@ -164,7 +166,7 @@
     mode: get
     bucket: "{{ aws_storage_bucket_name }}"
     object: "{{ item }}"
-    dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item | basename }}"
+    dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
   with_items: "{{ s3_bucket_items.s3_keys }}"
 
 - name: build cbiitssrepo/{{etl | lower}} image

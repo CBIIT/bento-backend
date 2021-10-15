@@ -146,8 +146,8 @@
 - name: Get list of files from S3
   aws_s3:
     mode: list
-    aws_access_key: "{{ aws_access_key_id }}"
-    aws_secret_key: "{{ aws_secret_access_key }}"
+    #aws_access_key: "{{ aws_access_key_id }}"
+    #aws_secret_key: "{{ aws_secret_access_key }}"
     bucket: "{{ aws_storage_bucket_name }}"
     prefix: "{{ digest_file_folder }}"
     marker: "{{ digest_file_folder }}"
@@ -158,10 +158,10 @@
     msg: "s3_bucket_items Version: {{ s3_bucket_items }}"
 
 - name: Download files from S3
-  aws_s3:
+  s3:
     mode: get
-    aws_access_key: "{{ aws_access_key_id }}"
-    aws_secret_key: "{{ aws_secret_access_key }}"
+    #aws_access_key: "{{ aws_access_key_id }}"
+    #aws_secret_key: "{{ aws_secret_access_key }}"
     bucket: "{{ aws_storage_bucket_name }}"
     object: "{{ item }}"
     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item | basename }}"

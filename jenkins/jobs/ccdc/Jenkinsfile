@@ -132,6 +132,7 @@ pipeline {
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
        ETL_VERSION = "${params.Etl_Tag}"
+       S3_FOLDER = "${params.S3Folder}"
       }
  		steps {
 
@@ -155,6 +156,7 @@ pipeline {
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
        ETL_VERSION = "${params.Etl_Tag}-${BUILD_NUMBER}"
+       S3_FOLDER = "${params.S3Folder}"
 	   	 SLACK_CHANNEL = "#system-alerts"
 	   	URL_DOMAIN = "bento-tools.org"
       }

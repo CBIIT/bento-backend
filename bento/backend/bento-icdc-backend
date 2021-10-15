@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.13.6
 MAINTAINER ESI Devops Team
 
 ENV TOMCAT_MAJOR=9

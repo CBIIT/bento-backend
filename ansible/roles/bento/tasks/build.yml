@@ -86,7 +86,7 @@
   args:
     chdir: "{{workspace}}"
 
-- name: copy Bento-0.0.1.war to api.war
+- name: copy Bento-0.0.1.war to ROOT.war
   copy:
     remote_src: yes
     src: "{{workspace}}/target/Bento-0.0.1.war"

@@ -4,7 +4,6 @@ import json
 import requests
 
 def setcpucondition(key, host, policy_id):
-
    API_ENDPOINT = 'https://infra-api.newrelic.com/v2/alerts/conditions?policy_id={}'.format(policy_id)
 
    condition_name = '{} CPU Used Condition'.format(host.title())
@@ -32,7 +31,7 @@ def setcpucondition(key, host, policy_id):
    data = {
      "data":{
       "type":"infra_metric",
-      "name":'{}-updated'.format(condition_name),
+      "name":condition_name,
       "enabled":True,
       "where_clause":host_query,
       "policy_id":policy_id,
@@ -65,7 +64,7 @@ def setcpucondition(key, host, policy_id):
    else:
      print('{} already exists - updating with the latest configuration'.format(condition_name))
      
-     API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_conditions/{}.json'.format(condition_id)
+     API_ENDPOINT = 'https://infra-api.newrelic.com/v2/alerts/conditions/{}'.format(condition_id)
 
      # update condition
      try:

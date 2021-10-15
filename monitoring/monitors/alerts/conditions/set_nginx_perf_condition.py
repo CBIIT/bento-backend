@@ -3,10 +3,10 @@
 import json
 import requests
 
-def setdiskspacecondition(key, host, policy_id):
+def setnginxconditions(key, project, tier, policy_id):
    API_ENDPOINT = 'https://infra-api.newrelic.com/v2/alerts/conditions?policy_id={}'.format(policy_id)
 
-   condition_name = '{} Disk Space Condition'.format(host.title())
+   condition_name = '{}-{} Nginx Performance Condition'.format(project.title(), tier.title())
    condition_found = False
    headers = {'Api-Key': key}
    data = {'policy_id': policy_id}
@@ -21,7 +21,7 @@ def setdiskspacecondition(key, host, policy_id):
        condition_found = True
        condition_id = x.get("id", "none")
 
-   host_query = "(displayName IN ('{}'))".format(host)
+   host_query = "(label.Project = '{}' AND label.Environment = '{}')".format(project, tier)
 
    headers = {
        "Api-Key": key,
@@ -35,17 +35,17 @@ def setdiskspacecondition(key, host, policy_id):
       "enabled":True,
       "where_clause":host_query,
       "policy_id":policy_id,
-      "event_type":"StorageSample",
-      "select_value":"diskFreePercent",
-      "comparison":"below",
+      "event_type":"NginxSample",
+      "select_value":"net.connectionsWaiting",
+      "comparison":"above",
       "critical_threshold":{
-         "value":10,
-         "duration_minutes":1,
+         "value":2,
+         "duration_minutes":5,
          "time_function":"any"
       },
       "warning_threshold":{
-         "value":30,
-         "duration_minutes":2,
+         "value":1,
+         "duration_minutes":10,
          "time_function":"any"
       }
      }

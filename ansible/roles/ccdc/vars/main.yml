@@ -26,3 +26,5 @@ rds_password: "{{ lookup('aws_ssm', 'rds_password', region='us-east-1' ) }}"
 es_host: "{{ lookup('aws_ssm', 'es_host', region='us-east-1' ) }}"
 es_port: "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
 digest_file_folder: "{{ lookup('env','S3_FOLDER') }}"
+aws_storage_bucket_name : ccdc-etl-digest
+

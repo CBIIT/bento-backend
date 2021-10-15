@@ -143,6 +143,26 @@
   loop:
     - npm install
 
+- name: Get list of files from S3
+  aws_s3:
+    mode: list
+    aws_access_key: "{{ aws_access_key_id }}"
+    aws_secret_key: "{{ aws_secret_access_key }}"
+    bucket: "{{ aws_storage_bucket_name }}"
+    prefix: "etl-digest-files/"
+    marker: "etl-digest-files/"
+  register: s3_bucket_items
+
+- name: Download files from S3
+  aws_s3:
+    mode: get
+    aws_access_key: "{{ aws_access_key_id }}"
+    aws_secret_key: "{{ aws_secret_access_key }}"
+    bucket: "{{ aws_storage_bucket_name }}"
+    object: "{{ item }}"
+    dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
+  with_items: "{{ s3_bucket_items.s3_keys }}"
+
 - name: build cbiitssrepo/{{etl | lower}} image
   docker_image:
     build:

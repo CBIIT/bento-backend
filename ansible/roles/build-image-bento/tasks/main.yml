@@ -48,7 +48,8 @@
   docker_image:
     build:
       path: "{{ item | dirname }}"
-      dockerfile: "Dockerfile"
+      #dockerfile: "Dockerfile"
+      dockerfile: "bento-icdc-backend"
       nocache: yes
       force: yes
     name: "{{ image_location.dockerhub.path }}/bento-{{ item | dirname | basename }}"

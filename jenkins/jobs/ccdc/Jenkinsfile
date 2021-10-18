@@ -143,8 +143,6 @@ pipeline {
                 string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')]){
                   env.TIER  = "dev"
                   s3_folder: "${params.S3Folder}"
-                  aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
-                  aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
 
                 }
         break
@@ -180,9 +178,7 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         tier: "${params.Environment}",
-                        s3_folder: "${params.S3Folder}",
-                        aws_access_key_id: "${AWS_ACCESS_KEY_ID}",
-                        aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+                        s3_folder: "${params.S3Folder}"
             ],
 						colorized: true)
  				}

@@ -87,7 +87,6 @@ pipeline {
           string(credentialsId: 'sumo_access_key', variable: 'SUMO_ACCESS_KEY'),
           string(credentialsId: 'bento_syslog_host', variable: 'SYSLOG_HOST'),
           string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
-          string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
           file(credentialsId: 'ansible_host_file', variable: 'host_file')])
           {
             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
@@ -97,7 +96,7 @@ pipeline {
                   extraVars: [
                        tier: "${params.Environment}",
                        //indexd_url: "${params.IndexD_Url}",
-                       cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
+                       cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}.trim()",
                        cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
                        cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                       ],

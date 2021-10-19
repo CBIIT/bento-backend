@@ -188,7 +188,7 @@ public class ESService {
         return agg;
     }
 
-    public Map<String, JsonArray> collectTermAggs(JsonObject jsonObject, String[] termAggNames) throws IOException {
+    public Map<String, JsonArray> collectTermAggs(JsonObject jsonObject, String[] termAggNames) {
         Map<String, JsonArray> data = new HashMap<>();
         JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
         for (String aggName: termAggNames) {
@@ -198,7 +198,17 @@ public class ESService {
         return data;
     }
 
-    public Map<String, JsonObject> collectRangeAggs(JsonObject jsonObject, String[] rangeAggNames) throws IOException {
+    public List<String> collectTerms(JsonObject jsonObject, String aggName) {
+        List<String> data = new ArrayList<>();
+        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
+        JsonArray buckets = aggs.getAsJsonObject(aggName).getAsJsonArray("buckets");
+        for (var bucket: buckets) {
+            data.add(bucket.getAsJsonObject().get("key").getAsString());
+        }
+        return data;
+    }
+
+    public Map<String, JsonObject> collectRangeAggs(JsonObject jsonObject, String[] rangeAggNames) {
         Map<String, JsonObject> data = new HashMap<>();
         JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
         for (String aggName: rangeAggNames) {

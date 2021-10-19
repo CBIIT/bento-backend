@@ -69,6 +69,10 @@ public class ESFilterDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return globalSearch(args);
                         })
+                        .dataFetcher("fileIDsFromList", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return fileIDsFromList(args);
+                        })
                 )
                 .build();
     }
@@ -459,6 +463,18 @@ public class ESFilterDataFetcher {
             );
         }
 
+        return result;
+    }
+
+    private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {
+        String idField = "file_ids";
+        String[] idFieldArray = new String[]{idField};
+        Map<String, Object> query = esService.buildListQuery(params, Set.of());
+        query = esService.addAggregations(query, idFieldArray);
+        Request request = new Request("GET", FILES_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+        List<String> result = esService.collectTerms(jsonObject, idField);
         return result;
     }
 }

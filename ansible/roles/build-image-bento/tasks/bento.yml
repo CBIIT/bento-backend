@@ -1,0 +1,60 @@
+---
+# tasks file for build-image-bento
+- name: clean the workspace of dangling images and volumes
+  command: docker system prune -a --volumes 
+
+- name: list all dockerfiles in backend directory
+  find: 
+    path: ../bento/backend
+    patterns: 'Dockerfile'
+    file_type: file
+  register: backend_dockerfile
+
+- name: list all dockerfiles in frontend directory
+  find: 
+    path: ../bento/frontend
+    patterns: 'Dockerfile'
+    file_type: file
+  register: frontend_dockerfile
+
+- name: set name of backend dockerfiles
+  set_fact:
+    backendfiles: "{{ backend_dockerfile.files | json_query('[*].path')}}"
+
+- name: set name of frontend dockerfiles
+  set_fact:
+    frontendfiles: "{{ frontend_dockerfile.files | json_query('[*].path')}}"
+
+- name: merge file lists
+  set_fact:
+    dockerfiles: "{{ backendfiles + frontendfiles }}"
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: build all the docker images
+  docker_image:
+    build:
+      path: "{{ item | dirname }}"
+      dockerfile: "Dockerfile"
+      pull: yes
+      nocache: yes
+    name: "{{ dockerhub_path }}/bento-{{ item | dirname | basename }}"
+    tag: "release"
+    push: yes
+    force_source: yes
+    source: build
+  loop: "{{ dockerfiles }}"
+
+- name: list docker images
+  command: >
+    docker images -q 
+  register: docker_img
+
+- name: remove all docker images
+  command: >
+    docker rmi {{item}} -f
+  loop: 
+    "{{ docker_img.stdout_lines }}"

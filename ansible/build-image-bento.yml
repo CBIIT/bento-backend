@@ -1,11 +1,12 @@
 ---
 - name: build bento base images
-  hosts: localhost
+  hosts: all
   connection: local
-  become_user: commonsdocker
-
-  vars_files:
-    config/icdc-env-vars.yaml
-
-  roles:
-    - build-image-bento
+  become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: build bento image
+      include_role:
+        name: build-image-bento
+        tasks_from: bento

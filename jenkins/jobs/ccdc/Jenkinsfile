@@ -139,16 +139,14 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-                string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')]){
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   env.TIER  = "dev"
                   s3_folder: "${params.S3Folder}"
 
                 }
         break
               default:
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-                string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
                   env.TIER  = "dev"
                   s3_folder: "${params.S3Folder}"
                   aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
@@ -171,8 +169,7 @@ pipeline {
  		steps {
 
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
-        string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'), string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')]){
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
                     playbook: '${WORKSPACE}/icdc-devops/ansible/ccdc-build.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

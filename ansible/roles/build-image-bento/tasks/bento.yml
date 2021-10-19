@@ -29,11 +29,11 @@
   set_fact:
     dockerfiles: "{{ backendfiles + frontendfiles }}"
 
-- name: install requirements
-  command: "{{item}}"
-  loop:
-    - pip install docker
-    - pip install docker-py
+#- name: install requirements
+#  command: "{{item}}"
+#  loop:
+#    - pip install docker
+#    - pip install docker-py
 
 - name: log into DockerHub
   docker_login:

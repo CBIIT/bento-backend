@@ -33,7 +33,7 @@ pipeline {
 
 	agent {
 		node {
-			label 'data-loader'
+			label 'cicd_microservice'
 		}
 	}
 

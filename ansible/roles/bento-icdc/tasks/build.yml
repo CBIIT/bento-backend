@@ -30,21 +30,8 @@
   when: tier == "prod"
 
 ################################################################################
-- name: check node version 
-  command: node -v
-  register: output
 
-- name: show node version 
-  debug:
-    msg: "{{output.stdout_lines}}"
 
-- name: check npm version 
-  command: npm -v
-  register: output
-
-- name: show npm version 
-  debug:
-    msg: "{{output.stdout_lines}}"
 
 ##################################################################################
 

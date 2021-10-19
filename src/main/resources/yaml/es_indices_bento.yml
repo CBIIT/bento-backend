@@ -150,6 +150,9 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+      age_at_index:
+        type: integer
+
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -182,6 +185,7 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,
       COLLECT(DISTINCT f.file_id) AS files,
@@ -243,6 +247,8 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+      age_at_index:
+        type: integer
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -273,6 +279,7 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
       samp.sample_id AS sample_id,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       samp.tissue_type AS tissue_type,

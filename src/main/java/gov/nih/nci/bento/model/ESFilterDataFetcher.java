@@ -38,6 +38,7 @@ public class ESFilterDataFetcher {
     final String GS_SEARCH_FIELD = "search_field";
     final String GS_COLLECT_FIELD = "collect_field";
     final String GS_AGG_LIST = "list";
+    final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
 
     @Autowired
@@ -74,27 +75,31 @@ public class ESFilterDataFetcher {
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         // Query related values
-        final Map<String, List<String>> AGGS = new HashMap<>();
-        AGGS.put("programs", List.of("subjectCountByProgram", "filterSubjectCountByProgram"));
-        AGGS.put("studies", List.of("subjectCountByStudy", "filterSubjectCountByStudy"));
-        AGGS.put("diagnoses", List.of("subjectCountByDiagnoses", "filterSubjectCountByDiagnoses"));
-        AGGS.put("rc_scores", List.of("subjectCountByRecurrenceScore", "filterSubjectCountByRecurrenceScore"));
-        AGGS.put("tumor_sizes", List.of("subjectCountByTumorSize", "filterSubjectCountByTumorSize"));
-        AGGS.put("tumor_grades", List.of("subjectCountByTumorGrade", "filterSubjectCountByTumorGrade"));
-        AGGS.put("er_status", List.of("subjectCountByErStatus", "filterSubjectCountByErStatus"));
-        AGGS.put("pr_status", List.of("subjectCountByPrStatus", "filterSubjectCountByPrStatus"));
-        AGGS.put("chemo_regimen", List.of("subjectCountByChemotherapyRegimen", "filterSubjectCountByChemotherapyRegimen"));
-        AGGS.put("endo_therapies", List.of("subjectCountByEndocrineTherapy", "filterSubjectCountByEndocrineTherapy"));
-        AGGS.put("meno_status", List.of("subjectCountByMenopauseStatus", "filterSubjectCountByMenopauseStatus"));
-        AGGS.put("tissue_type", List.of("subjectCountByTissueType", "filterSubjectCountByTissueType"));
-        AGGS.put("composition", List.of("subjectCountByTissueComposition", "filterSubjectCountByTissueComposition"));
-        AGGS.put("association", List.of("subjectCountByFileAssociation", "filterSubjectCountByFileAssociation"));
-        AGGS.put("file_type", List.of("subjectCountByFileType", "filterSubjectCountByFileType"));
-        AGGS.put("lab_procedures", List.of("subjectCountByLabProcedures", "filterSubjectCountByLabProcedures"));
+        final Map<String, List<String>> TERM_AGGS = new HashMap<>();
+        TERM_AGGS.put("programs", List.of("subjectCountByProgram", "filterSubjectCountByProgram"));
+        TERM_AGGS.put("studies", List.of("subjectCountByStudy", "filterSubjectCountByStudy"));
+        TERM_AGGS.put("diagnoses", List.of("subjectCountByDiagnoses", "filterSubjectCountByDiagnoses"));
+        TERM_AGGS.put("rc_scores", List.of("subjectCountByRecurrenceScore", "filterSubjectCountByRecurrenceScore"));
+        TERM_AGGS.put("tumor_sizes", List.of("subjectCountByTumorSize", "filterSubjectCountByTumorSize"));
+        TERM_AGGS.put("tumor_grades", List.of("subjectCountByTumorGrade", "filterSubjectCountByTumorGrade"));
+        TERM_AGGS.put("er_status", List.of("subjectCountByErStatus", "filterSubjectCountByErStatus"));
+        TERM_AGGS.put("pr_status", List.of("subjectCountByPrStatus", "filterSubjectCountByPrStatus"));
+        TERM_AGGS.put("chemo_regimen", List.of("subjectCountByChemotherapyRegimen", "filterSubjectCountByChemotherapyRegimen"));
+        TERM_AGGS.put("endo_therapies", List.of("subjectCountByEndocrineTherapy", "filterSubjectCountByEndocrineTherapy"));
+        TERM_AGGS.put("meno_status", List.of("subjectCountByMenopauseStatus", "filterSubjectCountByMenopauseStatus"));
+        TERM_AGGS.put("tissue_type", List.of("subjectCountByTissueType", "filterSubjectCountByTissueType"));
+        TERM_AGGS.put("composition", List.of("subjectCountByTissueComposition", "filterSubjectCountByTissueComposition"));
+        TERM_AGGS.put("association", List.of("subjectCountByFileAssociation", "filterSubjectCountByFileAssociation"));
+        TERM_AGGS.put("file_type", List.of("subjectCountByFileType", "filterSubjectCountByFileType"));
+        TERM_AGGS.put("lab_procedures", List.of("subjectCountByLabProcedures", "filterSubjectCountByLabProcedures"));
 
-        final String[] AGG_NAMES = AGGS.keySet().toArray(new String[0]);
+        final String[] TERM_AGG_NAMES = TERM_AGGS.keySet().toArray(new String[0]);
 
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        final Map<String, String> RANGE_AGGS = new HashMap<>();
+        RANGE_AGGS.put("age_at_index",  "filterSubjectCountByAge");
+        final String[] RANGE_AGG_NAMES = RANGE_AGGS.keySet().toArray(new String[0]);
+
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
         query.put("size", 0);
         Request sampleRequest = new Request("GET", SAMPLES_END_POINT);
         sampleRequest.setJsonEntity(gson.toJson(query));
@@ -108,12 +113,12 @@ public class ESFilterDataFetcher {
 
 
         // Get aggregations
-        Map<String, Object> aggQuery = esService.addAggregations(query, AGG_NAMES);
+        Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
         Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
         subjectRequest.setJsonEntity(gson.toJson(aggQuery));
         JsonObject subjectResult = esService.send(subjectRequest);
         int numberOfSubjects = esService.getTotalHits(subjectResult);
-        Map<String, JsonArray> aggs = esService.collectAggs(subjectResult, AGG_NAMES);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, TERM_AGG_NAMES);
 
         Map<String, Object> data = new HashMap<>();
         data.put("numberOfPrograms", aggs.get("programs").size());
@@ -124,9 +129,10 @@ public class ESFilterDataFetcher {
         data.put("numberOfFiles", numberOfFiles);
 
         data.put("armsByPrograms", armsByPrograms(params));
-        for (String field: AGG_NAMES) {
-            String widgetQueryName = AGGS.get(field).get(0);
-            String filterCountQueryName = AGGS.get(field).get(1);
+        // widgets data and facet filter counts
+        for (String field: TERM_AGG_NAMES) {
+            String widgetQueryName = TERM_AGGS.get(field).get(0);
+            String filterCountQueryName = TERM_AGGS.get(field).get(1);
             List<Map<String, Object>> widgetData = getGroupCountHelper(aggs.get(field));
             data.put(widgetQueryName, widgetData);
             if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
@@ -134,6 +140,18 @@ public class ESFilterDataFetcher {
                 data.put(filterCountQueryName, filterCount);
             } else {
                 data.put(filterCountQueryName, widgetData);
+            }
+        }
+
+        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(subjectResult, RANGE_AGG_NAMES);
+
+        for (String field: RANGE_AGG_NAMES) {
+            String filterCountQueryName = RANGE_AGGS.get(field);
+            if (params.containsKey(field) && ((List<Double>)params.get(field)).size() >= 2) {
+                Map<String, Object> filterCount = rangeFilterSubjectCountBy(field, params);;
+                data.put(filterCountQueryName, filterCount);
+            } else {
+                data.put(filterCountQueryName, getRange(rangeAggs.get(field)));
             }
         }
 
@@ -260,8 +278,9 @@ public class ESFilterDataFetcher {
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
+
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
@@ -289,15 +308,16 @@ public class ESFilterDataFetcher {
     private List<Map<String, Object>> armsByPrograms(Map<String, Object> params) throws IOException {
         final String category = "programs";
         final String subCategory = "study_acronym";
+
         String[] subCategories = new String[] { subCategory };
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
-        Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, AGG_NAMES);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
@@ -323,7 +343,7 @@ public class ESFilterDataFetcher {
     }
 
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(PAGE_SIZE, category));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS,Set.of(PAGE_SIZE, category));
         return getGroupCount(category, query);
     }
 
@@ -333,7 +353,7 @@ public class ESFilterDataFetcher {
         Request request = new Request("GET", SUBJECTS_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
-        Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, AGG_NAMES);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);
         JsonArray buckets = aggs.get(category);
 
         return getGroupCountHelper(buckets);
@@ -348,6 +368,29 @@ public class ESFilterDataFetcher {
 
         }
         return data;
+    }
+
+    private Map<String, Object> rangeFilterSubjectCountBy(String category, Map<String, Object> params) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS,Set.of(PAGE_SIZE, category));
+        return getRangeCount(category, query);
+    }
+
+    private Map<String, Object> getRangeCount(String category, Map<String, Object> query) throws IOException {
+        String[] AGG_NAMES = new String[] {category};
+        query = esService.addAggregations(query, new String[]{}, AGG_NAMES);
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+        Map<String, JsonObject> aggs = esService.collectRangeAggs(jsonObject, AGG_NAMES);
+        return getRange(aggs.get(category).getAsJsonObject());
+    }
+
+    private Map<String, Object> getRange(JsonObject aggs) {
+        Map<String, Object> range = new HashMap<>();
+        range.put("lowerBound", aggs.get("min").getAsDouble());
+        range.put("upperBound", aggs.get("max").getAsDouble());
+        range.put("subjects", aggs.get("count").getAsInt());
+        return range;
     }
 
     private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
@@ -391,7 +434,7 @@ public class ESFilterDataFetcher {
             Request request = new Request("GET", GS_END_POINT);
             request.setJsonEntity(gson.toJson(query));
             JsonObject jsonObject = esService.send(request);
-            Map<String, JsonArray> aggs = esService.collectAggs(jsonObject, new String[]{GS_AGG_LIST});
+            Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, new String[]{GS_AGG_LIST});
             var buckets = aggs.get(GS_AGG_LIST);
             result.put(resultFieldName, esService.collectBucketKeys(buckets));
         }

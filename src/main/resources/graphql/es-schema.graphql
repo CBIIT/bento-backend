@@ -105,10 +105,17 @@ type SearchResult {
     filterSubjectCountByTissueComposition: [GroupCount2]
     filterSubjectCountByFileAssociation: [GroupCount2]
     filterSubjectCountByFileType: [GroupCount2]
+    filterSubjectCountByAge: RangeCount
 }
 
 type GroupCount2 {
     group: String
+    subjects: Int
+}
+
+type RangeCount {
+    lowerBound: Float
+    upperBound: Float
     subjects: Int
 }
 
@@ -152,7 +159,8 @@ type QueryType {
         tissue_type: [String] = [],
         composition: [String] = [],
         association: [String] = [],
-        file_type: [String] = []
+        file_type: [String] = [],
+        age_at_index: [Float] = []
     ): SearchResult
 
     subjectOverview (
@@ -171,6 +179,7 @@ type QueryType {
         composition: [String] = [],
         association: [String] = [],
         file_type: [String] = [],
+        age_at_index: [Float] = [],
         order_by: String = "",
         sort_direction: String = "ASC",
         first: Int = 10,
@@ -193,6 +202,7 @@ type QueryType {
         composition: [String] = [],
         association: [String] = [],
         file_type: [String] = [],
+        age_at_index: [Float] = [],
         order_by: String = "",
         sort_direction: String = "ASC",
         first: Int = 10,
@@ -215,6 +225,7 @@ type QueryType {
         composition: [String] = [],
         association: [String] = [],
         file_type: [String] = [],
+        age_at_index: [Float] = [],
         order_by: String = "",
         sort_direction: String = "ASC",
         first: Int = 10,

@@ -7,13 +7,11 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.*;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -90,11 +88,15 @@ public class ESService {
         return result;
     }
 
-    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params) {
+    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params) throws IOException {
         return buildFacetFilterQuery(params, Set.of());
     }
 
-    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params, Set<String> excludedParams) {
+    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params, Set<String> rangeParams)  throws IOException {
+        return buildFacetFilterQuery(params, rangeParams, Set.of());
+    }
+
+    public Map<String, Object> buildFacetFilterQuery(Map<String, Object> params, Set<String> rangeParams, Set<String> excludedParams) throws IOException {
         Map<String, Object> result = new HashMap<>();
 
         List<Object> filter = new ArrayList<>();
@@ -102,11 +104,36 @@ public class ESService {
             if (excludedParams.contains(key)) {
                 continue;
             }
-            List<String> valueSet = (List<String>) params.get(key);
-            if (valueSet.size() > 0) {
-                filter.add(Map.of(
-                        "terms", Map.of( key, valueSet)
-                ));
+
+            if (rangeParams.contains(key)) {
+                // Range parameters, should contain two doubles, first lower bound, then upper bound
+                // Any other values after those two will be ignored
+                List<Double> bounds = (List<Double>) params.get(key);
+                if (bounds.size() >= 2) {
+                    Double lower = bounds.get(0);
+                    Double higher = bounds.get(1);
+                    if (lower == null && higher == null) {
+                        throw new IOException("Lower bound and Upper bound can't be both null!");
+                    }
+                    Map<String, Double> range = new HashMap<>();
+                    if (lower != null) {
+                        range.put("gte", lower);
+                    }
+                    if (higher != null) {
+                        range.put("lte", higher);
+                    }
+                    filter.add(Map.of(
+                            "range", Map.of( key, range)
+                    ));
+                }
+            } else {
+                // Term parameters (default)
+                List<String> valueSet = (List<String>) params.get(key);
+                if (valueSet.size() > 0) {
+                    filter.add(Map.of(
+                            "terms", Map.of( key, valueSet)
+                    ));
+                }
             }
         }
 
@@ -114,41 +141,74 @@ public class ESService {
         return result;
     }
 
-    public Map<String, Object> addAggregations(Map<String, Object> query, String[] aggNames) {
+    public Map<String, Object> addAggregations(Map<String, Object> query, String[] termAggNames) {
+        return addAggregations(query, termAggNames, new String[]{});
+    }
+
+    public Map<String, Object> addAggregations(Map<String, Object> query, String[] termAggNames, String[] rangeAggNames) {
         Map<String, Object> newQuery = new HashMap<>(query);
         newQuery.put("size", 0);
-        newQuery.put("aggregations", getAllAggregations(aggNames));
+        newQuery.put("aggregations", getAllAggregations(termAggNames, rangeAggNames));
         return newQuery;
     }
 
-    public void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subAggNames) {
+    public void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subTermAggNames) {
+        addSubAggregations(query, mainAggName, subTermAggNames, new String[]{});
+    }
+
+    public void addSubAggregations(Map<String, Object> query, String mainAggName, String[] subTermAggNames, String[] subRangeAggNames) {
         Map<String, Object> mainAgg = (Map<String, Object>) ((Map<String, Object>) query.get("aggregations")).get(mainAggName);
-        Map<String, Object> subAggs = getAllAggregations(subAggNames);
+        Map<String, Object> subAggs = getAllAggregations(subTermAggNames, subRangeAggNames);
         mainAgg.put("aggregations", subAggs);
     }
 
-    private Map<String, Object> getAllAggregations(String[]  aggNames) {
+    private Map<String, Object> getAllAggregations(String[]  termAggNames, String[] rangeAggNames) {
         Map<String, Object> aggs = new HashMap<>();
-        for (String aggName: aggNames) {
-            aggs.put(aggName, getSingleAggregation(aggName));
+        for (String aggName: termAggNames) {
+            // Terms
+            aggs.put(aggName, getTermAggregation(aggName));
+        }
+
+        for (String aggName: rangeAggNames) {
+            // Range
+            aggs.put(aggName, getRangeAggregation(aggName));
         }
         return aggs;
     }
 
-    private Map<String, Object> getSingleAggregation(String aggName) {
+    private Map<String, Object> getTermAggregation(String aggName) {
         Map<String, Object> agg = new HashMap<>();
         agg.put("terms", Map.of("field", aggName, "size", MAX_ES_SIZE));
         return agg;
     }
 
-    public Map<String, JsonArray> collectAggs(JsonObject jsonObject, String[] aggNames) throws IOException{
+    private Map<String, Object> getRangeAggregation(String aggName) {
+        Map<String, Object> agg = new HashMap<>();
+        agg.put("stats", Map.of("field", aggName));
+        return agg;
+    }
+
+    public Map<String, JsonArray> collectTermAggs(JsonObject jsonObject, String[] termAggNames) throws IOException {
         Map<String, JsonArray> data = new HashMap<>();
         JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
-        for (String aggName: aggNames) {
+        for (String aggName: termAggNames) {
+            // Terms buckets
             data.put(aggName, aggs.getAsJsonObject(aggName).getAsJsonArray("buckets"));
         }
         return data;
     }
+
+    public Map<String, JsonObject> collectRangeAggs(JsonObject jsonObject, String[] rangeAggNames) throws IOException {
+        Map<String, JsonObject> data = new HashMap<>();
+        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
+        for (String aggName: rangeAggNames) {
+            // Range/stats
+            data.put(aggName, aggs.getAsJsonObject(aggName));
+        }
+        return data;
+    }
+
+
 
     public List<String> collectBucketKeys(JsonArray buckets) {
         List<String> keys = new ArrayList<>();

@@ -74,6 +74,7 @@ pipeline {
 					extraVars: [
                         dockerhub_path: "cbiitssrepo",
 						],
+				    extras: '-vvv'
             		colorized: true)
  				}
  			}

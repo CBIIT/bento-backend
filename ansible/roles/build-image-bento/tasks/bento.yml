@@ -29,6 +29,9 @@
   set_fact:
     dockerfiles: "{{ backendfiles + frontendfiles }}"
 
+- name: install requirements
+  command: "pip install docker-py"
+
 - name: log into DockerHub
   docker_login:
     username: "{{docker_user}}"

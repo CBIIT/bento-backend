@@ -132,7 +132,7 @@ pipeline {
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
-          file(credentialsId: 'cloudfront_private_key', variable: 'cloudfront_private_key_file'),
+          string(credentialsId: 'cloudfront_private_key', variable: 'CLOUDFRONT_PRIVATE_KEY'),
           string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
           string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
           usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
@@ -143,9 +143,9 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                     indexd_url: "${params.IndexD_Url}",
+                     //indexd_url: "${params.IndexD_Url}",
                      tier: "${params.Environment}",
-                     // cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
+                     cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
                      cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
                      cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                     ],

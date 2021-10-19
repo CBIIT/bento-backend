@@ -205,7 +205,7 @@ Indices:
         type: keyword
       subject_id_num:
         type: integer
-      sample_id:
+      sample_ids:
         type: keyword
       sample_id_num:
         type: integer
@@ -213,7 +213,7 @@ Indices:
         type: keyword
       file_id_num:
         type: integer
-      file_name:
+      file_names:
         type: keyword
       file_description:
         type: keyword
@@ -265,7 +265,7 @@ Indices:
       ss.study_subject_id AS subject_ids,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       f.file_id AS file_ids,
-      f.file_name AS file_name,
+      f.file_name AS file_names,
       f.file_description AS file_description,
       f.file_format AS file_format,
       f.file_size AS file_size,
@@ -280,7 +280,7 @@ Indices:
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
       demo.age_at_index AS age_at_index,
-      samp.sample_id AS sample_id,
+      samp.sample_id AS sample_ids,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,

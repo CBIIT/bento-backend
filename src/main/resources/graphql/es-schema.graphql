@@ -232,6 +232,12 @@ type QueryType {
         offset: Int = 0
     ): [FileOverview2]
 
+    fileIDsFromList(
+        subject_ids: [String] = [],
+        sample_ids: [String] = [],
+        file_names: [String] = []
+    ): [String]
+
     globalSearch (input: String): GlobalSearchResult
 
 }

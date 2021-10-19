@@ -30,7 +30,10 @@
     dockerfiles: "{{ backendfiles + frontendfiles }}"
 
 - name: install requirements
-  command: "pip install docker"
+  command: "{{item}}"
+  loop:
+    - pip install docker
+    - pip install docker-py
 
 - name: log into DockerHub
   docker_login:

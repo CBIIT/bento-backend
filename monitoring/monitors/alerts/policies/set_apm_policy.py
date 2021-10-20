@@ -25,7 +25,7 @@ def setapmalertpolicy(project, tier, email_id, slack_id, key):
      "Api-Key": key,
      "Content-Type": "application/json"
    }
-   
+
    data = {
      "policy": {
        "incident_preference": "PER_POLICY",

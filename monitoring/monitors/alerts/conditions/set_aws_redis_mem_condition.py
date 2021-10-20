@@ -27,7 +27,7 @@ def setawsredisconditions(key, project, tier, policy_id):
        "Api-Key": key,
        "Content-Type": "application/json"
    }
-   
+
    data = {
      "data":{
       "type":"infra_metric",
@@ -55,7 +55,7 @@ def setawsredisconditions(key, project, tier, policy_id):
    if not condition_found:
      # create policy
      API_ENDPOINT = 'https://infra-api.newrelic.com/v2/alerts/conditions'
-     
+
      try:
        response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
      except requests.exceptions.RequestException as e:
@@ -64,7 +64,7 @@ def setawsredisconditions(key, project, tier, policy_id):
 
    else:
      print('{} already exists - updating with the latest configuration'.format(condition_name))
-     
+
      API_ENDPOINT = 'https://infra-api.newrelic.com/v2/alerts/conditions/{}'.format(condition_id)
 
      # update condition

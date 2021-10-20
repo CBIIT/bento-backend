@@ -49,7 +49,7 @@ pipeline {
 				poll: false,
 				scm: [$class: 'GitSCM', 
 				//branches: [[name: '*/master']], 
-				branches: [[name: '*/base_image']], 
+				branches: [[name: '*/master']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 

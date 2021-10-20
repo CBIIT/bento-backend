@@ -91,7 +91,7 @@ pipeline {
           {
             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
             script {
-              def private_key_content = readFile ${cloudfront_key_file}
+              def private_key_content = readFile cloudfront_key_file
             }
             ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 

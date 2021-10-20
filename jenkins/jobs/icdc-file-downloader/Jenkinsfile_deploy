@@ -90,14 +90,14 @@ pipeline {
           file(credentialsId: 'ansible_host_file', variable: 'host_file')])
           {
             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
-            sh "export CLOUDFRONT_PRIVATE_KEY=`cat ${cloudfront_key_file}`"
+            def private_key_content = readFile ${cloudfront_key_file}
             ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
                   inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                   extraVars: [
                        tier: "${params.Environment}",
                        //indexd_url: "${params.IndexD_Url}",
-                       cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
+                       cloudfront_private_key: "${private_key_content}",
                        cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
                        cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                       ],

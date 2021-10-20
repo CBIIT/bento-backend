@@ -1,8 +1,5 @@
 ---
 # tasks file for build-image-bento
-- name: clean the workspace of dangling images and volumes
-  command: docker system prune -a --volumes 
-
 - name: list all dockerfiles in backend directory
   find: 
     path: ../bento/backend
@@ -29,12 +26,6 @@
   set_fact:
     dockerfiles: "{{ backendfiles + frontendfiles }}"
 
-- name: install requirements
-  command: "{{item}}"
-  loop:
-    - pip install docker
-    - pip install docker-py
-
 - name: log into DockerHub
   docker_login:
     username: "{{docker_user}}"
@@ -53,14 +44,3 @@
     force_source: yes
     source: build
   loop: "{{ dockerfiles }}"
-
-- name: list docker images
-  command: >
-    docker images -q 
-  register: docker_img
-
-- name: remove all docker images
-  command: >
-    docker rmi {{item}} -f
-  loop: 
-    "{{ docker_img.stdout_lines }}"

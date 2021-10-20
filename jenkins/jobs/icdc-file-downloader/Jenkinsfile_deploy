@@ -91,7 +91,7 @@ pipeline {
           {
             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
             script {
-              def private_key_content = readFile cloudfront_key_file
+               env.CLOUDFRONT_PRIVATE_KEY  = readFile "${cloudfront_key_file}"
             }
             ansiblePlaybook( 
                   playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
@@ -99,7 +99,7 @@ pipeline {
                   extraVars: [
                        tier: "${params.Environment}",
                        //indexd_url: "${params.IndexD_Url}",
-                       cloudfront_private_key: "${private_key_content}",
+                       cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
                        cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
                        cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"
                       ],

@@ -56,7 +56,7 @@ Indices:
       samples:
         type: keyword
       files:
-        type: object
+        type: keyword
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
@@ -93,8 +93,7 @@ Indices:
       COLLECT(DISTINCT samp.composition) AS composition,
       COLLECT(DISTINCT head(labels(parent))) AS association,
       COLLECT(DISTINCT f.file_type) AS file_type,
-      COLLECT(DISTINCT f { .file_id, .file_description, .file_format, .file_location, .file_name,
-                           .file_size, .file_status, .file_type, .md5sum }) AS files,
+      COLLECT(DISTINCT f.file_id) AS files,
       COLLECT(DISTINCT samp.sample_id) AS samples
       "
   - index_name: samples
@@ -150,6 +149,9 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+      age_at_index:
+        type: integer
+
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -182,6 +184,7 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,
       COLLECT(DISTINCT f.file_id) AS files,
@@ -201,7 +204,7 @@ Indices:
         type: keyword
       subject_id_num:
         type: integer
-      sample_id:
+      sample_ids:
         type: keyword
       sample_id_num:
         type: integer
@@ -209,7 +212,7 @@ Indices:
         type: keyword
       file_id_num:
         type: integer
-      file_name:
+      file_names:
         type: keyword
       file_description:
         type: keyword
@@ -243,6 +246,8 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+      age_at_index:
+        type: integer
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -259,7 +264,7 @@ Indices:
       ss.study_subject_id AS subject_ids,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       f.file_id AS file_ids,
-      f.file_name AS file_name,
+      f.file_name AS file_names,
       f.file_description AS file_description,
       f.file_format AS file_format,
       f.file_size AS file_size,
@@ -273,7 +278,8 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  meno_status,
-      samp.sample_id AS sample_id,
+      demo.age_at_index AS age_at_index,
+      samp.sample_id AS sample_ids,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,

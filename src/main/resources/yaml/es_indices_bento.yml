@@ -56,7 +56,7 @@ Indices:
       samples:
         type: keyword
       files:
-        type: object
+        type: keyword
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
@@ -93,8 +93,7 @@ Indices:
       COLLECT(DISTINCT samp.composition) AS composition,
       COLLECT(DISTINCT head(labels(parent))) AS association,
       COLLECT(DISTINCT f.file_type) AS file_type,
-      COLLECT(DISTINCT f { .file_id, .file_description, .file_format, .file_location, .file_name,
-                           .file_size, .file_status, .file_type, .md5sum }) AS files,
+      COLLECT(DISTINCT f.file_id) AS files,
       COLLECT(DISTINCT samp.sample_id) AS samples
       "
   - index_name: samples

@@ -120,7 +120,7 @@ pipeline {
           doGenerateSubmoduleConfigurations: 
           false, extensions: [], submoduleCfg: [], 
           userRemoteConfigs: 
-          [[url: 'https://github.com/CBIIT/bento-backend']]])
+          [[url: 'https://github.com/CBIIT/INS-WebService']]])
 
       checkout([$class: 'GitSCM',
         branches: [[name: "${params.Frontend_Tag}"]],

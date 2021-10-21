@@ -42,10 +42,7 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod' )
-    // string(
-    // defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
-    // description: 'Provide indexd url',
-    // name: 'IndexD_Url')
+    
    	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Downloader_Tag', 
@@ -57,9 +54,7 @@ pipeline {
        useRepository: 'https://github.com/CBIIT/bento-files')
 
   }
-   // triggers { 
-   //   pollSCM('H/15 * * * 1-5') 
-   //  }
+   
   options {
   	ansiColor('xterm')
   }
@@ -132,12 +127,15 @@ pipeline {
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				withCredentials([
           string(credentialsId: 'newrelic_license_key', variable: 'NEWRELIC_LIC_KEY'),
-          string(credentialsId: 'cloudfront_private_key', variable: 'CLOUDFRONT_PRIVATE_KEY'),
+          file(credentialsId: 'cloudone_cloudfront_private_key', variable: 'cloudfront_key_file'),
           string(credentialsId: "${params.Environment}_cloudfront_key_group_id", variable: 'CLOUDFRONT_KEY_GROUP_ID'),
           string(credentialsId: "${params.Environment}_cloudfront_domain_name", variable: 'CLOUDFRONT_DOMAIN_NAME'),
           usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')
           ])
         {
+          script {
+            env.CLOUDFRONT_PRIVATE_KEY  = readFile "${cloudfront_key_file}"
+          }
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

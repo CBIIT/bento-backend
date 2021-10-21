@@ -20,34 +20,28 @@ def setdbalertpolicy(project, tier, email_id, synthetics_id, key):
    for x in response.json()['policies']:
      if policy_name in x.get("name", "none"):
        policy_found = True
+       policy_id = x.get("id", "none")
+
+   headers = {
+     "Api-Key": key,
+     "Content-Type": "application/json"
+   }
+   
+   data = {
+     "policy": {
+       "incident_preference": "PER_POLICY",
+       "name": policy_name
+     }
+   }
 
    if not policy_found:
-     headers = {
-         "Api-Key": key,
-         "Content-Type": "application/json"
-     }
-   
-     data = {
-       "policy": {
-          "incident_preference": "PER_POLICY",
-          "name": policy_name
-       }
-     }
 
+     # create policy
      try:
        response = requests.post('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
      except requests.exceptions.RequestException as e:
        raise SystemExit(e)
      policy_id = response.json()['policy'].get("id", "none")
-
-     # add disk space condition
-     set_disk_space_condition.setdiskspacecondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
-     
-     # add memory condition
-     set_memory_condition.setmemorycondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
-     
-     # add cpu condition
-     set_cpu_condition.setcpucondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
 
      # add notification channels
      data = {
@@ -62,4 +56,21 @@ def setdbalertpolicy(project, tier, email_id, synthetics_id, key):
      print('{} Created'.format(policy_name))
 
    else:
-     print('{} already exists'.format(policy_name))
+     print('{} already exists - updating with the latest configuration'.format(policy_name))
+
+     API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies/{}.json'.format(policy_id)
+
+     # update policy
+     try:
+       response = requests.put('{}'.format(API_ENDPOINT), headers=headers, data=json.dumps(data), allow_redirects=False)
+     except requests.exceptions.RequestException as e:
+       raise SystemExit(e)
+     
+   # add disk space condition
+   set_disk_space_condition.setdiskspacecondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
+
+   # add memory condition
+   set_memory_condition.setmemorycondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)
+
+   # add cpu condition
+   set_cpu_condition.setcpucondition(key, '{}-aws-{}-neo4j'.format(project.lower(), tier.lower()), policy_id)

@@ -33,7 +33,7 @@ pipeline {
 
 	agent {
 		node {
-			label 'data-loader'
+			label 'cicd_microservice'
 		}
 	}
 
@@ -48,6 +48,7 @@ pipeline {
   			checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 
+				//branches: [[name: '*/master']], 
 				branches: [[name: '*/master']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
@@ -74,6 +75,7 @@ pipeline {
 					extraVars: [
                         dockerhub_path: "cbiitssrepo",
 						],
+				    extras: '-vvv',
             		colorized: true)
  				}
  			}

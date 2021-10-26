@@ -147,7 +147,7 @@ public class GraphQLController {
 	}
 
 	@PostConstruct
-	private void initGraphQL() throws IOException {
+	public void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
 		GraphQLSchema esSchema = getEsSchema();
 		GraphQLSchema newSchema = mergeSchema(neo4jSchema, esSchema);

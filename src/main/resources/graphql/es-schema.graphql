@@ -164,6 +164,7 @@ type QueryType {
     ): SearchResult
 
     subjectOverview (
+        subject_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -187,6 +188,7 @@ type QueryType {
     ): [SubjectOverview]
 
     sampleOverview (
+        sample_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -210,6 +212,7 @@ type QueryType {
     ): [SampleOverview]
 
     fileOverview (
+        file_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],

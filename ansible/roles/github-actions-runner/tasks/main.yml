@@ -16,7 +16,7 @@
 
 - name: download runner binary
   get_url:
-    url: https://github.com/actions/runner/releases/download/{{runner_version}}/actions-runner-linux-x64-{{runner_version}}.tar.gz
+    url: https://github.com/actions/runner/releases/download/v{{runner_version}}/actions-runner-linux-x64-{{runner_version}}.tar.gz
     dest: /runner/actions-runner-linux-x64-{{runner_version}}.tar.gz
 
 - name: extract the runner file

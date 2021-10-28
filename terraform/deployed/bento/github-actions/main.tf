@@ -125,7 +125,9 @@ mainSteps:
     runCommand:
     - set -ex
     - cd /tmp
-    - yum -y install ansible
+    - rm -rf icdc-devops || true
+    - yum -y install git jq
+    - amazon-linux-extras install ansible2 -y
     - git clone https://github.com/CBIIT/icdc-devops
     - cd icdc-devops/ansible && git checkout master
     - ansible-playbook github-actions-runner.yml -e pat=${jsondecode(data.aws_secretsmanager_secret_version.github_action_token.secret_string)["github-actions-token"]}

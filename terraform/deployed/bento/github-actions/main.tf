@@ -13,7 +13,7 @@ resource "aws_launch_configuration" "asg_launch_config" {
   name              = "${var.stack_name}-${terraform.workspace}-launch-configuration"
   image_id          =  data.aws_ami.centos.id
   instance_type     =  var.github_actions_instance_type
-  iam_instance_profile = data.aws_iam_instance_profile.instance_profile.id
+  iam_instance_profile = data.aws_iam_instance_profile.instance_profile.name
   security_groups   = [aws_security_group.github_actions_sg.id]
   associate_public_ip_address = var.associate_public_ip_address
   key_name    = var.ssh_key_name
@@ -94,7 +94,7 @@ resource "aws_security_group_rule" "inbound_github_actions" {
   protocol = local.tcp_protocol
   to_port = local.https_port
   security_group_id = aws_security_group.github_actions_sg.id
-  cidr_blocks = ["0.0.0.0/0","::/0"]
+  cidr_blocks = ["0.0.0.0/0"]
   type = "ingress"
 }
 
@@ -124,20 +124,19 @@ mainSteps:
   inputs:
     runCommand:
     - set -ex
-    - yum -y update && yum -y install epel-release
     - yum -y install docker git jq
     - usermod -a -G docker bento
     - systemctl start docker
     - systemctl enable docker
     - export RUNNER_ALLOW_RUNASROOT=true
-    - mkdir actions-runner && actions-runner
+    - mkdir actions-runner && cd actions-runner
     - curl -o actions-runner-linux-x64-2.283.3.tar.gz -L https://github.com/actions/runner/releases/download/v2.283.3/actions-runner-linux-x64-2.283.3.tar.gz
     - tar xzf ./actions-runner-linux-x64-2.283.3.tar.gz
-    - sudo chown ${var.ssh_user} -R /actions-runner
-    - ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token ${jsondecode(data.aws_secretsmanager_secret_version.github_action_token.secret_string)["github-actions-token"]} --name "bento-runner-$(hostname)"
+    - PAT=${jsondecode(data.aws_secretsmanager_secret_version.github_action_token.secret_string)["github-actions-token"]}
+    - token=$(curl -s -XPOST -H "authorization: token $PAT" https://api.github.com/repos/CBIIT/bento-github-actions-poc/actions/runners/registration-token | jq -r .token)
+    - ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token $token  --name "bento-runner-$(hostname)"
     - sudo ./svc.sh install
     - sudo ./svc.sh start
-    - sudo chown ${var.ssh_user} -R /actions-runner
 DOC
   tags = merge(
   {

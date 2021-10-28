@@ -43,12 +43,6 @@ data "terraform_remote_state" "network" {
   }
 }
 
-
-#grab public ssh key
-data "aws_ssm_parameter" "sshkey" {
-  name = "ssh_public_key"
-}
-
 #define user data
 data "template_cloudinit_config" "user_data" {
   gzip          = false
@@ -85,4 +79,7 @@ data "aws_iam_instance_profile" "instance_profile" {
 }
 data "aws_secretsmanager_secret_version" "github_action_token" {
   secret_id = var.github_actions_secret_name
+}
+data "aws_ssm_parameter" "aws_linux" {
+  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
 }

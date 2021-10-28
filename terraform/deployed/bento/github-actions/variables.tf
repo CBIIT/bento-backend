@@ -49,7 +49,7 @@ variable "health_check_type" {
 }
 variable "associate_public_ip_address" {
   type = bool
-  default = false
+  default = true
   description = "options to associate public ip to launched instances"
 }
 variable "desired_ec2_instance_capacity" {

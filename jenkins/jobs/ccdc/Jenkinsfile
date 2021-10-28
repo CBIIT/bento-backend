@@ -69,9 +69,9 @@ pipeline {
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
        useRepository: ' https://github.com/CBIIT/CCDC-ETL')
-    string(defaultValue: "etl-digest-files", 
-        description: 'S3 Folder to load data from', 
-        name: 'S3Folder')
+    // string(defaultValue: "etl-digest-files", 
+    //     description: 'S3 Folder to load data from', 
+    //     name: 'S3Folder')
   }
   options {
   	ansiColor('xterm')
@@ -100,14 +100,14 @@ pipeline {
 					userRemoteConfigs: 
 					[[url: 'https://github.com/CBIIT/CCDC-WebPortal']]])
 
-				checkout([$class: 'GitSCM',
-					branches: [[name: "${params.Etl_Tag}"]],
-					doGenerateSubmoduleConfigurations: false,
-					extensions: [[$class: 'RelativeTargetDirectory',
-					relativeTargetDir: 'CCDC-ETL']],
-					submoduleCfg: [],
-					userRemoteConfigs: 
-					[[url: 'https://github.com/CBIIT/CCDC-ETL']]])
+				// checkout([$class: 'GitSCM',
+				// 	branches: [[name: "${params.Etl_Tag}"]],
+				// 	doGenerateSubmoduleConfigurations: false,
+				// 	extensions: [[$class: 'RelativeTargetDirectory',
+				// 	relativeTargetDir: 'CCDC-ETL']],
+				// 	submoduleCfg: [],
+				// 	userRemoteConfigs: 
+				// 	[[url: 'https://github.com/CBIIT/CCDC-ETL']]])
 
   			checkout( poll: false, 
 				changelog:false,
@@ -132,8 +132,8 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
-       ETL_VERSION = "${params.Etl_Tag}"
-       S3_FOLDER = "${params.S3Folder}"
+       // ETL_VERSION = "${params.Etl_Tag}"
+       // S3_FOLDER = "${params.S3Folder}"
       }
         steps {
           script {
@@ -141,16 +141,16 @@ pipeline {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   env.TIER  = "dev"
-                  s3_folder: "${params.S3Folder}"
+                  // s3_folder: "${params.S3Folder}"
 
                 }
         break
               default:
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
                   env.TIER  = "dev"
-                  s3_folder: "${params.S3Folder}"
-                  aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
-                  aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+                  // s3_folder: "${params.S3Folder}"
+                  // aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
+                  // aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
                 }
               break
             }
@@ -163,8 +163,8 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
-       ETL_VERSION = "${params.Etl_Tag}"
-       S3_FOLDER = "${params.S3Folder}"
+       // ETL_VERSION = "${params.Etl_Tag}"
+       // S3_FOLDER = "${params.S3Folder}"
       }
  		steps {
 
@@ -175,7 +175,7 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         tier: "${params.Environment}",
-                        s3_folder: "${params.S3Folder}"
+                        // s3_folder: "${params.S3Folder}"
             ],
 						colorized: true)
  				}
@@ -187,8 +187,8 @@ pipeline {
        VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
-       ETL_VERSION = "${params.Etl_Tag}-${BUILD_NUMBER}"
-       S3_FOLDER = "${params.S3Folder}"
+       // ETL_VERSION = "${params.Etl_Tag}-${BUILD_NUMBER}"
+       // S3_FOLDER = "${params.S3Folder}"
 	   	 SLACK_CHANNEL = "#system-alerts"
 	   	URL_DOMAIN = "bento-tools.org"
       }

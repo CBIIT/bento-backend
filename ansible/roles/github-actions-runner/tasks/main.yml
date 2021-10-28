@@ -34,7 +34,7 @@
 #   register: login
 
 - name: install runner script
-  shell: ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token {{pat}}  --name "bento-runner-$(hostname)"
+  shell: ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token {{pat}}  --name "bento-runner-0"
     args:
     chdir: /runner
     environment:
@@ -42,7 +42,7 @@
 
 # - name: install runner service
 #   shell: ./svc.sh install && ./svc.sh start
-#     args:
+#     args: 
 #     chdir: /runner
 
 - name: show login content

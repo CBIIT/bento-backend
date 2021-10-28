@@ -25,20 +25,20 @@
     dest: /runner
     remote_src: yes
 
-- name: get github token
-  uri:
-    url: https://api.github.com/repos/CBIIT/bento-github-actions-poc/actions/runners/registration-token
-    method: POST
-    headers:
-      authorization: "{{pat}}"
-  register: login
+# - name: get github token
+#   uri:
+#     url: https://api.github.com/repos/CBIIT/bento-github-actions-poc/actions/runners/registration-token
+#     method: POST
+#     headers:
+#       authorization: "{{pat}}"
+#   register: login
 
-# - name: install runner script
-#   shell: ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token $token  --name "bento-runner-$(hostname)"
-#     args:
-#     chdir: /runner
-#     environment:
-#       RUNNER_ALLOW_RUNASROOT: true
+- name: install runner script
+  shell: ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token {{pat}}  --name "bento-runner-$(hostname)"
+    args:
+    chdir: /runner
+    environment:
+      RUNNER_ALLOW_RUNASROOT: true
 
 # - name: install runner service
 #   shell: ./svc.sh install && ./svc.sh start

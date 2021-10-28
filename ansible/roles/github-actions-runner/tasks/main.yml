@@ -30,7 +30,7 @@
     url: https://api.github.com/repos/CBIIT/bento-github-actions-poc/actions/runners/registration-token
     method: POST
     headers:
-      Authorization: "{{pat}}"
+      authorization: "{{pat}}"
   register: login
 
 # - name: install runner script

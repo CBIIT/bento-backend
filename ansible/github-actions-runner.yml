@@ -1,0 +1,12 @@
+---
+- name: setup github-actions-runner
+  hosts: docker
+  gather_facts: no
+  connection: local
+  become: yes
+
+  roles:
+    - github-actions-runner
+   
+   
+

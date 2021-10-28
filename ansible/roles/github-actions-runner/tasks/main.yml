@@ -1,0 +1,56 @@
+---
+# tasks file for roles/github-actions-runner
+
+- name: install docker
+  yum:
+    name:
+      - docker
+      - git 
+      - jq
+    state: present
+
+- name: create runner directory
+  file:
+    path: /runner
+    state: directory
+
+- name: download runner binary
+  get_url:
+    url: https://github.com/actions/runner/releases/download/{{runner_version}}/actions-runner-linux-x64-{{runner_version}}.tar.gz
+    dest: /runner/actions-runner-linux-x64-{{runner_version}}.tar.gz
+
+- name: extract the runner file
+  unarchive:
+    src: /runner/actions-runner-linux-x64-{{runner_version}}.tar.gz
+    dest: /runner
+    remote_src: yes
+
+- name: get github token
+  uri:
+    url: https://api.github.com/repos/CBIIT/bento-github-actions-poc/actions/runners/registration-token
+    method: POST
+    headers:
+      Authorization: "{{pat}}"
+  register: login
+
+# - name: install runner script
+#   shell: ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token $token  --name "bento-runner-$(hostname)"
+#     args:
+#     chdir: /runner
+#     environment:
+#       RUNNER_ALLOW_RUNASROOT: true
+
+# - name: install runner service
+#   shell: ./svc.sh install && ./svc.sh start
+#     args:
+#     chdir: /runner
+
+- name: show login content
+  debug:
+    msg: "{{login}}"
+    
+- name: enable and start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes

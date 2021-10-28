@@ -124,19 +124,11 @@ mainSteps:
   inputs:
     runCommand:
     - set -ex
-    - yum -y install docker git jq
-    - usermod -a -G docker bento
-    - systemctl start docker
-    - systemctl enable docker
-    - export RUNNER_ALLOW_RUNASROOT=true
-    - mkdir actions-runner && cd actions-runner
-    - curl -o actions-runner-linux-x64-2.283.3.tar.gz -L https://github.com/actions/runner/releases/download/v2.283.3/actions-runner-linux-x64-2.283.3.tar.gz
-    - tar xzf ./actions-runner-linux-x64-2.283.3.tar.gz
-    - PAT=${jsondecode(data.aws_secretsmanager_secret_version.github_action_token.secret_string)["github-actions-token"]}
-    - token=$(curl -s -XPOST -H "authorization: token $PAT" https://api.github.com/repos/CBIIT/bento-github-actions-poc/actions/runners/registration-token | jq -r .token)
-    - ./config.sh --url https://github.com/CBIIT/bento-github-actions-poc --token $token  --name "bento-runner-$(hostname)"
-    - sudo ./svc.sh install
-    - sudo ./svc.sh start
+    - cd /tmp
+    - yum -y install ansible
+    - git clone https://github.com/CBIIT/icdc-devops
+    - cd icdc-devops/ansible && git checkout master
+    - ansible-playbook github-actions-runner.yml -e pat=${jsondecode(data.aws_secretsmanager_secret_version.github_action_token.secret_string)["github-actions-token"]}
 DOC
   tags = merge(
   {

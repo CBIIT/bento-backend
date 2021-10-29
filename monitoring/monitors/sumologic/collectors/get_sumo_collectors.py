@@ -13,7 +13,7 @@ def getsumocollectors(project, tier, auth):
    except requests.exceptions.RequestException as e:
      raise SystemExit(e)
 
-   print('Sumo Collectors:')
+   print('Sumo Collectors: ')
    print()
    for x in response.json()['collectors']:
      if project.lower() in x.get("name", "none").lower() and tier.lower() in x.get("name", "none").lower():

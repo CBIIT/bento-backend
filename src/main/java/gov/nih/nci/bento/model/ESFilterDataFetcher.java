@@ -26,12 +26,15 @@ public class ESFilterDataFetcher {
     final String SUBJECT_ID = "subject_ids";
     final String SUBJECT_ID_NUM = "subject_id_num";
     final String SUBJECTS_END_POINT = "/subjects/_search";
+    final String SUBJECTS_COUNT_END_POINT = "/subjects/_count";
     final String SAMPLE_ID = "sample_ids";
     final String SAMPLE_ID_NUM = "sample_id_num";
     final String SAMPLES_END_POINT = "/samples/_search";
+    final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILE_ID = "file_ids";
     final String FILE_ID_NUM = "file_id_num";
     final String FILES_END_POINT = "/files/_search";
+    final String FILES_COUNT_END_POINT = "/files/_count";
     final String GS_END_POINT = "/global_search/_search";
     final int GS_LIMIT = 10;
     final String GS_RESULT_FIELD = "result_field";
@@ -104,16 +107,20 @@ public class ESFilterDataFetcher {
         final String[] RANGE_AGG_NAMES = RANGE_AGGS.keySet().toArray(new String[0]);
 
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
-        query.put("size", 0);
-        Request sampleRequest = new Request("GET", SAMPLES_END_POINT);
-        sampleRequest.setJsonEntity(gson.toJson(query));
-        JsonObject sampleResult = esService.send(sampleRequest);
-        int numberOfSamples = esService.getTotalHits(sampleResult);
+        Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
+        sampleCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject sampleCountResult = esService.send(sampleCountRequest);
+        int numberOfSamples = sampleCountResult.get("count").getAsInt();
 
-        Request fileRequest = new Request("GET", FILES_END_POINT);
-        fileRequest.setJsonEntity(gson.toJson(query));
-        JsonObject fileResult = esService.send(fileRequest);
-        int numberOfFiles = esService.getTotalHits(fileResult);
+        Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
+        fileCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject fileCountResult = esService.send(fileCountRequest);
+        int numberOfFiles = fileCountResult.get("count").getAsInt();
+
+        Request subjectCountRequest = new Request("GET", SUBJECTS_COUNT_END_POINT);
+        subjectCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject subjectCountResult = esService.send(subjectCountRequest);
+        int numberOfSubjects = subjectCountResult.get("count").getAsInt();
 
 
         // Get aggregations
@@ -121,7 +128,6 @@ public class ESFilterDataFetcher {
         Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
         subjectRequest.setJsonEntity(gson.toJson(aggQuery));
         JsonObject subjectResult = esService.send(subjectRequest);
-        int numberOfSubjects = esService.getTotalHits(subjectResult);
         Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, TERM_AGG_NAMES);
 
         Map<String, Object> data = new HashMap<>();

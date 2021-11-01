@@ -1,0 +1,166 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice_ccdc'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Etl_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: ' https://github.com/CBIIT/CCDC-ETL')
+    string(defaultValue: "etl-digest-files", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
+    extendedChoice( 
+        name: 'Deployment_Type', 
+        defaultValue: 're-depployment', 
+        description: 'Choose the type fo deployment', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'initial-setup,re-deployment' )
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+
+				checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Etl_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [[$class: 'RelativeTargetDirectory',
+					relativeTargetDir: 'CCDC-ETL']],
+					submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/CCDC-ETL']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+   
+    stage('Set Environment'){
+      environment {
+       SLACK_URL = "${SLACK_URL}"
+       ETL_VERSION = "${params.Etl_Tag}"
+       S3_FOLDER = "${params.S3Folder}"
+       DEPLOYMENT_TYPE = "${params.Deployment_Type}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  env.TIER  = "dev"
+                }
+        break
+              default:
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
+                  env.TIER  = "dev"
+                }
+              break
+            }
+          }
+        }
+    }
+
+  	stage('build'){
+      environment {
+       VERSION = "${params.Etl_Tag}"
+       ETL_VERSION = "${params.Etl_Tag}"
+       S3_FOLDER = "${params.S3Folder}"
+      }
+ 		steps {
+
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  ansiblePlaybook(  			
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/ccdc-build-etl.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						extraVars: [
+                        tier: "${params.Environment}",
+                        s3_folder: "${params.S3Folder}",
+                        deployment_type: "${params.Deployment_Type}"
+            ],
+						colorized: true)
+ 				}
+ 			}
+ 		}
+  }
+
+  }
+  post {
+
+	always {
+
+      sendSlackMessage()
+
+    }
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

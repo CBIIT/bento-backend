@@ -1,0 +1,67 @@
+---
+
+- name: run npm install in {{workspace}}/{{etl}}
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/{{etl}}"
+  loop:
+    - npm install
+
+- name: create digest_file_folder 
+  file: 
+    path: "{{workspace}}/{{etl}}/{{ digest_file_folder }}"
+    state: directory
+
+- name: Get list of files from S3
+  aws_s3:
+    mode: list
+    bucket: "{{ aws_storage_bucket_name }}"
+    prefix: "{{ digest_file_folder }}/"
+    marker: "{{ digest_file_folder }}/"
+  register: s3_bucket_items
+
+- name: Print s3_bucket_items
+  debug:
+    msg: "s3_bucket_items Version: {{ s3_bucket_items.s3_keys }}"
+
+- name: Download files from S3
+  aws_s3:
+    mode: get
+    bucket: "{{ aws_storage_bucket_name }}"
+    object: "{{ item }}"
+    dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
+  with_items: "{{ s3_bucket_items.s3_keys }}"
+
+- name: set environment variables required for js file execution
+  shell:
+  environment:
+    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+    REACT_APP_ENVIRONMENT: "{{tier}}"
+    RDB_HOST : "{{ rds_host }}"
+    RDB_PORT : "{{ rds_port }}"
+    RDB_USER : "{{ rds_user }}"
+    RDB_PASSWORD : "{{ rds_password }}"
+    ES_HOST : "{{ es_host }}"
+    ES_PORT : "{{ es_port }}"
+    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
+
+- name: start the application. Run dropTable.js
+  shell:
+    "node dropTable.js"
+  args:
+    chdir: "{{ workspace }}/{{ etl }}"
+  when:
+    "{{ deployment_type }}" == "re-deployment"
+
+
+- name: start the application. Run createTable.js
+  shell:
+    "node dropTable.js"
+  args:
+    chdir: "{{ workspace }}/{{ etl }}"
+  
+- name: start the application. Run index.js
+  shell:
+    "node index.js"
+  args:
+    chdir: "{{ workspace }}/{{ etl }}"

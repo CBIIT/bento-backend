@@ -1,0 +1,63 @@
+---
+# vars file for cicd
+#enable_redis: true
+platform: aws
+redis_tier_name: "{{project}}-{{tier}}"
+redis_host: 
+  bento-dev: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  bento-qa: "bento-qa-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  bento-perf: "bento-perf-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  bento-icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  bento-ctdc: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  bento-prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  gmb-dev: "gmb-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  ins-dev: "ins-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+
+redis_password: ""
+redis_port: 6379
+use_cluster: 'true'
+
+tier: "{{ lookup('env','TIER') }}"
+es_host: "{{ lookup('env','ES_HOST') }}"
+version: "{{ lookup('env','VERSION') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+region: us-east-1
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
+app_name: "{{project}}-{{platform}}-{{tier}}"
+
+#### bento-icdc changes ################################################################################################################################################
+#schema_file: "{% if tier == 'icdc' %}icdc.graphql{% elif project == 'ctdc' %}ctdc.graphql{% else %}bento-extended.graphql{% endif %}"
+########################################################################################################################################################################
+schemas:
+  icdc: "icdc.graphql"
+  bento: "bento-extended.graphql"
+  gmb: "bento-gmb.graphql"
+  ins: "bento-extended.graphql"
+  ccdi: "bento-extended.graphql"
+
+schema_file: "{{schemas[project]}}"
+
+frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"
+backend_commit_id: "{{ lookup('env','BE_COMMIT') | default('', true) }}"
+frontend_version: "{{ lookup('env','FE_VERSION') }}"
+backend_version: "{{ lookup('env','BE_VERSION') }}"
+bento_api_version: "{{ backend_version }}"
+backend_frontend_version: "{{frontend_version }}"
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
+# neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+neo4j_bearer: "{{ lookup('env','BEARER') }}"
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+bearer: "{{ lookup('env','BEARER') }}"
+
+about_content_url:
+  gmb:  https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/develop/src/content/{{tier}}/aboutPagesContent.yaml
+  bento: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
+  ctdc: https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/develop/src/content/pre-prod/aboutPagesContent.yml
+# hostname: "{{ansible_fqdn}}"

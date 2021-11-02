@@ -1,0 +1,10 @@
+---
+# vars file for ins
+redis_host: 
+  dev: "ins-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
+
+schema_file: "bento-extended.graphql"
+
+about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"
+
+

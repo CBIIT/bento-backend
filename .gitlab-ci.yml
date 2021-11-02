@@ -1,0 +1,8 @@
+# use cicd-microservice container
+image: cbiitssrepo/cicd-microservice:latest
+
+build:
+  stage: build
+  variables:
+    NODE_OPTIONS: "--max_old_space_size=4096"
+  script: ansible-playbook build/ansible/bento-build.yml -i build/ansible/hosts

@@ -1,0 +1,40 @@
+---
+# defaults file for cicd
+# project
+platform: aws
+region: us-east-1
+project: bento
+tier: "{{ lookup('env','TIER') }}"
+app_name: "{{project}}-{{platform}}-{{tier}}"
+
+# build
+workspace: "{{ lookup('env','WORKSPACE') }}"
+docker_user: "{{ lookup('env','DOCKER_USER') }}"
+docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"
+backend_commit_id: "{{ lookup('env','BE_COMMIT') | default('', true) }}"
+frontend_version: "{{ lookup('env','CI_COMMIT_BRANCH') }}"
+bento_api_version: "{{ lookup('env','CI_COMMIT_BRANCH') }}"
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+test_queries_file: "{{ lookup('env','TEST_QUERIES_FILE')}}"
+
+# db
+neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
+neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
+
+# redis
+enable_redis: true
+redis_password: ""
+redis_port: 6379
+use_cluster: 'true'
+
+# elasticsearch
+enable_es_filter: true
+es_host: "{{ lookup('env','ES_HOST') }}"
+
+# monitoring agents
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"

@@ -145,6 +145,7 @@ schema {
 
 type QueryType {
     searchSubjects (
+        subject_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],

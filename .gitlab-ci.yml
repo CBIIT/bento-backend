@@ -5,4 +5,4 @@ build:
   stage: build
   variables:
     NODE_OPTIONS: "--max_old_space_size=4096"
-  script: ansible-playbook build/ansible/bento-build.yml -i build/ansible/hosts
+  script: ansible-playbook devops/ansible/bento-build.yml -i devops/ansible/hosts

@@ -14,50 +14,50 @@
 
 - name: remove the application_example.properties file 
   file:
-    path: "{{ workspace }}/src/main/resources/application_example.properties"
+    path: "{{ workspace.stdout }}/src/main/resources/application_example.properties"
     state: absent
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: "{{ workspace }}/src/main/resources/application.properties.j2"
-    dest: "{{ workspace }}/src/main/resources/application.properties"
+    src: "{{ workspace.stdout }}/src/main/resources/application.properties.j2"
+    dest: "{{ workspace.stdout }}/src/main/resources/application.properties"
 
 - name: create graphql directory in backend
   file:
     state: directory
-    path: "{{ workspace }}/src/main/resources/graphql"
+    path: "{{ workspace.stdout }}/src/main/resources/graphql"
 
 - name: create yaml directory in backend
   file:
     state: directory
-    path: "{{ workspace }}/src/main/resources/yaml"
+    path: "{{ workspace.stdout }}/src/main/resources/yaml"
 
 - name: copy schema from frontend to resources
   get_url:
     url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_api_version }}/graphql/{{ schema_file }}"
-    dest: "{{ workspace }}/src/main/resources/graphql/{{ schema_file }}"
+    dest: "{{ workspace.stdout }}/src/main/resources/graphql/{{ schema_file }}"
 
 - name: verify test queries file exists
   stat:
-    path: "{{ workspace }}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
+    path: "{{ workspace.stdout }}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
   register: test_queries
 
 - name: copy test queries from frontend to resources
   get_url:
     url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_api_version }}/yaml/{{ test_queries_file }}"
-    dest: "{{ workspace }}/src/main/resources/yaml/{{ test_queries_file }}"
+    dest: "{{ workspace.stdout }}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
 - name: build springboot code
   command: mvn package -DskipTests
   args:
-    chdir: "{{ workspace }}"
+    chdir: "{{ workspace.stdout }}"
 
 - name: copy Bento-0.0.1.war to ROOT.war
   copy:
     remote_src: yes
-    src: "{{ workspace }}/target/Bento-0.0.1.war"
-    dest: "{{ workspace }}/target/ROOT.war"
+    src: "{{ workspace.stdout }}/target/Bento-0.0.1.war"
+    dest: "{{ workspace.stdout }}/target/ROOT.war"
 
 - name: log into DockerHub
   docker_login:
@@ -67,8 +67,8 @@
 - name: build cbiitssrepo/{{ project }}-backend image
   docker_image:
     build:
-      path: "{{ workspace }}"
-      dockerfile: "{{ workspace }}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+      path: "{{ workspace.stdout }}"
+      dockerfile: "{{ workspace.stdout }}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
     name: cbiitssrepo/{{ project }}-backend

@@ -9,5 +9,7 @@ redis_host:
   prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 
 schema_file: "bento-extended.graphql"
+redis_schema_file: ""
+redis_init_queries_file: ""
 
 about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"

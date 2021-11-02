@@ -37,16 +37,10 @@
     url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_api_version }}/graphql/{{ schema_file }}"
     dest: "{{ workspace.stdout }}/src/main/resources/graphql/{{ schema_file }}"
 
-- name: verify test queries file exists
-  stat:
-    path: "{{ workspace.stdout }}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
-  register: test_queries
-
 - name: copy test queries from frontend to resources
   get_url:
     url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_api_version }}/yaml/{{ test_queries_file }}"
     dest: "{{ workspace.stdout }}/src/main/resources/yaml/{{ test_queries_file }}"
-  when: test_queries.stat.exists
 
 - name: build springboot code
   command: mvn package -DskipTests

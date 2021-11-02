@@ -396,10 +396,23 @@ public class ESFilterDataFetcher {
     }
 
     private Map<String, Object> getRange(JsonObject aggs) {
+        final String LOWER_BOUND = "lowerBound";
+        final String UPPER_BOUND = "upperBound";
         Map<String, Object> range = new HashMap<>();
-        range.put("lowerBound", aggs.get("min").getAsDouble());
-        range.put("upperBound", aggs.get("max").getAsDouble());
         range.put("subjects", aggs.get("count").getAsInt());
+        JsonElement lowerBound = aggs.get("min");
+        if (!lowerBound.isJsonNull()) {
+            range.put(LOWER_BOUND, lowerBound.getAsDouble());
+        } else {
+            range.put(LOWER_BOUND, null);
+        }
+        JsonElement upperBound = aggs.get("max");
+        if (!upperBound.isJsonNull()) {
+            range.put("upperBound", aggs.get("max").getAsDouble());
+        } else {
+            range.put(UPPER_BOUND, null);
+        }
+
         return range;
     }
 

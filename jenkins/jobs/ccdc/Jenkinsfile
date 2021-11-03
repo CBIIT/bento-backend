@@ -142,15 +142,18 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   env.TIER  = "dev"
                   // s3_folder: "${params.S3Folder}"
-
+                }
+        break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  env.TIER  = "qa"
+                  // s3_folder: "${params.S3Folder}"
                 }
         break
               default:
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
                   env.TIER  = "dev"
                   // s3_folder: "${params.S3Folder}"
-                  // aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
-                  // aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
                 }
               break
             }
@@ -193,7 +196,7 @@ pipeline {
 	   	URL_DOMAIN = "bento-tools.org"
       }
   		steps{
-  		  node('cicd_microservice') {
+  		  node('cicd_microservice_ccdc') {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 

@@ -5,6 +5,17 @@
   gather_facts: no
   become: yes
     
+  environment:
+    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+    REACT_APP_ENVIRONMENT: "{{tier}}"
+    RDB_HOST : "{{ rds_host }}"
+    RDB_PORT : "{{ rds_port }}"
+    RDB_USER : "{{ rds_user }}"
+    RDB_PASSWORD : "{{ rds_password }}"
+    ES_HOST : "{{ es_host }}"
+    ES_PORT : "{{ es_port }}"
+    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
+
   tasks:
     - name: This is a build stage
       include_role:

@@ -144,7 +144,14 @@ pipeline {
 						extraVars: [
                         tier: "${params.Environment}",
                         s3_folder: "${params.S3Folder}",
-                        deployment_type: "${params.Deployment_Type}"
+                        deployment_type: "${params.Deployment_Type}",
+                        stack_name: ccdc,
+                        rds_port: "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}",
+                        rds_user: "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}",
+                        rds_password: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}",
+                        es_host: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}",
+                        es_port: "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}",
+                        digest_file_folder: "{{ lookup('env','S3_FOLDER') }}"
             ],
 						colorized: true)
  				}

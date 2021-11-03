@@ -15,32 +15,32 @@ app_name: "{{stack_name}}-{{platform}}-{{tier}}"
 etl: CCDC-ETL
 etl_version: "{{ lookup('env','ETL_VERSION') }}"
 region: us-east-1
-rds_host: "{{ lookup('aws_ssm', 'rds_host', region='us-east-1' ) }}"
+rds_host: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-host', region='us-east-1' ) }}"
 rds_port: "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
 rds_user: "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
-rds_password: "{{ lookup('aws_ssm', 'rds_password', region='us-east-1' ) }}"
-es_host: "{{ lookup('aws_ssm', 'es_host', region='us-east-1' ) }}"
+rds_password: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
+es_host: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
 es_port: "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
 digest_file_folder: "{{ lookup('env','S3_FOLDER') }}"
 aws_storage_bucket_name : ccdc-etl-digest
 deployment_type: "{{ lookup('env','DEPLOYMENT_TYPE') }}"
 
-environment_variables:
-  - key: REACT_APP_BACKEND_API 
-    value : "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 
-  - key: REACT_APP_ENVIRONMENT 
-    value : "{{tier}}"
-  - key: RDB_HOST 
-    value : "{{ rds_host }}"
-  - key: RDB_PORT 
-    value : "{{ rds_port }}"
-  - key: RDB_USER 
-    value : "{{ rds_user }}"
-  - key: RDB_PASSWORD 
-    value : "{{ rds_password }}"
-  - key: ES_HOST 
-    value : "{{ es_host }}" 
-  - key: ES_PORT 
-    value : "{{ es_port }}"
-  - key: DIGEST_FILE_FOLDER 
-    value : "{{ digest_file_folder }}"
+# environment_variables:
+#   - key: REACT_APP_BACKEND_API 
+#     value : "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 
+#   - key: REACT_APP_ENVIRONMENT 
+#     value : "{{tier}}"
+#   - key: RDB_HOST 
+#     value : "{{ rds_host }}"
+#   - key: RDB_PORT 
+#     value : "{{ rds_port }}"
+#   - key: RDB_USER 
+#     value : "{{ rds_user }}"
+#   - key: RDB_PASSWORD 
+#     value : "{{ rds_password }}"
+#   - key: ES_HOST 
+#     value : "{{ es_host }}" 
+#   - key: ES_PORT 
+#     value : "{{ es_port }}"
+#   - key: DIGEST_FILE_FOLDER 
+#     value : "{{ digest_file_folder }}"

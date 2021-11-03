@@ -32,18 +32,18 @@
     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
   with_items: "{{ s3_bucket_items.s3_keys }}"
 
-- name: set environment variables required for js file execution
-  shell:
-  environment:
-    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
-    REACT_APP_ENVIRONMENT: "{{tier}}"
-    RDB_HOST : "{{ rds_host }}"
-    RDB_PORT : "{{ rds_port }}"
-    RDB_USER : "{{ rds_user }}"
-    RDB_PASSWORD : "{{ rds_password }}"
-    ES_HOST : "{{ es_host }}"
-    ES_PORT : "{{ es_port }}"
-    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
+# - name: set environment variables required for js file execution
+#   shell:
+#   environment:
+#     REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+#     REACT_APP_ENVIRONMENT: "{{tier}}"
+#     RDB_HOST : "{{ rds_host }}"
+#     RDB_PORT : "{{ rds_port }}"
+#     RDB_USER : "{{ rds_user }}"
+#     RDB_PASSWORD : "{{ rds_password }}"
+#     ES_HOST : "{{ es_host }}"
+#     ES_PORT : "{{ es_port }}"
+#     DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
 
 - name: start the application. Run dropTable.js
   shell:

@@ -8,5 +8,5 @@
   tasks:
     - name: This is a build stage
       include_role:
-        name: ccdc
-        tasks_from: build_ETL
+        name: ccdc-etl
+        tasks_from: build

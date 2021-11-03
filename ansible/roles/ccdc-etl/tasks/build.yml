@@ -51,7 +51,7 @@
   args:
     chdir: "{{ workspace }}/{{ etl }}"
   when:
-    {{ deployment_type }} == "re-deployment"
+    deployment_type == "re-deployment"
 
 
 - name: start the application. Run createTable.js

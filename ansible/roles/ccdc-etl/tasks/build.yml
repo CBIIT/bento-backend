@@ -56,7 +56,7 @@
 
 - name: start the application. Run createTable.js
   shell:
-    "node dropTable.js"
+    "node createTable.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
   

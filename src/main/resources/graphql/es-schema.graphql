@@ -145,6 +145,7 @@ schema {
 
 type QueryType {
     searchSubjects (
+        subject_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],
         diagnoses: [String] = [],
@@ -188,6 +189,7 @@ type QueryType {
     ): [SubjectOverview]
 
     sampleOverview (
+        subject_ids: [String] = [],
         sample_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],
@@ -212,6 +214,7 @@ type QueryType {
     ): [SampleOverview]
 
     fileOverview (
+        subject_ids: [String] = [],
         file_ids: [String] = [],
         programs: [String] = [],
         studies: [String] = [],

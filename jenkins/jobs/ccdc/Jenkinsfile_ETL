@@ -113,6 +113,11 @@ pipeline {
                   env.TIER  = "dev"
                 }
         break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  env.TIER  = "qa"
+                }
+        break
               default:
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
                   env.TIER  = "dev"

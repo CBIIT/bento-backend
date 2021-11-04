@@ -11,10 +11,10 @@
 
 - name: show url
   debug:
-    msg: "{{ git_url }}"
+    msg: "{{ git_url.stdout }}"
 
 - name: get latest tag number
-  shell: "git ls-remote --refs --tags --sort=v:refname origin | cut -d '/' -f2- | grep '3.6.0' | sed 's|.*-||' | tail -1"
+  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep '3.6.0' | sed 's|.*-||' | tail -1"
   register: tags
 
 - name: show tags

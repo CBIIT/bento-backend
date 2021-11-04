@@ -14,7 +14,7 @@
     msg: "{{ git_url.stdout }}"
 
 - name: get latest tag number
-  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep '4.3.0' | sed 's|.*-||' | tail -1"
+  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep '{{ bento_api_version }}-{{ project }}' | sed 's|.*-||' | tail -1"
   register: tags
 
 - name: show tags

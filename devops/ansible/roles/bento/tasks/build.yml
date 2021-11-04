@@ -5,6 +5,14 @@
 
 ############################################################################################################################
 
+- name: get remote url
+  shell: git config --get remote.origin.url
+  register: git_url
+
+- name: show url
+  debug:
+    msg: "{{ git_url }}"
+
 - name: get latest tag number
   shell: "git ls-remote --refs --tags --sort=v:refname origin | cut -d '/' -f2- | grep '3.6.0' | sed 's|.*-||' | tail -1"
   register: tags

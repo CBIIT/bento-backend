@@ -9,25 +9,21 @@
   shell: git config --get remote.origin.url
   register: git_url
 
-- name: show url
-  debug:
-    msg: "{{ git_url.stdout }}"
-
-- name: show version
-  debug:
-    msg: "{{ bento_api_version }}"
-    
-- name: show project
-  debug:
-    msg: "{{ project }}"
-
 - name: get latest tag number
   shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep {{ bento_api_version }}-{{ project }} | sed 's|.*-||' | tail -1"
   register: tags
 
 - name: show tags
   debug:
-    msg: "{{ tags.stdout_lines }}"
+    msg: "{{ tags.stdout }}"
+
+- name: set build number
+  set_fact:
+    build_number: "{% if tags.stdout %}{{ tags.stdout|int + 1 }}{% else %}1{% endif %}"
+
+- name: show build number
+  debug:
+    msg: "{{ build_number }}"
 
 - name: get path
   command: pwd
@@ -80,6 +76,19 @@
   docker_login:
     username: "{{docker_user}}"
     password: "{{docker_password}}"
+
+#- name: push tag: {{ bento_api_version }}-{{ project }}-{{ build_number }}
+#  docker_image:
+#    build:
+#      path: "{{ workspace.stdout }}"
+#      dockerfile: "./devops/dockerfiles/backend-dockerfile"
+#      pull: yes
+#      nocache: yes
+#    name: cbiitssrepo/{{ project }}-backend
+#    tag: "{{ bento_api_version }}-{{ build_number }}"
+#    push: yes
+#    force_source: yes
+#    source: build
 
 #- name: build cbiitssrepo/{{ project }}-backend image
 #  docker_image:

@@ -5,6 +5,14 @@
 
 ############################################################################################################################
 
+- name: get latest tag
+  shell: git describe --tags --abbrev=0
+  register: latest_tag
+
+- name: show tag
+  debug:
+    msg: "{{ latest_tag.stdout }}"
+
 - name: get path
   command: pwd
   args:
@@ -57,18 +65,18 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: build cbiitssrepo/{{ project }}-backend image
-  docker_image:
-    build:
-      path: "{{ workspace.stdout }}"
-      dockerfile: "./devops/dockerfiles/backend-dockerfile"
-      pull: yes
-      nocache: yes
-    name: cbiitssrepo/{{ project }}-backend
-    tag: "{{bento_api_version}}-{{build_number}}"
-    push: yes
-    force_source: yes
-    source: build
+#- name: build cbiitssrepo/{{ project }}-backend image
+#  docker_image:
+#    build:
+#      path: "{{ workspace.stdout }}"
+#      dockerfile: "./devops/dockerfiles/backend-dockerfile"
+#      pull: yes
+#      nocache: yes
+#    name: cbiitssrepo/{{ project }}-backend
+#    tag: "{{bento_api_version}}-{{build_number}}"
+#    push: yes
+#    force_source: yes
+#    source: build
 
 #- name: Add tag latest to cbiitssrepo/{{ project }}-backend image
 #  docker_image:

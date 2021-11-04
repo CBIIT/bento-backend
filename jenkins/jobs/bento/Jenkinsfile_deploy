@@ -430,47 +430,6 @@ pipeline {
 	success {
 
 		script {
-		    if (env.Tier == 'perf') {
-			    withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
-				    sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
-
-				    gitURL=$(git config remote.origin.url | sed 's|^.*//||')
-				    echo "Updating tag $Backend_Image to Release:  $gitURL"
-				    git config user.email "jenkins@bento-tools.org"
-				    git config user.name "Bento Jenkins"
-				    git tag --no-sign ${Backend_Image}-release ${Backend_Image}
-					git tag --no-sign -d ${Backend_Image}
-					git push https://${git_token}:x-oauth-basic@${gitURL} origin :refs:tags:${Backend_Image}
-				    git push https://${git_token}:x-oauth-basic@${gitURL} --tags
-
-				    '''
-
-				    }
-			    }
-			}
-		
-		script {
-		    if (env.Tier == 'perf') {
-			    withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
-				    sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
-
-				    cd ${WORKSPACE}/bento-frontend
-				    gitURL=$(git config remote.origin.url | sed 's|^.*//||')
-				    echo "Updating tag $Frontend_Image to Release:  $gitURL"
-				    git config user.email "jenkins@bento-tools.org"
-				    git config user.name "Bento Jenkins"
-				    git tag --no-sign ${Frontend_Image}-release ${Frontend_Image}
-					git tag --no-sign -d ${Frontend_Image}
-					git push https://${git_token}:x-oauth-basic@${gitURL} origin :refs:tags:${Frontend_Image}
-				    git push https://${git_token}:x-oauth-basic@${gitURL} --tags
-
-				    '''
-
-				    }
-			    }
-			}
-
-		script {
 			if ("${params.Test_Params}"?.trim()) {
 				echo 'Run Bento Katalon Tests'
 				def params = "[${params.Test_Params}]"

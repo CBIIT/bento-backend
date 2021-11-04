@@ -13,8 +13,16 @@
   debug:
     msg: "{{ git_url.stdout }}"
 
+- name: show version
+  debug:
+    msg: "{{ bento_api_version }}"
+    
+- name: show project
+  debug:
+    msg: "{{ project }}"
+
 - name: get latest tag number
-  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep '{{ bento_api_version }}-{{ project }}' | sed 's|.*-||' | tail -1"
+  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep {{ bento_api_version }}-{{ project }} | sed 's|.*-||' | tail -1"
   register: tags
 
 - name: show tags

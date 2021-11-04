@@ -430,6 +430,20 @@ pipeline {
 	success {
 
 		script {
+		    if (env.Tier == 'perf') {
+			    withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+				    sh label: 'GIT-Set Releases', script: '''#!/bin/bash
+
+					curl -u michael-fleming:"${git_token}" POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-frontend/releases -d '{"tag_name":${Frontend_Image}}'
+					curl -u michael-fleming:"${git_token}" POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-backend/releases -d '{"tag_name":${Backend_Image}}'
+
+				    '''
+
+				    }
+			    }
+			}
+
+		script {
 			if ("${params.Test_Params}"?.trim()) {
 				echo 'Run Bento Katalon Tests'
 				def params = "[${params.Test_Params}]"

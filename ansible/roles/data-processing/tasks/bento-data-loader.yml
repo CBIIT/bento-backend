@@ -12,6 +12,10 @@
   set_fact:
     neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
 
+- name: show db 
+  debug:
+    msg: "{{neo4j_ip}}"
+
 - name: set model files location for icdc
   set_fact:
     model_file1: "{{workspace}}/icdc-model/model-desc/icdc-model.yml"

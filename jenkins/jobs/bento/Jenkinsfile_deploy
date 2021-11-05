@@ -288,144 +288,144 @@ pipeline {
         }
     }
 
-    stage('clear redis cache'){
-		agent { label 'data-loader' }
-		when {
-			expression { params.Flush_Redis }
-			}
+//    stage('clear redis cache'){
+//		agent { label 'data-loader' }
+//		when {
+//			expression { params.Flush_Redis }
+//			}
+//	
+// 		environment {
+//			TIER = "${params.Environment}"
+//			}
+//
+//		steps{
+//			checkout( changelog:false,
+//				poll: false,
+//				scm: [$class: 'GitSCM', 
+//				branches: [[name: '*/master']], 
+//				doGenerateSubmoduleConfigurations: false, 
+//				extensions: [[$class: 'DisableRemotePoll'],
+//				[$class: 'PathRestriction', excludedRegions: '*'], 
+//				[$class: 'RelativeTargetDirectory', 
+//				relativeTargetDir: 'icdc-devops']], 
+//				submoduleCfg: [], 
+//				userRemoteConfigs: 
+//				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+//				])
+//       
+//			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+//				ansiblePlaybook( 
+//                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
+//                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+//                colorized: true)
+//			}
+//		}
+//	}
 	
-  		environment {
-			TIER = "${params.Environment}"
-			}
-
-		steps{
-			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-        
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-				ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                colorized: true)
-			}
-		}
-	}
+//  	stage('deploy'){
+//	  environment {
+//	   SLACK_URL = "${SLACK_URL}"
+//       TIER = "${params.Environment}"
+//       FE_VERSION = "${params.Frontend_Image}"
+//       BE_VERSION = "${params.Backend_Image}"
+//	   SLACK_CHANNEL = "#system-alerts"
+//	   URL_DOMAIN = "bento-tools.org"
+//      }
+//  		steps{
+//		  node('cicd_microservice') {
+//		    checkout( changelog:false,
+//				poll: false,
+//				scm: [$class: 'GitSCM', 
+//				branches: [[name: '*/master']], 
+//				doGenerateSubmoduleConfigurations: false, 
+//				extensions: [[$class: 'DisableRemotePoll'],
+//				[$class: 'PathRestriction', excludedRegions: '*'], 
+//				[$class: 'RelativeTargetDirectory', 
+//				relativeTargetDir: 'icdc-devops']], 
+//				submoduleCfg: [], 
+//				userRemoteConfigs: 
+//				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+//				])
+//  			
+//			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+//  				ansiblePlaybook( 
+//            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
+//            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+//            		extraVars: [
+//                    enable_redis: "${params.Use_Redis}",
+//					enable_es_filter: "${params.Enable_ES_Filter}",
+//                    ],
+//					colorized: true)
+// 			}
+//			
+//			script {
+//
+//              sh label: 'Env-Updates', script: '''#!/bin/bash
+//
+//		      yum -y install python3
+//		  
+//			  cd icdc-devops/monitoring
+//		      pip3 install -r requirements.txt
+//
+//              '''
+//		  
+//		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
+//			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
+//				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p bento -t $TIER -k $API_KEY"
+//				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p bento -t $TIER -k $API_KEY"
+//	          }
+//
+//            }
+//
+//		  }
+// 		}
+//  	}
 	
-  	stage('deploy'){
-	  environment {
-	   SLACK_URL = "${SLACK_URL}"
-       TIER = "${params.Environment}"
-       FE_VERSION = "${params.Frontend_Image}"
-       BE_VERSION = "${params.Backend_Image}"
-	   SLACK_CHANNEL = "#system-alerts"
-	   URL_DOMAIN = "bento-tools.org"
-      }
-  		steps{
-		  node('cicd_microservice') {
-		    checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-  			
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/bento-deploy.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            		extraVars: [
-                    enable_redis: "${params.Use_Redis}",
-					enable_es_filter: "${params.Enable_ES_Filter}",
-                    ],
-					colorized: true)
-  			}
-			
-			script {
-
-              sh label: 'Env-Updates', script: '''#!/bin/bash
-
-		      yum -y install python3
-		  
-			  cd icdc-devops/monitoring
-		      pip3 install -r requirements.txt
-
-              '''
-		  
-		      withCredentials([string(credentialsId: 'newrelic_api_key', variable: 'API_KEY')]) {
-			    sh "python3 $WORKSPACE/icdc-devops/monitoring/releases/add_apm_release.py -p bento -t $TIER -v $FE_VERSION/$BE_VERSION -k $API_KEY"
-				sh "python3 $WORKSPACE/icdc-devops/monitoring/monitor_update.py -p bento -t $TIER -k $API_KEY"
-				sh "python3 $WORKSPACE/icdc-devops/monitoring/dashboards/add_tier_dashboards.py -p bento -t $TIER -k $API_KEY"
-	          }
-
-            }
-
-		  }
-  		}
-  	}
-	
-	stage('update database monitoring agents'){
-		steps{
-		  node('data-loader') {
-		    checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-			
-		    echo "Recreating inventory file"
-			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
-            sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-            sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
-  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					extraVars: [
-                    env: "${params.Environment}",
-					app_type: 'database',
-					app_name: 'neo4j',
-                    project: 'bento',
-					log_path: '/var/log/neo4j/*.log',
-                    ],
-            		colorized: true)
-  			}
-  		  }
-		}
-  	}
+//	stage('update database monitoring agents'){
+//		steps{
+//		  node('data-loader') {
+//		    checkout( changelog:false,
+//				poll: false,
+//				scm: [$class: 'GitSCM', 
+//				branches: [[name: '*/master']], 
+//				doGenerateSubmoduleConfigurations: false, 
+//				extensions: [[$class: 'DisableRemotePoll'],
+//				[$class: 'PathRestriction', excludedRegions: '*'], 
+//				[$class: 'RelativeTargetDirectory', 
+//				relativeTargetDir: 'icdc-devops']], 
+//				submoduleCfg: [], 
+//				userRemoteConfigs: 
+//				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+//				])
+//			
+//		    echo "Recreating inventory file"
+//			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
+//           sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+//            sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+//  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+//  				ansiblePlaybook( 
+//            		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
+//            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+//					extraVars: [
+//                    env: "${params.Environment}",
+//					app_type: 'database',
+//					app_name: 'neo4j',
+//                    project: 'bento',
+//					log_path: '/var/log/neo4j/*.log',
+//                    ],
+//            		colorized: true)
+//  			}
+//  		  }
+//		}
+//  	}
 
   }
   post {
-    always {
-      
-      sendSlackMessage()
-
-    }
+//    always {
+//      
+//      sendSlackMessage()
+//
+//    }
 
 	success {
 
@@ -436,12 +436,14 @@ pipeline {
 
 					data=\\'{\\"tag_name\\":\\"${Frontend_Image}\\"}\\'
 					echo $data
-					curl -i -u michael-fleming:"${git_token}" POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-frontend/releases -d {"tag_name":"${Frontend_Image}"}
+					curl_cmd='curl -i -u michael-fleming:"${git_token}" POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-frontend/releases -d {"tag_name":"${Frontend_Image}"}'
+					echo $curl_cmd
 					
 					bento_tag=$(echo "${Backend_Image}" | sed 's/-/-bento-/g')
 					data=\\'{\\"tag_name\\":\\"$bento_tag\\"}\\'
 					echo $data
-					curl -i -u michael-fleming:"${git_token}" POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-backend/releases -d $data
+					curl_cmd='curl -i -u michael-fleming:"${git_token}" POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-backend/releases -d $data'
+					echo $curl_cmd
 
 				    '''
 
@@ -449,23 +451,23 @@ pipeline {
 			    }
 			}
 
-		script {
-			if ("${params.Test_Params}"?.trim()) {
-				echo 'Run Bento Katalon Tests'
-				def params = "[${params.Test_Params}]"
-				def list_params = evaluate(params)
-				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
-			}
-		}
+//		script {
+//			if ("${params.Test_Params}"?.trim()) {
+//				echo 'Run Bento Katalon Tests'
+//				def params = "[${params.Test_Params}]"
+//				def list_params = evaluate(params)
+//				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
+//			}
+//		}
 
-		script {
-			if (params.Reload_ES_Data) {
-				echo 'Reload data to Elasticsearch'
-				String tag = "${params.Backend_Image}"
-				String branch = "${tag}".substring(0, "${tag}".lastIndexOf("-")) + "-bento" + "${tag}".substring("${tag}".lastIndexOf("-"), "${tag}".length())
-				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
-			}
-		}
+//		script {
+//			if (params.Reload_ES_Data) {
+//				echo 'Reload data to Elasticsearch'
+//				String tag = "${params.Backend_Image}"
+//				String branch = "${tag}".substring(0, "${tag}".lastIndexOf("-")) + "-bento" + "${tag}".substring("${tag}".lastIndexOf("-"), "${tag}".length())
+//				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+//			}
+//		}
 
 	}
 

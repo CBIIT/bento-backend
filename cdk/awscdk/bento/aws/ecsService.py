@@ -38,7 +38,7 @@ class ECSService:
         "{}-ecs-backend".format(ns),
         network_mode=ecs.NetworkMode.AWS_VPC)
     
-    backendECSContainer = backendECSTask.add_container('api',
+    backendECSContainer = backendECSTask.add_container('backend',
         image = ecs.ContainerImage.from_registry("cbiitssrepo/bento-backend:latest"),
         memory_reservation_mib=1024,
         cpu=512)
@@ -62,7 +62,7 @@ class ECSService:
         "{}-ecs-frontend".format(ns),
         network_mode=ecs.NetworkMode.AWS_VPC)
     
-    frontendECSContainer = frontendECSTask.add_container('ui',
+    frontendECSContainer = frontendECSTask.add_container('frontend',
         image = ecs.ContainerImage.from_registry("cbiitssrepo/bento-frontend:latest"),
         memory_reservation_mib=1024,
         cpu=512)

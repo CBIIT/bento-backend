@@ -52,8 +52,6 @@
     chdir: "{{ workspace }}/{{ etl }}"
   when:
     deployment_type == "re-deployment"
-  register: job_result
-  until: job_result.finished
 
 
 - name: start the application. Run createTable.js
@@ -61,8 +59,6 @@
     "node createTable.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
-  register: job_result
-  until: job_result.finished
   
 - name: start the application. Run index.js
   shell:

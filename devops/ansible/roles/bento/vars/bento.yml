@@ -8,6 +8,9 @@ redis_host:
   ctdc: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 
+es_host:
+  gitlab: "vpc-bento-gitlab-es-uhxze3zl7zep3khmq53zbja2li.us-east-1.es.amazonaws.com"
+
 schema_file: "bento-extended.graphql"
 redis_schema_file: ""
 redis_init_queries_file: ""

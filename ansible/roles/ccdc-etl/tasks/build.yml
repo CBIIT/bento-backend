@@ -45,6 +45,16 @@
 #     ES_PORT : "{{ es_port }}"
 #     DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
 
+
+- name: run npm install in {{workspace}}/{{ etl }}
+  command: "{{item}}"
+  args:
+    chdir: "{{ workspace }}/{{ etl }}"
+  loop:
+    - npm install
+    - npm run build
+
+
 - name: start the application. Run dropTable.js
   shell:
     "node dropTable.js"
@@ -52,7 +62,11 @@
     chdir: "{{ workspace }}/{{ etl }}"
   when:
     deployment_type == "re-deployment"
+  register: drop_table
 
+- name: Print drop_table
+  debug:
+    msg: "drop_table output: {{ drop_table }}"
 
 - name: start the application. Run createTable.js
   shell:

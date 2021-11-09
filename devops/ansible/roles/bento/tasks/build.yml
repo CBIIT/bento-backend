@@ -77,19 +77,6 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-- name: push tag: {{ bento_api_version }}-{{ project }}-{{ build_number }}
-  docker_image:
-    build:
-      path: "{{ workspace.stdout }}"
-      dockerfile: "./devops/dockerfiles/backend-dockerfile"
-      pull: yes
-      nocache: yes
-    name: cbiitssrepo/{{ project }}-backend
-    tag: "{{ bento_api_version }}-{{ build_number }}"
-    push: yes
-    force_source: yes
-    source: build
-
 - name: build cbiitssrepo/{{ project }}-backend image
   docker_image:
     build:

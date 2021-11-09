@@ -40,10 +40,10 @@
   environment:
     RUNNER_ALLOW_RUNASROOT: true
 
-# - name: install runner service
-#   shell: ./svc.sh install && ./svc.sh start
-#     args: 
-#     chdir: /runner
+- name: install runner service
+  shell: ./svc.sh install && ./svc.sh start
+    args: 
+    chdir: /runner
 
 - name: show login content
   debug:

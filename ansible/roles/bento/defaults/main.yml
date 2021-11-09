@@ -23,10 +23,10 @@ neo4j_user: "{{ lookup('env','NEO4J_USER') }}"
 neo4j_password: "{{ lookup('env','NEO4J_PASS') }}"
 
 # redis
-enable_redis: true
+enable_redis: false
 redis_password: ""
 redis_port: 6379
-use_cluster: 'true'
+use_cluster: 'false'
 
 # elasticsearch
 enable_es_filter: true

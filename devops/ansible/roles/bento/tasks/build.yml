@@ -53,12 +53,12 @@
 
 - name: copy schema from frontend to resources
   get_url:
-    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_api_version }}/graphql/{{ schema_file }}"
+    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_branch }}/graphql/{{ schema_file }}"
     dest: "{{ workspace.stdout }}/src/main/resources/graphql/{{ schema_file }}"
 
 - name: copy test queries from frontend to resources
   get_url:
-    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_api_version }}/yaml/{{ test_queries_file }}"
+    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ bento_branch }}/yaml/{{ test_queries_file }}"
     dest: "{{ workspace.stdout }}/src/main/resources/yaml/{{ test_queries_file }}"
 
 - name: build springboot code

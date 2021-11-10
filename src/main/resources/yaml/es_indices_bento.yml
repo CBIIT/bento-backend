@@ -418,32 +418,21 @@ Indices:
       content:
         type: object
 
-  # Holdes node names
-  - index_name: nodes
-    type: model_node
+  - index_name: data_model
+    type: model
     # type mapping for each property of the index
     mapping:
-      name:
-        type: search_as_you_type
-
-  # Holds property names
-  - index_name: properties
-    type: model_property
-    # type mapping for each property of the index
-    mapping:
-      node:
+      node_name:
         type: keyword
-      name:
-        type: search_as_you_type
-
-  # Holds valid values of properties
-  - index_name: values
-    type: model_value
-    # type mapping for each property of the index
-    mapping:
       node:
+        type: search_as_you_type
+      property_name:
         type: keyword
       property:
-        type: keyword
-      name:
         type: search_as_you_type
+      value_name:
+        type: keyword
+      value:
+        type: search_as_you_type
+
+

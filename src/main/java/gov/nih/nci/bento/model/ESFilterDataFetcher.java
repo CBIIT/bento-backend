@@ -37,6 +37,7 @@ public class ESFilterDataFetcher {
     final String FILES_COUNT_END_POINT = "/files/_count";
     final String GS_END_POINT = "/global_search/_search";
     final String GS_ABOUT_END_POINT = "/about_page/_search";
+    final String GS_MODEL_END_POINT = "/data_model/_search";
     final int GS_LIMIT = 10;
     final String GS_RESULT_FIELD = "result_field";
     final String GS_SEARCH_FIELD = "search_field";
@@ -463,9 +464,44 @@ public class ESFilterDataFetcher {
             result.put(resultFieldName, esService.collectBucketKeys(buckets));
         }
 
+        searchModelNodes(input, result);
+
         result.put("about_page", searchAboutPage(input));
 
         return result;
+    }
+
+    // Should be refactored!
+    private void searchModelNodes(String input, Map<String, Object> result) throws IOException {
+        List<Map<String, String>> fieldNames = List.of(
+                Map.of(
+                    GS_RESULT_FIELD, "nodes",
+                    GS_SEARCH_FIELD,"node",
+                    GS_COLLECT_FIELD,"node_name"
+                ),
+                Map.of(
+                        GS_RESULT_FIELD, "properties",
+                        GS_SEARCH_FIELD,"property",
+                        GS_COLLECT_FIELD,"property_name"
+                ),
+                Map.of(
+                        GS_RESULT_FIELD, "values",
+                        GS_SEARCH_FIELD,"value",
+                        GS_COLLECT_FIELD,"value_name"
+                )
+        );
+
+        Map<String, Map<String, Object>> queries = getGlobalSearchQuery(input, fieldNames);
+
+        for (String resultFieldName: queries.keySet()) {
+            Map<String, Object> query = queries.get(resultFieldName);
+            Request request = new Request("GET", GS_MODEL_END_POINT);
+            request.setJsonEntity(gson.toJson(query));
+            JsonObject jsonObject = esService.send(request);
+            Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, new String[]{GS_AGG_LIST});
+            var buckets = aggs.get(GS_AGG_LIST);
+            result.put(resultFieldName, esService.collectBucketKeys(buckets));
+        }
     }
 
     private List<String> searchAboutPage(String input) throws IOException {

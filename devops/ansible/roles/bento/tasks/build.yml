@@ -86,7 +86,7 @@
       pull: yes
       nocache: yes
     name: cbiitssrepo/{{ project }}-backend
-    tag: "{{ bento_api_version }}-{{ build_number }}"
+    tag: "{{ bento_api_version }}"
     push: yes
     force_source: yes
     source: build

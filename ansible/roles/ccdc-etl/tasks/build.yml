@@ -114,7 +114,7 @@
     DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
-    register: loading
+  register: loading
 
 - name: Print loading
   debug:

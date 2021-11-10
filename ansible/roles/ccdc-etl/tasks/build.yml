@@ -34,16 +34,16 @@
 
 # - name: set environment variables required for js file execution
 #   shell:
-#   environment:
-#     REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
-#     REACT_APP_ENVIRONMENT: "{{tier}}"
-#     RDB_HOST : "{{ rds_host }}"
-#     RDB_PORT : "{{ rds_port }}"
-#     RDB_USER : "{{ rds_user }}"
-#     RDB_PASSWORD : "{{ rds_password }}"
-#     ES_HOST : "{{ es_host }}"
-#     ES_PORT : "{{ es_port }}"
-#     DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
+  environment:
+    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+    REACT_APP_ENVIRONMENT: "{{tier}}"
+    RDB_HOST : "{{ rds_host }}"
+    RDB_PORT : "{{ rds_port }}"
+    RDB_USER : "{{ rds_user }}"
+    RDB_PASSWORD : "{{ rds_password }}"
+    ES_HOST : "{{ es_host }}"
+    ES_PORT : "{{ es_port }}"
+    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
 
 
 # - name: run npm install in {{workspace}}/{{ etl }}
@@ -60,6 +60,16 @@
     "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./dropTable.js" #"node dropTable.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
+  environment:
+    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+    REACT_APP_ENVIRONMENT: "{{tier}}"
+    RDB_HOST : "{{ rds_host }}"
+    RDB_PORT : "{{ rds_port }}"
+    RDB_USER : "{{ rds_user }}"
+    RDB_PASSWORD : "{{ rds_password }}"
+    ES_HOST : "{{ es_host }}"
+    ES_PORT : "{{ es_port }}"
+    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
   when:
     deployment_type == "re-deployment"
   register: drop_table
@@ -73,15 +83,35 @@
     "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./createTable.js" #"node createTable.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
+  environment:
+    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+    REACT_APP_ENVIRONMENT: "{{tier}}"
+    RDB_HOST : "{{ rds_host }}"
+    RDB_PORT : "{{ rds_port }}"
+    RDB_USER : "{{ rds_user }}"
+    RDB_PASSWORD : "{{ rds_password }}"
+    ES_HOST : "{{ es_host }}"
+    ES_PORT : "{{ es_port }}"
+    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
   register: create_table
 
-- name: Print drop_table
+- name: Print create_table
   debug:
     msg: "create_table output: {{ create_table }}"
   
 - name: start the application. Run index.js
   shell:
     "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./index.js"  #"node index.js"
+  environment:
+    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
+    REACT_APP_ENVIRONMENT: "{{tier}}"
+    RDB_HOST : "{{ rds_host }}"
+    RDB_PORT : "{{ rds_port }}"
+    RDB_USER : "{{ rds_user }}"
+    RDB_PASSWORD : "{{ rds_password }}"
+    ES_HOST : "{{ es_host }}"
+    ES_PORT : "{{ es_port }}"
+    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
     register: loading

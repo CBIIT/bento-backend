@@ -13,10 +13,6 @@
   shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep {{ bento_branch }} | sed 's|.*-||' | tail -1"
   register: tags
 
-- name: show tags
-  debug:
-    msg: "{{ tags.stdout }}"
-
 - name: set build number
   set_fact:
     build_number: "{% if tags.stdout %}{{ tags.stdout|int + 1 }}{% else %}1{% endif %}"
@@ -24,14 +20,6 @@
 - name: set api version
   set_fact:
     bento_api_version: "{{ bento_branch }}-{{ build_number }}"
-
-- name: show build number
-  debug:
-    msg: "{{ build_number }}"
-
-- name: show tag number
-  debug:
-    msg: "{{ bento_api_version }}"
 
 - name: copy tag number to build.env
   copy:
@@ -90,18 +78,18 @@
     username: "{{docker_user}}"
     password: "{{docker_password}}"
 
-#- name: build cbiitssrepo/{{ project }}-backend image
-#  docker_image:
-#    build:
-#      path: "{{ workspace.stdout }}"
-#      dockerfile: "./devops/dockerfiles/backend-dockerfile"
-#      pull: yes
-#      nocache: yes
-#    name: cbiitssrepo/{{ project }}-backend
-#    tag: "{{ bento_api_version }}-{{ build_number }}"
-#    push: yes
-#    force_source: yes
-#    source: build
+- name: build cbiitssrepo/{{ project }}-backend image
+  docker_image:
+    build:
+      path: "{{ workspace.stdout }}"
+      dockerfile: "./devops/dockerfiles/backend-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{ project }}-backend
+    tag: "{{ bento_api_version }}-{{ build_number }}"
+    push: yes
+    force_source: yes
+    source: build
 
 #- name: Add tag latest to cbiitssrepo/{{ project }}-backend image
 #  docker_image:

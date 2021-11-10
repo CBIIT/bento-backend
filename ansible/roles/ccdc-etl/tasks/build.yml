@@ -46,18 +46,18 @@
 #     DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
 
 
-- name: run npm install in {{workspace}}/{{ etl }}
-  command: "{{item}}"
-  args:
-    chdir: "{{ workspace }}/{{ etl }}"
-  loop:
-    - npm install
-    - npm run build
+# - name: run npm install in {{workspace}}/{{ etl }}
+#   command: "{{item}}"
+#   args:
+#     chdir: "{{ workspace }}/{{ etl }}"
+#   loop:
+#     - npm install
+#     - npm run build
 
 
 - name: start the application. Run dropTable.js
   shell:
-    "node dropTable.js"
+    "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./dropTable.js" #"node dropTable.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
   when:
@@ -70,12 +70,12 @@
 
 - name: start the application. Run createTable.js
   shell:
-    "node createTable.js"
+    "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./createTable.js" #"node createTable.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"
   
 - name: start the application. Run index.js
   shell:
-    "node index.js"
+    "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./index.js"  #"node index.js"
   args:
     chdir: "{{ workspace }}/{{ etl }}"

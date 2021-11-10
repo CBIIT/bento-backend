@@ -10,7 +10,7 @@
   register: git_url
 
 - name: get latest tag number
-  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep {{ bento_branch }}-{{ project }} | sed 's|.*-||' | tail -1"
+  shell: "git ls-remote --refs --tags --sort=v:refname {{ git_url.stdout }} | cut -d '/' -f2- | grep {{ bento_branch }} | sed 's|.*-||' | tail -1"
   register: tags
 
 - name: show tags
@@ -27,7 +27,12 @@
 
 - name: show tag number
   debug:
-    msg: "{{ bento_api_version }}-{{ build_number }}"
+    msg: "{{ bento_branch }}-{{ build_number }}"
+
+- name: copy tag number to build.env
+  copy:
+    dest: 
+    content: "BENTO_API_VERSION={{ bento_branch }}-{{ build_number }}"
 
 - name: get path
   command: pwd

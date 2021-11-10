@@ -15,7 +15,7 @@ frontend_commit_id: "{{ lookup('env','FE_COMMIT') | default('', true) }}"
 backend_commit_id: "{{ lookup('env','BE_COMMIT') | default('', true) }}"
 frontend_version: "{{ lookup('env','CI_COMMIT_BRANCH') }}"
 bento_branch: "{{ lookup('env','CI_COMMIT_BRANCH') }}"
-bento_api_version: "{{ bento_branch }}-1"
+#bento_api_version: "{{ bento_branch }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 test_queries_file: "{{ lookup('env','TEST_QUERIES_FILE')}}"

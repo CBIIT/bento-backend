@@ -18,7 +18,7 @@ if __name__=="__main__":
   app = core.App()
   bentoApp = BentoStack(app, tierName, env=env)
 
-  bentoTags = dict(s.split(':') for s in bentoApp.config['bento-cdk']['tags'].split(","))
+  bentoTags = dict(s.split(':') for s in bentoApp.config[tierName]['tags'].split(","))
 
   for tag,value in bentoTags.items():
     core.Tags.of(bentoApp).add(tag, value)

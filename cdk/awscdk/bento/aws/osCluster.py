@@ -21,8 +21,5 @@ class OSCluster:
         },
         zone_awareness={
             "availability_zone_count": 2
-        },
-        logging={
-            "slow_index_log_enabled": True
         }
     )

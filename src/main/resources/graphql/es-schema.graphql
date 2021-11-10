@@ -137,6 +137,10 @@ type GlobalSearchResult {
     subject_ids: [String]
     sample_ids: [String]
     file_ids: [String]
+    about_page: [String]
+    nodes: [String]
+    properties: [String]
+    values: [String]
 }
 
 schema {

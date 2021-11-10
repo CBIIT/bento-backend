@@ -1,8 +1,9 @@
-  # Indices settings
+# Indices settings
 Indices:
   # First index
   # Name of the index to be created, existing index with same name will be deleted
   - index_name: subjects
+    type: neo4j
     # type mapping for each property of the index
     mapping:
       programs:
@@ -97,6 +98,7 @@ Indices:
       COLLECT(DISTINCT samp.sample_id) AS samples
       "
   - index_name: samples
+    type: neo4j
     # type mapping for each property of the index
     mapping:
       programs:
@@ -192,6 +194,7 @@ Indices:
       COLLECT(DISTINCT f.file_type) AS file_type
       "
   - index_name: files
+    type: neo4j
     # type mapping for each property of the index
     mapping:
       programs:
@@ -288,6 +291,7 @@ Indices:
       order by f.file_id
       "
   - index_name: global_search
+    type: neo4j
     # type mapping for each property of the index
     mapping:
       program:
@@ -401,3 +405,34 @@ Indices:
         f.file_type AS file_type
       order by f.file_id
       "
+  - index_name: about_page
+    type: about_file
+    # type mapping for each property of the index
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
+  - index_name: data_model
+    type: model
+    # type mapping for each property of the index
+    mapping:
+      node_name:
+        type: keyword
+      node:
+        type: search_as_you_type
+      property_name:
+        type: keyword
+      property:
+        type: search_as_you_type
+      value_name:
+        type: keyword
+      value:
+        type: search_as_you_type
+
+

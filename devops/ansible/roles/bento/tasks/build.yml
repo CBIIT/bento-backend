@@ -21,18 +21,22 @@
   set_fact:
     build_number: "{% if tags.stdout %}{{ tags.stdout|int + 1 }}{% else %}1{% endif %}"
 
+- name: set api version
+  set_fact:
+    bento_api_version: "{{ bento_branch }}-{{ build_number }}"
+
 - name: show build number
   debug:
     msg: "{{ build_number }}"
 
 - name: show tag number
   debug:
-    msg: "{{ bento_branch }}-{{ build_number }}"
+    msg: "{{ bento_api_version }}"
 
 - name: copy tag number to build.env
   copy:
     dest: build.env
-    content: "BENTO_API_VERSION={{ bento_branch }}-{{ build_number }}"
+    content: "BENTO_API_VERSION={{ bento_api_version }}"
 
 - name: get path
   command: pwd

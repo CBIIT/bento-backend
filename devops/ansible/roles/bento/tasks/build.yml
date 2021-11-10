@@ -31,7 +31,7 @@
 
 - name: copy tag number to build.env
   copy:
-    dest: 
+    dest: build.env
     content: "BENTO_API_VERSION={{ bento_branch }}-{{ build_number }}"
 
 - name: get path

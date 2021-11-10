@@ -36,6 +36,7 @@ public class ESFilterDataFetcher {
     final String FILES_END_POINT = "/files/_search";
     final String FILES_COUNT_END_POINT = "/files/_count";
     final String GS_END_POINT = "/global_search/_search";
+    final String GS_ABOUT_END_POINT = "/about_page/_search";
     final int GS_LIMIT = 10;
     final String GS_RESULT_FIELD = "result_field";
     final String GS_SEARCH_FIELD = "search_field";
@@ -460,6 +461,29 @@ public class ESFilterDataFetcher {
             Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, new String[]{GS_AGG_LIST});
             var buckets = aggs.get(GS_AGG_LIST);
             result.put(resultFieldName, esService.collectBucketKeys(buckets));
+        }
+
+        result.put("about_page", searchAboutPage(input));
+
+        return result;
+    }
+
+    private List<String> searchAboutPage(String input) throws IOException {
+        final String ABOUT_CONTENT = "content.paragraph";
+        Map<String, Object> query = Map.of(
+                "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
+                "highlight", Map.of("fields", Map.of(ABOUT_CONTENT, Map.of()))
+        );
+        Request request = new Request("GET", GS_ABOUT_END_POINT);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+
+        List<String> result = new ArrayList<>();
+
+        for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
+            for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
+                result.add(highlight.getAsString());
+            }
         }
 
         return result;

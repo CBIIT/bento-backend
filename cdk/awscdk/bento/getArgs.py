@@ -2,7 +2,7 @@ import sys, getopt
 
 class getArgs:
   def set_tier(argv):
-    validTiers = {"bento-dev", "bento-qa", "bento-cdk"}
+    validTiers = {"bento-dev", "bento-qa", "bento-cdk", "bento-gitlab"}
     
     try:
       opts, args = getopt.getopt(argv,"ht:",["tier="])

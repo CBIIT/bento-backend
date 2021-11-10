@@ -24,7 +24,7 @@ class EC2Resources:
         vpc=self.bentoVPC,
         role=self.ecsInstanceRole)
     self.DBInstance.add_user_data(initScript)
-    core.Tags.of(self.DBInstance).add("Name", "{}-neo4j".format(ns))
+    core.Tags.of(self.DBInstance).add("Name", "{}-neo4j-4".format(ns))
     
     # Update DB Security Group
     dbsg = self.DBInstance.connections.security_groups[0]

@@ -1,4 +1,4 @@
-FROM node:current-alpine3.13
+FROM node:16.3.0-alpine3.13
 MAINTAINER ESI Devops Team
 
 # Update to the latest npm
@@ -15,6 +15,6 @@ RUN python3 -V
 RUN pip3 --version
 
 # install aws-cdk and set its log level to debug
-RUN npm install -g aws-cdk@1.126.0
+RUN npm install -g aws-cdk@1.131.0
 
 WORKDIR /bento

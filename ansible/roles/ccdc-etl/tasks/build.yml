@@ -32,8 +32,29 @@
     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
   with_items: "{{ s3_bucket_items.s3_keys }}"
 
-# - name: set environment variables required for js file execution
-#   shell:
+- name: build cbiitssrepo/{{etl | lower}} image
+  docker_image:
+    build:
+      path: "{{workspace}}/{{etl}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{etl | lower}}
+    tag: "{{etl_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to cbiitssrepo/{{ etl | lower}} image
+  docker_image:
+    name: "cbiitssrepo/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ etl | lower}}:latest
+    force_tag: yes
+    push: yes
+    source: local
+
+- name: set environment variables required for js file execution
+  shell:
   environment:
     REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
     REACT_APP_ENVIRONMENT: "{{tier}}"
@@ -61,8 +82,6 @@
   args:
     chdir: "{{ workspace }}/{{ etl }}"
   environment:
-    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
-    REACT_APP_ENVIRONMENT: "{{tier}}"
     RDB_HOST : "{{ rds_host }}"
     RDB_PORT : "{{ rds_port }}"
     RDB_USER : "{{ rds_user }}"
@@ -79,13 +98,11 @@
     msg: "drop_table output: {{ drop_table }}"
 
 - name: start the application. Run createTable.js
-  shell:
-    "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./createTable.js" #"node createTable.js"
+  shell: 
+    "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./createTable.js" #"node createTable.js
   args:
     chdir: "{{ workspace }}/{{ etl }}"
   environment:
-    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
-    REACT_APP_ENVIRONMENT: "{{tier}}"
     RDB_HOST : "{{ rds_host }}"
     RDB_PORT : "{{ rds_port }}"
     RDB_USER : "{{ rds_user }}"
@@ -103,8 +120,6 @@
   shell:
     "docker run --rm -d cbiitssrepo/ccdc-etl:latest ./index.js"  #"node index.js"
   environment:
-    REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
-    REACT_APP_ENVIRONMENT: "{{tier}}"
     RDB_HOST : "{{ rds_host }}"
     RDB_PORT : "{{ rds_port }}"
     RDB_USER : "{{ rds_user }}"

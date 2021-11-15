@@ -60,12 +60,12 @@
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
-      logConfiguration:
-        logDriver: syslog
-        options:
-          syslog-address: tcp://{{ syslog_host }}:514
-          tag: "{{ app_name }}-backend"
-          syslog-format: "rfc5424micro"
+#      logConfiguration:
+#        logDriver: syslog
+#        options:
+#          syslog-address: tcp://{{ syslog_host }}:514
+#          tag: "{{ app_name }}-backend"
+#          syslog-format: "rfc5424micro"
     #network_mode: bridge
     network_mode: awsvpc
     family: "{{ project }}-{{tier}}-backend"
@@ -270,47 +270,47 @@
 
 ############################################################################################################################
 
-- name: update sumologic syslog service
-  ecs_service:
-    state: present
-    name: "{{ project }}-{{tier}}-sumo_syslog"
-    cluster: "{{ project }}-{{tier}}"
-    task_definition: "{{task_sumo_syslog_name}}"
-    force_new_deployment: no
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    region: "{{region}}"
-  register: service_sumo_syslog_output
+#- name: update sumologic syslog service
+#  ecs_service:
+#    state: present
+#    name: "{{ project }}-{{tier}}-sumo_syslog"
+#    cluster: "{{ project }}-{{tier}}"
+#    task_definition: "{{task_sumo_syslog_name}}"
+#    force_new_deployment: no
+#    deployment_configuration:
+#      minimum_healthy_percent: 0
+#      maximum_percent: 100
+#    desired_count: 1
+#    region: "{{region}}"
+#  register: service_sumo_syslog_output
 
-- name: update sumologic docker service
-  ecs_service:
-    state: present
-    name: "{{ project }}-{{tier}}-sumo_docker"
-    cluster: "{{ project }}-{{tier}}"
-    task_definition: "{{task_sumo_docker_name}}"
-    force_new_deployment: no
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    region: "{{region}}"
-  register: service_sumo_docker_output
+#- name: update sumologic docker service
+#  ecs_service:
+#    state: present
+#    name: "{{ project }}-{{tier}}-sumo_docker"
+#    cluster: "{{ project }}-{{tier}}"
+#    task_definition: "{{task_sumo_docker_name}}"
+#    force_new_deployment: no
+#    deployment_configuration:
+#      minimum_healthy_percent: 0
+#      maximum_percent: 100
+#    desired_count: 1
+#    region: "{{region}}"
+#  register: service_sumo_docker_output
 
-- name: update newrelic docker service
-  ecs_service:
-    state: present
-    name: "{{ project }}-{{tier}}-nr_docker"
-    cluster: "{{ project }}-{{tier}}"
-    task_definition: "{{task_nr_docker_name}}"
-    force_new_deployment: no
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    region: "{{region}}"
-  register: service_nr_docker_output
+#- name: update newrelic docker service
+#  ecs_service:
+#    state: present
+#    name: "{{ project }}-{{tier}}-nr_docker"
+#    cluster: "{{ project }}-{{tier}}"
+#    task_definition: "{{task_nr_docker_name}}"
+#    force_new_deployment: no
+#    deployment_configuration:
+#      minimum_healthy_percent: 0
+#      maximum_percent: 100
+#    desired_count: 1
+#    region: "{{region}}"
+#  register: service_nr_docker_output
 
 - name: update {{ project }}-{{tier}}-backend service
   ecs_service:

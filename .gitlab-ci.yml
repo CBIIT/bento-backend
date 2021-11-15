@@ -1,6 +1,10 @@
 # use cicd-microservice container
 image: cbiitssrepo/cicd-microservice:latest
 
+stages:
+  - build
+  - deploy
+
 build:
   stage: build
   variables:

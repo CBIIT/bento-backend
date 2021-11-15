@@ -225,7 +225,7 @@
 
 - name: show backend task definition
   debug:
-    msg: {{service_backend}}
+    msg: "{{service_backend}}"
 
 - name: query sumologic syslog service
   ecs_service_info:

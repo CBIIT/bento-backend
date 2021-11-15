@@ -19,13 +19,13 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'demo,gdc,dev,qa,perf,icdc,prod,github-actions' )
+        value: 'demo,gdc,dev,qa,perf,icdc,prod,poc' )
     extendedChoice( 
         name: 'ProjectName', 
         defaultValue: 'bento', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento,ccdi,gmb,ins' )
+        value: 'icdc,ctdc,bento,ccdi,gmb,ins,github-actions' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')

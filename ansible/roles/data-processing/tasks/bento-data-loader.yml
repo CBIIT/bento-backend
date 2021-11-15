@@ -30,6 +30,13 @@
     property_file: "config/props-bento-ext.yml"
   when: project == "bento"
 
+- name: set model files location for github
+  set_fact:
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
+    property_file: "config/props-bento-ext.yml"
+  when: project == "github-actions"
+
 - name: set model files location for ctdc
   set_fact:
     model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"

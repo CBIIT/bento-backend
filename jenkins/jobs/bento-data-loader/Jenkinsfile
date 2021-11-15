@@ -19,13 +19,13 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'demo,gdc,dev,qa,perf,icdc,prod' )
+        value: 'demo,gdc,dev,qa,perf,icdc,prod,poc' )
     extendedChoice( 
         name: 'ProjectName', 
         defaultValue: 'bento', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento,ccdi,gmb,ins' )
+        value: 'icdc,ctdc,bento,ccdi,gmb,ins,github-actions' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -122,6 +122,17 @@ pipeline {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   // env.NEO4J_IP        = "${${params.ProjectName}_${params.Environment}_neo4j_ip}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
+                }
+              break
+              case "poc":
+                withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

@@ -1,0 +1,31 @@
+FROM centos:7
+
+ENV LANG=en_US.UTF-8
+ARG RUNNER_VERSION="2.283.3"
+
+RUN yum -y update && yum -y install epel-release 
+RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo \
+  && yum install -y https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm \
+  && yum -y install docker-ce docker-ce-cli containerd.io \
+  && useradd -m bento \
+  && usermod -aG docker bento
+
+RUN yum -y install jq python3 python3-pip git \ 
+  && /usr/bin/pip3 install pip -U \
+  && /usr/bin/pip3 install ansible==2.10.0 awscli jmespath docker boto botocore boto
+ 
+RUN yum clean all 
+RUN cd /home/bento && mkdir actions-runner && cd actions-runner \
+    && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
+    && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
+
+RUN chown -R bento /home/bento && /home/bento/actions-runner/bin/installdependencies.sh
+
+
+
+COPY start.sh start.sh
+
+RUN chmod +x start.sh && chown bento start.sh
+USER bento
+
+ENTRYPOINT ["./start.sh"]

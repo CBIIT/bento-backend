@@ -68,7 +68,7 @@
           syslog-format: "rfc5424micro"
     #network_mode: bridge
     #network_mode: awsvpc
-    family: "{{ project }}-{{tier}}-backend"
+    family: "{{ project }}-{{tier}}-backend-instance"
     memory: '2048'
     cpu: '512'
     state: present

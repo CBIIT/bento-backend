@@ -18,7 +18,7 @@ build:
 
 deploy test:
   stage: deploy
-  script: cat build_env.yml
+  script: cat devops/ansible/build_env.yml
 #  dependencies:
 #    - build
 

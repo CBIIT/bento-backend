@@ -12,6 +12,8 @@ build:
   script: 
     - ansible-playbook devops/ansible/bento-build.yml -i devops/ansible/hosts
     - ls -la
+    - ls -la devops/ansible
+    - ls -la devops/ansible/roles/bento/tasks
   artifacts:
     paths:
       - build_env.yml

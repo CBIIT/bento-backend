@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="df71774a-1f48-4c2e-ab16-d571cc47055b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/github-actions/backend.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/github-actions/data.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/github-actions/main.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/github-actions/outputs.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/github-actions/provider.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/github-actions/variables.tf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/terraform/deployed/bento/workspace/github-actions-poc.tfvars" afterDir="false" />
-    </list>
+    <list default="true" id="df71774a-1f48-4c2e-ab16-d571cc47055b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,7 +35,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -56,6 +48,9 @@
     </task>
     <servers />
   </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
@@ -66,6 +61,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

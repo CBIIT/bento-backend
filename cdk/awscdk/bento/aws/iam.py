@@ -121,7 +121,7 @@ class IAMResources:
     core.Tags.of(ecsPolicy).add("Name", "{}-ecs-policy".format(ns))
     
     self.ecsInstanceRole.attach_inline_policy(ecsPolicy)
-    self.ecsInstanceRole.add_managed_policy(iam.ManagedPolicy. from_aws_managed_policy_name('service-role/AmazonEC2ContainerServiceforEC2Role'))
+    self.ecsInstanceRole.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name('service-role/AmazonEC2ContainerServiceforEC2Role'))
     
     # ECR
     self.ecrPolicyStatement = iam.PolicyStatement(

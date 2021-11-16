@@ -23,7 +23,7 @@
 
 - name: copy tag number to build.env
   copy:
-    dest: build_env.yml
+    dest: ./build_env.yml
     content: "BENTO_API_VERSION: {{ bento_api_version }}"
 
 - name: get path

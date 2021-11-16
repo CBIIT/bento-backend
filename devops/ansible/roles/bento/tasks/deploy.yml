@@ -227,10 +227,6 @@
     region: "{{region}}"
   register: service_backend
 
-- name: show backend task definition
-  debug:
-    msg: "{{service_backend}}"
-
 - name: query sumologic syslog service
   ecs_service_info:
     cluster: "{{ project }}-{{tier}}"

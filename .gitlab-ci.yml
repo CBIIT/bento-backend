@@ -27,8 +27,10 @@ deploy ecs:
   variables:
     ENVIRONMENT: bento-gitlab
   script:
-    - ansible-playbook devops/ansible/bento-deploy.yml -i devops/ansible/hosts
-    - ls -la
     - ls -la devops/ansible
-  dependencies:
-    - build
+    - mv devops/ansible/build_env.yml devops/ansible/roles/bento/vars/
+    - ls -la devops/ansible
+    - ls -la devops/ansible/roles/bento/vars
+    - ansible-playbook devops/ansible/bento-deploy.yml -i devops/ansible/hosts
+#  dependencies:
+#    - build

@@ -9,7 +9,7 @@
 ############################################################################################################################
 
 - name: include build vars
-  include_vars: devops/ansible/build_env.yml
+  include_vars: build_env.yml
 
 - name: echo version
   debug:

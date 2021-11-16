@@ -8,12 +8,16 @@
 
 ############################################################################################################################
 
+- name: echo version
+  debug:
+    msg: "{{ bento_api_version }}"
+
 - name: create task definition - {{ project }}-backend
   ecs_taskdefinition:
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/{{ project }}-backend:{{bento_api_version}}"
+      image: "cbiitssrepo/{{ project }}-backend:{{ bento_api_version }}"
       environment:
         - name: NEO4J_URL
           value: bolt://{{ neo4j_ip }}:7687

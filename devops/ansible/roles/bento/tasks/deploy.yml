@@ -8,6 +8,9 @@
 
 ############################################################################################################################
 
+- name: include build vars
+  include_vars: build.yml
+
 - name: echo version
   debug:
     msg: "{{ bento_api_version }}"

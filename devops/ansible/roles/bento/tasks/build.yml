@@ -23,8 +23,8 @@
 
 - name: copy tag number to build.env
   copy:
-    dest: build.env
-    content: "BENTO_API_VERSION={{ bento_api_version }}"
+    dest: build.yml
+    content: "BENTO_API_VERSION: {{ bento_api_version }}"
 
 - name: get path
   command: pwd

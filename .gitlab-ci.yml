@@ -14,7 +14,13 @@ build:
     paths:
       - build_env.yml
 
-deploy:
+deploy0:
+  stage: deploy
+  script: cat build_env.yml
+#  dependencies:
+#    - build
+
+deploy1:
   stage: deploy
   variables:
     ENVIRONMENT: bento-gitlab

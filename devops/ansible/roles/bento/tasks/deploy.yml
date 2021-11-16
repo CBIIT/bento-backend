@@ -9,7 +9,7 @@
 ############################################################################################################################
 
 - name: include build vars
-  include_vars: build.yml
+  include_vars: build_env.yml
 
 - name: echo version
   debug:

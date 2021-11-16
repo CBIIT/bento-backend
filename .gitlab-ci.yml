@@ -12,12 +12,12 @@ build:
   script: ansible-playbook devops/ansible/bento-build.yml -i devops/ansible/hosts
   artifacts:
     paths:
-      - build.yml
+      - build_env.yml
 
 deploy:
   stage: deploy
   variables:
     ENVIRONMENT: bento-gitlab
   script: ansible-playbook devops/ansible/bento-deploy.yml -i devops/ansible/hosts
-#   dependencies:
-#    - build
+  dependencies:
+    - build

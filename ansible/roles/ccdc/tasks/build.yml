@@ -136,55 +136,55 @@
 
 
 
-# - name: run npm install in {{workspace}}/{{etl}}
-#   command: "{{item}}"
-#   args:
-#     chdir: "{{workspace}}/{{etl}}"
-#   loop:
-#     - npm install
+- name: run npm install in {{workspace}}/{{etl}}
+  command: "{{item}}"
+  args:
+    chdir: "{{workspace}}/{{etl}}"
+  loop:
+    - npm install
 
-# - name: create digest_file_folder 
-#   file: 
-#     path: "{{workspace}}/{{etl}}/{{ digest_file_folder }}"
-#     state: directory
+- name: create digest_file_folder 
+  file: 
+    path: "{{workspace}}/{{etl}}/{{ digest_file_folder }}"
+    state: directory
 
-# - name: Get list of files from S3
-#   aws_s3:
-#     mode: list
-#     bucket: "{{ aws_storage_bucket_name }}"
-#     prefix: "{{ digest_file_folder }}/"
-#     marker: "{{ digest_file_folder }}/"
-#   register: s3_bucket_items
+- name: Get list of files from S3
+  aws_s3:
+    mode: list
+    bucket: "{{ aws_storage_bucket_name }}"
+    prefix: "{{ digest_file_folder }}/"
+    marker: "{{ digest_file_folder }}/"
+  register: s3_bucket_items
 
-# - name: Print s3_bucket_items
-#   debug:
-#     msg: "s3_bucket_items Version: {{ s3_bucket_items.s3_keys }}"
+- name: Print s3_bucket_items
+  debug:
+    msg: "s3_bucket_items Version: {{ s3_bucket_items.s3_keys }}"
 
-# - name: Download files from S3
-#   aws_s3:
-#     mode: get
-#     bucket: "{{ aws_storage_bucket_name }}"
-#     object: "{{ item }}"
-#     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
-#   with_items: "{{ s3_bucket_items.s3_keys }}"
+- name: Download files from S3
+  aws_s3:
+    mode: get
+    bucket: "{{ aws_storage_bucket_name }}"
+    object: "{{ item }}"
+    dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
+  with_items: "{{ s3_bucket_items.s3_keys }}"
 
-# - name: build cbiitssrepo/{{etl | lower}} image
-#   docker_image:
-#     build:
-#       path: "{{workspace}}/{{etl}}"
-#       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
-#       pull: yes
-#       nocache: yes
-#     name: cbiitssrepo/{{etl | lower}}
-#     tag: "{{etl_version}}-{{build_number}}"
-#     push: yes
-#     force_source: yes
-#     source: build
+- name: build cbiitssrepo/{{etl | lower}} image
+  docker_image:
+    build:
+      path: "{{workspace}}/{{etl}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{etl | lower}}
+    tag: "{{etl_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
 
-# - name: Add tag latest to cbiitssrepo/{{ etl | lower}} image
-#   docker_image:
-#     name: "cbiitssrepo/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
-#     repository: cbiitssrepo/{{ etl | lower}}:latest
-#     force_tag: yes
-#     push: yes
-#     source: local
+- name: Add tag latest to cbiitssrepo/{{ etl | lower}} image
+  docker_image:
+    name: "cbiitssrepo/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ etl | lower}}:latest
+    force_tag: yes
+    push: yes
+    source: local

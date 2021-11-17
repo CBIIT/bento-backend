@@ -6,7 +6,8 @@ pipeline {
 	}
 	parameters {
     gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
+        //defaultValue: 'master',
+		defaultValue: '1.1.0',
         name: 'Dataloader_Branch', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 

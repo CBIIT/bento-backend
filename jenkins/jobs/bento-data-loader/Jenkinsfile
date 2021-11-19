@@ -53,10 +53,25 @@ pipeline {
         multiSelectDelimiter: ',',
         value: 'false,true',
         type: 'PT_SINGLE_SELECT')
-	string(
-	    defaultValue: '',
-		description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
-		name: 'ES_Backend_Branch')
+	gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'ES_Backend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-backend')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'ES_Frontend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-frontend')
+	
   }
   // options {
   // 	ansiColor('xterm')
@@ -75,6 +90,25 @@ pipeline {
           recursiveSubmodules: true,
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+			
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.ES_Frontend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+			
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.ES_Backend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-backend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-backend']]])
+				
           sh 'git submodule update --init'
   			dir('icdc-devops'){
   				git branch: 'master',
@@ -244,7 +278,7 @@ pipeline {
       	script {
 			if ("${params.ES_Backend_Branch}"?.trim()) {
 				echo 'Reload data to Elasticsearch'
-				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.ES_Backend_Branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${params.ES_Backend_Branch}"), gitParameter(name: 'Frontend_Branch', value: "${params.ES_Frontend_Branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
 			}
 		}
 	}

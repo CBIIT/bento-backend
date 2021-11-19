@@ -12,6 +12,16 @@
   set_fact:
     neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
 
+- name: set model files location for bento
+  set_fact:
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
+    property_file: "config/props-bento-ext.yml"
+
+- name: set about_file location for bento
+  set_fact:
+    about_file: "{{workspace}}/bento-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+
 - name: update indices file
   template:
     dest: "{{workspace}}/config/es_indices_bento.yml"

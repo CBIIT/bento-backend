@@ -6,8 +6,7 @@ pipeline {
 	}
 	parameters {
     gitParameter(branchFilter: 'origin/(.*)', 
-        //defaultValue: 'master',
-		defaultValue: '1.1.0',
+        defaultValue: 'master',
         name: 'Dataloader_Branch', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 
@@ -80,8 +79,7 @@ pipeline {
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
-				//branches: [[name: "master"]],
-				branches: [[name: "ES_loader_updates"]],
+				branches: [[name: "master"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'icdc-devops']],
@@ -156,9 +154,9 @@ pipeline {
     }
 
   }
-//  post {
-//    always {
-//	  cleanWs()
-//    }
-//  }
+  post {
+    always {
+	  cleanWs()
+    }
+  }
 }

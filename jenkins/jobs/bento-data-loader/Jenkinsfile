@@ -71,10 +71,6 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-frontend')
-	//string(
-	//    defaultValue: '',
-	//	description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
-	//	name: 'ES_Backend_Branch')
 	
   }
   // options {

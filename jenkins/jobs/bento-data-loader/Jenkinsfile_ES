@@ -24,7 +24,16 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-backend')
-    extendedChoice( 
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Frontend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-frontend')
+	extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
@@ -49,6 +58,10 @@ pipeline {
                 recursiveSubmodules: true,
   				userRemoteConfigs: 
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+
+            dir('bento-model'){
+                git branch: 'master',
+                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'}
 
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
@@ -119,6 +132,7 @@ pipeline {
   	stage('load-es-data'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"
+			FRONTEND_BRANCH = "${params.frontend_branch}"
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

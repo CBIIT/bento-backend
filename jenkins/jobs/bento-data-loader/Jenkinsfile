@@ -53,10 +53,29 @@ pipeline {
         multiSelectDelimiter: ',',
         value: 'false,true',
         type: 'PT_SINGLE_SELECT')
-	string(
-	    defaultValue: '',
-		description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
-		name: 'ES_Backend_Branch')
+	gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'ES_Backend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-backend')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'ES_Frontend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-frontend')
+	//string(
+	//    defaultValue: '',
+	//	description: 'The backend branch to use when loading data to Elasticsearch (if left blank this action will be skipped)',
+	//	name: 'ES_Backend_Branch')
+	
   }
   // options {
   // 	ansiColor('xterm')

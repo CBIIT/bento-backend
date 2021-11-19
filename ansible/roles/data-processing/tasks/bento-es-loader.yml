@@ -12,6 +12,21 @@
   set_fact:
     neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
 
+- name: set model files location for bento
+  set_fact:
+    model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
+    model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
+    property_file: "config/props-bento-ext.yml"
+
+- name: copy aboutPagesContent.yaml queries from frontend to config
+  get_url:
+    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_branch }}/src/content/{{ tier }}/aboutPagesContent.yaml"
+    dest: "config/aboutPagesContent.yaml"
+
+- name: set about_file location for bento
+  set_fact:
+    about_file: "config/aboutPagesContent.yaml"
+
 - name: update indices file
   template:
     dest: "{{workspace}}/config/es_indices_bento.yml"

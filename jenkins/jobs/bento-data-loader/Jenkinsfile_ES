@@ -64,6 +64,15 @@ pipeline {
                 url: 'https://github.com/CBIIT/BENTO-TAILORx-model'}
 
 			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+			
+			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
@@ -75,7 +84,8 @@ pipeline {
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
-				branches: [[name: "master"]],
+				//branches: [[name: "master"]],
+				branches: [[name: "ES_loader_updates"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'icdc-devops']],

@@ -18,14 +18,14 @@
     model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
     property_file: "config/props-bento-ext.yml"
 
-- name: copy aboutPagesContent.yaml queries from frontend to config
-  get_url:
-    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_branch }}/src/content/{{ tier }}/aboutPagesContent.yaml"
-    dest: "config/aboutPagesContent.yaml"
+#- name: copy aboutPagesContent.yaml queries from frontend to config
+#  get_url:
+#    url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_branch }}/src/content/{{ tier }}/aboutPagesContent.yaml"
+#    dest: "config/aboutPagesContent.yaml"
 
 - name: set about_file location for bento
   set_fact:
-    about_file: "config/aboutPagesContent.yaml"
+    about_file: "{{workspace}}/bento-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
 
 - name: update indices file
   template:

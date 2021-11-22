@@ -33,7 +33,7 @@ use_cluster: 'false'
 
 # elasticsearch
 enable_es_filter: true
-es_host: "{{ lookup('env','ES_HOST') }}"
+#es_host: "{{ lookup('env','ES_HOST') }}"
 
 # monitoring agents
 newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"

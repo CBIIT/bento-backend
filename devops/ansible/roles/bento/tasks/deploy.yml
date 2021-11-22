@@ -33,7 +33,7 @@
         - name: BENTO_API_VERSION
           value: "{{bento_api_version}}"
         - name: ES_HOST
-          value: "{{es_host}}"
+          value: "{{es_host[tier]}}"
         - name: REDIS_ENABLE
           value: "{{ enable_redis }}"
         - name: REDIS_USE_CLUSTER

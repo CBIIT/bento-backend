@@ -21,7 +21,7 @@
   set_fact:
     bento_api_version: "{{ bento_branch }}-{{ build_number }}"
 
-- name: copy tag number to build.env
+- name: copy tag number to build_env.yml
   copy:
     dest: ./build_env.yml
     content: "bento_api_version: {{ bento_api_version }}"

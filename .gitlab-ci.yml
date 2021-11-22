@@ -11,26 +11,16 @@ build:
     NODE_OPTIONS: "--max_old_space_size=4096"
   script: 
     - ansible-playbook devops/ansible/bento-build.yml -i devops/ansible/hosts
-    - ls -la devops/ansible
   artifacts:
     paths:
       - devops/ansible/build_env.yml
-
-deploy test:
-  stage: deploy
-  script: cat devops/ansible/build_env.yml
-#  dependencies:
-#    - build
 
 deploy ecs:
   stage: deploy
   variables:
     ENVIRONMENT: bento-gitlab
   script:
-    - ls -la devops/ansible
     - mv devops/ansible/build_env.yml devops/ansible/roles/bento/vars/
-    - ls -la devops/ansible
-    - ls -la devops/ansible/roles/bento/vars
     - ansible-playbook devops/ansible/bento-deploy.yml -i devops/ansible/hosts
 #  dependencies:
 #    - build

@@ -42,6 +42,7 @@ public class ESFilterDataFetcher {
     final String GS_END_POINT = "endpoint";
     final String GS_COUNT_ENDPOINT = "count_endpoint";
     final String GS_RESULT_FIELD = "result_field";
+    final String GS_COUNT_RESULT_FIELD = "count_result_field";
     final String GS_SEARCH_FIELD = "search_field";
     final String GS_COLLECT_FIELDS = "collect_fields";
     final String GS_AGG_LIST = "list";
@@ -430,6 +431,7 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, PROGRAMS_END_POINT,
                 GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "program_count",
                 GS_RESULT_FIELD, "programs",
                 GS_SEARCH_FIELD,"program_id",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -441,6 +443,7 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, STUDIES_END_POINT,
                 GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "study_count",
                 GS_RESULT_FIELD, "studies",
                 GS_SEARCH_FIELD,"study_id",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -453,6 +456,7 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, SUBJECTS_END_POINT,
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
                 GS_SEARCH_FIELD,"subject_id_gs",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -467,6 +471,7 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, SAMPLES_END_POINT,
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
                 GS_SEARCH_FIELD,"sample_id_gs",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -481,6 +486,7 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, FILES_END_POINT,
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD,"file_id_gs",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -493,9 +499,18 @@ public class ESFilterDataFetcher {
         ));
 
         for (Map<String, Object> category: searchCategories) {
+            String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
             String resultFieldName = (String) category.get(GS_RESULT_FIELD);
             String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
             Map<String, Object> query = getGlobalSearchQuery(input, category);
+
+            // Get count
+            Request countRequest = new Request("GET", (String) category.get(GS_COUNT_ENDPOINT));
+            countRequest.setJsonEntity(gson.toJson(query));
+            JsonObject countResult = esService.send(countRequest);
+            result.put(countResultFieldName, countResult.get("count").getAsInt());
+
+            // Get results
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
             result.put(resultFieldName, esService.collectPage(request, query, properties, size, offset));
         }

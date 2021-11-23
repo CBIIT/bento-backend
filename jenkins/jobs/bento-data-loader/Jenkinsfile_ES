@@ -6,8 +6,7 @@ pipeline {
 	}
 	parameters {
     gitParameter(branchFilter: 'origin/(.*)', 
-        //defaultValue: 'master',
-		defaultValue: '1.1.0',
+        defaultValue: 'master',
         name: 'Dataloader_Branch', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 
@@ -24,12 +23,21 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-backend')
-    extendedChoice( 
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Frontend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-frontend')
+	extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,perf' )
+        value: 'dev,qa,perf,gitlab' )
   }
   // options {
   // 	ansiColor('xterm')
@@ -51,6 +59,15 @@ pipeline {
   				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
 
 			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+			
+			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
@@ -69,6 +86,10 @@ pipeline {
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops']]])
+			
+			dir('bento-model'){
+                git branch: 'master',
+                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'}
 
   		}
  
@@ -79,7 +100,7 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+                withCredentials([usernamePassword(credentialsId: 'bento_dev_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
 				     string(credentialsId: 'es_dev_host', variable: 'ES_HOST')]) {
                   env.ES_HOST        = "https://${ES_HOST}"
 				  env.PROJECT        = "bento"
@@ -89,7 +110,7 @@ pipeline {
                 }
               break
               case "qa":
-                withCredentials([usernamePassword(credentialsId: 'qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+                withCredentials([usernamePassword(credentialsId: 'bento_qa_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
 				     string(credentialsId: 'es_qa_host', variable: 'ES_HOST')]) {
                   env.ES_HOST        = "https://${ES_HOST}"
 				  env.PROJECT        = "bento"
@@ -99,8 +120,18 @@ pipeline {
                 }
               break
               case "perf":
-                withCredentials([usernamePassword(credentialsId: 'perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+                withCredentials([usernamePassword(credentialsId: 'bento_perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
 				     string(credentialsId: 'es_perf_host', variable: 'ES_HOST')]) {
+                  env.ES_HOST        = "https://${ES_HOST}"
+				  env.PROJECT        = "bento"
+				  env.TIER           = "${params.Environment}"
+				  env.NEO4J_PASSWORD = "${neo4j_password}"
+				  env.NEO4J_IP       = "${NEO4J_PERF_IP}"
+                }
+              break
+              case "gitlab":
+                withCredentials([usernamePassword(credentialsId: 'bento_gitlab_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+				     string(credentialsId: 'es_gitlab_host', variable: 'ES_HOST')]) {
                   env.ES_HOST        = "https://${ES_HOST}"
 				  env.PROJECT        = "bento"
 				  env.TIER           = "${params.Environment}"
@@ -119,6 +150,7 @@ pipeline {
   	stage('load-es-data'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"
+			FRONTEND_BRANCH = "${params.frontend_branch}"
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -132,9 +164,9 @@ pipeline {
     }
 
   }
-//  post {
-//    always {
-//	  cleanWs()
-//    }
-//  }
+  post {
+    always {
+	  cleanWs()
+    }
+  }
 }

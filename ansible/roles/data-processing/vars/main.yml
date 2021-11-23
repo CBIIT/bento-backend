@@ -42,3 +42,4 @@ bucket:
 
 # vars for elasticsearch loader
 es_host: "{{ lookup('env','ES_HOST') }}"
+frontend_branch: "{{ lookup('env','FRONTEND_BRANCH') }}"

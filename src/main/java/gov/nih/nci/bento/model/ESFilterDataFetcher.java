@@ -23,25 +23,27 @@ public class ESFilterDataFetcher {
     final String OFFSET = "offset";
     final String ORDER_BY = "order_by";
     final String SORT_DIRECTION = "sort_direction";
-    final String SUBJECT_ID = "subject_ids";
-    final String SUBJECT_ID_NUM = "subject_id_num";
+
+    final String PROGRAMS_END_POINT = "/programs/_search";
+    final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
+    final String STUDIES_END_POINT = "/studies/_search";
+    final String STUDIES_COUNT_END_POINT = "/studies/_count";
+
     final String SUBJECTS_END_POINT = "/subjects/_search";
     final String SUBJECTS_COUNT_END_POINT = "/subjects/_count";
-    final String SAMPLE_ID = "sample_ids";
-    final String SAMPLE_ID_NUM = "sample_id_num";
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
-    final String FILE_ID = "file_ids";
-    final String FILE_ID_NUM = "file_id_num";
     final String FILES_END_POINT = "/files/_search";
     final String FILES_COUNT_END_POINT = "/files/_count";
-    final String GS_END_POINT = "/global_search/_search";
     final String GS_ABOUT_END_POINT = "/about_page/_search";
     final String GS_MODEL_END_POINT = "/data_model/_search";
+
     final int GS_LIMIT = 10;
+    final String GS_END_POINT = "endpoint";
+    final String GS_COUNT_ENDPOINT = "count_endpoint";
     final String GS_RESULT_FIELD = "result_field";
     final String GS_SEARCH_FIELD = "search_field";
-    final String GS_COLLECT_FIELD = "collect_field";
+    final String GS_COLLECT_FIELDS = "collect_fields";
     final String GS_AGG_LIST = "list";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
@@ -255,6 +257,7 @@ public class ESFilterDataFetcher {
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
+        // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"program", "programs"},
                 new String[]{"program_id", "program_id"},
@@ -421,47 +424,80 @@ public class ESFilterDataFetcher {
     private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
         Map<String, Object> result = new HashMap<>();
         String input = (String) params.get("input");
-        List<Map<String, String>> fieldNames = new ArrayList<>();
-        fieldNames.add(Map.of(
-                GS_RESULT_FIELD, "program_ids",
+        int size = (int) params.get("first");
+        int offset = (int) params.get("offset");
+        List<Map<String, Object>> searchCategories = new ArrayList<>();
+        searchCategories.add(Map.of(
+                GS_END_POINT, PROGRAMS_END_POINT,
+                GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
+                GS_RESULT_FIELD, "programs",
                 GS_SEARCH_FIELD,"program_id",
-                GS_COLLECT_FIELD,"program_id_kw"
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_code", "program_code"},
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"program_name", "program_name"}
+                }
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, STUDIES_END_POINT,
+                GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
+                GS_RESULT_FIELD, "studies",
+                GS_SEARCH_FIELD,"study_id",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"study_id", "study_id"},
+                        new String[]{"study_code", "study_code"},
+                        new String[]{"study_name", "study_name"}
+                }
 
         ));
-        fieldNames.add(Map.of(
-                GS_RESULT_FIELD, "arm_ids",
-                GS_SEARCH_FIELD,"arm_id",
-                GS_COLLECT_FIELD,"arm_id_kw"
+        searchCategories.add(Map.of(
+                GS_END_POINT, SUBJECTS_END_POINT,
+                GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
+                GS_RESULT_FIELD, "subjects",
+                GS_SEARCH_FIELD,"subject_id_gs",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_code", "programs"},
+                        new String[]{"study", "study_acronym"},
+                        new String[]{"subject_id", "subject_id_gs"},
+                        new String[]{"diagnosis", "diagnoses"},
+                        new String[]{"age", "age_at_index"}
+                }
 
         ));
-        fieldNames.add(Map.of(
-                GS_RESULT_FIELD, "subject_ids",
-                GS_SEARCH_FIELD,"subject_id",
-                GS_COLLECT_FIELD,"subject_id_kw"
+        searchCategories.add(Map.of(
+                GS_END_POINT, SAMPLES_END_POINT,
+                GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
+                GS_RESULT_FIELD, "samples",
+                GS_SEARCH_FIELD,"sample_id_gs",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"subject_id", "subject_ids"},
+                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"diagnosis", "diagnoses"},
+                        new String[]{"sample_anatomic_site", "sample_anatomic_site"},
+                        new String[]{"sample_procurement_method", "sample_procurement_method"}
+                }
 
         ));
-        fieldNames.add(Map.of(
-                GS_RESULT_FIELD, "sample_ids",
-                GS_SEARCH_FIELD,"sample_id",
-                GS_COLLECT_FIELD,"sample_id_kw"
+        searchCategories.add(Map.of(
+                GS_END_POINT, FILES_END_POINT,
+                GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
+                GS_RESULT_FIELD, "files",
+                GS_SEARCH_FIELD,"file_id_gs",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"subject_id", "subject_ids"},
+                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"file_name", "file_names"},
+                        new String[]{"file_id", "file_ids"}
+                }
 
         ));
-        fieldNames.add(Map.of(
-                GS_RESULT_FIELD, "file_ids",
-                GS_SEARCH_FIELD,"file_id",
-                GS_COLLECT_FIELD,"file_id_kw"
 
-        ));
-        Map<String, Map<String, Object>> queries = getGlobalSearchQuery(input, fieldNames);
-
-        for (String resultFieldName: queries.keySet()) {
-            Map<String, Object> query = queries.get(resultFieldName);
-            Request request = new Request("GET", GS_END_POINT);
-            request.setJsonEntity(gson.toJson(query));
-            JsonObject jsonObject = esService.send(request);
-            Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, new String[]{GS_AGG_LIST});
-            var buckets = aggs.get(GS_AGG_LIST);
-            result.put(resultFieldName, esService.collectBucketKeys(buckets));
+        for (Map<String, Object> category: searchCategories) {
+            String resultFieldName = (String) category.get(GS_RESULT_FIELD);
+            String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
+            Map<String, Object> query = getGlobalSearchQuery(input, category);
+            Request request = new Request("GET", (String)category.get(GS_END_POINT));
+            result.put(resultFieldName, esService.collectPage(request, query, properties, size, offset));
         }
 
         searchModelNodes(input, result);
@@ -475,23 +511,23 @@ public class ESFilterDataFetcher {
     private void searchModelNodes(String input, Map<String, Object> result) throws IOException {
         List<Map<String, String>> fieldNames = List.of(
                 Map.of(
-                    GS_RESULT_FIELD, "nodes",
-                    GS_SEARCH_FIELD,"node",
-                    GS_COLLECT_FIELD,"node_name"
+                        GS_RESULT_FIELD, "nodes",
+                        GS_SEARCH_FIELD,"node",
+                        GS_COLLECT_FIELDS,"node_name"
                 ),
                 Map.of(
                         GS_RESULT_FIELD, "properties",
                         GS_SEARCH_FIELD,"property",
-                        GS_COLLECT_FIELD,"property_name"
+                        GS_COLLECT_FIELDS,"property_name"
                 ),
                 Map.of(
                         GS_RESULT_FIELD, "values",
                         GS_SEARCH_FIELD,"value",
-                        GS_COLLECT_FIELD,"value_name"
+                        GS_COLLECT_FIELDS,"value_name"
                 )
         );
 
-        Map<String, Map<String, Object>> queries = getGlobalSearchQuery(input, fieldNames);
+        Map<String, Map<String, Object>> queries = getGlobalSearchQueries(input, fieldNames);
 
         for (String resultFieldName: queries.keySet()) {
             Map<String, Object> query = queries.get(resultFieldName);
@@ -525,24 +561,31 @@ public class ESFilterDataFetcher {
         return result;
     }
 
-    private Map<String, Map<String, Object>> getGlobalSearchQuery(String input, List<Map<String, String>> fieldNames) {
+    private Map<String, Map<String, Object>> getGlobalSearchQueries(String input, List<Map<String, String>> fieldNames) {
         Map<String, Map<String, Object>> result = new HashMap<>();
         for (var field: fieldNames) {
             String searchFieldName = field.get(GS_SEARCH_FIELD);
-            String collectFieldName = field.get(GS_COLLECT_FIELD);
+            String collectFieldName = field.get(GS_COLLECT_FIELDS);
             String resultFieldName = field.get(GS_RESULT_FIELD);
             result.put(
                     resultFieldName,
                     Map.of(
-                        "query", Map.of("match_phrase_prefix", Map.of(searchFieldName, input)),
-                        "_source", false,
-                        "aggs", Map.of(GS_AGG_LIST, Map.of("terms", Map.of("field", collectFieldName))),
-                         "size", GS_LIMIT
+                            "query", Map.of("match_phrase_prefix", Map.of(searchFieldName, input)),
+                            "_source", false,
+                            "aggs", Map.of(GS_AGG_LIST, Map.of("terms", Map.of("field", collectFieldName))),
+                            "size", GS_LIMIT
                     )
             );
         }
 
         return result;
+    }
+
+    private Map<String, Object> getGlobalSearchQuery(String input, Map<String, Object> category) {
+        String searchFieldName = (String)category.get(GS_SEARCH_FIELD);
+        Map<String, Object> query = new HashMap<>();
+        query.put("query", Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
+        return query;
     }
 
     private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {

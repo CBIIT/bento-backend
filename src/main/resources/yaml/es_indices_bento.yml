@@ -22,6 +22,8 @@ Indices:
         type: keyword
       subject_id_num:
         type: integer
+      subject_id_gs:
+        type: search_as_you_type
       diagnoses:
         type: keyword
       rc_scores:
@@ -77,6 +79,7 @@ Indices:
       s.study_short_description AS study_short_description,
       COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
       ss.study_subject_id AS subject_ids,
+      ss.study_subject_id AS subject_id_gs,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,
@@ -115,6 +118,8 @@ Indices:
         type: keyword
       sample_ids:
         type: keyword
+      sample_id_gs:
+        type: search_as_you_type
       sample_id_num:
         type: integer
       diagnoses:
@@ -171,8 +176,9 @@ Indices:
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       s.study_acronym AS study_acronym,
       samp.sample_id AS sample_ids,
+      samp.sample_id AS sample_id_gs,
       samp.sample_anatomic_site AS sample_anatomic_site,
-      samp.sample_procurement_method AS sample_procurement_method,
+      samp.method_of_sample_procurement AS sample_procurement_method,
       lp.test_name AS platform,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       ss.study_subject_id AS subject_ids,
@@ -215,6 +221,8 @@ Indices:
         type: keyword
       file_id_num:
         type: integer
+      file_id_gs:
+        type: search_as_you_type
       file_names:
         type: keyword
       file_description:
@@ -267,6 +275,7 @@ Indices:
       ss.study_subject_id AS subject_ids,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       f.file_id AS file_ids,
+      f.file_id AS file_id_gs,
       f.file_name AS file_names,
       f.file_description AS file_description,
       f.file_format AS file_format,
@@ -290,121 +299,54 @@ Indices:
       f.file_type AS file_type
       order by f.file_id
       "
-  - index_name: global_search
+
+  - index_name: programs
     type: neo4j
     # type mapping for each property of the index
     mapping:
-      program:
+      program_code:
         type: search_as_you_type
       program_id:
         type: search_as_you_type
-      program_id_kw:
-        type: keyword
       program_file_names:
         type: search_as_you_type
-      arm_id:
-        type: search_as_you_type
-      arm_id_kw:
+      program_name:
         type: keyword
-      arm_name:
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (p:program)
+      OPTIONAL MATCH (p)<--(pf:file)
+      RETURN DISTINCT
+        p.program_acronym AS program_code,
+        p.program_id AS program_id,
+        p.program_name AS program_name,
+        COLLECT(DISTINCT pf.file_name) AS program_file_names
+      "
+  - index_name: studies
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      study_code:
+        type: search_as_you_type
+      study_id:
+        type: search_as_you_type
+      study_name:
         type: search_as_you_type
       study_file_names:
-        type: search_as_you_type
-      subject_id:
-        type: search_as_you_type
-      subject_id_kw:
-        type: keyword
-
-      diagnosis:
-        type: search_as_you_type
-      rc_score:
-        type: search_as_you_type
-      tumor_size:
-        type: search_as_you_type
-      chemo_regimen:
-        type: search_as_you_type
-      tumor_grade:
-        type: search_as_you_type
-      er_status:
-        type: search_as_you_type
-      pr_status:
-        type: search_as_you_type
-      endo_therapy:
-        type: search_as_you_type
-      meno_status:
-        type: search_as_you_type
-
-      sample_id:
-        type: search_as_you_type
-      sample_id_kw:
-        type: keyword
-      tissue_type:
-        type: search_as_you_type
-      composition:
-        type: search_as_you_type
-
-      file_id:
-        type: search_as_you_type
-      file_id_kw:
-        type: keyword
-      file_name:
-        type: search_as_you_type
-      file_description:
-        type: search_as_you_type
-      file_format:
-        type: search_as_you_type
-      association:
-        type: search_as_you_type
-      file_type:
         type: search_as_you_type
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (ss:study_subject)<-[*..2]-(parent)<--(f:file)
-      MATCH (ss)<-[:sf_of_study_subject]-(sf)
-      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
-      MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-      OPTIONAL MATCH (p)<--(pf:file)
+      MATCH (s:study)
       OPTIONAL MATCH (s)<--(sf:file)
-      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-      MATCH (f)-[*]->(samp:sample)
       RETURN DISTINCT
-        p.program_acronym AS program,
-        p.program_id AS program_id,
-        p.program_id AS program_id_kw,
-        COLLECT(DISTINCT pf.file_name) AS program_file_names,
-
-        s.study_acronym AS arm_id,
-        s.study_acronym AS arm_id_kw,
-        s.study_name AS arm_name,
-        COLLECT(DISTINCT sf.file_name) AS study_file_names,
-
-        ss.study_subject_id AS subject_id,
-        ss.study_subject_id AS subject_id_kw,
-        ss.disease_subtype AS diagnosis,
-        sf.grouped_recurrence_score AS rc_score,
-        d.tumor_size_group AS tumor_size,
-        tp.chemotherapy_regimen AS chemo_regimen,
-        d.tumor_grade AS tumor_grade,
-        d.er_status AS er_status,
-        d.pr_status AS pr_status,
-        tp.endocrine_therapy_type AS endo_therapy,
-        demo.menopause_status AS  meno_status,
-
-        samp.sample_id AS sample_id,
-        samp.sample_id AS sample_id_kw,
-        samp.tissue_type AS tissue_type,
-        samp.composition AS composition,
-
-        f.file_id AS file_id,
-        f.file_id AS file_id_kw,
-        f.file_name AS file_name,
-        f.file_description AS file_description,
-        f.file_format AS file_format,
-        head(labels(parent)) AS association,
-        f.file_type AS file_type
-      order by f.file_id
+        s.study_id AS study_id,
+        s.study_acronym AS study_code,
+        s.study_name AS study_name,
+        COLLECT(DISTINCT sf.file_name) AS study_file_names
       "
+
   - index_name: about_page
     type: about_file
     # type mapping for each property of the index

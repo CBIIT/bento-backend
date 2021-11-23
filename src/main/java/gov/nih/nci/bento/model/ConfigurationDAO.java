@@ -26,8 +26,17 @@ public class ConfigurationDAO {
 	//GraphQL
 	@Value("${graphql.schema}")
 	private String schemaFile;
-	@Value("${graphql.redis_schema}")
-	private String redisSchemaFile;
+
+	public String getEsSchemaFile() {
+		return esSchemaFile;
+	}
+
+	public void setEsSchemaFile(String esSchemaFile) {
+		this.esSchemaFile = esSchemaFile;
+	}
+
+	@Value("${graphql.es_schema}")
+	private String esSchemaFile;
 
 	//Query Restrictions
 	@Value("${allow_graphql_query}")
@@ -47,11 +56,48 @@ public class ConfigurationDAO {
 	@Value("${redis.ttl}")
 	private int redisTTL;
 
-	//Redis Filtering
-	@Value("${redis.filter.enable}")
-	private boolean redisFilterEnabled;
-	@Value("${redis.filter.init_queries_file}")
-	private String redisFilterInitQueriesFile;
+	@Value("${es.host}")
+	private String esHost;
+	@Value("${es.port}")
+	private int esPort;
+	@Value("${es.scheme}")
+	private String esScheme;
+
+	public int getEsPort() {
+		return esPort;
+	}
+
+	public void setEsPort(int esPort) {
+		this.esPort = esPort;
+	}
+
+	public String getEsScheme() {
+		return esScheme;
+	}
+
+	public void setEsScheme(String esScheme) {
+		this.esScheme = esScheme;
+	}
+
+	@Value(("${es.filter.enabled}"))
+	private boolean esFilterEnabled;
+
+
+	public String getEsHost() {
+		return esHost;
+	}
+
+	public void setEsHost(String esHost) {
+		this.esHost = esHost;
+	}
+
+	public boolean getEsFilterEnabled() {
+		return esFilterEnabled;
+	}
+
+	public void setEsFilterEnabled(boolean esFilterEnabled) {
+		this.esFilterEnabled = esFilterEnabled;
+	}
 
 	//Testing
 	@Value("${test.queries_file}")
@@ -110,18 +156,6 @@ public class ConfigurationDAO {
 		return testQueriesFile;
 	}
 
-	public boolean isRedisFilterEnabled() {
-		return redisFilterEnabled;
-	}
-
-	public String getRedisFilterInitQueriesFile() {
-		return redisFilterInitQueriesFile;
-	}
-
-	public String getRedisSchemaFile() {
-		return redisSchemaFile;
-	}
-
 	//Setters
 	public void setNeo4jUrl(String neo4jUrl) {
 		this.neo4jUrl = neo4jUrl;
@@ -175,15 +209,4 @@ public class ConfigurationDAO {
 		this.testQueriesFile = testQueriesFile;
 	}
 
-	public void setRedisFilterEnabled(boolean redisFilterEnabled) {
-		this.redisFilterEnabled = redisFilterEnabled;
-	}
-
-	public void setRedisFilterInitQueriesFile(String redisFilterInitQueriesFile) {
-		this.redisFilterInitQueriesFile = redisFilterInitQueriesFile;
-	}
-
-	public void setRedisSchemaFile(String redisSchemaFile) {
-		this.redisSchemaFile = redisSchemaFile;
-	}
 }

@@ -6,9 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.service.Neo4jDataFetcher;
-import gov.nih.nci.bento.service.RedisFilterDataFetcher;
-import gov.nih.nci.bento.service.RedisService;
+import gov.nih.nci.bento.model.ESFilterDataFetcher;
+import gov.nih.nci.bento.model.Neo4jDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -23,8 +22,6 @@ import graphql.schema.idl.SchemaParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,21 +38,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@DependsOn({"neo4jDataFetcher", "redisService"})
+@DependsOn({"neo4jDataFetcher"})
 public class GraphQLController {
 
 	private static final Logger logger = LogManager.getLogger(GraphQLController.class);
@@ -63,30 +56,13 @@ public class GraphQLController {
 	@Autowired
 	private ConfigurationDAO config;
 	@Autowired
-	private RedisService redisService;
-	@Autowired
 	private Neo4jDataFetcher dataFetcherInterceptor;
 	@Autowired
-	private RedisFilterDataFetcher redisFilterDataFetcher;
+	private ESFilterDataFetcher esFilterDataFetcher;
 
 
 	private Gson gson = new GsonBuilder().serializeNulls().create();
 	private GraphQL graphql;
-
-	@PostConstruct
-	public void init() throws IOException {
-		initGraphQL();
-		if (config.getRedisEnabled() && config.isRedisFilterEnabled()){
-			boolean redisInitialized = initRedisFiltering();
-			//Initialize redis filtering and check if initialization was successful
-			if(!redisInitialized){
-				//If initialization failed, set redis filtering to disabled in the config and reinitialize GraphQL to
-				//remove the redis schema
-				config.setRedisFilterEnabled(false);
-				initGraphQL();
-			}
-		}
-	}
 
 	@CrossOrigin
 	@RequestMapping(value = "/version", method = {RequestMethod.GET}, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
@@ -170,65 +146,18 @@ public class GraphQLController {
 		return ResponseEntity.status(status).body(error);
 	}
 
-	private void initGraphQL() throws IOException {
+	@PostConstruct
+	public void initGraphQL() throws IOException {
 		GraphQLSchema neo4jSchema = getNeo4jSchema();
-		GraphQLSchema redisSchema = getRedisSchema();
-		GraphQLSchema newSchema = mergeSchema(neo4jSchema, redisSchema);
+		GraphQLSchema esSchema = getEsSchema();
+		GraphQLSchema newSchema = mergeSchema(neo4jSchema, esSchema);
 		graphql = GraphQL.newGraphQL(newSchema).build();
 	}
 
-	private boolean initRedisFiltering(){
-		logger.info("Initializing group list in Redis");
-		Yaml yaml = new Yaml();
-		try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(config.getRedisFilterInitQueriesFile())) {
-			Map<String, Object> yamlMap = yaml.load(inputStream);
-			List<String> queries = (List<String>) yamlMap.get("queries");
-			for (String query : queries) {
-				String response = query(String.format("{%s{group subjects}}", query), new HashMap<>());
-				//Convert query response to JSON
-				JSONObject jsonObject = new JSONObject(response);
-				//Extract "data" attribute from response as a JSON object
-				jsonObject = jsonObject.getJSONObject("data");
-				//Extract and loop through array of query responses
-				JSONArray jsonQueries = jsonObject.getJSONArray(query);
-				for (int i = 0; i < jsonQueries.length(); i++) {
-					//Get current response
-					JSONObject groupList = jsonQueries.getJSONObject(i);
-					//Check for required response fields
-					if (!groupList.has("group") || !groupList.has("subjects")){
-						continue;
-					}
-					//Store group attribute
-					String group = groupList.get("group").toString();
-					//Store and format subjects attribute
-					String subjectsString = groupList.get("subjects").toString();
-					subjectsString = subjectsString.replaceAll("\"", "");
-					subjectsString = subjectsString.replace("[", "");
-					subjectsString = subjectsString.replace("]", "");
-					//Split subjects attribute into an array of subject_ids
-					String[] subjects = subjectsString.split(",");
-					//Cache subject_ids for the current group
-					logger.info("Caching " + group);
-					redisService.cacheGroup(group, subjects);
-				}
-			}
-			redisService.setParameterMappings((HashMap<String, String>) yamlMap.get("parameter_mappings"));
-			return true;
-		} catch (IOException | YAMLException e) {
-			logger.error(e);
-			logger.warn(String.format("Unable to read redis filter initializations queries from %s",config.getRedisFilterInitQueriesFile()));
-			logger.warn("Redis filtering will not be enabled");
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			logger.warn("Exception occurred while initializing Redis filter sets");
-		}
-		return false;
-	}
-
-	private GraphQLSchema getRedisSchema() throws IOException {
-		if (config.getRedisEnabled() && config.isRedisFilterEnabled()){
-			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getRedisSchemaFile()).getFile();
-			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), redisFilterDataFetcher.buildRuntimeWiring());
+	private GraphQLSchema getEsSchema() throws IOException {
+		if (config.getEsFilterEnabled()){
+			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
+			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
 		}
 		else{
 			return null;

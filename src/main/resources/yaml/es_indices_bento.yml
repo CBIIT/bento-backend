@@ -360,21 +360,32 @@ Indices:
       content:
         type: object
 
-  - index_name: data_model
+  - index_name: model_nodes
     type: model
+    subtype: node
     # type mapping for each property of the index
     mapping:
-      node_name:
-        type: keyword
       node:
         type: search_as_you_type
-      property_name:
-        type: keyword
+
+  - index_name: model_properties
+    type: model
+    subtype: property
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
       property:
         type: search_as_you_type
-      value_name:
-        type: keyword
+
+  - index_name: model_values
+    type: model
+    subtype: value
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
       value:
         type: search_as_you_type
-
-

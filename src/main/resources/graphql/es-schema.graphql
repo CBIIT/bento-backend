@@ -166,6 +166,19 @@ type GS_File {
     file_id: String
 }
 
+type GS_Node {
+    node_name: String
+}
+type GS_Property {
+    node_name: String
+    property_name: String
+}
+type GS_Value {
+    node_name: String
+    property_name: String
+    value: String
+}
+
 type GlobalSearchResult {
     program_count: Int
     programs: [GS_Program]
@@ -182,14 +195,15 @@ type GlobalSearchResult {
     file_count: Int
     files: [GS_File]
 
+    about_count: Int
     about_page: [String]
 
     node_count: Int
-    nodes: [String]
+    nodes: [GS_Node]
     property_count: Int
-    properties: [String]
+    properties: [GS_Property]
     value_count: Int
-    values: [String]
+    values: [GS_Value]
 }
 
 schema {

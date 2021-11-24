@@ -35,6 +35,12 @@ public class ESFilterDataFetcher {
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
     final String FILES_COUNT_END_POINT = "/files/_count";
+    final String NODES_END_POINT = "/model_nodes/_search";
+    final String NODES_COUNT_END_POINT = "/model_nodes/_count";
+    final String PROPERTIES_END_POINT = "/model_properties/_search";
+    final String PROPERTIES_COUNT_END_POINT = "/model_properties/_count";
+    final String VALUES_END_POINT = "/model_values/_search";
+    final String VALUES_COUNT_END_POINT = "/model_values/_count";
     final String GS_ABOUT_END_POINT = "/about_page/_search";
     final String GS_MODEL_END_POINT = "/data_model/_search";
 
@@ -497,6 +503,42 @@ public class ESFilterDataFetcher {
                 }
 
         ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, NODES_END_POINT,
+                GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "node_count",
+                GS_RESULT_FIELD, "nodes",
+                GS_SEARCH_FIELD,"node",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"node_name", "node"}
+                }
+
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, PROPERTIES_END_POINT,
+                GS_COUNT_ENDPOINT, PROPERTIES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "property_count",
+                GS_RESULT_FIELD, "properties",
+                GS_SEARCH_FIELD,"property",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"node_name", "node"},
+                        new String[]{"property_name", "property"}
+                }
+
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, VALUES_END_POINT,
+                GS_COUNT_ENDPOINT, VALUES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "value_count",
+                GS_RESULT_FIELD, "values",
+                GS_SEARCH_FIELD,"value",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"node_name", "node"},
+                        new String[]{"property_name", "property"},
+                        new String[]{"value", "value"}
+                }
+
+        ));
 
         for (Map<String, Object> category: searchCategories) {
             String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
@@ -515,51 +557,19 @@ public class ESFilterDataFetcher {
             result.put(resultFieldName, esService.collectPage(request, query, properties, size, offset));
         }
 
-        searchModelNodes(input, result);
-
-        result.put("about_page", searchAboutPage(input));
+        List<String> about_results = searchAboutPage(input);
+        result.put("about_count", about_results.size());
+        result.put("about_page", about_results.subList(offset, offset + size));
 
         return result;
-    }
-
-    // Should be refactored!
-    private void searchModelNodes(String input, Map<String, Object> result) throws IOException {
-        List<Map<String, String>> fieldNames = List.of(
-                Map.of(
-                        GS_RESULT_FIELD, "nodes",
-                        GS_SEARCH_FIELD,"node",
-                        GS_COLLECT_FIELDS,"node_name"
-                ),
-                Map.of(
-                        GS_RESULT_FIELD, "properties",
-                        GS_SEARCH_FIELD,"property",
-                        GS_COLLECT_FIELDS,"property_name"
-                ),
-                Map.of(
-                        GS_RESULT_FIELD, "values",
-                        GS_SEARCH_FIELD,"value",
-                        GS_COLLECT_FIELDS,"value_name"
-                )
-        );
-
-        Map<String, Map<String, Object>> queries = getGlobalSearchQueries(input, fieldNames);
-
-        for (String resultFieldName: queries.keySet()) {
-            Map<String, Object> query = queries.get(resultFieldName);
-            Request request = new Request("GET", GS_MODEL_END_POINT);
-            request.setJsonEntity(gson.toJson(query));
-            JsonObject jsonObject = esService.send(request);
-            Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, new String[]{GS_AGG_LIST});
-            var buckets = aggs.get(GS_AGG_LIST);
-            result.put(resultFieldName, esService.collectBucketKeys(buckets));
-        }
     }
 
     private List<String> searchAboutPage(String input) throws IOException {
         final String ABOUT_CONTENT = "content.paragraph";
         Map<String, Object> query = Map.of(
                 "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
-                "highlight", Map.of("fields", Map.of(ABOUT_CONTENT, Map.of()))
+                "highlight", Map.of("fields", Map.of(ABOUT_CONTENT, Map.of())),
+                "size", esService.MAX_ES_SIZE
         );
         Request request = new Request("GET", GS_ABOUT_END_POINT);
         request.setJsonEntity(gson.toJson(query));
@@ -571,26 +581,6 @@ public class ESFilterDataFetcher {
             for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
                 result.add(highlight.getAsString());
             }
-        }
-
-        return result;
-    }
-
-    private Map<String, Map<String, Object>> getGlobalSearchQueries(String input, List<Map<String, String>> fieldNames) {
-        Map<String, Map<String, Object>> result = new HashMap<>();
-        for (var field: fieldNames) {
-            String searchFieldName = field.get(GS_SEARCH_FIELD);
-            String collectFieldName = field.get(GS_COLLECT_FIELDS);
-            String resultFieldName = field.get(GS_RESULT_FIELD);
-            result.put(
-                    resultFieldName,
-                    Map.of(
-                            "query", Map.of("match_phrase_prefix", Map.of(searchFieldName, input)),
-                            "_source", false,
-                            "aggs", Map.of(GS_AGG_LIST, Map.of("terms", Map.of("field", collectFieldName))),
-                            "size", GS_LIMIT
-                    )
-            );
         }
 
         return result;

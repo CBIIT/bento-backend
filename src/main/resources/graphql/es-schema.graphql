@@ -131,16 +131,79 @@ type ProgramArms2 {
     children: [ArmInfo2]
 }
 
+type GS_Program {
+    program_code: String
+    program_id: String
+    program_name: String
+}
+
+type GS_Study {
+    study_id: String
+    study_code: String
+    study_name: String
+}
+
+type GS_Subject {
+    program_code: String
+    study: String
+    subject_id: String
+    diagnosis: String
+    age: Int
+}
+
+type GS_Sample {
+    subject_id: String
+    sample_id: String
+    diagnosis: String
+    sample_anatomic_site: String
+    sample_procurement_method: String
+}
+
+type GS_File {
+    subject_id: String
+    sample_id: String
+    file_name: String
+    file_id: String
+}
+
+type GS_Node {
+    node_name: String
+}
+type GS_Property {
+    node_name: String
+    property_name: String
+}
+type GS_Value {
+    node_name: String
+    property_name: String
+    value: String
+}
+
 type GlobalSearchResult {
-    program_ids: [String]
-    arm_ids: [String]
-    subject_ids: [String]
-    sample_ids: [String]
-    file_ids: [String]
+    program_count: Int
+    programs: [GS_Program]
+
+    study_count: Int
+    studies: [GS_Study]
+
+    subject_count: Int
+    subjects: [GS_Subject]
+
+    sample_count: Int
+    samples: [GS_Sample]
+
+    file_count: Int
+    files: [GS_File]
+
+    about_count: Int
     about_page: [String]
-    nodes: [String]
-    properties: [String]
-    values: [String]
+
+    node_count: Int
+    nodes: [GS_Node]
+    property_count: Int
+    properties: [GS_Property]
+    value_count: Int
+    values: [GS_Value]
 }
 
 schema {
@@ -248,6 +311,6 @@ type QueryType {
         file_names: [String] = [""]
     ): [String]
 
-    globalSearch (input: String): GlobalSearchResult
+    globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
 
 }

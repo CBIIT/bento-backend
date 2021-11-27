@@ -73,7 +73,7 @@ pipeline {
           doGenerateSubmoduleConfigurations: 
           false, extensions: [], submoduleCfg: [], 
           userRemoteConfigs: 
-          [[url: 'hhttps://github.com/PediatricOpenTargets/OpenPedCan-api.git']]])
+          [[url: 'https://github.com/PediatricOpenTargets/OpenPedCan-api.git']]])
 
         checkout( poll: false, 
         changelog:false,

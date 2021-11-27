@@ -69,7 +69,7 @@ pipeline {
       steps {
 
         checkout([$class: 'GitSCM', 
-          branches: [[name: "${params.Backend_Tag}"]], 
+          branches: [[name: "${params.OpenPedCan_Tag}"]], 
           doGenerateSubmoduleConfigurations: 
           false, extensions: [], submoduleCfg: [], 
           userRemoteConfigs: 

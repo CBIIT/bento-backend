@@ -28,3 +28,6 @@ localhost
 [ccdc]
 localhost
 
+[rserver]
+localhost
+

@@ -338,7 +338,8 @@ variable "tags" {
   type = map(string)
 }
 variable "db_subnet_id_name" {
-  default = "ccdc-rds-db-subnet"
+  description = "db_subnet_id_name"
+  type = string
 }
 variable "subnet_id_name" {
   default = ""

@@ -1,0 +1,46 @@
+---
+- name: install docker and docker-compose
+  pip:
+    name: "{{item}}"
+    state: present
+  loop:
+    - docker
+    - docker-compose
+
+- name: create OpenPedCan-api-secrets directory
+  file: 
+    path: "{{workspace}}/"
+    state: directory
+  loop:
+    - OpenPedCan-api-secrets
+
+- name: copy DB environment files
+  template:  src={{item.src}} dest={{item.dest}}
+  with_items:
+    - { src: 'access_db.env', dest: '{{workspace}}//OpenPedCan-api-secrets//access_db.env' }
+    - { src: 'common_db.env', dest: '{{workspace}}//OpenPedCan-api-secrets//common_db.env' }
+    - { src: 'load_db.env', dest: '{{workspace}}//OpenPedCan-api-secrets//load_db.env' }
+   
+- name: login into ecr
+  shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  ignore_errors: True
+  register: ecr_login
+
+- name:  build {{ecr}}/OpenPedCan:HttpServer image
+  docker_image:
+    path: "{{workspace}}/{{project}}/"
+    dockerfile: "{{workspace}}/{{project}}/Dockerfile"
+    pull: yes
+    name: "{{ecr}}/OpenPedCan"
+    tag: "HttpServer-{{version}}"
+    push: yes
+    
+
+- name:  build {{ecr}}/OpenPedCan:DatabaseServer image
+  docker_image:
+    path: "{{workspace}}/{{project}}"
+    dockerfile: "{{workspace}}/{{project}}/db/build_tools/build_db.Dockerfile"
+    pull: yes
+    name: "{{ecr}}/OpenPedCan"
+    tag: "DatabaseServer-{{version}}"
+    push: yes

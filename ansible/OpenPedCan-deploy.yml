@@ -1,0 +1,11 @@
+---
+- name: deploy stage of OpenPedCan-api pipeline
+  hosts: OpenPedCan-api
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: OpenPedCan
+        tasks_from: deploy

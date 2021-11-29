@@ -1,0 +1,12 @@
+---
+- name: OpenPedCan cicd pipeline
+  hosts: OpenPedCan-api
+  connection: local
+  gather_facts: no
+  become: yes
+    
+  tasks:
+    - name: This is a build stage
+      include_role:
+        name: OpenPedCan
+        tasks_from: build

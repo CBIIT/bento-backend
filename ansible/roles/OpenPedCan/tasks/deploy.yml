@@ -1,0 +1,151 @@
+---
+- name: create task OpenPedCan httpsServer definition 
+  ecs_taskdefinition:
+    network_mode: bridge
+    family: {{ stack_name }}-HttpServer
+    launch_type: FARGATE
+    memory: '1024'
+    cpu: '1024'
+    state: present
+    region: "{{region}}"
+    containers:
+    - name: HttpsServer
+      essential: true
+      image: "{{ecr}}/OpenPedCan:HttpServer-{{version}}"
+      environment:
+        - name: REACT_APP_ENVIRONMENT
+          value: "{{tier}}"
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}-backend"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: true
+        - name: RDB_HOST
+          value: "{{ rds_host }}"
+        - name: RDB_PORT
+          value: "{{ rds_port }}"
+        - name: RDB_USER
+          value: "{{ rds_user }}"
+        - name: RDB_PASSWORD
+          value: "{{ rds_password }}"
+      portMappings:
+      - containerPort: "8080"
+        hostPort: "8080"
+        protocol: tcp
+  register: task_output
+
+- name: create task OpenPedCan Database Server definition 
+  ecs_taskdefinition:
+    network_mode: bridge
+    family: {{ stack_name }}-DatabaseServer
+    launch_type: FARGATE
+    memory: '1024'
+    cpu: '1024'
+    state: present
+    region: "{{region}}"
+    containers:
+    - name: DatabaseServer
+      essential: true
+      image: "{{ecr}}/OpenPedCan:DatabaseServer-{{version}}"
+      environment:
+        - name: REACT_APP_ENVIRONMENT
+          value: "{{tier}}"
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}-backend"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: true
+        - name: RDB_HOST
+          value: "{{ rds_host }}"
+        - name: RDB_PORT
+          value: "{{ rds_port }}"
+        - name: RDB_USER
+          value: "{{ rds_user }}"
+        - name: RDB_PASSWORD
+          value: "{{ rds_password }}"
+      portMappings:
+      - containerPort: "8081"
+        hostPort: "8081"
+        protocol: tcp
+  register: task_output
+
+
+
+- name: query task definition HttpServer
+  ecs_taskdefinition_facts:
+    task_definition: OpenPedCan-HttpServer
+    region: "{{region}}" 
+  register: task_httpserver
+
+- name: query task definition DatabaseServer
+  ecs_taskdefinition_facts:
+    task_definition: OpenPedCan-DatabaseServer
+    region: "{{region}}" 
+  register: task_databaseserver
+
+- name: query ecs service httpserver
+  ecs_service_facts:
+    cluster: OpenPedCan
+    service: OpenPedCan-HttpServer
+    details: true
+    region: "{{region}}"
+  register: service_httpserver
+
+- name: query ecs service DatabaseServer
+  ecs_service_facts:
+    cluster: OpenPedCan
+    service: OpenPedCan-DatabaseServer
+    details: true
+    region: "{{region}}"
+  register: service_databaseserver
+
+
+- name: set facts
+  set_fact:
+    httpserver_revision: "{{task_httpserver.revision}}"
+    databaseserver_revision: "{{task_databaseserver.revision}}"
+    task_databaseserver_name: "{{task_databaseserver.family}}"
+    task_httpserver_name: "{{task_httpserver.family}}"
+    lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"
+    role_arn: "{{service_httpserver.services[0].roleArn}}"
+
+
+- name: update httpserver service
+  ecs_service:
+    state: present
+    name: OpenPedCan-HttpServer
+    cluster: OpenPedCan
+    task_definition: "{{task_httpserver_name}}:{{httpserver_revision}}"
+    role: "{{role_arn}}"
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_httpserver_output
+
+
+- name: update databaseserver service
+  ecs_service:
+    state: present
+    name: OpenPedCan-DatabaseServer
+    cluster: OpenPedCan
+    task_definition: "{{task_databaseServer_name}}:{{databaseserver_revision}}"
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_processor_output
+

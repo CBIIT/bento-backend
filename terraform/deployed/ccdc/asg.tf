@@ -242,7 +242,7 @@ resource "aws_lb_listener_rule" "backend_alb_listener_prod" {
   }
   condition {
     path_pattern  {
-      values = ["/service"]
+      values = ["/service*"]
     }
   }
 }
@@ -288,7 +288,7 @@ resource "aws_lb_listener_rule" "backend_alb_listener" {
   }
   condition {
     path_pattern  {
-      values = ["/service"]
+      values = ["/service*"]
     }
   }
 }

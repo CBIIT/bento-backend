@@ -558,8 +558,17 @@ public class ESFilterDataFetcher {
         }
 
         List<String> about_results = searchAboutPage(input);
-        result.put("about_count", about_results.size());
-        result.put("about_page", about_results.subList(offset, offset + size));
+        int about_count = about_results.size();
+        result.put("about_count", about_count);
+        List<String> about_page = new ArrayList<>();
+        if (offset <= about_count -1) {
+            int end_index = offset + size;
+            if (end_index > about_count) {
+                end_index = about_count;
+            }
+            about_page = about_results.subList(offset, end_index);
+        }
+        result.put("about_page", about_page);
 
         return result;
     }

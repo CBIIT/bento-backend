@@ -51,6 +51,7 @@ public class ESFilterDataFetcher {
     final String GS_COUNT_RESULT_FIELD = "count_result_field";
     final String GS_SEARCH_FIELD = "search_field";
     final String GS_COLLECT_FIELDS = "collect_fields";
+    final String GS_CATEGORY_TYPE = "type";
     final String GS_AGG_LIST = "list";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
@@ -444,7 +445,8 @@ public class ESFilterDataFetcher {
                         new String[]{"program_code", "program_code"},
                         new String[]{"program_id", "program_id"},
                         new String[]{"program_name", "program_name"}
-                }
+                },
+                GS_CATEGORY_TYPE, "program"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, STUDIES_END_POINT,
@@ -456,7 +458,8 @@ public class ESFilterDataFetcher {
                         new String[]{"study_id", "study_id"},
                         new String[]{"study_code", "study_code"},
                         new String[]{"study_name", "study_name"}
-                }
+                },
+                GS_CATEGORY_TYPE, "study"
 
         ));
         searchCategories.add(Map.of(
@@ -471,8 +474,8 @@ public class ESFilterDataFetcher {
                         new String[]{"subject_id", "subject_id_gs"},
                         new String[]{"diagnosis", "diagnoses"},
                         new String[]{"age", "age_at_index"}
-                }
-
+                },
+                GS_CATEGORY_TYPE, "subject"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, SAMPLES_END_POINT,
@@ -486,8 +489,8 @@ public class ESFilterDataFetcher {
                         new String[]{"diagnosis", "diagnoses"},
                         new String[]{"sample_anatomic_site", "sample_anatomic_site"},
                         new String[]{"sample_procurement_method", "sample_procurement_method"}
-                }
-
+                },
+                GS_CATEGORY_TYPE, "sample"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, FILES_END_POINT,
@@ -500,8 +503,8 @@ public class ESFilterDataFetcher {
                         new String[]{"sample_id", "sample_ids"},
                         new String[]{"file_name", "file_names"},
                         new String[]{"file_id", "file_ids"}
-                }
-
+                },
+                GS_CATEGORY_TYPE, "file"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,
@@ -511,8 +514,8 @@ public class ESFilterDataFetcher {
                 GS_SEARCH_FIELD,"node",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"}
-                }
-
+                },
+                GS_CATEGORY_TYPE, "node"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, PROPERTIES_END_POINT,
@@ -523,8 +526,8 @@ public class ESFilterDataFetcher {
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
                         new String[]{"property_name", "property"}
-                }
-
+                },
+                GS_CATEGORY_TYPE, "property"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, VALUES_END_POINT,
@@ -536,8 +539,8 @@ public class ESFilterDataFetcher {
                         new String[]{"node_name", "node"},
                         new String[]{"property_name", "property"},
                         new String[]{"value", "value"}
-                }
-
+                },
+                GS_CATEGORY_TYPE, "value"
         ));
 
         for (Map<String, Object> category: searchCategories) {
@@ -554,12 +557,27 @@ public class ESFilterDataFetcher {
 
             // Get results
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
-            result.put(resultFieldName, esService.collectPage(request, query, properties, size, offset));
+            List<Map<String, Object>> objects = esService.collectPage(request, query, properties, size, offset);
+
+            for (var object: objects) {
+                object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
+            }
+
+            result.put(resultFieldName, objects);
         }
 
         List<String> about_results = searchAboutPage(input);
-        result.put("about_count", about_results.size());
-        result.put("about_page", about_results.subList(offset, offset + size));
+        int about_count = about_results.size();
+        result.put("about_count", about_count);
+        List<String> about_page = new ArrayList<>();
+        if (offset <= about_count -1) {
+            int end_index = offset + size;
+            if (end_index > about_count) {
+                end_index = about_count;
+            }
+            about_page = about_results.subList(offset, end_index);
+        }
+        result.put("about_page", about_page);
 
         return result;
     }

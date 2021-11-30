@@ -148,6 +148,7 @@ pipeline {
   	stage('build'){
       environment {
        VERSION = "${params.Branch_Tag}"
+       NODE_OPTIONS="--max_old_space_size=2048"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

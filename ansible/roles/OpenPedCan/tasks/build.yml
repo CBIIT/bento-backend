@@ -17,9 +17,9 @@
 - name: copy DB environment files
   template:  src={{item.src}} dest={{item.dest}}
   with_items:
-    - { src: 'access_db.env', dest: '{{workspace}}//OpenPedCan-api-secrets//access_db.env' }
-    - { src: 'common_db.env', dest: '{{workspace}}//OpenPedCan-api-secrets//common_db.env' }
-    - { src: 'load_db.env', dest: '{{workspace}}//OpenPedCan-api-secrets//load_db.env' }
+    - { src: 'access_db.env.j2', dest: '{{workspace}}//OpenPedCan-api-secrets//access_db.env' }
+    - { src: 'common_db.env.j2', dest: '{{workspace}}//OpenPedCan-api-secrets//common_db.env' }
+    - { src: 'load_db.env.j2', dest: '{{workspace}}//OpenPedCan-api-secrets//load_db.env' }
    
 - name: login into ecr
   shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"

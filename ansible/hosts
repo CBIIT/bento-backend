@@ -28,6 +28,6 @@ localhost
 [ccdc]
 localhost
 
-[rserver]
+[OpenPedCan-api]
 localhost
 

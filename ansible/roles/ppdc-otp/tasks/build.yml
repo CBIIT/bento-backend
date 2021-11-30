@@ -36,14 +36,14 @@
     mode: 0755
 
 - name: run npm install in {{workspace}}/{{ project }}-frontend
-      command: "{{item}}"
-      environment:
-        NODE_OPTIONS: --max-old-space-size=4096
-      args:
-        chdir: "{{workspace}}"
-      loop:
-        - npm install
-        - npm run build
+  command: "{{item}}"
+  environment:
+    NODE_OPTIONS: --max-old-space-size=4096
+  args:
+    chdir: "{{workspace}}"
+  loop:
+    - npm install
+    - npm run build
 
 - name: run yarn install in {{workspace}}/ppdc-otp-frontend
   shell: yarn install

@@ -1,5 +1,6 @@
 ---
 # vars file for cicd
+
 platform: aws
 stack_name: OpenPedCan-api
 tier: "{{ lookup('env','TIER') }}"

@@ -5,7 +5,7 @@ data "aws_s3_bucket" "bento_files" {
 data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.files_bucket.arn}/*"]
+    resources = ["${data.aws_s3_bucket.bento_files.arn}/*"]
 
     principals {
       type        = "AWS"

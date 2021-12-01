@@ -38,7 +38,7 @@
 - name: run yarn install in {{workspace}}/ppdc-otp-frontend
   shell: yarn install
   environment:
-    NODE_OPTIONS: --max-old-space-size=4096
+    NODE_OPTIONS: --max-old-space-size=2048
   args:
     chdir: "{{workspace}}/ppdc-otp-frontend"
 

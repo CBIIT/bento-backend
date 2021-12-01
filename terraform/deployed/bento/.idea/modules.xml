@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/cloudfront.iml" filepath="$PROJECT_DIR$/.idea/cloudfront.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/bento.iml" filepath="$PROJECT_DIR$/.idea/bento.iml" />
     </modules>
   </component>
 </project>

@@ -35,3 +35,4 @@ alarms = {
 }
 slack_secret_name = "pcdc-cloudfront-slack"
 
+cloudfront_distribution_bucket_name = "pcdc-dev-files"

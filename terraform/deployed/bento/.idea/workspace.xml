@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cf8ca13c-e309-4b12-9ba9-c4659b4e82e0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/cloudfront/data.tf" beforeDir="false" afterPath="$PROJECT_DIR$/cloudfront/data.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/workspace/pcdc-cloudfront.tfvars" beforeDir="false" afterPath="$PROJECT_DIR$/workspace/pcdc-cloudfront.tfvars" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

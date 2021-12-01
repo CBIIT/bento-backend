@@ -9,10 +9,8 @@
 
 - name: create OpenPedCan-api-secrets directory
   file: 
-    path: "{{workspace}}/"
+    path: "{{workspace}}/OpenPedCan-api-secrets"
     state: directory
-  loop:
-    - OpenPedCan-api-secrets
 
 - name: copy DB environment files
   template:  src={{item.src}} dest={{item.dest}}

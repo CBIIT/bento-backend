@@ -17,6 +17,4 @@ sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 db_user: "{{ lookup('aws_ssm', 'OpenPedCan-api_dbuser', region='us-east-1' ) }}"
 db_password: "{{ lookup('aws_ssm', 'OpenPedCan-api_dbpass', region='us-east-1' ) }}"
-
-
 # hostname: "{{ansible_fqdn}}"

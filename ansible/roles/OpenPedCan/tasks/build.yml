@@ -29,7 +29,7 @@
   shell: ls
   register: shell_result
   args:
-    chdir: "{{workspace}}"
+    chdir: "{{workspace}}/OpenPedCan-analysis"
 
 - debug:
         var: shell_result.stdout_lines

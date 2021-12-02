@@ -20,7 +20,8 @@
     - { src: 'load_db.env.j2', dest: '{{workspace}}//OpenPedCan-api-secrets//load_db.env' }
    
 - name: login into ecr
-  shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  #shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ecr}})"
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) {{ecr}}"
   ignore_errors: True
   register: ecr_login
 

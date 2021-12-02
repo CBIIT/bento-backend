@@ -9,7 +9,7 @@ tags = {
 region = "us-east-1"
 
 #specify your aws credential profile. Note this is not IAM role but rather profile configured during AWS CLI installation
-profile = "bento"
+profile = "icdc"
 
 #specify the name you will like to call this project.
 stack_name = "pcdc"

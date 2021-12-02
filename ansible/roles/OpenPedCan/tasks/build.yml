@@ -25,6 +25,13 @@
   ignore_errors: True
   register: ecr_login
 
+  - name: listing the contents
+  shell: ls
+  register: shell_result
+  
+- debug:
+        var: shell_result.stdout_lines
+
 - name:  build {{ecr}}/OpenPedCan:HttpServer image
   docker_image:
     path: "{{workspace}}/{{project}}/"

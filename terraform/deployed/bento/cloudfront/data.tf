@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "s3_policy" {
 
 #get managed s3cors policy
 data "aws_cloudfront_origin_request_policy" "s3_cors" {
-  name = "CORS-S3Origin"
+  id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
 }
 
 #get managed cloudfront distribution

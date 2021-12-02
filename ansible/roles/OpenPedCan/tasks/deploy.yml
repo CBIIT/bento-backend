@@ -18,7 +18,7 @@
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
-          value: "{{ app_name }}-backend"
+          value: "{{ stack_name }}-backend"
         - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
           value: true
         - name: NEW_RELIC_HOST
@@ -58,7 +58,7 @@
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
-          value: "{{ app_name }}-backend"
+          value: "{{ stack_name }}-backend"
         - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
           value: true
         - name: NEW_RELIC_HOST

@@ -2,7 +2,7 @@
 - name: create task OpenPedCan httpsServer definition 
   ecs_taskdefinition:
     network_mode: bridge
-    family: {{ stack_name }}-HttpServer
+    family: "{{ stack_name }}-httpserver"
     launch_type: FARGATE
     memory: '1024'
     cpu: '1024'
@@ -11,7 +11,7 @@
     containers:
     - name: HttpsServer
       essential: true
-      image: "{{ecr}}/OpenPedCan:HttpServer-{{version}}"
+      image: "{{ecr}}/rserver-dev-ecr:httpserver-{{version}}"
       environment:
         - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"
@@ -42,7 +42,7 @@
 - name: create task OpenPedCan Database Server definition 
   ecs_taskdefinition:
     network_mode: bridge
-    family: {{ stack_name }}-DatabaseServer
+    family: "{{ stack_name }}-databaseserver"
     launch_type: FARGATE
     memory: '1024'
     cpu: '1024'
@@ -51,7 +51,7 @@
     containers:
     - name: DatabaseServer
       essential: true
-      image: "{{ecr}}/OpenPedCan:DatabaseServer-{{version}}"
+      image: "{{ecr}}/rserver-dev-ecr:databaseserver-{{version}}"
       environment:
         - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"

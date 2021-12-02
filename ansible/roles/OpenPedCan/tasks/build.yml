@@ -28,7 +28,9 @@
 - name: listing the contents
   shell: ls
   register: shell_result
-  
+  args:
+    chdir: "{{workspace}}"
+
 - debug:
         var: shell_result.stdout_lines
 

@@ -4,6 +4,7 @@
     network_mode: bridge
     family: "{{ stack_name }}-httpserver"
     launch_type: FARGATE
+    network_mode: "awsvpc"
     memory: '1024'
     cpu: '1024'
     state: present
@@ -44,6 +45,7 @@
     network_mode: bridge
     family: "{{ stack_name }}-databaseserver"
     launch_type: FARGATE
+    network_mode: "awsvpc"
     memory: '1024'
     cpu: '1024'
     state: present

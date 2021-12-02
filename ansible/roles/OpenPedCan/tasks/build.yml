@@ -39,7 +39,7 @@
     path: "{{workspace}}/{{project}}/"
     dockerfile: "{{workspace}}/{{project}}/Dockerfile"
     pull: yes
-    name: "{{ecr}}/openpedcan"
+    name: "{{ecr}}/rserver-dev-ecr"
     tag: "httpserver-{{version}}"
     push: yes
     
@@ -49,6 +49,6 @@
     path: "{{workspace}}/{{project}}"
     dockerfile: "{{workspace}}/{{project}}/db/build_tools/build_db.Dockerfile"
     pull: yes
-    name: "{{ecr}}/openpedcan"
+    name: "{{ecr}}/rserver-dev-ecr"
     tag: "databaseserver-{{version}}"
     push: yes

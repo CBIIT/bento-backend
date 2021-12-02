@@ -68,12 +68,21 @@ pipeline {
     stage('checkout'){
       steps {
 
-        checkout([$class: 'GitSCM', 
-          branches: [[name: "${params.OpenPedCan_Tag}"]], 
-          doGenerateSubmoduleConfigurations: 
-          false, extensions: [], submoduleCfg: [], 
-          userRemoteConfigs: 
-          [[url: 'https://github.com/PediatricOpenTargets/OpenPedCan-api.git']]])
+        // checkout([$class: 'GitSCM', 
+        //   branches: [[name: "${params.OpenPedCan_Tag}"]], 
+        //   doGenerateSubmoduleConfigurations: 
+        //   false, extensions: [], submoduleCfg: [], 
+        //   userRemoteConfigs: 
+        //   [[url: 'https://github.com/PediatricOpenTargets/OpenPedCan-api.git']]])
+
+        checkout([$class: 'GitSCM',
+        branches: [[name: "${params.OpenPedCan_Tag}"]],
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'RelativeTargetDirectory',
+        relativeTargetDir: 'OpenPedCan-api']],
+        submoduleCfg: [],
+        userRemoteConfigs: 
+        [[url: 'https://github.com/PediatricOpenTargets/OpenPedCan-api.git']]])
 
         checkout( poll: false, 
         changelog:false,

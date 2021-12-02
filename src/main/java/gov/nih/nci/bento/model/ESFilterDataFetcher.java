@@ -52,6 +52,7 @@ public class ESFilterDataFetcher {
     final String GS_SEARCH_FIELD = "search_field";
     final String GS_COLLECT_FIELDS = "collect_fields";
     final String GS_CATEGORY_TYPE = "type";
+    final String GS_ABOUT = "about";
     final String GS_AGG_LIST = "list";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
@@ -567,10 +568,10 @@ public class ESFilterDataFetcher {
             result.put(resultFieldName, objects);
         }
 
-        List<String> about_results = searchAboutPage(input);
+        List<Map<String, String>> about_results = searchAboutPage(input);
         int about_count = about_results.size();
         result.put("about_count", about_count);
-        List<String> about_page = new ArrayList<>();
+        List<Map<String, String>> about_page = new ArrayList<>();
         if (offset <= about_count -1) {
             int end_index = offset + size;
             if (end_index > about_count) {
@@ -583,7 +584,7 @@ public class ESFilterDataFetcher {
         return result;
     }
 
-    private List<String> searchAboutPage(String input) throws IOException {
+    private List<Map<String, String>> searchAboutPage(String input) throws IOException {
         final String ABOUT_CONTENT = "content.paragraph";
         Map<String, Object> query = Map.of(
                 "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
@@ -594,11 +595,14 @@ public class ESFilterDataFetcher {
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
 
-        List<String> result = new ArrayList<>();
+        List<Map<String, String>> result = new ArrayList<>();
 
         for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
             for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
-                result.add(highlight.getAsString());
+                result.add(Map.of(
+                        GS_CATEGORY_TYPE, GS_ABOUT,
+                        "text", highlight.getAsString()
+                ));
             }
         }
 

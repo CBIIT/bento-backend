@@ -187,6 +187,10 @@ type GS_Value {
     property_name: String
     value: String
 }
+type GS_About {
+    type: String
+    text: String
+}
 
 type GlobalSearchResult {
     program_count: Int
@@ -205,7 +209,7 @@ type GlobalSearchResult {
     files: [GS_File]
 
     about_count: Int
-    about_page: [String]
+    about_page: [GS_About]
 
     node_count: Int
     nodes: [GS_Node]

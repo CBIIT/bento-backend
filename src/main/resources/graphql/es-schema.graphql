@@ -148,6 +148,7 @@ type GS_Study {
 type GS_Subject {
     type: String
     program_code: String
+    program_id: String
     study: String
     subject_id: String
     diagnosis: String

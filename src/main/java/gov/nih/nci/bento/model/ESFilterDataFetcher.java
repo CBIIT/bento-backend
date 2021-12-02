@@ -470,6 +470,7 @@ public class ESFilterDataFetcher {
                 GS_SEARCH_FIELD,"subject_id_gs",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_code", "programs"},
+                        new String[]{"program_id", "program_id"},
                         new String[]{"study", "study_acronym"},
                         new String[]{"subject_id", "subject_id_gs"},
                         new String[]{"diagnosis", "diagnoses"},

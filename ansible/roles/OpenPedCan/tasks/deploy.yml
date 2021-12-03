@@ -91,21 +91,21 @@
     region: "{{region}}" 
   register: task_databaseserver
 
-# - name: query ecs service httpserver
-#   ecs_service_facts:
-#     cluster: OpenPedCan
-#     service: OpenPedCan-HttpServer
-#     details: true
-#     region: "{{region}}"
-#   register: service_httpserver
+- name: query ecs service httpserver
+  ecs_service_facts:
+    cluster: OpenPedCan
+    service: OpenPedCan-HttpServer
+    details: true
+    region: "{{region}}"
+  register: service_httpserver
 
-# - name: query ecs service DatabaseServer
-#   ecs_service_facts:
-#     cluster: OpenPedCan
-#     service: OpenPedCan-DatabaseServer
-#     details: true
-#     region: "{{region}}"
-#   register: service_databaseserver
+- name: query ecs service DatabaseServer
+  ecs_service_facts:
+    cluster: OpenPedCan
+    service: OpenPedCan-DatabaseServer
+    details: true
+    region: "{{region}}"
+  register: service_databaseserver
 
 
 # - name: set facts

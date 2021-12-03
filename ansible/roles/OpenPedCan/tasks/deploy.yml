@@ -79,17 +79,17 @@
 
 
 
-# - name: query task definition HttpServer
-#   ecs_taskdefinition_facts:
-#     task_definition: OpenPedCan-HttpServer
-#     region: "{{region}}" 
-#   register: task_httpserver
+- name: query task definition HttpServer
+  ecs_taskdefinition_facts:
+    task_definition: OpenPedCan-HttpServer
+    region: "{{region}}" 
+  register: task_httpserver
 
-# - name: query task definition DatabaseServer
-#   ecs_taskdefinition_facts:
-#     task_definition: OpenPedCan-DatabaseServer
-#     region: "{{region}}" 
-#   register: task_databaseserver
+- name: query task definition DatabaseServer
+  ecs_taskdefinition_facts:
+    task_definition: OpenPedCan-DatabaseServer
+    region: "{{region}}" 
+  register: task_databaseserver
 
 # - name: query ecs service httpserver
 #   ecs_service_facts:

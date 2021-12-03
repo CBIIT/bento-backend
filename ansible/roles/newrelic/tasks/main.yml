@@ -16,6 +16,7 @@
       - libcap
       - newrelic-infra
     state: installed
+    disable_gpg_check: yes
   environment:
     NRIA_MODE: PRIVILEGED
 

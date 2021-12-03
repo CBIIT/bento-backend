@@ -3,8 +3,6 @@
   ecs_taskdefinition:
     network_mode: bridge
     family: "{{ stack_name }}-httpserver"
-    launch_type: FARGATE
-    network_mode: "awsvpc"
     memory: '1024'
     cpu: '1024'
     state: present
@@ -44,8 +42,6 @@
   ecs_taskdefinition:
     network_mode: bridge
     family: "{{ stack_name }}-databaseserver"
-    launch_type: FARGATE
-    network_mode: "awsvpc"
     memory: '1024'
     cpu: '1024'
     state: present

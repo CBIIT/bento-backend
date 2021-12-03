@@ -39,6 +39,7 @@ bucket:
   gmb:  bento-gmb-metadata
   ctdc: bento-ctdc-metadata
   github-actions: bento-metadata-dev
+  pcdc: bento-gmb-metadata
 
 # vars for elasticsearch loader
 es_host: "{{ lookup('env','ES_HOST') }}"

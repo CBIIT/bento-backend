@@ -7,6 +7,7 @@ redis_host:
   icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   gmb-dev: "gmb-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  pcdc-dev: "pcdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   gitlab: "bento-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 redis_host_icdc: 
   dev: "10.208.2.75"

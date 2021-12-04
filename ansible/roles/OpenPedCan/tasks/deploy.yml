@@ -108,14 +108,14 @@
   register: service_databaseserver
 
 
-# - name: set facts
-#   set_fact:
-#     httpserver_revision: "{{task_httpserver.revision}}"
-#     databaseserver_revision: "{{task_databaseserver.revision}}"
-#     task_databaseserver_name: "{{task_databaseserver.family}}"
-#     task_httpserver_name: "{{task_httpserver.family}}"
-#     lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"
-#     role_arn: "{{service_httpserver.services[0].roleArn}}"
+- name: set facts
+  set_fact:
+    httpserver_revision: "{{task_httpserver.revision}}"
+    databaseserver_revision: "{{task_databaseserver.revision}}"
+    task_databaseserver_name: "{{task_databaseserver.family}}"
+    task_httpserver_name: "{{task_httpserver.family}}"
+    lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"
+    role_arn: "{{service_httpserver.services[0].roleArn}}"
 
 
 # - name: update httpserver service

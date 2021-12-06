@@ -85,11 +85,20 @@
     region: "{{region}}" 
   register: task_httpserver
 
+
+- name: show service service
+  debug:
+    msg: "{{task_httpserver}}"
+
 - name: query task definition DatabaseServer
   ecs_taskdefinition_facts:
     task_definition: OpenPedCan-DatabaseServer
     region: "{{region}}" 
   register: task_databaseserver
+
+- name: show service service
+  debug:
+    msg: "{{task_databaseserver}}"
 
 - name: query ecs service httpserver
   ecs_service_facts:
@@ -110,8 +119,8 @@
 
 - name: set facts
   set_fact:
-    httpserver_revision: "{{task_httpserver.revision}}"
-    databaseserver_revision: "{{task_databaseserver.revision}}"
+    #httpserver_revision: "{{task_httpserver.revision}}"
+    #databaseserver_revision: "{{task_databaseserver.revision}}"
     task_databaseserver_name: "{{task_databaseserver.family}}"
     task_httpserver_name: "{{task_httpserver.family}}"
     lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"

@@ -80,7 +80,7 @@
 
 
 - name: query task definition HttpServer
-  ecs_taskdefinition_facts:
+  ecs_taskdefinition_info:
     task_definition: OpenPedCan-HttpServer
     region: "{{region}}" 
   register: task_httpserver
@@ -91,7 +91,7 @@
     msg: "{{task_httpserver}}"
 
 - name: query task definition DatabaseServer
-  ecs_taskdefinition_facts:
+  ecs_taskdefinition_info:
     task_definition: OpenPedCan-DatabaseServer
     region: "{{region}}" 
   register: task_databaseserver

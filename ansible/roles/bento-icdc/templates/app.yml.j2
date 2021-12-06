@@ -54,6 +54,8 @@ services:
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
+      REACT_APP_DATA_MODEL: "https://raw.githubusercontent.com/CBIIT/icdc-model-tool/master/model-desc/icdc-model.yml"
+      REACT_APP_DATA_MODEL_PROPS: "https://raw.githubusercontent.com/CBIIT/icdc-model-tool/master/model-desc/icdc-model-props.yml"
       NEW_RELIC_LABELS: "Project:{{ project }};Environment:{{ tier }}"
       REACT_APP_FILE_SERVICE_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
     volumes:

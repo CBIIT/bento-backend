@@ -2,7 +2,7 @@
 # vars file for cicd
 
 platform: aws
-stack_name: OpenPedCan-api
+stack_name: OpenPedCan
 tier: "{{ lookup('env','TIER') }}"
 version: "{{ lookup('env','VERSION') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

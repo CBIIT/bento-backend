@@ -8,9 +8,48 @@
     state: present
     region: "{{region}}"
     containers:
-    - name: HttpsServer
+    - name: httpserver
       essential: true
       image: "{{ecr}}/rserver-dev-ecr:httpserver-{{version}}"
+      environment:
+        - name: REACT_APP_ENVIRONMENT
+          value: "{{tier}}"
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ stack_name }}-backend"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_NO_CONFIG_FILE
+          value: true
+        # - name: RDB_HOST
+        #   value: "{{ rds_host }}"
+        # - name: RDB_PORT
+        #   value: "{{ rds_port }}"
+        # - name: RDB_USER
+        #   value: "{{ rds_user }}"
+        # - name: RDB_PASSWORD
+        #   value: "{{ rds_password }}"
+      portMappings:
+      - containerPort: "80"
+        hostPort: "80"
+        protocol: tcp
+  register: task_output
+
+- name: create task OpenPedCan Database Server definition 
+  ecs_taskdefinition:
+    network_mode: bridge
+    family: "{{ stack_name }}-dbserver"
+    memory: '1024'
+    cpu: '1024'
+    state: present
+    region: "{{region}}"
+    containers:
+    - name: dbserver
+      essential: true
+      image: "{{ecr}}/rserver-dev-ecr:databaseserver-{{version}}"
       environment:
         - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"
@@ -38,61 +77,22 @@
         protocol: tcp
   register: task_output
 
-- name: create task OpenPedCan Database Server definition 
-  ecs_taskdefinition:
-    network_mode: bridge
-    family: "{{ stack_name }}-databaseserver"
-    memory: '1024'
-    cpu: '1024'
-    state: present
-    region: "{{region}}"
-    containers:
-    - name: DatabaseServer
-      essential: true
-      image: "{{ecr}}/rserver-dev-ecr:databaseserver-{{version}}"
-      environment:
-        - name: REACT_APP_ENVIRONMENT
-          value: "{{tier}}"
-        - name: NEW_RELIC_LICENSE_KEY
-          value: "{{ newrelic_license_key }}"
-        - name: NEW_RELIC_APP_NAME
-          value: "{{ stack_name }}-backend"
-        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-          value: true
-        - name: NEW_RELIC_HOST
-          value: "gov-collector.newrelic.com"
-        - name: NEW_RELIC_NO_CONFIG_FILE
-          value: true
-        # - name: RDB_HOST
-        #   value: "{{ rds_host }}"
-        # - name: RDB_PORT
-        #   value: "{{ rds_port }}"
-        # - name: RDB_USER
-        #   value: "{{ rds_user }}"
-        # - name: RDB_PASSWORD
-        #   value: "{{ rds_password }}"
-      portMappings:
-      - containerPort: "8081"
-        hostPort: "8081"
-        protocol: tcp
-  register: task_output
-
 
 
 - name: query task definition HttpServer
   ecs_taskdefinition_info:
-    task_definition: OpenPedCan-HttpServer
+    task_definition: OpenPedCan-httpserver
     region: "{{region}}" 
   register: task_httpserver
 
 
-- name: show service service
+- name: show task output
   debug:
     msg: "{{task_httpserver}}"
 
 - name: query task definition DatabaseServer
   ecs_taskdefinition_info:
-    task_definition: OpenPedCan-DatabaseServer
+    task_definition: OpenPedCan-dbserver
     region: "{{region}}" 
   register: task_databaseserver
 
@@ -119,8 +119,8 @@
 
 - name: set facts
   set_fact:
-    #httpserver_revision: "{{task_httpserver.revision}}"
-    #databaseserver_revision: "{{task_databaseserver.revision}}"
+    httpserver_revision: "{{task_httpserver.revision}}"
+    databaseserver_revision: "{{task_databaseserver.revision}}"
     task_databaseserver_name: "{{task_databaseserver.family}}"
     task_httpserver_name: "{{task_httpserver.family}}"
     lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"

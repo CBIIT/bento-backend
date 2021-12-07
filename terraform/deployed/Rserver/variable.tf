@@ -31,7 +31,13 @@ variable "frontend_container_port" {
   type = number
 }
 variable "instance_volume_size" {
-  default = ""
+  description = "volume size of the instances"
+  type = number
+}
+
+variable "db_container_port" {
+  description = "port on which the container listens"
+  type = number
 }
 variable "evs_volume_type" {
   description = "EVS volume type"

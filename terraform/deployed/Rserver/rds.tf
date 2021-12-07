@@ -1,7 +1,7 @@
 module "rds_instance" {
   source = "../../modules/rds/"
   #source = "cloudposse/rds/aws"
-  identifier                  =  "${var.stack_name}-${var.env}-rds"
+  identifier                  = var.identifier # "${var.stack_name}-${var.env}-rds"
   security_group_ids          = [aws_security_group.rds_sg.id]
   allowed_cidr_blocks         = [data.terraform_remote_state.network.outputs.vpc_cidr_block]
   database_name               = var.database_name

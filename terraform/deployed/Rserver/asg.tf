@@ -1,4 +1,3 @@
-
 resource "aws_launch_configuration" "asg_launch_config" {
   name              = "${var.stack_name}-${var.env}-launch-configuration"
   image_id          =  data.aws_ami.centos.id
@@ -27,7 +26,7 @@ resource "aws_autoscaling_group" "asg_frontend" {
   desired_capacity     = var.desired_ec2_instance_capacity
   vpc_zone_identifier  = data.terraform_remote_state.network.outputs.private_subnets_ids
   launch_configuration = aws_launch_configuration.asg_launch_config.name
-  target_group_arns    = [aws_lb_target_group.frontend_target_group.arn]
+  target_group_arns    = [aws_lb_target_group.frontend_target_group.arn,aws_lb_target_group.db_target_group.arn]
   health_check_type    =  var.health_check_type
   tag {
     key = "Name"
@@ -49,8 +48,6 @@ resource "aws_autoscaling_schedule" "shutdown" {
   scheduled_action_name  = "bento-auto-stop"
   recurrence             = var.shutdown_schedule
   desired_capacity       = 0
-//  start_time             = "2021-11-27T15:40:00Z"
-//  end_time               = "2021-11-27T04:00:00Z"
 }
 
 resource "aws_autoscaling_schedule" "startup" {
@@ -60,8 +57,6 @@ resource "aws_autoscaling_schedule" "startup" {
   desired_capacity       = var.desired_ec2_instance_capacity
   min_size               = var.min_size
   max_size               = var.max_size
-//  start_time             = "2021-11-27T15:40:00Z"
-//  end_time               = "2021-11-27T04:00:00Z"
 }
 
 resource "aws_security_group" "frontend_sg" {
@@ -88,6 +83,15 @@ resource "aws_security_group_rule" "inbound_frontend_alb" {
   from_port = var.frontend_container_port
   protocol = local.tcp_protocol
   to_port = var.frontend_container_port
+  security_group_id = aws_security_group.frontend_sg.id
+  source_security_group_id = module.alb.alb_security_group_id
+  type = "ingress"
+}
+
+resource "aws_security_group_rule" "inbound_db_alb" {
+  from_port = var.db_container_port
+  protocol = local.tcp_protocol
+  to_port = var.db_container_port
   security_group_id = aws_security_group.frontend_sg.id
   source_security_group_id = module.alb.alb_security_group_id
   type = "ingress"
@@ -126,6 +130,34 @@ resource "aws_lb_target_group" "frontend_target_group" {
   tags = merge(
   {
     "Name" = format("%s-%s",var.stack_name,"frontend-alb-target-group")
+  },
+  var.tags,
+  )
+}
+
+#create alb target group
+resource "aws_lb_target_group" "db_target_group" {
+  name = "${var.stack_name}-${var.env}-db"
+  port = var.db_container_port
+  protocol = "HTTP"
+  vpc_id =  data.terraform_remote_state.network.outputs.vpc_id
+  stickiness {
+    type = "lb_cookie"
+    cookie_duration = 1800
+    enabled = true
+  }
+  health_check {
+    path = "/"
+    protocol = "HTTP"
+    matcher = "200"
+    interval = 15
+    timeout = 3
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+  }
+  tags = merge(
+  {
+    "Name" = format("%s-%s",var.stack_name,"db-alb-target")
   },
   var.tags,
   )
@@ -194,6 +226,31 @@ resource "aws_lb_listener_rule" "bento_www" {
   }
 }
 
+
+variable "db_rule_priority" {
+  default = ""
+}
+resource "aws_lb_listener_rule" "db_alb_listener_prod" {
+  count =  var.env ==  "prod" ? 1:0
+  listener_arn = module.alb.alb_https_listener_arn
+  priority = var.db_rule_priority
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.db_target_group.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${var.stack_name}.${var.domain_name}"]
+    }
+  }
+  condition {
+    path_pattern  {
+      values = ["/service*"]
+    }
+  }
+}
+
 resource "aws_lb_listener_rule" "frontend_alb_listener" {
   count =  var.env !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
@@ -215,6 +272,29 @@ resource "aws_lb_listener_rule" "frontend_alb_listener" {
   }
 
 }
+
+resource "aws_lb_listener_rule" "backend_alb_listener" {
+  count =  var.env !=  "prod" ? 1:0
+  listener_arn = module.alb.alb_https_listener_arn
+  priority = var.db_rule_priority
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.db_target_group.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
+    }
+
+  }
+  condition {
+    path_pattern  {
+      values = ["/service*"]
+    }
+  }
+}
+
 
 #create boostrap script to hook up the node to ecs cluster
 resource "aws_ssm_document" "ssm_doc_boostrap" {

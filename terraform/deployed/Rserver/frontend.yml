@@ -1,5 +1,5 @@
 ---
-- name: frontend
+- name: httpserver
   image: cbiitssrepo/bento-frontend:latest
   essential: true
   portMappings:

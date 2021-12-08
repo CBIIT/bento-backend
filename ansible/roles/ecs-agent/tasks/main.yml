@@ -8,6 +8,7 @@
       "instance-state-name": running
       "tag:Environment": "{{env}}"
   register: frontend
+  when: stack_name != "OpenPedCan"
 
 - name: gather instance facts
   ec2_instance_facts:

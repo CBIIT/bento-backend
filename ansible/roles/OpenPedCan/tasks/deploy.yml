@@ -108,6 +108,10 @@
     region: "{{region}}"
   register: service_httpserver
 
+- name: show service service
+  debug:
+    msg: "{{service_httpserver}}"
+
 - name: query ecs service DatabaseServer
   ecs_service_facts:
     cluster: rserver-dev
@@ -116,6 +120,9 @@
     region: "{{region}}"
   register: service_databaseserver
 
+- name: show service service
+  debug:
+    msg: "{{service_databaseserver}}"
 
 - name: set facts
   set_fact:

@@ -132,6 +132,7 @@
     task_httpserver_name: "{{task_httpserver.family}}"
     lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"
     role_arn: "{{service_httpserver.services[0].roleArn}}"
+    lb_dbserver: "{{service_databaseserver.services[0].loadBalancers}}"
 
 
 - name: update httpserver service
@@ -156,10 +157,12 @@
     name: OpenPedCan-dbserver
     cluster: OpenPedCan-dev
     task_definition: "{{task_databaseserver_name}}:{{databaseserver_revision}}"
+    role: "{{role_arn}}"
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
+    load_balancers: "{{ lb_dbserver }}"
     region: "{{region}}"
   register: service_processor_output
 

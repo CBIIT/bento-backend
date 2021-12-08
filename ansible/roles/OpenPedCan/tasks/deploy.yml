@@ -10,7 +10,7 @@
     containers:
     - name: httpserver
       essential: true
-      image: "{{ecr}}/rserver-dev-ecr:httpserver-{{version}}"
+      image: "{{ecr}}/openpedcan-dev-ecr:httpserver-{{version}}"
       environment:
         - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"
@@ -49,7 +49,7 @@
     containers:
     - name: dbserver
       essential: true
-      image: "{{ecr}}/rserver-dev-ecr:databaseserver-{{version}}"
+      image: "{{ecr}}/openpedcan-dev-ecr:databaseserver-{{version}}"
       environment:
         - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"

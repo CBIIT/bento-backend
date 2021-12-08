@@ -134,32 +134,32 @@
     role_arn: "{{service_httpserver.services[0].roleArn}}"
 
 
-# - name: update httpserver service
-#   ecs_service:
-#     state: present
-#     name: OpenPedCan-HttpServer
-#     cluster: OpenPedCan
-#     task_definition: "{{task_httpserver_name}}:{{httpserver_revision}}"
-#     role: "{{role_arn}}"
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     load_balancers: "{{ lb_frontend }}"
-#     region: "{{region}}"
-#   register: service_httpserver_output
+- name: update httpserver service
+  ecs_service:
+    state: present
+    name: OpenPedCan-httpserver
+    cluster: OpenPedCan-dev
+    task_definition: "{{task_httpserver_name}}:{{httpserver_revision}}"
+    role: "{{role_arn}}"
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_httpserver_output
 
 
-# - name: update databaseserver service
-#   ecs_service:
-#     state: present
-#     name: OpenPedCan-DatabaseServer
-#     cluster: OpenPedCan
-#     task_definition: "{{task_databaseServer_name}}:{{databaseserver_revision}}"
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     region: "{{region}}"
-#   register: service_processor_output
+- name: update databaseserver service
+  ecs_service:
+    state: present
+    name: OpenPedCan-dbserver
+    cluster: OpenPedCan-dev
+    task_definition: "{{task_databaseserver_name}}:{{databaseserver_revision}}"
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    region: "{{region}}"
+  register: service_processor_output
 

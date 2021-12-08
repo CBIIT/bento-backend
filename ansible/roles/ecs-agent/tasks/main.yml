@@ -16,7 +16,6 @@
     filters:
       "tag:Name": "{{stack_name}}-{{env}}-httpserver"
       "instance-state-name": running
-      "tag:Environment": "{{env}}"
   register: frontend
   when: stack_name == "OpenPedCan"
 

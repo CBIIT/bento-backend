@@ -102,8 +102,8 @@
 
 - name: query ecs service httpserver
   ecs_service_facts:
-    cluster: rserver-dev
-    service: OpenPedCan-HttpServer
+    cluster: OpenPedCan-dev
+    service: OpenPedCan-httpserver
     details: true
     region: "{{region}}"
   register: service_httpserver
@@ -114,8 +114,8 @@
 
 - name: query ecs service DatabaseServer
   ecs_service_facts:
-    cluster: rserver-dev
-    service: OpenPedCan-DatabaseServer
+    cluster: OpenPedCan-dev
+    service: OpenPedCan-dbserver
     details: true
     region: "{{region}}"
   register: service_databaseserver

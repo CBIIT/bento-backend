@@ -3,6 +3,6 @@
 redis_host: 
   dev: "pcdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
 
-schema_file: "bento-gmb.graphql"
+schema_file: "bento-pcdc.graphql"
 
-about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/develop/src/content/{{tier}}/aboutPagesContent.yaml"
+about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-pcdc-frontend/{{ frontend_version }}/src/content/{{tier}}/aboutPagesContent.yaml"

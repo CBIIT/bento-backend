@@ -4,7 +4,7 @@
     network_mode: bridge
     family: "{{ stack_name }}-httpserver"
     memory: '1024'
-    cpu: '1024'
+    cpu: '512'
     state: present
     region: "{{region}}"
     containers:
@@ -43,7 +43,7 @@
     network_mode: bridge
     family: "{{ stack_name }}-dbserver"
     memory: '1024'
-    cpu: '1024'
+    cpu: '512'
     state: present
     region: "{{region}}"
     containers:

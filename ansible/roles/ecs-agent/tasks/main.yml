@@ -21,7 +21,7 @@
   when: stack_name == "OpenPedCan"
 
 - debug:
-    msg: {{ frontend }}
+    msg: "{{ frontend }}"
 
 - name: set instance name
   set_fact:

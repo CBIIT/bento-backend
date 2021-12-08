@@ -20,6 +20,9 @@
   register: frontend
   when: stack_name == "OpenPedCan"
 
+- debug:
+    msg: {{ frontend }}
+
 - name: set instance name
   set_fact:
     frontend_ip: "{{ frontend.instances[0].network_interfaces[0].private_ip_address }}"

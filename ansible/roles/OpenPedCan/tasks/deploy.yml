@@ -33,8 +33,8 @@
         # - name: RDB_PASSWORD
         #   value: "{{ rds_password }}"
       portMappings:
-      - containerPort: "80"
-        hostPort: "80"
+      - containerPort: "8080"
+        hostPort: "8080"
         protocol: tcp
   register: task_output
 
@@ -72,8 +72,8 @@
         # - name: RDB_PASSWORD
         #   value: "{{ rds_password }}"
       portMappings:
-      - containerPort: "8080"
-        hostPort: "8080"
+      - containerPort: "8081"
+        hostPort: "8081"
         protocol: tcp
   register: task_output
 

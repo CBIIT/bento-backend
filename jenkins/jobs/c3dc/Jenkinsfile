@@ -43,7 +43,7 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'dev' )
   string(
-	    defaultValue: 'pcdc',
+	    defaultValue: 'c3dc',
 		description: 'Project Name',
 		name: 'ProjectName')
 	booleanParam(
@@ -91,7 +91,7 @@ pipeline {
   	stage('checkout'){
   		steps {
 
-  			checkout([$class: 'GitSCM', 
+  	  checkout([$class: 'GitSCM', 
   				branches: [[name: "${params.Backend_Tag}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
@@ -102,10 +102,10 @@ pipeline {
 				branches: [[name: "${params.Frontend_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'pcdc-frontend']],
+				relativeTargetDir: 'c3dc-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-pcdc-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-c3dc-frontend']]])
 
   			checkout( poll: false, 
 				changelog:false,
@@ -133,7 +133,7 @@ pipeline {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.TIER  = "${params.Environment}"
-				  env.NEO4J_IP    = "${NEO4J_PCDC_IP}"
+				  env.NEO4J_IP    = "${NEO4J_C3DC_IP}"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 
@@ -142,7 +142,7 @@ pipeline {
               default:
                 withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.TIER  = "${params.Environment}"
-				  env.NEO4J_IP  = "${NEO4J_PCDC_IP}"
+				  env.NEO4J_IP  = "${NEO4J_C3DC_IP}"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 
@@ -163,7 +163,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/pcdc-build.yml',
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/c3dc-build.yml',
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
 						project: "${params.ProjectName}",
@@ -236,7 +236,7 @@ pipeline {
 			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/pcdc-deploy.yml',
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/c3dc-deploy.yml',
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
 					project: "${params.ProjectName}",

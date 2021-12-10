@@ -308,7 +308,7 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/pcdc-deploy.yml',
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/c3dc-deploy.yml',
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     project: "${params.ProjectName}",

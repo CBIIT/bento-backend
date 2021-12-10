@@ -599,8 +599,10 @@ public class ESFilterDataFetcher {
 
         for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
             for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
+                String page = hit.getAsJsonObject().get("_source").getAsJsonObject().get("page").getAsString();
                 result.add(Map.of(
                         GS_CATEGORY_TYPE, GS_ABOUT,
+                        "page", page,
                         "text", highlight.getAsString()
                 ));
             }

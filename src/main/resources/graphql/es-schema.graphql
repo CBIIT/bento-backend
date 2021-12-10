@@ -188,6 +188,7 @@ type GS_Value {
     value: String
 }
 type GS_About {
+    page: String
     type: String
     text: String
 }

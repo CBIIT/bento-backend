@@ -189,6 +189,7 @@ type GS_Value {
 }
 type GS_About {
     page: String
+    title: String
     type: String
     text: String
 }

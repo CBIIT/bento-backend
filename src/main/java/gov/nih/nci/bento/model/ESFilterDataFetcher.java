@@ -53,7 +53,7 @@ public class ESFilterDataFetcher {
     final String GS_COLLECT_FIELDS = "collect_fields";
     final String GS_CATEGORY_TYPE = "type";
     final String GS_ABOUT = "about";
-    final String GS_AGG_LIST = "list";
+    final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
 
@@ -588,7 +588,11 @@ public class ESFilterDataFetcher {
         final String ABOUT_CONTENT = "content.paragraph";
         Map<String, Object> query = Map.of(
                 "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
-                "highlight", Map.of("fields", Map.of(ABOUT_CONTENT, Map.of())),
+                "highlight", Map.of(
+                        "fields", Map.of(ABOUT_CONTENT, Map.of()),
+                        "pre_tags", GS_HIGHLIGHT_DELIMITER,
+                        "post_tags", GS_HIGHLIGHT_DELIMITER
+                    ),
                 "size", esService.MAX_ES_SIZE
         );
         Request request = new Request("GET", GS_ABOUT_END_POINT);
@@ -600,9 +604,11 @@ public class ESFilterDataFetcher {
         for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
             for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
                 String page = hit.getAsJsonObject().get("_source").getAsJsonObject().get("page").getAsString();
+                String title = hit.getAsJsonObject().get("_source").getAsJsonObject().get("title").getAsString();
                 result.add(Map.of(
                         GS_CATEGORY_TYPE, GS_ABOUT,
                         "page", page,
+                        "title", title,
                         "text", highlight.getAsString()
                 ));
             }

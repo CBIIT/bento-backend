@@ -51,6 +51,7 @@ public class ESFilterDataFetcher {
     final String GS_COUNT_RESULT_FIELD = "count_result_field";
     final String GS_SEARCH_FIELD = "search_field";
     final String GS_COLLECT_FIELDS = "collect_fields";
+    final String GS_SORT_FIELD = "sort_field";
     final String GS_CATEGORY_TYPE = "type";
     final String GS_ABOUT = "about";
     final String GS_HIGHLIGHT_DELIMITER = "$";
@@ -442,6 +443,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "program_count",
                 GS_RESULT_FIELD, "programs",
                 GS_SEARCH_FIELD,"program_id",
+                GS_SORT_FIELD, "program_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_code", "program_code"},
                         new String[]{"program_id", "program_id"},
@@ -455,6 +457,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "study_count",
                 GS_RESULT_FIELD, "studies",
                 GS_SEARCH_FIELD,"study_id",
+                GS_SORT_FIELD, "study_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"study_id", "study_id"},
                         new String[]{"study_code", "study_code"},
@@ -469,6 +472,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
                 GS_SEARCH_FIELD,"subject_id_gs",
+                GS_SORT_FIELD, "subject_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_code", "programs"},
                         new String[]{"program_id", "program_id"},
@@ -485,6 +489,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
                 GS_SEARCH_FIELD,"sample_id_gs",
+                GS_SORT_FIELD, "sample_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"subject_id", "subject_ids"},
                         new String[]{"sample_id", "sample_ids"},
@@ -500,6 +505,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD,"file_id_gs",
+                GS_SORT_FIELD, "file_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"subject_id", "subject_ids"},
                         new String[]{"sample_id", "sample_ids"},
@@ -514,6 +520,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "node_count",
                 GS_RESULT_FIELD, "nodes",
                 GS_SEARCH_FIELD,"node",
+                GS_SORT_FIELD, "node_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"}
                 },
@@ -525,6 +532,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "property_count",
                 GS_RESULT_FIELD, "properties",
                 GS_SEARCH_FIELD,"property",
+                GS_SORT_FIELD, "property_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
                         new String[]{"property_name", "property"}
@@ -537,6 +545,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_RESULT_FIELD, "value_count",
                 GS_RESULT_FIELD, "values",
                 GS_SEARCH_FIELD,"value",
+                GS_SORT_FIELD, "value_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
                         new String[]{"property_name", "property"},
@@ -559,6 +568,8 @@ public class ESFilterDataFetcher {
 
             // Get results
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
+            String sortFieldName = (String)category.get(GS_SORT_FIELD);
+            query.put("sort", Map.of(sortFieldName, "asc"));
             List<Map<String, Object>> objects = esService.collectPage(request, query, properties, size, offset);
 
             for (var object: objects) {

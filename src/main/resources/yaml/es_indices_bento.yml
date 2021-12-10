@@ -308,6 +308,8 @@ Indices:
         type: search_as_you_type
       program_id:
         type: search_as_you_type
+      program_id_kw:
+        type: keyword
       program_file_names:
         type: search_as_you_type
       program_name:
@@ -320,6 +322,7 @@ Indices:
       RETURN DISTINCT
         p.program_acronym AS program_code,
         p.program_id AS program_id,
+        p.program_id AS program_id_kw,
         p.program_name AS program_name,
         COLLECT(DISTINCT pf.file_name) AS program_file_names
       "
@@ -331,6 +334,8 @@ Indices:
         type: search_as_you_type
       study_id:
         type: search_as_you_type
+      study_id_kw:
+        type: keyword
       study_name:
         type: search_as_you_type
       study_file_names:
@@ -342,6 +347,7 @@ Indices:
       OPTIONAL MATCH (s)<--(sf:file)
       RETURN DISTINCT
         s.study_id AS study_id,
+        s.study_id AS study_id_kw,
         s.study_acronym AS study_code,
         s.study_name AS study_name,
         COLLECT(DISTINCT sf.file_name) AS study_file_names
@@ -367,6 +373,8 @@ Indices:
     mapping:
       node:
         type: search_as_you_type
+      node_kw:
+        type: keyword
 
   - index_name: model_properties
     type: model
@@ -377,6 +385,8 @@ Indices:
         type: search_as_you_type
       property:
         type: search_as_you_type
+      property_kw:
+        type: keyword
 
   - index_name: model_values
     type: model
@@ -389,3 +399,5 @@ Indices:
         type: search_as_you_type
       value:
         type: search_as_you_type
+      value_kw:
+        type: keyword

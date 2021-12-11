@@ -126,9 +126,9 @@ pipeline {
           git branch: 'utf8',
           url: 'https://github.com/CBIIT/gmb-model.git'
         }
-        dir('pcdc-model'){
-            git branch: 'utf8',
-            url: 'https://github.com/CBIIT/gmb-model.git'
+        dir('c3dc-model'){
+            git branch: 'master',
+            url: 'https://github.com/CBIIT/c3dc-model.git'
          }
         dir('ins-model'){
           git branch: 'main',
@@ -191,7 +191,7 @@ pipeline {
                   env.SPLIT           = "${params.SplitTransactions}"
                 }
               break
-              case "pcdc":
+              case "c3dc":
                 withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
                                 env.S3_FOLDER       = "${params.S3Folder}"
                                 env.TIER            = "${params.Environment}"

@@ -25,7 +25,7 @@ pipeline {
         defaultValue: 'bento', 
         description: 'Choose the project', 
         type: 'PT_SINGLE_SELECT',
-        value: 'icdc,ctdc,bento,ccdi,gmb,ins,github-actions,pcdc' )
+        value: 'icdc,ctdc,bento,ccdi,gmb,ins,github-actions,c3dc' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')

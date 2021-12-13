@@ -95,7 +95,8 @@ pipeline {
               break
               case "dev":
                 withCredentials([string(credentialsId: 'neo4j_ctdc_dev_cred', variable: 'neo4j_password')]) {
-                  env.NEO4J_IP        = "${NEO4J_CTDC_IP}"
+                  //env.NEO4J_IP        = "${NEO4J_CTDC_IP}"
+				  env.NEO4J_IP        = "ncias-d2267-c"
                   env.S3_FOLDER       = "${params.S3Folder}"
                   env.TIER            = "${params.Environment}"
                   env.WIPE_DB         = "${params.WipeDB}"

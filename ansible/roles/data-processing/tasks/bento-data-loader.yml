@@ -54,8 +54,8 @@
 
 - name: set model files location for pcdc
   set_fact:
-    model_file1: "{{workspace}}/c3dc-model/model-desc/PCDC_Model.yml"
-    model_file2: "{{workspace}}/c3dc-model/model-desc/PCDC_Model_Props.yml"
+    model_file1: "{{workspace}}/c3dc-model/model-desc/c3dc_Model.yml"
+    model_file2: "{{workspace}}/c3dc-model/model-desc/c3dc_Model_Props.yml"
     property_file: "config/props-pcdc-mock.yml"
   when: project == "c3dc"
 

@@ -3,11 +3,11 @@
   debug:
     msg: "{{project}}{{s3_folder}}{{wipe_db}}{{cheat_mode}}"
 
- - name: set model files location for ctdc
-   set_fact:
-     model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
-     model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
-     property_file: "config/props-ctdc.yml"
+- name: set model files location for ctdc
+  set_fact:
+    model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
+    model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
+    property_file: "config/props-ctdc.yml"
 
 - name: Check if tmp directory exist
   stat:

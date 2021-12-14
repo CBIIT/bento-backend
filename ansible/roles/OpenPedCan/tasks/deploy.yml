@@ -12,7 +12,7 @@
       essential: true
       image: "{{ecr}}/openpedcan-dev-ecr:httpserver-{{version}}"
       environment:
-        - name: REACT_APP_ENVIRONMENT
+       - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
@@ -32,6 +32,50 @@
         #   value: "{{ rds_user }}"
         # - name: RDB_PASSWORD
         #   value: "{{ rds_password }}"
+        - name: DB_READ_WRITE_USERNAME
+          value: {{ db_user }}   
+        - name: DB_READ_WRITE_PASSWORD
+          value: {{ db_password }}
+        - name: POSTGRES _USER
+          value: {{ db_user }}
+        - name: POSTGRES_DB
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: {{ db_password }}
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: "scram-sha-256"
+        - name: POSTGRES_INITDB_ARGS
+          value: "--auth-local=scram-sha-256 --auth-host=scram-sha-256"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_HOST
+          value: "{{ db_host }}"
+        - name: DB_DRIVER
+          value: "PostgreSQL Unicode"
+        - name: DB_USERNAME
+          value: "{{ db_user }}"
+        - name: DB_PASSWORD
+          value: "{{ db_password }}"
+        - name: Driver
+          value: "DB_DRIVER"
+        - name: Server
+          value: "DB_HOST"
+        - name: Port
+          value: "DB_PORT"
+        - name: Uid
+          value: "DB_USERNAME"
+        - name: Pwd
+          value: "DB_PASSWORD"
+        - name: Database
+          value: "DB_PORT"
+        - name: BULK_EXP_SCHEMA
+          value: "BULK_EXP_SCHEMA"
+        - name: BULK_EXP_TPM_HISTOLOGY_TBL
+          value: "BULK_EXP_TPM_HISTOLOGY_TBL"
+        - name: BUILD_OUTPUT_DIR_PATH
+          value: "/home/open-ped-can-api-db/db/build_outputs"
+        - name: DB_HOME_DIR_PATH
+          value: "{{workspace}}/{{project}}/"
       portMappings:
       - containerPort: "8080"
         hostPort: "8080"
@@ -71,6 +115,50 @@
         #   value: "{{ rds_user }}"
         # - name: RDB_PASSWORD
         #   value: "{{ rds_password }}"
+        - name: DB_READ_WRITE_USERNAME
+          value: {{ db_user }}   
+        - name: DB_READ_WRITE_PASSWORD
+          value: {{ db_password }}
+        - name: POSTGRES _USER
+          value: {{ db_user }}
+        - name: POSTGRES_DB
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: {{ db_password }}
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: "scram-sha-256"
+        - name: POSTGRES_INITDB_ARGS
+          value: "--auth-local=scram-sha-256 --auth-host=scram-sha-256"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_HOST
+          value: "{{ db_host }}"
+        - name: DB_DRIVER
+          value: "PostgreSQL Unicode"
+        - name: DB_USERNAME
+          value: "{{ db_user }}"
+        - name: DB_PASSWORD
+          value: "{{ db_password }}"
+        - name: Driver
+          value: "DB_DRIVER"
+        - name: Server
+          value: "DB_HOST"
+        - name: Port
+          value: "DB_PORT"
+        - name: Uid
+          value: "DB_USERNAME"
+        - name: Pwd
+          value: "DB_PASSWORD"
+        - name: Database
+          value: "DB_PORT"
+        - name: BULK_EXP_SCHEMA
+          value: "BULK_EXP_SCHEMA"
+        - name: BULK_EXP_TPM_HISTOLOGY_TBL
+          value: "BULK_EXP_TPM_HISTOLOGY_TBL"
+        - name: BUILD_OUTPUT_DIR_PATH
+          value: "/home/open-ped-can-api-db/db/build_outputs"
+        - name: DB_HOME_DIR_PATH
+          value: "{{workspace}}/{{project}}/"
       portMappings:
       - containerPort: "8081"
         hostPort: "8081"

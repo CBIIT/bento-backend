@@ -33,15 +33,15 @@
         # - name: RDB_PASSWORD
         #   value: "{{ rds_password }}"
         - name: DB_READ_WRITE_USERNAME
-          value: {{ db_user }}   
+          value: "{{ db_user }}" 
         - name: DB_READ_WRITE_PASSWORD
-          value: {{ db_password }}
+          value: "{{ db_password }}"
         - name: POSTGRES _USER
-          value: {{ db_user }}
+          value: "{{ db_user }}"
         - name: POSTGRES_DB
           value: "postgres"
         - name: POSTGRES_PASSWORD
-          value: {{ db_password }}
+          value: "{{ db_password }}"
         - name: POSTGRES_HOST_AUTH_METHOD
           value: "scram-sha-256"
         - name: POSTGRES_INITDB_ARGS
@@ -116,15 +116,15 @@
         # - name: RDB_PASSWORD
         #   value: "{{ rds_password }}"
         - name: DB_READ_WRITE_USERNAME
-          value: {{ db_user }}   
+          value: "{{ db_user }}"    
         - name: DB_READ_WRITE_PASSWORD
-          value: {{ db_password }}
+          value: "{{ db_password }}"
         - name: POSTGRES _USER
-          value: {{ db_user }}
+          value: "{{ db_user }}"
         - name: POSTGRES_DB
           value: "postgres"
         - name: POSTGRES_PASSWORD
-          value: {{ db_password }}
+          value: "{{ db_password }}"
         - name: POSTGRES_HOST_AUTH_METHOD
           value: "scram-sha-256"
         - name: POSTGRES_INITDB_ARGS

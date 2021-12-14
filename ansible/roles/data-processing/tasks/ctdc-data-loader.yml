@@ -52,7 +52,7 @@
     executable: pip3
     state: latest
 
-- name: load data
+- name: loader data
   shell:
     cmd: >
       python3

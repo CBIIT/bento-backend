@@ -3,14 +3,15 @@
   hosts: loader
   connection: local
   gather_facts: yes
-  become: yes
+  #become: yes
     
   tasks:
     - name: perform data loading
       include_role:
         name: data-processing
-        tasks_from: ctdc-data-loader
+        #tasks_from: ctdc-data-loader
+        tasks_from: data-loader
       vars:
-        # data_bucket: nci-cbiit-ctdc-{{tier}}
-        data_bucket: nci-cbiit-ctdc-dev
-        ansible_python_interpreter: /usr/bin/python2.7
+        data_bucket: nci-cbiit-ctdc-{{tier}}
+        #data_bucket: nci-cbiit-ctdc-dev
+        #ansible_python_interpreter: /usr/bin/python2.7

@@ -12,7 +12,7 @@
       essential: true
       image: "{{ecr}}/openpedcan-dev-ecr:httpserver-{{version}}"
       environment:
-       - name: REACT_APP_ENVIRONMENT
+        - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"

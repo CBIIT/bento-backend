@@ -57,17 +57,18 @@
         - name: DB_PASSWORD
           value: "{{ db_password }}"
         - name: Driver
-          value: "DB_DRIVER"
+          value: "PostgreSQL Unicode""
+          #value: "DB_DRIVER"
         - name: Server
-          value: "DB_HOST"
+          value: "{{ db_host }}"
         - name: Port
-          value: "DB_PORT"
+          value: "5432"
         - name: Uid
-          value: "DB_USERNAME"
+          value: "{{ db_user }}"
         - name: Pwd
-          value: "DB_PASSWORD"
+          value: "{{ db_password }}"
         - name: Database
-          value: "DB_PORT"
+          value: "5432"
         - name: BULK_EXP_SCHEMA
           value: "BULK_EXP_SCHEMA"
         - name: BULK_EXP_TPM_HISTOLOGY_TBL
@@ -140,17 +141,18 @@
         - name: DB_PASSWORD
           value: "{{ db_password }}"
         - name: Driver
-          value: "DB_DRIVER"
+          value: "PostgreSQL Unicode""
+          #value: "DB_DRIVER"
         - name: Server
-          value: "DB_HOST"
+          value: "{{ db_host }}"
         - name: Port
-          value: "DB_PORT"
+          value: "5432"
         - name: Uid
-          value: "DB_USERNAME"
+          value: "{{ db_user }}"
         - name: Pwd
-          value: "DB_PASSWORD"
+          value: "{{ db_password }}"
         - name: Database
-          value: "DB_PORT"
+          value: "5432"
         - name: BULK_EXP_SCHEMA
           value: "BULK_EXP_SCHEMA"
         - name: BULK_EXP_TPM_HISTOLOGY_TBL

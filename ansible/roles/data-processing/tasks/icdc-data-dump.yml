@@ -14,22 +14,15 @@
     state: stopped
 
 - name: backup neo4j db
-  command: "neo4j-admin dump --database=neo4j --to={{ backup_directory }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+  command: "neo4j-admin dump --database=neo4j --to={{ backup_directory }}/{{ dump_file_name }}.dump"
   become_user: neo4j
 
 - name: verify file is present
   stat:
-     path: "{{ backup_directory }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+     path: "{{ backup_directory }}/{{ dump_file_name }}.dump"
   register: file_status
 
 - name: start neo4j
   service:
     name: neo4j
     state: started
-
-- name: upload dump file to s3
-  aws_s3:
-    bucket: "{{ s3_bucket_name }}"
-    object: "{{ s3_folder_name }}/{{ dump_file_name }}-{{ timestamp }}.dump"
-    src: "{{ backup_directory }}/{{ dump_file_name }}-{{ timestamp }}.dump"
-    mode: put

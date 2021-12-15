@@ -143,9 +143,25 @@ pipeline {
 				credentialsId: 'commonsdocker',
                 colorized: true)
 		  }
+		
+		stash includes: "**/${DUMP_FILE}", name: 'dump_file'
 			
  		}
     }
+	
+	stage('push to s3'){
+		steps{
+        
+			unstash 'dump_file'
+			
+			ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-dump-push.yml',
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				credentialsId: 'commonsdocker',
+                colorized: true)
+
+		}
+	}
 	
   }
   post {

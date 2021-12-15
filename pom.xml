@@ -24,7 +24,7 @@
 		<java.version>11</java.version>
 		<spring.version>5.1.17.RELEASE</spring.version>
 		<spring.restdocs.version>2.0.5.RELEASE</spring.restdocs.version>
-        <log4j2.version>2.15.0</log4j2.version>
+        <log4j2.version>2.16.0</log4j2.version>
 	</properties>
 
 	<dependencies>
@@ -150,7 +150,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.15.0</version>
+			<version>2.16.0</version>
 		</dependency>
 
 		<!-- Mockito -->

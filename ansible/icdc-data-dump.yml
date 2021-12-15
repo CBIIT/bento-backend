@@ -1,7 +1,6 @@
 ---
 - name: dump data from neo4j db
   hosts: icdc-neo4j
-  #connection: local
   gather_facts: yes
   become: yes
     
@@ -12,6 +11,5 @@
         tasks_from: icdc-data-dump
         vars_from: icdc_data_dump
       vars:
-        # data_bucket: nci-cbiit-ctdc-dev
         ansible_python_interpreter: /usr/bin/python2.7
-        data_bucket: nci-cbiit-caninedatacommons-dev
+        s3_bucket: nci-cbiit-caninedatacommons-dev

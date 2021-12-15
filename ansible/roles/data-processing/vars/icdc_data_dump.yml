@@ -1,7 +1,8 @@
 ---
 # vars file for neo4j-loader
 backup_directory: /backups
-s3_bucket_name: "{{ lookup('env','S3_BUCKET') }}"
+#s3_bucket_name: "{{ lookup('env','S3_BUCKET') }}"
+s3_bucket_name: 'nci-cbiit-caninedatacommons-dev'
 dump_file_name: "{{ lookup('env','DUMP_FILE') }}"
 s3_folder_name: 'dump_files'
 timestamp: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"

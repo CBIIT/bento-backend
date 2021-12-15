@@ -10,6 +10,6 @@
         name: data-processing
         tasks_from: icdc-data-dump
         vars_from: icdc_data_dump
-      vars:
-        ansible_python_interpreter: /usr/bin/python2.7
-        s3_bucket: nci-cbiit-caninedatacommons-dev
+      #vars:
+        #ansible_python_interpreter: /usr/bin/python2.7
+        #s3_bucket: nci-cbiit-caninedatacommons-dev

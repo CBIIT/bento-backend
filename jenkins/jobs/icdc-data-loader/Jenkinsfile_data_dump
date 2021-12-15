@@ -138,7 +138,7 @@ pipeline {
               }
 			  
 			  ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-neo4j-dump.yml',
+                playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-dump.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 				credentialsId: 'commonsdocker',
                 colorized: true)

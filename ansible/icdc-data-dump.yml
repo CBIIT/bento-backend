@@ -1,7 +1,7 @@
 ---
 - name: dump data from neo4j db
   hosts: icdc-neo4j
-  connection: local
+  #connection: local
   gather_facts: yes
   become: yes
     

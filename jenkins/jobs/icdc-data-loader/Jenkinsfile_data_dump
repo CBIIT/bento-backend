@@ -144,7 +144,7 @@ pipeline {
                 colorized: true)
 		  }
 		
-		stash includes: "**/${DUMP_FILE}", name: 'dump_file'
+		stash includes: "**/${DUMP_FILE}.dump", name: 'dump_file'
 			
  		}
     }

@@ -8,6 +8,9 @@
     owner: neo4j
     group: neo4j
 
+- name: Remove old backup files if found
+  file: path="{{ backup_directory }}/{{ dump_file_name }}.dump" state=absent
+
 - name: stop neo4j
   service:
     name: neo4j

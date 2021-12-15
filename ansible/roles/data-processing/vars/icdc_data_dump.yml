@@ -1,7 +1,6 @@
 ---
 # vars file for neo4j-loader
 backup_directory: /backups
-remote_workspace: /tmp/neo4j
 s3_bucket_name: "{{ lookup('env','S3_BUCKET') }}"
 dump_file_name: "{{ lookup('env','DUMP_FILE') }}"
 s3_folder_name: 'dump_files'

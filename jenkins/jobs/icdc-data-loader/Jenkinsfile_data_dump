@@ -154,6 +154,16 @@ pipeline {
         
 			unstash 'dump_file'
 			
+			script {
+                sh label: 'db-hosts', script: '''#!/bin/bash
+                  echo "Creating inventory file"
+                  echo "[loader]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+                  echo "localhost" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+                '''
+
+              }
+			
 			ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-dump-push.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',

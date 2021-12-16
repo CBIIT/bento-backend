@@ -174,12 +174,12 @@ pipeline {
 	}
 	
   }
-//  post {
-//    always {
-//      sendSlackMessage()
-//      }
-//    cleanup {
-//      cleanWs()
-//      }
-//  }
+  post {
+    always {
+      sendSlackMessage()
+      }
+    cleanup {
+      cleanWs()
+      }
+  }
 }

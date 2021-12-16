@@ -3,12 +3,12 @@
 
 - name: ensure that remote workspace exists
   file:
-    path: "{{ remote_workspace }}"
+    path: "{{ remote_workspace }}-{{ tier }}"
     state: directory
 
 - name: copy dump file
   copy:
-    src: "{{ dump_file_name }}"
+    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}"
     dest: "{{ remote_workspace }}/{{ dump_file_name }}-{{ timestamp }}.dump"
 
 - name: verify file is copied

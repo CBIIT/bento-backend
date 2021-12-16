@@ -2,7 +2,6 @@
 # vars file for neo4j-loader
 backup_directory: /backups
 remote_workspace: /tmp/neo4j
-#s3_bucket_name: "{{ lookup('env','S3_BUCKET') }}"
 s3_bucket_name: 'nci-cbiit-caninedatacommons-dev'
 dump_file_name: "{{ lookup('env','DUMP_FILE') }}"
 s3_folder_name: 'dump_files'
@@ -11,6 +10,5 @@ timestamp: "{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
 tier: "{{ lookup('env','TIER') }}"
 region: us-east-1
 
-#neo4j_db_name: "{{ 'neo4j' if tier == 'icdc' else 'graph.db' }}"
 neo4j_db_name: neo4j
 neo4j_admin_cmd: 'neo4j-admin'

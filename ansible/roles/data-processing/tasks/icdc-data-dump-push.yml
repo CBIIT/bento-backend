@@ -1,0 +1,24 @@
+---
+# tasks file for neo4j-loader
+
+- name: ensure that remote workspace exists
+  file:
+    path: "{{ remote_workspace }}"
+    state: directory
+
+- name: copy dump file
+  copy:
+    src: "{{ dump_file_name }}"
+    dest: "{{ remote_workspace }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+
+- name: verify file is copied
+  stat:
+     path: "{{ remote_workspace }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+  register: file_status
+
+- name: upload dump file to s3
+  aws_s3:
+    bucket: "{{ s3_bucket_name }}"
+    object: "{{ s3_folder_name }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+    src: "{{ remote_workspace }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+    mode: put

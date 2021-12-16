@@ -8,7 +8,7 @@
 
 - name: copy dump file
   copy:
-    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}"
+    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}.dump"
     dest: "{{ remote_workspace }}/{{ dump_file_name }}-{{ timestamp }}.dump"
 
 - name: verify file is copied

@@ -1,0 +1,12 @@
+---
+- name: push dump file to s3
+  hosts: loader
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: push dump file
+      include_role:
+        name: data-processing
+        tasks_from: icdc-data-dump-push
+        vars_from: icdc_data_dump

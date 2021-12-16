@@ -1,0 +1,185 @@
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${ICDC_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+pipeline {
+	agent {
+		node {
+			label 'slave-ncias-d2320-c'
+		}
+	}
+
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'demo,dev,qa,stage,prod' )
+    string(defaultValue: "", 
+        description: 'Name of the dump file to use', 
+        name: 'DumpFileName')
+    
+    }
+
+  // options {
+  // 	ansiColor('xterm')
+  // }
+
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+
+  stages{
+
+  	stage('checkout'){
+  		steps {
+          checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				//branches: [[name: '*/master']], 
+				branches: [[name: '*/neo4j_dump']],
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+
+  		}
+  	}
+	
+    stage('set-environment'){
+        environment {
+          ICDC_SLACK_URL = "${ICDC_SLACK_URL}"
+        }
+		steps {
+          script {
+            switch("${params.Environment}") {
+              case "demo":
+                env.NEO4J_IP        = "${NEO4J_DEMO_IP}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "dev":
+                env.NEO4J_IP        = "${NEO4J_ICDC_DEV_IP}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "ecs-dev":
+                env.NEO4J_IP        = "${NEO4J_ECS_DEV_IP}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "qa":
+                env.NEO4J_IP        = "${NEO4J_ICDC_QA_IP}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "stage":
+                env.NEO4J_IP        = "${NEO4J_ICDC_STAGE_IP}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              case "prod":
+                env.NEO4J_IP        = "${NEO4J_ICDC_PROD_IP}"
+				env.DUMP_FILE       = "${params.DumpFileName}"
+				env.TIER            = "${params.Environment}"
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+
+  	stage('dump data'){
+ 		steps {
+ 		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			
+		      script {
+                sh label: 'db-hosts', script: '''#!/bin/bash
+                  echo "Creating inventory file"
+                  echo "[icdc-neo4j]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+                  echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+                '''
+
+              }
+			  
+			  ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-dump.yml',
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				credentialsId: 'commonsdocker',
+                colorized: true)
+		  }
+		
+		stash includes: "**/${DUMP_FILE}.dump", name: 'dump_file'
+			
+ 		}
+    }
+	
+	stage('push to s3'){
+		steps{
+        
+			unstash 'dump_file'
+			
+			script {
+                sh label: 'db-hosts', script: '''#!/bin/bash
+                  echo "Creating inventory file"
+                  echo "[loader]" > ${WORKSPACE}/icdc-devops/ansible/hosts
+                  echo "localhost" >> ${WORKSPACE}/icdc-devops/ansible/hosts
+
+                '''
+
+              }
+			
+			ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-dump-push.yml',
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+				credentialsId: 'commonsdocker',
+                colorized: true)
+
+		}
+	}
+	
+  }
+//  post {
+//    always {
+//      sendSlackMessage()
+//      }
+//    cleanup {
+//      cleanWs()
+//      }
+//  }
+}

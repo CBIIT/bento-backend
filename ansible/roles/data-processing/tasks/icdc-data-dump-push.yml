@@ -6,19 +6,21 @@
     path: "{{ remote_workspace }}-{{ tier }}"
     state: directory
 
-- name: copy dump file
-  copy:
-    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}.dump"
-    dest: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+#- name: copy dump file
+#  copy:
+#    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}.dump"
+#    dest: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}-{{ timestamp }}.dump"
 
-- name: verify file is copied
+#- name: verify file is copied
+- name: verify file is present
   stat:
-     path: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+     #path: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+     path: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}.dump"
   register: file_status
 
 - name: upload dump file to s3
   aws_s3:
     bucket: "{{ s3_bucket_name }}"
-    object: "{{ s3_folder_name }}/{{ dump_file_name }}-{{ timestamp }}.dump"
-    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+    object: "/{{ s3_folder_name }}/{{ dump_file_name }}-{{ timestamp }}.dump"
+    src: "{{ remote_workspace }}-{{ tier }}/{{ dump_file_name }}.dump"
     mode: put

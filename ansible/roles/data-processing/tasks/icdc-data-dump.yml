@@ -29,3 +29,9 @@
   service:
     name: neo4j
     state: started
+
+- name: ansible copy file from remote to local
+  fetch:
+    src: "{{ backup_directory }}/{{ dump_file_name }}.dump"
+    dest: "{{ remote_workspace }}"
+    flat: yes

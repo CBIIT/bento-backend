@@ -63,6 +63,14 @@
     regexp: '-Xmx1g'
     replace: '-Xmx4g'
 
+
+- name: updating Dlog4j2.formatMsgNoLookups=true in elasticsearch jvm.options
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    line: "{{ item }}"
+  with_items:
+    - '-Dlog4j2.formatMsgNoLookups=true'
+
 - name: reload systemd config
   systemd: daemon_reload=yes
 

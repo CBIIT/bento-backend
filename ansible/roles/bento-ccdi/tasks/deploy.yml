@@ -326,6 +326,7 @@
     # task_nr_docker_name: "{{task_nr_docker.family}}"
     lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
+    lb_file_downloader: "{{service_file_downloader.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
 
 - name: show
@@ -424,6 +425,6 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers: "{{ lb_frontend }}"
+    load_balancers: "{{ lb_file_downloader }}"
     region: "{{region}}"
   register: service_file_downloader_output

@@ -142,17 +142,13 @@ pipeline {
 				credentialsId: 'commonsdocker',
                 colorized: true)
 		  }
-		
-		//stash includes: "**/${DUMP_FILE}.dump", name: 'dump_file'
-			
+
  		}
     }
 	
 	stage('push to s3'){
 		steps{
-        
-			//unstash 'dump_file'
-			
+
 			script {
                 sh label: 'db-hosts', script: '''#!/bin/bash
                   echo "Creating inventory file"

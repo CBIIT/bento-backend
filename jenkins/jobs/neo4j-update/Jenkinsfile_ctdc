@@ -88,18 +88,21 @@ pipeline {
 			    withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_dev_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-d2267-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
 				}
               break
               case "qa":
                 withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_qa_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncidb-q325-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
 				}
               break
               default:
                 withCredentials([usernamePassword(credentialsId: 'neo4j_ctdc_dev_cred', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-d2267-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
 				}
               break
             }
@@ -127,7 +130,7 @@ pipeline {
             playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-version-update.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 			  extraVars: [
-                    neo4j_edition: 'enterprise',
+                    neo4j_edition: "${NEO4J_EDITION}",
                     ],
 			  credentialsId: 'commonsdocker',
               colorized: true)

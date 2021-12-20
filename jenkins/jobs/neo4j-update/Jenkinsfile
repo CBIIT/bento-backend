@@ -88,30 +88,35 @@ pipeline {
 			    withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-d2224-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
 				}
               break
               case "qa":
                 withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-q2251-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
 				}
               break
                case "stage":
                 withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-s2261-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
         }
               break
                case "prod":
                 withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-p2284-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "enterprise"
         }
               break
               default:
                 withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.DB_INSTANCE = "ncias-d2224-c"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.NEO4J_EDITION = "community"
 				}
               break
             }
@@ -139,7 +144,7 @@ pipeline {
             playbook: '${WORKSPACE}/icdc-devops/ansible/neo4j-version-update.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 			  extraVars: [
-                    neo4j_edition: 'enterprise',
+                    neo4j_edition: "${NEO4J_EDITION}",
                     ],
 			  credentialsId: 'commonsdocker',
               colorized: true)

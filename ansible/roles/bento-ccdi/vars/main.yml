@@ -4,7 +4,7 @@ stack_name: ccdi
 enable_redis: true
 platform: aws
 redis_host: 
-  dev: "ccdi-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
+  dev: "ccdi-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com:6379"
   qa: "localhost"
   perf: "localhost"
   icdc: "localhost"

@@ -441,9 +441,9 @@ pipeline {
 		script {
 			if (params.Reload_ES_Data) {
 				echo 'Reload data to Elasticsearch'
-				String tag = "${params.Backend_Image}"
-				String branch = "${tag}".substring(0, "${tag}".lastIndexOf("-")) + "-bento" + "${tag}".substring("${tag}".lastIndexOf("-"), "${tag}".length())
-				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Backend_Branch', value: "${branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+				String be_tag = "${params.Backend_Image}"
+				String be_branch = "${be_tag}".substring(0, "${be_tag}".lastIndexOf("-")) + "-bento" + "${be_tag}".substring("${be_tag}".lastIndexOf("-"), "${be_tag}".length())
+				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Frontend_Branch', value: "${params.Frontend_Tag}"), gitParameter(name: 'Backend_Branch', value: "${be_branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
 			}
 		}
 

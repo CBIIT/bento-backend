@@ -47,7 +47,7 @@ pipeline {
         defaultValue: 'bento', 
         description: 'Choose project to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'bento,gmb,icdc,ctdc' )
+        value: 'bento,gmb,icdc,ctdc,c3dc' )
    	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Downloader_Tag', 

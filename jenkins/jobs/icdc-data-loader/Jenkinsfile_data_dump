@@ -143,7 +143,7 @@ pipeline {
                 colorized: true)
 		  }
 		
-		stash includes: "**/${DUMP_FILE}.dump", name: 'dump_file'
+		//stash includes: "**/${DUMP_FILE}.dump", name: 'dump_file'
 			
  		}
     }
@@ -151,7 +151,7 @@ pipeline {
 	stage('push to s3'){
 		steps{
         
-			unstash 'dump_file'
+			//unstash 'dump_file'
 			
 			script {
                 sh label: 'db-hosts', script: '''#!/bin/bash

@@ -40,7 +40,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa' )
+        value: 'stage,prod' )
     string(defaultValue: "", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -87,21 +87,17 @@ pipeline {
 		steps {
           script {
             switch("${params.Environment}") {
-              case "dev":
-                env.NEO4J_IP        = "${NEO4J_ICDC_DEV_IP}"
+              case "stage":
+                env.NEO4J_IP        = "${NEO4J_ICDC_STAGE_IP}"
                 env.S3_BUCKET       = "${params.S3Folder}"
 				env.DUMP_FILE       = "${params.DumpFileName}"
 				env.TIER            = "${params.Environment}"
-				env.DB_HOSTS        = "ncias-d2224-c"
-				env.FE_HOSTS        = "nciws-d1092-c,nciws-d2001-c"
               break
-              case "qa":
-                env.NEO4J_IP        = "${NEO4J_ICDC_QA_IP}"
+              case "prod":
+                env.NEO4J_IP        = "${NEO4J_ICDC_PROD_IP}"
                 env.S3_BUCKET       = "${params.S3Folder}"
 				env.DUMP_FILE       = "${params.DumpFileName}"
 				env.TIER            = "${params.Environment}"
-				env.DB_HOSTS        = "ncias-q2251-c"
-				env.FE_HOSTS        = "nciws-q2024-c,nciws-q2025-c"
               break
               default:
                 println "Select valid option"

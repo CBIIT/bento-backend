@@ -90,6 +90,10 @@ public class ESFilterDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return fileIDsFromList(args);
                         })
+                        .dataFetcher("findSubjectIdsInList", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return findSubjectIdsInList(args);
+                        })
                 )
                 .build();
     }
@@ -636,14 +640,21 @@ public class ESFilterDataFetcher {
     }
 
     private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {
-        String idField = "file_ids";
-        String[] idFieldArray = new String[]{idField};
+        return collectFieldFromList(params, "file_ids", FILES_END_POINT);
+    }
+
+    private List<String> findSubjectIdsInList(Map<String, Object> params) throws IOException {
+        return collectFieldFromList(params, "subject_ids", SUBJECTS_END_POINT);
+    }
+
+    // This function search values in parameters and return a given collectField's unique values in a list
+    private List<String> collectFieldFromList(Map<String, Object> params, String collectField, String endpoint) throws IOException {
+        String[] idFieldArray = new String[]{collectField};
         Map<String, Object> query = esService.buildListQuery(params, Set.of());
         query = esService.addAggregations(query, idFieldArray);
-        Request request = new Request("GET", FILES_END_POINT);
+        Request request = new Request("GET", endpoint);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
-        List<String> result = esService.collectTerms(jsonObject, idField);
-        return result;
+        return esService.collectTerms(jsonObject, collectField);
     }
 }

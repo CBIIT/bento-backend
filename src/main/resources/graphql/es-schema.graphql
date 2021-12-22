@@ -221,6 +221,11 @@ type GlobalSearchResult {
     values: [GS_Value]
 }
 
+type SubjectResult {
+    subject_id: String
+    program_id: String
+}
+
 schema {
     query: QueryType
 }
@@ -326,7 +331,7 @@ type QueryType {
         file_names: [String] = [""]
     ): [String]
 
-    findSubjectIdsInList(subject_ids: [String] = []): [String]
+    findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
 

@@ -639,12 +639,20 @@ public class ESFilterDataFetcher {
         return query;
     }
 
-    private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {
-        return collectFieldFromList(params, "file_ids", FILES_END_POINT);
+    private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {
+        final String[][] properties = new String[][]{
+                new String[]{"subject_id", "subject_ids"},
+                new String[]{"program_id", "program_id"}
+        };
+
+        Map<String, Object> query = esService.buildListQuery(params, Set.of());
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+
+        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
     }
 
-    private List<String> findSubjectIdsInList(Map<String, Object> params) throws IOException {
-        return collectFieldFromList(params, "subject_ids", SUBJECTS_END_POINT);
+    private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {
+        return collectFieldFromList(params, "file_ids", FILES_END_POINT);
     }
 
     // This function search values in parameters and return a given collectField's unique values in a list

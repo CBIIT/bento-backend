@@ -163,7 +163,7 @@ pipeline {
 	success {
 
 		script {
-			withCredentials([usernamePassword(credentialsId: 'git_credential', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
 				cd ${WORKSPACE}/bento-files
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
@@ -171,7 +171,7 @@ pipeline {
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Downloader_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
-				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags 
 				
 				'''
 			

@@ -63,6 +63,7 @@
      - java-11-openjdk
      - neo4j-{{ neo4j_version }}
     state: installed
+    disable_gpg_check: yes
   when: neo4j_edition == 'community'
 
 - name: install neo4j {{ neo4j_version }}

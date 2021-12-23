@@ -60,7 +60,7 @@ pipeline {
         defaultValue: 'QA_ICDC', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_ICDC,STAGE_ICDC,PROD_ICDC,QA_CTDC' )
+        value: 'DEV_ICDC,QA_ICDC,STAGE_ICDC,PROD_ICDC,QA_CTDC' )
 
 	string(defaultValue: "gayathri.radhakrishnan@nih.gov,laxmi.lolla@nih.gov,sohil.sohil@nih.gov", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
@@ -93,6 +93,19 @@ pipeline {
 			steps {
                 script {
                     switch("${params.Profile}") {
+                    case "DEV_ICDC":
+						WIKI_PAGE="289178264"
+						PROJECT="ICDC"
+						TIER="DEV"
+						withCredentials([string(credentialsId: 'Box_Email_DEV_ICDC', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_DEV_ICDC', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_DEV_ICDC', variable: 'pass_file')]) {
+                            BOX_URL="${box_url}"
+							BOX_EMAIL="${box_email}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
+                            }
+                        break
                     case "QA_ICDC":
 						WIKI_PAGE="289178264"
 						PROJECT="ICDC"

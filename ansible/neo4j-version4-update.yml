@@ -1,7 +1,8 @@
 ---
 - name: upgrade neo4j server
-  hosts: local
+  hosts: localhost
   become: yes
+  connection: local
   #become_method: sudo
   
 #  vars_files:

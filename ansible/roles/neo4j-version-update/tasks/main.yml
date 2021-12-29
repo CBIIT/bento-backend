@@ -15,11 +15,11 @@
     gpgcheck: yes
     enabled: yes
 
-# - name: disable and stop neo4j
-#   service:
-#     name: neo4j
-#     state: stopped
-#     enabled: no
+- name: disable and stop neo4j
+  service:
+    name: neo4j
+    state: stopped
+    enabled: no
 
 - name: create neo4j cert backup directory
   file:
@@ -137,8 +137,8 @@
     owner: neo4j
     group: neo4j
 
-# - name: update default neo4j password
-#   shell: "neo4j-admin set-initial-password {{ neo4j_password }}"
+- name: update default neo4j password
+  shell: "neo4j-admin set-initial-password {{ neo4j_password }}"
 
 - name: start and enable neo4j service
   service:

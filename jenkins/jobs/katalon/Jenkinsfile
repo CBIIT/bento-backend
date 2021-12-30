@@ -99,7 +99,7 @@ pipeline {
 						TIER="DEV"
 						withCredentials([string(credentialsId: 'Box_Email_DEV_ICDC', variable: 'box_email'),
 						  string(credentialsId: 'Box_Url_DEV_ICDC', variable: 'box_url'),
-						  file(credentialsId: 'Katalon_DEV_ICDC', variable: 'pass_file')]) {
+						  file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
                             BOX_URL="${box_url}"
 							BOX_EMAIL="${box_email}"
 							PROFILE="${pass_file}"

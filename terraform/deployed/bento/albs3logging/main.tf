@@ -8,6 +8,8 @@ resource "aws_lb" "alb" {
     prefix  = "alb-logs"
     enabled = true
   }
+  tags = var.tags
+  depends_on = [aws_s3_bucket.alb_logs_bucket]
 }
 
 resource "aws_s3_bucket" "alb_logs_bucket" {

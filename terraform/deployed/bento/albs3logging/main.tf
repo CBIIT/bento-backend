@@ -4,7 +4,7 @@ locals {
 resource "aws_lb" "alb" {
   name               = var.alb_name
   access_logs  {
-    bucket  = var.alb_s3_bucket_name
+    bucket  = local.alb_s3_bucket_name
     prefix  = "alb-logs"
     enabled = true
   }

@@ -44,7 +44,3 @@ resource "aws_s3_bucket" "alb_logs_bucket" {
     }
   }
 }
-variable "alb_name" {
-  type = string
-  description = "name of alb"
-}

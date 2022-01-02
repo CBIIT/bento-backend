@@ -9,10 +9,12 @@ variable "stack_name" {
 variable "region" {
   description = "aws region to deploy"
   type = string
+  default = "us-east-1"
 }
 variable "profile" {
   description = "iam user profile to use"
   type = string
+  default = "icdc"
 }
 variable "alb_s3_bucket_name" {
   type = string
@@ -38,4 +40,8 @@ variable "s3_object_glacier_transition_days" {
   description = "number of days for an object to transition to glacier storage class"
   default = 180
   type = number
+}
+variable "alb_name" {
+  type = string
+  description = "name of alb"
 }

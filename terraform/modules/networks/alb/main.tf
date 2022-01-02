@@ -1,6 +1,4 @@
 
-
-
 resource "aws_lb" "alb" {
 
   name               = "${var.stack_name}-${var.alb_name}-${var.env}"
@@ -8,12 +6,11 @@ resource "aws_lb" "alb" {
   subnets            = var.subnets
   security_groups    = [aws_security_group.alb-sg.id]
 
-  access_logs = {
+  access_logs  {
     bucket  = var.alb_s3_bucket_name
     prefix  = "alb-logs"
     enabled = true
   }
-
 
   timeouts {
     create = "10m"

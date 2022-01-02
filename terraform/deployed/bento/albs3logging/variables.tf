@@ -40,3 +40,10 @@ variable "alb_name" {
   type = string
   description = "name of alb"
 }
+variable "aws_account_id" {
+  type = map(string)
+  description = "aws account to allow for alb s3 logging"
+  default = {
+    us-east-1 = "127311923021"
+  }
+}

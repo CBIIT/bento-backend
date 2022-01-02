@@ -59,11 +59,6 @@ variable "frontend_app_name" {
   type        = string
   default     = ""
 }
-variable "alb_s3_bucket_name" {
-  type        = string
-  description = "name of s3 bucket for alb logging"
-  default     = null
-}
 variable "s3_object_expiration_days" {
   description = "number of days for object to live"
   type = number

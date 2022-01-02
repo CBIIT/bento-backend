@@ -1,4 +1,6 @@
-
+locals {
+  alb_s3_bucket_name = "${var.stack_name}-alb-${terraform.workspace}-access-logs"
+}
 resource "aws_lb" "alb" {
 
   name               = "${var.stack_name}-${var.alb_name}-${var.env}"
@@ -7,7 +9,7 @@ resource "aws_lb" "alb" {
   security_groups    = [aws_security_group.alb-sg.id]
 
   access_logs  {
-    bucket  = var.alb_s3_bucket_name
+    bucket  = local.alb_s3_bucket_name
     prefix  = "alb-logs"
     enabled = true
   }

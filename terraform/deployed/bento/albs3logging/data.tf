@@ -4,7 +4,7 @@ data "aws_iam_policy_document" "s3_policy" {
     sid = "allowalbaccount"
     effect = "Allow"
     principals {
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = [data.aws_caller_identity.current.arn]
       type        = "AWS"
     }
     actions = ["s3:PutObject"]

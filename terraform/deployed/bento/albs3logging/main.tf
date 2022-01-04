@@ -36,4 +36,5 @@ resource "aws_s3_bucket" "alb_logs_bucket" {
       days = var.s3_object_nonactive_expiration_days
     }
   }
+  tags = var.tags
 }

@@ -1,10 +1,17 @@
 variable "tags" {
   description = "tags to associate with this instance"
   type = map(string)
+  default = {
+    ManagedBy = "terraform"
+    Project = "bento"
+    Environment = "prod"
+    POC = "Amit"
+  }
 }
 variable "stack_name" {
   description = "name of the project"
   type = string
+  default = "bento"
 }
 variable "region" {
   description = "aws region to deploy"

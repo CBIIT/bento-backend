@@ -1,16 +1,16 @@
 locals {
-  alb_s3_bucket_name = "${var.stack_name}-alb-${terraform.workspace}-access-logs"
+  alb_s3_bucket_name = "${var.stack_name}-alb-access-logs"
 }
-resource "aws_lb" "alb" {
-  name               = var.alb_name
-  access_logs  {
-    bucket  = local.alb_s3_bucket_name
-    prefix  = "alb-logs"
-    enabled = true
-  }
-  tags = var.tags
-  depends_on = [aws_s3_bucket.alb_logs_bucket]
-}
+#resource "aws_lb" "alb" {
+#  name               = var.alb_name
+#  access_logs  {
+#    bucket  = local.alb_s3_bucket_name
+#    prefix  = "alb-logs"
+#    enabled = true
+#  }
+#  tags = var.tags
+#  depends_on = [aws_s3_bucket.alb_logs_bucket]
+#}
 
 resource "aws_s3_bucket" "alb_logs_bucket" {
   bucket = local.alb_s3_bucket_name

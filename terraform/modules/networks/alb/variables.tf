@@ -79,3 +79,10 @@ variable "s3_object_glacier_transition_days" {
   default = 180
   type = number
 }
+variable "aws_account_id" {
+  type = map(string)
+  description = "aws account to allow for alb s3 logging"
+  default = {
+    us-east-1 = "127311923021"
+  }
+}

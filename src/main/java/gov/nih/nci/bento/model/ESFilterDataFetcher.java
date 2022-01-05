@@ -99,26 +99,114 @@ public class ESFilterDataFetcher {
     }
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
+        final String AGG_NAME = "agg_name";
+        final String AGG_ENDPOINT = "agg_endpoint";
+        final String WIDGET_QUERY = "widgetQueryName";
+        final String FILTER_COUNT_QUERY = "filterCountQueryName";
         // Query related values
-        final Map<String, List<String>> TERM_AGGS = new HashMap<>();
-        TERM_AGGS.put("programs", List.of("subjectCountByProgram", "filterSubjectCountByProgram"));
-        TERM_AGGS.put("studies", List.of("subjectCountByStudy", "filterSubjectCountByStudy"));
-        TERM_AGGS.put("diagnoses", List.of("subjectCountByDiagnoses", "filterSubjectCountByDiagnoses"));
-        TERM_AGGS.put("rc_scores", List.of("subjectCountByRecurrenceScore", "filterSubjectCountByRecurrenceScore"));
-        TERM_AGGS.put("tumor_sizes", List.of("subjectCountByTumorSize", "filterSubjectCountByTumorSize"));
-        TERM_AGGS.put("tumor_grades", List.of("subjectCountByTumorGrade", "filterSubjectCountByTumorGrade"));
-        TERM_AGGS.put("er_status", List.of("subjectCountByErStatus", "filterSubjectCountByErStatus"));
-        TERM_AGGS.put("pr_status", List.of("subjectCountByPrStatus", "filterSubjectCountByPrStatus"));
-        TERM_AGGS.put("chemo_regimen", List.of("subjectCountByChemotherapyRegimen", "filterSubjectCountByChemotherapyRegimen"));
-        TERM_AGGS.put("endo_therapies", List.of("subjectCountByEndocrineTherapy", "filterSubjectCountByEndocrineTherapy"));
-        TERM_AGGS.put("meno_status", List.of("subjectCountByMenopauseStatus", "filterSubjectCountByMenopauseStatus"));
-        TERM_AGGS.put("tissue_type", List.of("subjectCountByTissueType", "filterSubjectCountByTissueType"));
-        TERM_AGGS.put("composition", List.of("subjectCountByTissueComposition", "filterSubjectCountByTissueComposition"));
-        TERM_AGGS.put("association", List.of("subjectCountByFileAssociation", "filterSubjectCountByFileAssociation"));
-        TERM_AGGS.put("file_type", List.of("subjectCountByFileType", "filterSubjectCountByFileType"));
-        TERM_AGGS.put("lab_procedures", List.of("subjectCountByLabProcedures", "filterSubjectCountByLabProcedures"));
+        final List<Map<String, String>> TERM_AGGS = new ArrayList<>();
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "programs",
+                WIDGET_QUERY, "subjectCountByProgram",
+                FILTER_COUNT_QUERY, "filterSubjectCountByProgram",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "studies",
+                WIDGET_QUERY, "subjectCountByStudy",
+                FILTER_COUNT_QUERY, "filterSubjectCountByStudy",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "diagnoses",
+                WIDGET_QUERY, "subjectCountByDiagnoses",
+                FILTER_COUNT_QUERY, "filterSubjectCountByDiagnoses",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "rc_scores",
+                WIDGET_QUERY,"subjectCountByRecurrenceScore",
+                FILTER_COUNT_QUERY, "filterSubjectCountByRecurrenceScore",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "tumor_sizes",
+                WIDGET_QUERY, "subjectCountByTumorSize",
+                FILTER_COUNT_QUERY, "filterSubjectCountByTumorSize",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "tumor_grades",
+                WIDGET_QUERY, "subjectCountByTumorGrade",
+                FILTER_COUNT_QUERY, "filterSubjectCountByTumorGrade",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "er_status",
+                WIDGET_QUERY, "subjectCountByErStatus",
+                FILTER_COUNT_QUERY, "filterSubjectCountByErStatus",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "pr_status",
+                WIDGET_QUERY, "subjectCountByPrStatus",
+                FILTER_COUNT_QUERY, "filterSubjectCountByPrStatus",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "chemo_regimen",
+                WIDGET_QUERY, "subjectCountByChemotherapyRegimen",
+                FILTER_COUNT_QUERY, "filterSubjectCountByChemotherapyRegimen",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "endo_therapies",
+                WIDGET_QUERY, "subjectCountByEndocrineTherapy",
+                FILTER_COUNT_QUERY, "filterSubjectCountByEndocrineTherapy",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "meno_status",
+                WIDGET_QUERY, "subjectCountByMenopauseStatus",
+                FILTER_COUNT_QUERY, "filterSubjectCountByMenopauseStatus",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "tissue_type",
+                WIDGET_QUERY, "subjectCountByTissueType",
+                FILTER_COUNT_QUERY, "filterSubjectCountByTissueType",
+                AGG_ENDPOINT, SAMPLES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "composition",
+                WIDGET_QUERY, "subjectCountByTissueComposition",
+                FILTER_COUNT_QUERY, "filterSubjectCountByTissueComposition",
+                AGG_ENDPOINT, SAMPLES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "association",
+                WIDGET_QUERY, "subjectCountByFileAssociation",
+                FILTER_COUNT_QUERY, "filterSubjectCountByFileAssociation",
+                AGG_ENDPOINT, FILES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "file_type",
+                WIDGET_QUERY, "subjectCountByFileType",
+                FILTER_COUNT_QUERY, "filterSubjectCountByFileType",
+                AGG_ENDPOINT, FILES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "lab_procedures",
+                WIDGET_QUERY, "subjectCountByLabProcedures",
+                FILTER_COUNT_QUERY, "filterSubjectCountByLabProcedures",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
 
-        final String[] TERM_AGG_NAMES = TERM_AGGS.keySet().toArray(new String[0]);
+        List<String> agg_names = new ArrayList<>();
+        for (var agg: TERM_AGGS) {
+            agg_names.add(agg.get(AGG_NAME));
+        }
+        final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
         final Map<String, String> RANGE_AGGS = new HashMap<>();
         RANGE_AGGS.put("age_at_index",  "filterSubjectCountByAge");
@@ -158,13 +246,15 @@ public class ESFilterDataFetcher {
 
         data.put("armsByPrograms", armsByPrograms(params));
         // widgets data and facet filter counts
-        for (String field: TERM_AGG_NAMES) {
-            String widgetQueryName = TERM_AGGS.get(field).get(0);
-            String filterCountQueryName = TERM_AGGS.get(field).get(1);
+        for (var agg: TERM_AGGS) {
+            String field = agg.get(AGG_NAME);
+            String widgetQueryName = agg.get(WIDGET_QUERY);
+            String filterCountQueryName = agg.get(FILTER_COUNT_QUERY);
+            String endpoint = agg.get(AGG_ENDPOINT);
             List<Map<String, Object>> widgetData = getGroupCountHelper(aggs.get(field));
             data.put(widgetQueryName, widgetData);
             if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
-                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params);;
+                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
                 data.put(filterCountQueryName, filterCount);
             } else {
                 data.put(filterCountQueryName, widgetData);
@@ -371,15 +461,15 @@ public class ESFilterDataFetcher {
         return data;
     }
 
-    private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params) throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS,Set.of(PAGE_SIZE, category));
-        return getGroupCount(category, query);
+    private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category));
+        return getGroupCount(category, query, endpoint);
     }
 
-    private List<Map<String, Object>> getGroupCount(String category, Map<String, Object> query) throws IOException {
+    private List<Map<String, Object>> getGroupCount(String category, Map<String, Object> query, String endpoint) throws IOException {
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
-        Request request = new Request("GET", SUBJECTS_END_POINT);
+        Request request = new Request("GET", endpoint);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
         Map<String, JsonArray> aggs = esService.collectTermAggs(jsonObject, AGG_NAMES);

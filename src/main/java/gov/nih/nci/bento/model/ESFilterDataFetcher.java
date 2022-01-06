@@ -251,8 +251,16 @@ public class ESFilterDataFetcher {
             String widgetQueryName = agg.get(WIDGET_QUERY);
             String filterCountQueryName = agg.get(FILTER_COUNT_QUERY);
             String endpoint = agg.get(AGG_ENDPOINT);
-            List<Map<String, Object>> widgetData = getGroupCountHelper(aggs.get(field));
-            data.put(widgetQueryName, widgetData);
+            // subjectCountByXXXX
+            List<Map<String, Object>> widgetData;
+            if (endpoint.equals(SUBJECTS_END_POINT)) {
+                widgetData = getGroupCountHelper(aggs.get(field));
+                data.put(widgetQueryName, widgetData);
+            } else {
+                widgetData = subjectCountBy(field, params, endpoint);;
+                data.put(widgetQueryName, widgetData);
+            }
+            // filterSubjectCountByXXXX
             if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
                 List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
                 data.put(filterCountQueryName, filterCount);
@@ -459,6 +467,11 @@ public class ESFilterDataFetcher {
 
         }
         return data;
+    }
+
+    private List<Map<String, Object>> subjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
+        return getGroupCount(category, query, endpoint);
     }
 
     private List<Map<String, Object>> filterSubjectCountBy(String category, Map<String, Object> params, String endpoint) throws IOException {

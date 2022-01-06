@@ -1,0 +1,8 @@
+---
+- name: dbserver
+  image: cbiitssrepo/bento-backend:release
+  essential: true
+  portMappings:
+    - protocol: tcp
+      containerPort: 8081
+      hostPort: 8081

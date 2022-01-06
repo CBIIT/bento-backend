@@ -57,7 +57,7 @@
         - name: DB_PASSWORD
           value: "{{ db_password }}"
         - name: Driver
-          value: "PostgreSQL Unicode""
+          value: "PostgreSQL Unicode"
           #value: "DB_DRIVER"
         - name: Server
           value: "{{ db_host }}"

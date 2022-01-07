@@ -52,7 +52,7 @@
           value: "{{ db_host }}"
         - name: DB_DRIVER
           value: "PostgreSQL Unicode"
-        - name: DB_USERNAME
+        - name: DB_NAME
           value: "{{ db_user }}"
         - name: DB_PASSWORD
           value: "{{ db_password }}"
@@ -120,7 +120,7 @@
           value: "{{ db_user }}"    
         - name: DB_READ_WRITE_PASSWORD
           value: "{{ db_password }}"
-        - name: POSTGRES _USER
+        - name: POSTGRES_USER
           value: "{{ db_user }}"
         - name: POSTGRES_DB
           value: "postgres"

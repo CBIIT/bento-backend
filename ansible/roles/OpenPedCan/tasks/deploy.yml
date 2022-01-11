@@ -171,6 +171,13 @@
         protocol: tcp
   register: task_output
 
+- name: listing the contents of "{{workspace}}"
+  shell: ls -ltr
+  register: shell_result
+  args:
+    chdir: "{{workspace}}/"
+
+
 - name: listing the contents of "{{workspace}}/{{project}}/"
   shell: ls
   register: shell_result

@@ -171,6 +171,11 @@
         protocol: tcp
   register: task_output
 
+- name: listing the contents after extracting
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "{{workspace}}/{{project}}/"
 
 
 - name: query task definition HttpServer
@@ -180,9 +185,9 @@
   register: task_httpserver
 
 
-- name: show task output
-  debug:
-    msg: "{{task_httpserver}}"
+# - name: show task output
+#   debug:
+#     msg: "{{task_httpserver}}"
 
 - name: query task definition DatabaseServer
   ecs_taskdefinition_info:
@@ -190,9 +195,9 @@
     region: "{{region}}" 
   register: task_databaseserver
 
-- name: show service service
-  debug:
-    msg: "{{task_databaseserver}}"
+# - name: show service service
+#   debug:
+#     msg: "{{task_databaseserver}}"
 
 - name: query ecs service httpserver
   ecs_service_facts:
@@ -202,9 +207,9 @@
     region: "{{region}}"
   register: service_httpserver
 
-- name: show service service
-  debug:
-    msg: "{{service_httpserver}}"
+# - name: show service service
+#   debug:
+#     msg: "{{service_httpserver}}"
 
 - name: query ecs service DatabaseServer
   ecs_service_facts:
@@ -214,9 +219,9 @@
     region: "{{region}}"
   register: service_databaseserver
 
-- name: show service service
-  debug:
-    msg: "{{service_databaseserver}}"
+# - name: show service service
+#   debug:
+#     msg: "{{service_databaseserver}}"
 
 - name: set facts
   set_fact:

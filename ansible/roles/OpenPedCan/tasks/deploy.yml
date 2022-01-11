@@ -85,7 +85,7 @@
         protocol: tcp
   register: task_output
 
-- name: create task OpenPedCan Database Server definition 
+- name: create task OpenPedCan Database Server definition {{workspace}}
   ecs_taskdefinition:
     network_mode: bridge
     family: "{{ stack_name }}-dbserver"

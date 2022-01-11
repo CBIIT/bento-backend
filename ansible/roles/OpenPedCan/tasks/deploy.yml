@@ -172,7 +172,7 @@
   register: task_output
 
 - name: listing the contents of "{{workspace}}"
-  shell: 'ls -l'
+  shell: ls
   register: shell_result
   args:
     chdir: "{{workspace}}/"

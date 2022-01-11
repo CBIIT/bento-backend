@@ -258,7 +258,7 @@
     region: "{{region}}"
   register: service_processor_output
 
-  - name: listing the contents
+- name: listing the contents
   shell: ls
   register: shell_result
   args:

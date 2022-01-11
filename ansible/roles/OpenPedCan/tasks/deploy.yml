@@ -175,7 +175,7 @@
   shell: ls
   register: shell_result
   args:
-    chdir: "{{workspace}}/{{project}}/"
+    chdir: "{{workspace}}/"
 
 
 - name: query task definition HttpServer

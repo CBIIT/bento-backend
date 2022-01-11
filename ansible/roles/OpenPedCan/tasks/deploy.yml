@@ -171,21 +171,11 @@
         protocol: tcp
   register: task_output
 
-- name: listing the contents of "{{workspace}}"
-  shell: 'ls -ltr'
-  register: shell_result
-  args:
-    chdir: "{{workspace}}/"
-
-- debug:
-        var: shell_result.stdout_lines
-
-
-- name: listing the contents of "{{workspace}}/{{project}}/"
+- name: listing the contents
   shell: ls
   register: shell_result
   args:
-    chdir: "{{workspace}}/{{project}}/"
+    chdir: "{{workspace}}/"
 
 - debug:
         var: shell_result.stdout_lines

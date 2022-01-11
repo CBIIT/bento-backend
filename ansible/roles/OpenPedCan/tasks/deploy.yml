@@ -127,7 +127,7 @@
         - name: POSTGRES_DB
           value: "postgres"
         - name: DB_NAME
-          value: "OpenPedCan1"
+          value: "open_ped_can_db"
         - name: POSTGRES_PASSWORD
           value: "{{ db_password }}"
         - name: POSTGRES_HOST_AUTH_METHOD

@@ -171,11 +171,11 @@
         protocol: tcp
   register: task_output
 
-- name: listing the contents after extracting
+- name: listing the contents of "{{workspace}}/{{project}}/"
   shell: ls
   register: shell_result
   args:
-    chdir: "{{workspace}}/"
+    chdir: "{{workspace}}/{{project}}/"
 
 
 - name: query task definition HttpServer

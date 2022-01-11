@@ -172,10 +172,13 @@
   register: task_output
 
 - name: listing the contents of "{{workspace}}"
-  shell: ls
+  shell: 'ls -ltr'
   register: shell_result
   args:
     chdir: "{{workspace}}/"
+
+- debug:
+        var: shell_result.stdout_lines
 
 
 - name: listing the contents of "{{workspace}}/{{project}}/"
@@ -183,6 +186,9 @@
   register: shell_result
   args:
     chdir: "{{workspace}}/{{project}}/"
+
+- debug:
+        var: shell_result.stdout_lines
 
 
 - name: query task definition HttpServer

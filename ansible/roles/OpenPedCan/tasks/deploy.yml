@@ -171,16 +171,6 @@
         protocol: tcp
   register: task_output
 
-- name: listing the contents
-  shell: ls
-  register: shell_result
-  args:
-    chdir: "{{workspace}}/"
-
-- debug:
-        var: shell_result.stdout_lines
-
-
 - name: query task definition HttpServer
   ecs_taskdefinition_info:
     task_definition: OpenPedCan-httpserver
@@ -267,4 +257,13 @@
     load_balancers: "{{ lb_dbserver }}"
     region: "{{region}}"
   register: service_processor_output
+
+  - name: listing the contents
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "{{workspace}}/"
+
+- debug:
+        var: shell_result.stdout_lines
 

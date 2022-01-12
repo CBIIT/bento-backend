@@ -131,6 +131,19 @@ type ProgramArms2 {
     children: [ArmInfo2]
 }
 
+type FileDetail {
+    study_code: String
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
 type GS_Program {
     type: String
     program_id: String
@@ -323,6 +336,14 @@ type QueryType {
         sample_ids: [String] = [""],
         file_names: [String] = [""]
     ): [String]
+
+    filesInList(
+        file_ids: [String],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileDetail]
 
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 

@@ -249,6 +249,8 @@ Indices:
         type: search_as_you_type
       file_size:
         type: double
+      md5sum:
+        type: keyword
       diagnoses:
         type: keyword
       rc_scores:
@@ -301,6 +303,7 @@ Indices:
       f.file_format AS file_format,
       f.file_format AS file_format_gs,
       f.file_size AS file_size,
+      f.md5sum AS md5sum,
       toInteger(split(f.file_id,'-')[2]) AS file_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,

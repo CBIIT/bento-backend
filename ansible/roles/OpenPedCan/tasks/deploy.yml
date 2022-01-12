@@ -165,6 +165,8 @@
           value: "/home/open-ped-can-api-db/db/build_outputs"
         - name: DB_HOME_DIR_PATH
           value: "/home/open-ped-can-api-db/"
+        - name: DB_LOCATION
+          value: "aws_s3"
       portMappings:
       - containerPort: "8081"
         hostPort: "8081"

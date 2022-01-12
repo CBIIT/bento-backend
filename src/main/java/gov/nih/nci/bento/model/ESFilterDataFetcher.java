@@ -549,7 +549,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "program_count",
                 GS_RESULT_FIELD, "programs",
-                GS_SEARCH_FIELD,"program_id",
+                GS_SEARCH_FIELD, List.of("program_id", "program_code", "program_name"),
                 GS_SORT_FIELD, "program_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_code", "program_code"},
@@ -563,11 +563,12 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "study_count",
                 GS_RESULT_FIELD, "studies",
-                GS_SEARCH_FIELD,"study_id",
+                GS_SEARCH_FIELD, List.of("study_id", "study_name", "study_type"),
                 GS_SORT_FIELD, "study_id_kw",
                 GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
                         new String[]{"study_id", "study_id"},
-                        new String[]{"study_code", "study_code"},
+                        new String[]{"study_type", "study_type"},
                         new String[]{"study_name", "study_name"}
                 },
                 GS_CATEGORY_TYPE, "study"
@@ -578,12 +579,10 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
-                GS_SEARCH_FIELD,"subject_id_gs",
+                GS_SEARCH_FIELD, List.of("subject_id_gs", "diagnosis_gs", "age_at_index_gs"),
                 GS_SORT_FIELD, "subject_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"program_code", "programs"},
                         new String[]{"program_id", "program_id"},
-                        new String[]{"study", "study_acronym"},
                         new String[]{"subject_id", "subject_id_gs"},
                         new String[]{"diagnosis", "diagnoses"},
                         new String[]{"age", "age_at_index"}
@@ -595,14 +594,15 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "sample_count",
                 GS_RESULT_FIELD, "samples",
-                GS_SEARCH_FIELD,"sample_id_gs",
+                GS_SEARCH_FIELD, List.of("sample_id_gs", "sample_anatomic_site_gs", "tissue_type_gs"),
                 GS_SORT_FIELD, "sample_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
                         new String[]{"subject_id", "subject_ids"},
                         new String[]{"sample_id", "sample_ids"},
                         new String[]{"diagnosis", "diagnoses"},
                         new String[]{"sample_anatomic_site", "sample_anatomic_site"},
-                        new String[]{"sample_procurement_method", "sample_procurement_method"}
+                        new String[]{"tissue_type", "tissue_type"}
                 },
                 GS_CATEGORY_TYPE, "sample"
         ));
@@ -611,12 +611,14 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
-                GS_SEARCH_FIELD,"file_id_gs",
+                GS_SEARCH_FIELD, List.of("file_id_gs", "file_name_gs", "file_format_gs"),
                 GS_SORT_FIELD, "file_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
                         new String[]{"subject_id", "subject_ids"},
                         new String[]{"sample_id", "sample_ids"},
                         new String[]{"file_name", "file_names"},
+                        new String[]{"file_format", "file_format"},
                         new String[]{"file_id", "file_ids"}
                 },
                 GS_CATEGORY_TYPE, "file"
@@ -626,7 +628,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "node_count",
                 GS_RESULT_FIELD, "nodes",
-                GS_SEARCH_FIELD,"node",
+                GS_SEARCH_FIELD, List.of("node"),
                 GS_SORT_FIELD, "node_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"}
@@ -638,11 +640,14 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, PROPERTIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "property_count",
                 GS_RESULT_FIELD, "properties",
-                GS_SEARCH_FIELD,"property",
+                GS_SEARCH_FIELD, List.of("property", "property_description", "property_type", "property_required"),
                 GS_SORT_FIELD, "property_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
-                        new String[]{"property_name", "property"}
+                        new String[]{"property_name", "property"},
+                        new String[]{"property_type", "property_type"},
+                        new String[]{"property_required", "property_required"},
+                        new String[]{"property_description", "property_description"}
                 },
                 GS_CATEGORY_TYPE, "property"
         ));
@@ -651,7 +656,7 @@ public class ESFilterDataFetcher {
                 GS_COUNT_ENDPOINT, VALUES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "value_count",
                 GS_RESULT_FIELD, "values",
-                GS_SEARCH_FIELD,"value",
+                GS_SEARCH_FIELD, List.of("value"),
                 GS_SORT_FIELD, "value_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
@@ -736,9 +741,13 @@ public class ESFilterDataFetcher {
     }
 
     private Map<String, Object> getGlobalSearchQuery(String input, Map<String, Object> category) {
-        String searchFieldName = (String)category.get(GS_SEARCH_FIELD);
+        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
+        List<Object> searchClauses = new ArrayList<>();
+        for (String searchFieldName: searchFields) {
+            searchClauses.add(Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
+        }
         Map<String, Object> query = new HashMap<>();
-        query.put("query", Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
+        query.put("query", Map.of("bool", Map.of("should", searchClauses)));
         return query;
     }
 

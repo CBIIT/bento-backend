@@ -626,8 +626,8 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,
                 GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
-                GS_COUNT_RESULT_FIELD, "node_count",
-                GS_RESULT_FIELD, "nodes",
+                GS_COUNT_RESULT_FIELD, "model_count",
+                GS_RESULT_FIELD, "model",
                 GS_SEARCH_FIELD, List.of("node"),
                 GS_SORT_FIELD, "node_kw",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -638,8 +638,8 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, PROPERTIES_END_POINT,
                 GS_COUNT_ENDPOINT, PROPERTIES_COUNT_END_POINT,
-                GS_COUNT_RESULT_FIELD, "property_count",
-                GS_RESULT_FIELD, "properties",
+                GS_COUNT_RESULT_FIELD, "model_count",
+                GS_RESULT_FIELD, "model",
                 GS_SEARCH_FIELD, List.of("property", "property_description", "property_type", "property_required"),
                 GS_SORT_FIELD, "property_kw",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -654,13 +654,16 @@ public class ESFilterDataFetcher {
         searchCategories.add(Map.of(
                 GS_END_POINT, VALUES_END_POINT,
                 GS_COUNT_ENDPOINT, VALUES_COUNT_END_POINT,
-                GS_COUNT_RESULT_FIELD, "value_count",
-                GS_RESULT_FIELD, "values",
+                GS_COUNT_RESULT_FIELD, "model_count",
+                GS_RESULT_FIELD, "model",
                 GS_SEARCH_FIELD, List.of("value"),
                 GS_SORT_FIELD, "value_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
                         new String[]{"property_name", "property"},
+                        new String[]{"property_type", "property_type"},
+                        new String[]{"property_required", "property_required"},
+                        new String[]{"property_description", "property_description"},
                         new String[]{"value", "value"}
                 },
                 GS_CATEGORY_TYPE, "value"
@@ -676,7 +679,8 @@ public class ESFilterDataFetcher {
             Request countRequest = new Request("GET", (String) category.get(GS_COUNT_ENDPOINT));
             countRequest.setJsonEntity(gson.toJson(query));
             JsonObject countResult = esService.send(countRequest);
-            result.put(countResultFieldName, countResult.get("count").getAsInt());
+            int oldCount = (int)result.getOrDefault(countResultFieldName, 0);
+            result.put(countResultFieldName, countResult.get("count").getAsInt() + oldCount);
 
             // Get results
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
@@ -688,6 +692,10 @@ public class ESFilterDataFetcher {
                 object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
             }
 
+            List<Map<String, Object>> oldObjects = (List<Map<String, Object>>)result.getOrDefault(resultFieldName, null);
+            if (oldObjects != null) {
+                objects.addAll(oldObjects);
+            }
             result.put(resultFieldName, objects);
         }
 

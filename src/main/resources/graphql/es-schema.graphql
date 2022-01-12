@@ -133,43 +133,45 @@ type ProgramArms2 {
 
 type GS_Program {
     type: String
-    program_code: String
     program_id: String
+    program_code: String
     program_name: String
 }
 
 type GS_Study {
     type: String
     study_id: String
-    study_code: String
+    program_id: String
     study_name: String
+    study_type: String
 }
 
 type GS_Subject {
     type: String
-    program_code: String
-    program_id: String
-    study: String
     subject_id: String
+    program_id: String
     diagnosis: String
     age: Int
 }
 
 type GS_Sample {
     type: String
-    subject_id: String
     sample_id: String
+    program_id: String
+    subject_id: String
     diagnosis: String
     sample_anatomic_site: String
-    sample_procurement_method: String
+    tissue_type: String
 }
 
 type GS_File {
     type: String
+    file_id: String
+    file_name: String
+    file_format: String
+    program_id: String
     subject_id: String
     sample_id: String
-    file_name: String
-    file_id: String
 }
 
 type GS_Node {
@@ -180,6 +182,9 @@ type GS_Property {
     type: String
     node_name: String
     property_name: String
+    property_description: String
+    property_required: String
+    property_type: String
 }
 type GS_Value {
     type: String

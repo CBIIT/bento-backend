@@ -174,24 +174,16 @@ type GS_File {
     sample_id: String
 }
 
-type GS_Node {
-    type: String
-    node_name: String
-}
-type GS_Property {
+type GS_Model {
     type: String
     node_name: String
     property_name: String
     property_description: String
     property_required: String
     property_type: String
-}
-type GS_Value {
-    type: String
-    node_name: String
-    property_name: String
     value: String
 }
+
 type GS_About {
     page: String
     title: String
@@ -218,12 +210,8 @@ type GlobalSearchResult {
     about_count: Int
     about_page: [GS_About]
 
-    node_count: Int
-    nodes: [GS_Node]
-    property_count: Int
-    properties: [GS_Property]
-    value_count: Int
-    values: [GS_Value]
+    model_count: Int
+    model: [GS_Model]
 }
 
 type SubjectResult {

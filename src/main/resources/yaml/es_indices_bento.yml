@@ -431,6 +431,12 @@ Indices:
         type: search_as_you_type
       property:
         type: search_as_you_type
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
       value:
         type: search_as_you_type
       value_kw:

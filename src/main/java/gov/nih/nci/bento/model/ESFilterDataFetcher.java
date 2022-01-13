@@ -31,6 +31,7 @@ public class ESFilterDataFetcher {
 
     final String SUBJECTS_END_POINT = "/subjects/_search";
     final String SUBJECTS_COUNT_END_POINT = "/subjects/_count";
+    final String SUBJECT_IDS_END_POINT = "/subject_ids/_search";
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
@@ -90,6 +91,10 @@ public class ESFilterDataFetcher {
                         .dataFetcher("fileIDsFromList", env -> {
                             Map<String, Object> args = env.getArguments();
                             return fileIDsFromList(args);
+                        })
+                        .dataFetcher("filesInList", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filesInList(args);
                         })
                         .dataFetcher("findSubjectIdsInList", env -> {
                             Map<String, Object> args = env.getArguments();
@@ -822,14 +827,54 @@ public class ESFilterDataFetcher {
 
     private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {
         final String[][] properties = new String[][]{
-                new String[]{"subject_id", "subject_ids"},
+                new String[]{"subject_id", "subject_id"},
                 new String[]{"program_id", "program_id"}
         };
 
-        Map<String, Object> query = esService.buildListQuery(params, Set.of());
-        Request request = new Request("GET", SUBJECTS_END_POINT);
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(), true);
+        Request request = new Request("GET", SUBJECT_IDS_END_POINT);
 
         return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+    }
+
+    private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException {
+        final String[][] properties = new String[][]{
+                new String[]{"study_code", "study_acronym"},
+                new String[]{"subject_id", "subject_ids"},
+                new String[]{"file_name", "file_names"},
+                new String[]{"file_type", "file_type"},
+                new String[]{"association", "association"},
+                new String[]{"file_description", "file_description"},
+                new String[]{"file_format", "file_format"},
+                new String[]{"file_size", "file_size"},
+                new String[]{"file_id", "file_ids"},
+                new String[]{"md5sum", "md5sum"}
+        };
+
+        String defaultSort = "file_name"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("study_code", "study_acronym"),
+                Map.entry("subject_id", "subject_id_num"),
+                Map.entry("file_name", "file_names"),
+                Map.entry("file_type", "file_type"),
+                Map.entry("association", "association"),
+                Map.entry("file_description", "file_description"),
+                Map.entry("file_format", "file_format"),
+                Map.entry("file_size", "file_size"),
+                Map.entry("file_id", "file_id_num"),
+                Map.entry("md5sum", "md5sum")
+        );
+
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        String order_by = (String)params.get(ORDER_BY);
+        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
+        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        int pageSize = (int) params.get(PAGE_SIZE);
+        int offset = (int) params.get(OFFSET);
+        Request request = new Request("GET", FILES_END_POINT);
+
+        return esService.collectPage(request, query, properties, pageSize, offset);
     }
 
     private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {

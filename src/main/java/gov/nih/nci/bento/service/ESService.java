@@ -340,6 +340,10 @@ public class ESService {
     }
 
     private List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, int pageSize, int offset) throws IOException {
+        return collectPage(jsonObject, properties, null, pageSize, offset);
+    }
+
+    public List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, String[][] highlights, int pageSize, int offset) throws IOException {
         List<Map<String, Object>> data = new ArrayList<>();
 
         JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
@@ -354,6 +358,16 @@ public class ESService {
                 String dataField = prop[1];
                 JsonElement element = searchHits.get(i).getAsJsonObject().get("_source").getAsJsonObject().get(dataField);
                 row.put(propName, getValue(element));
+            }
+            if (highlights != null) {
+                for (String[] highlight: highlights) {
+                    String hlName = highlight[0];
+                    String hlField = highlight[1];
+                    JsonElement element = searchHits.get(i).getAsJsonObject().get("highlight").getAsJsonObject().get(hlField);
+                    if (element != null) {
+                        row.put(hlName, ((List<String>)getValue(element)).get(0));
+                    }
+                }
             }
             data.add(row);
             if (data.size() >= pageSize) {

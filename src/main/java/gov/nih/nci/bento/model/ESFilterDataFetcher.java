@@ -55,6 +55,7 @@ public class ESFilterDataFetcher {
     final String GS_SORT_FIELD = "sort_field";
     final String GS_CATEGORY_TYPE = "type";
     final String GS_ABOUT = "about";
+    final String GS_HIGHLIGHT_FIELDS = "highlight_fields";
     final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
@@ -641,6 +642,9 @@ public class ESFilterDataFetcher {
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"}
                 },
+                GS_HIGHLIGHT_FIELDS, new String[][] {
+                        new String[]{"highlight", "node"}
+                },
                 GS_CATEGORY_TYPE, "node"
         ));
         searchCategories.add(Map.of(
@@ -656,6 +660,12 @@ public class ESFilterDataFetcher {
                         new String[]{"property_type", "property_type"},
                         new String[]{"property_required", "property_required"},
                         new String[]{"property_description", "property_description"}
+                },
+                GS_HIGHLIGHT_FIELDS, new String[][] {
+                        new String[]{"highlight", "property"},
+                        new String[]{"highlight", "property_description"},
+                        new String[]{"highlight", "property_type"},
+                        new String[]{"highlight", "property_required"}
                 },
                 GS_CATEGORY_TYPE, "property"
         ));
@@ -674,6 +684,9 @@ public class ESFilterDataFetcher {
                         new String[]{"property_description", "property_description"},
                         new String[]{"value", "value"}
                 },
+                GS_HIGHLIGHT_FIELDS, new String[][] {
+                        new String[]{"highlight", "value"}
+                },
                 GS_CATEGORY_TYPE, "value"
         ));
 
@@ -683,6 +696,7 @@ public class ESFilterDataFetcher {
             String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
             String resultFieldName = (String) category.get(GS_RESULT_FIELD);
             String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
+            String[][] highlights = (String[][]) category.get(GS_HIGHLIGHT_FIELDS);
             Map<String, Object> query = getGlobalSearchQuery(input, category);
 
             // Get count
@@ -696,12 +710,18 @@ public class ESFilterDataFetcher {
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
             String sortFieldName = (String)category.get(GS_SORT_FIELD);
             query.put("sort", Map.of(sortFieldName, "asc"));
-            List<Map<String, Object>> objects;
+            query = addHighlight(query, category);
+
             if (combinedCategories.contains(resultFieldName)) {
-                objects = esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+                query.put("size", ESService.MAX_ES_SIZE);
+                query.put("from", 0);
             } else {
-                objects = esService.collectPage(request, query, properties, size, offset);
+                query.put("size", size);
+                query.put("from", offset);
             }
+            request.setJsonEntity(gson.toJson(query));
+            JsonObject jsonObject = esService.send(request);
+            List<Map<String, Object>> objects = esService.collectPage(jsonObject, properties, highlights, (int)query.get("size"), 0);
 
             for (var object: objects) {
                 object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
@@ -785,6 +805,24 @@ public class ESFilterDataFetcher {
         Map<String, Object> query = new HashMap<>();
         query.put("query", Map.of("bool", Map.of("should", searchClauses)));
         return query;
+    }
+
+    private Map<String, Object> addHighlight(Map<String, Object> query, Map<String, Object> category) {
+        Map<String, Object> result = new HashMap<>(query);
+        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
+        Map<String, Object> highlightClauses = new HashMap<>();
+        for (String searchFieldName: searchFields) {
+            highlightClauses.put(searchFieldName, Map.of());
+        }
+
+        result.put("highlight", Map.of(
+                "fields", highlightClauses,
+                "pre_tags", "",
+                "post_tags", "",
+                "fragment_size", 1
+                )
+        );
+        return result;
     }
 
     private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {

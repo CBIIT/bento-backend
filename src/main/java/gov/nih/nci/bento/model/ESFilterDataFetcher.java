@@ -31,6 +31,7 @@ public class ESFilterDataFetcher {
 
     final String SUBJECTS_END_POINT = "/subjects/_search";
     final String SUBJECTS_COUNT_END_POINT = "/subjects/_count";
+    final String SUBJECT_IDS_END_POINT = "/subject_ids/_search";
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
@@ -788,12 +789,12 @@ public class ESFilterDataFetcher {
 
     private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {
         final String[][] properties = new String[][]{
-                new String[]{"subject_id", "subject_ids"},
+                new String[]{"subject_id", "subject_id"},
                 new String[]{"program_id", "program_id"}
         };
 
-        Map<String, Object> query = esService.buildListQuery(params, Set.of());
-        Request request = new Request("GET", SUBJECTS_END_POINT);
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(), true);
+        Request request = new Request("GET", SUBJECT_IDS_END_POINT);
 
         return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
     }

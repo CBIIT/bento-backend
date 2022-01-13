@@ -65,6 +65,10 @@ public class ESService {
     //  - If a list has only one element which is empty string, query will return all data available
     //  - If a list is null, query will return all data available
     public Map<String, Object> buildListQuery(Map<String, Object> params, Set<String> excludedParams) {
+        return buildListQuery(params, excludedParams, false);
+    }
+
+    public Map<String, Object> buildListQuery(Map<String, Object> params, Set<String> excludedParams, boolean ignoreCase) {
         Map<String, Object> result = new HashMap<>();
 
         List<Object> filter = new ArrayList<>();
@@ -73,6 +77,13 @@ public class ESService {
                 continue;
             }
             List<String> valueSet = (List<String>) params.get(key);
+            if (ignoreCase) {
+                List<String> lowerCaseValueSet = new ArrayList<>();
+                for (String value: valueSet) {
+                    lowerCaseValueSet.add(value.toLowerCase());
+                }
+                valueSet = lowerCaseValueSet;
+            }
             // list with only one empty string [""] means return all records
             if (valueSet.size() == 1) {
                 if (valueSet.get(0).equals("")) {

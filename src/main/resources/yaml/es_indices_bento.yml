@@ -106,6 +106,31 @@ Indices:
       COLLECT(DISTINCT f.file_id) AS files,
       COLLECT(DISTINCT samp.sample_id) AS samples
       "
+
+  - index_name: subject_ids
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      program_id:
+        type: keyword
+      subject_id:
+        type: keyword
+      subject_ids:
+        type: keyword
+      subject_id_num:
+        type: integer
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      RETURN DISTINCT
+      p.program_id AS program_id,
+      ss.study_subject_id AS subject_id,
+      toLower(ss.study_subject_id) AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num
+      "
+
   - index_name: samples
     type: neo4j
     # type mapping for each property of the index

@@ -672,6 +672,8 @@ public class ESFilterDataFetcher {
                 GS_CATEGORY_TYPE, "value"
         ));
 
+        Set<String> combinedCategories = Set.of("model") ;
+
         for (Map<String, Object> category: searchCategories) {
             String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
             String resultFieldName = (String) category.get(GS_RESULT_FIELD);
@@ -689,32 +691,50 @@ public class ESFilterDataFetcher {
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
             String sortFieldName = (String)category.get(GS_SORT_FIELD);
             query.put("sort", Map.of(sortFieldName, "asc"));
-            List<Map<String, Object>> objects = esService.collectPage(request, query, properties, size, offset);
+            List<Map<String, Object>> objects;
+            if (combinedCategories.contains(resultFieldName)) {
+                objects = esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+            } else {
+                objects = esService.collectPage(request, query, properties, size, offset);
+            }
 
             for (var object: objects) {
                 object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
             }
 
-            List<Map<String, Object>> oldObjects = (List<Map<String, Object>>)result.getOrDefault(resultFieldName, null);
-            if (oldObjects != null) {
-                objects.addAll(oldObjects);
+            List<Map<String, Object>> existingObjects = (List<Map<String, Object>>)result.getOrDefault(resultFieldName, null);
+            if (existingObjects != null) {
+                existingObjects.addAll(objects);
+                result.put(resultFieldName, existingObjects);
+            } else {
+                result.put(resultFieldName, objects);
             }
-            result.put(resultFieldName, objects);
+
         }
 
         List<Map<String, String>> about_results = searchAboutPage(input);
         int about_count = about_results.size();
         result.put("about_count", about_count);
-        List<Map<String, String>> about_page = new ArrayList<>();
-        if (offset <= about_count -1) {
-            int end_index = offset + size;
-            if (end_index > about_count) {
-                end_index = about_count;
-            }
-            about_page = about_results.subList(offset, end_index);
-        }
-        result.put("about_page", about_page);
+        result.put("about_page", paginate(about_results, size, offset));
 
+        for (String category: combinedCategories) {
+            List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
+            result.put(category, pagedCategory);
+        }
+
+        return result;
+    }
+
+    private List paginate(List org, int pageSize, int offset) {
+        List<Object> result = new ArrayList<>();
+        int size = org.size();
+        if (offset <= size -1) {
+            int end_index = offset + pageSize;
+            if (end_index > size) {
+                end_index = size;
+            }
+            result = org.subList(offset, end_index);
+        }
         return result;
     }
 
@@ -727,7 +747,7 @@ public class ESFilterDataFetcher {
                         "pre_tags", GS_HIGHLIGHT_DELIMITER,
                         "post_tags", GS_HIGHLIGHT_DELIMITER
                     ),
-                "size", esService.MAX_ES_SIZE
+                "size", ESService.MAX_ES_SIZE
         );
         Request request = new Request("GET", GS_ABOUT_END_POINT);
         request.setJsonEntity(gson.toJson(query));

@@ -185,6 +185,7 @@ type GS_Model {
     property_required: String
     property_type: String
     value: String
+    highlight: String
 }
 
 type GS_About {

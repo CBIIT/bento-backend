@@ -144,12 +144,15 @@ type GS_Study {
     program_id: String
     study_name: String
     study_type: String
+    study_code: String
 }
 
 type GS_Subject {
     type: String
     subject_id: String
     program_id: String
+    program_code: String
+    study: String
     diagnosis: String
     age: Int
 }

@@ -569,6 +569,7 @@ public class ESFilterDataFetcher {
                         new String[]{"program_id", "program_id"},
                         new String[]{"study_id", "study_id"},
                         new String[]{"study_type", "study_type"},
+                        new String[]{"study_code", "study_code"},
                         new String[]{"study_name", "study_name"}
                 },
                 GS_CATEGORY_TYPE, "study"
@@ -584,6 +585,8 @@ public class ESFilterDataFetcher {
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_id", "program_id"},
                         new String[]{"subject_id", "subject_id_gs"},
+                        new String[]{"program_code", "programs"},
+                        new String[]{"study", "study_acronym"},
                         new String[]{"diagnosis", "diagnoses"},
                         new String[]{"age", "age_at_index"}
                 },

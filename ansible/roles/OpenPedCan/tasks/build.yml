@@ -44,11 +44,11 @@
     push: yes
     
 
-- name:  build {{ecr}}/OpenPedCan:DatabaseServer-{{version}} image
-  docker_image:
-    path: "{{workspace}}/{{project}}"
-    dockerfile: "{{workspace}}/{{project}}/db/db.Dockerfile"
-    pull: yes
-    name: "{{ecr}}/openpedcan-dev-ecr"
-    tag: "databaseserver-{{version}}"
-    push: yes
+# - name:  build {{ecr}}/OpenPedCan:DatabaseServer-{{version}} image
+#   docker_image:
+#     path: "{{workspace}}/{{project}}"
+#     dockerfile: "{{workspace}}/{{project}}/db/db.Dockerfile"
+#     pull: yes
+#     name: "{{ecr}}/openpedcan-dev-ecr"
+#     tag: "databaseserver-{{version}}"
+#     push: yes

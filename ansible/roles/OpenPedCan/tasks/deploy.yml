@@ -85,93 +85,93 @@
         protocol: tcp
   register: task_output
 
-- name: create task OpenPedCan Database Server definition {{workspace}}
-  ecs_taskdefinition:
-    network_mode: bridge
-    family: "{{ stack_name }}-dbserver"
-    memory: '1024'
-    cpu: '512'
-    state: present
-    region: "{{region}}"
-    containers:
-    - name: dbserver
-      essential: true
-      image: "{{ecr}}/openpedcan-dev-ecr:databaseserver-{{version}}"
-      environment:
-        - name: REACT_APP_ENVIRONMENT
-          value: "{{tier}}"
-        - name: NEW_RELIC_LICENSE_KEY
-          value: "{{ newrelic_license_key }}"
-        - name: NEW_RELIC_APP_NAME
-          value: "{{ stack_name }}-backend"
-        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-          value: true
-        - name: NEW_RELIC_HOST
-          value: "gov-collector.newrelic.com"
-        - name: NEW_RELIC_NO_CONFIG_FILE
-          value: true
-        # - name: RDB_HOST
-        #   value: "{{ rds_host }}"
-        # - name: RDB_PORT
-        #   value: "{{ rds_port }}"
-        # - name: RDB_USER
-        #   value: "{{ rds_user }}"
-        # - name: RDB_PASSWORD
-        #   value: "{{ rds_password }}"
-        - name: DB_READ_WRITE_USERNAME
-          value: "{{ db_read_write_user }}"    
-        - name: DB_READ_WRITE_PASSWORD
-          value: "{{ db_password }}"
-        - name: POSTGRES_USER
-          value: "{{ postgres_user }}"
-        - name: POSTGRES_DB
-          value: "postgres"
-        - name: DB_NAME
-          value: "open_ped_can_db"
-        - name: POSTGRES_PASSWORD
-          value: "{{ db_password }}"
-        - name: POSTGRES_HOST_AUTH_METHOD
-          value: "scram-sha-256"
-        - name: POSTGRES_INITDB_ARGS
-          value: "--auth-local=scram-sha-256 --auth-host=scram-sha-256"
-        - name: DB_PORT
-          value: "5432"
-        - name: DB_HOST
-          value: "{{ db_host }}"
-        - name: DB_DRIVER
-          value: "PostgreSQL Unicode"
-        - name: DB_USERNAME
-          value: "{{ db_user }}"
-        - name: DB_PASSWORD
-          value: "{{ db_password }}"
-        - name: Driver
-          value: "PostgreSQL Unicode"
-          #value: "DB_DRIVER"
-        - name: Server
-          value: "{{ db_host }}"
-        - name: Port
-          value: "5432"
-        - name: Uid
-          value: "{{ uid }}"
-        - name: Pwd
-          value: "{{ db_password }}"
-        - name: Database
-          value: "5432"
-        - name: BULK_EXP_SCHEMA
-          value: "BULK_EXP_SCHEMA"
-        - name: BULK_EXP_TPM_HISTOLOGY_TBL
-          value: "BULK_EXP_TPM_HISTOLOGY_TBL"
-        - name: BUILD_OUTPUT_DIR_PATH
-          value: "/home/open-ped-can-api-db/db/build_outputs"
-        - name: DB_HOME_DIR_PATH
-          value: "/home/open-ped-can-api-db/"
-        - name: DB_LOCATION
-          value: "aws_s3"
-      portMappings:
-      - containerPort: "8081"
-        hostPort: "8081"
-        protocol: tcp
-  register: task_output
+# - name: create task OpenPedCan Database Server definition {{workspace}}
+#   ecs_taskdefinition:
+#     network_mode: bridge
+#     family: "{{ stack_name }}-dbserver"
+#     memory: '1024'
+#     cpu: '512'
+#     state: present
+#     region: "{{region}}"
+#     containers:
+#     - name: dbserver
+#       essential: true
+#       image: "{{ecr}}/openpedcan-dev-ecr:databaseserver-{{version}}"
+#       environment:
+#         - name: REACT_APP_ENVIRONMENT
+#           value: "{{tier}}"
+#         - name: NEW_RELIC_LICENSE_KEY
+#           value: "{{ newrelic_license_key }}"
+#         - name: NEW_RELIC_APP_NAME
+#           value: "{{ stack_name }}-backend"
+#         - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+#           value: true
+#         - name: NEW_RELIC_HOST
+#           value: "gov-collector.newrelic.com"
+#         - name: NEW_RELIC_NO_CONFIG_FILE
+#           value: true
+#         # - name: RDB_HOST
+#         #   value: "{{ rds_host }}"
+#         # - name: RDB_PORT
+#         #   value: "{{ rds_port }}"
+#         # - name: RDB_USER
+#         #   value: "{{ rds_user }}"
+#         # - name: RDB_PASSWORD
+#         #   value: "{{ rds_password }}"
+#         - name: DB_READ_WRITE_USERNAME
+#           value: "{{ db_read_write_user }}"    
+#         - name: DB_READ_WRITE_PASSWORD
+#           value: "{{ db_password }}"
+#         - name: POSTGRES_USER
+#           value: "{{ postgres_user }}"
+#         - name: POSTGRES_DB
+#           value: "postgres"
+#         - name: DB_NAME
+#           value: "open_ped_can_db"
+#         - name: POSTGRES_PASSWORD
+#           value: "{{ db_password }}"
+#         - name: POSTGRES_HOST_AUTH_METHOD
+#           value: "scram-sha-256"
+#         - name: POSTGRES_INITDB_ARGS
+#           value: "--auth-local=scram-sha-256 --auth-host=scram-sha-256"
+#         - name: DB_PORT
+#           value: "5432"
+#         - name: DB_HOST
+#           value: "{{ db_host }}"
+#         - name: DB_DRIVER
+#           value: "PostgreSQL Unicode"
+#         - name: DB_USERNAME
+#           value: "{{ db_user }}"
+#         - name: DB_PASSWORD
+#           value: "{{ db_password }}"
+#         - name: Driver
+#           value: "PostgreSQL Unicode"
+#           #value: "DB_DRIVER"
+#         - name: Server
+#           value: "{{ db_host }}"
+#         - name: Port
+#           value: "5432"
+#         - name: Uid
+#           value: "{{ uid }}"
+#         - name: Pwd
+#           value: "{{ db_password }}"
+#         - name: Database
+#           value: "5432"
+#         - name: BULK_EXP_SCHEMA
+#           value: "BULK_EXP_SCHEMA"
+#         - name: BULK_EXP_TPM_HISTOLOGY_TBL
+#           value: "BULK_EXP_TPM_HISTOLOGY_TBL"
+#         - name: BUILD_OUTPUT_DIR_PATH
+#           value: "/home/open-ped-can-api-db/db/build_outputs"
+#         - name: DB_HOME_DIR_PATH
+#           value: "/home/open-ped-can-api-db/"
+#         - name: DB_LOCATION
+#           value: "aws_s3"
+#       portMappings:
+#       - containerPort: "8081"
+#         hostPort: "8081"
+#         protocol: tcp
+#   register: task_output
 
 - name: query task definition HttpServer
   ecs_taskdefinition_info:
@@ -184,11 +184,11 @@
 #   debug:
 #     msg: "{{task_httpserver}}"
 
-- name: query task definition DatabaseServer
-  ecs_taskdefinition_info:
-    task_definition: OpenPedCan-dbserver
-    region: "{{region}}" 
-  register: task_databaseserver
+# - name: query task definition DatabaseServer
+#   ecs_taskdefinition_info:
+#     task_definition: OpenPedCan-dbserver
+#     region: "{{region}}" 
+#   register: task_databaseserver
 
 # - name: show service service
 #   debug:
@@ -206,13 +206,13 @@
 #   debug:
 #     msg: "{{service_httpserver}}"
 
-- name: query ecs service DatabaseServer
-  ecs_service_facts:
-    cluster: OpenPedCan-dev
-    service: OpenPedCan-dbserver
-    details: true
-    region: "{{region}}"
-  register: service_databaseserver
+# - name: query ecs service DatabaseServer
+#   ecs_service_facts:
+#     cluster: OpenPedCan-dev
+#     service: OpenPedCan-dbserver
+#     details: true
+#     region: "{{region}}"
+#   register: service_databaseserver
 
 # - name: show service service
 #   debug:
@@ -221,12 +221,12 @@
 - name: set facts
   set_fact:
     httpserver_revision: "{{task_httpserver.revision}}"
-    databaseserver_revision: "{{task_databaseserver.revision}}"
-    task_databaseserver_name: "{{task_databaseserver.family}}"
+    #databaseserver_revision: "{{task_databaseserver.revision}}"
+    #task_databaseserver_name: "{{task_databaseserver.family}}"
     task_httpserver_name: "{{task_httpserver.family}}"
     lb_frontend: "{{service_httpserver.services[0].loadBalancers}}"
     role_arn: "{{service_httpserver.services[0].roleArn}}"
-    lb_dbserver: "{{service_databaseserver.services[0].loadBalancers}}"
+    #lb_dbserver: "{{service_databaseserver.services[0].loadBalancers}}"
 
 
 - name: update httpserver service
@@ -245,20 +245,20 @@
   register: service_httpserver_output
 
 
-- name: update databaseserver service
-  ecs_service:
-    state: present
-    name: OpenPedCan-dbserver
-    cluster: OpenPedCan-dev
-    task_definition: "{{task_databaseserver_name}}:{{databaseserver_revision}}"
-    role: "{{role_arn}}"
-    deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
-    desired_count: 1
-    load_balancers: "{{ lb_dbserver }}"
-    region: "{{region}}"
-  register: service_processor_output
+# - name: update databaseserver service
+#   ecs_service:
+#     state: present
+#     name: OpenPedCan-dbserver
+#     cluster: OpenPedCan-dev
+#     task_definition: "{{task_databaseserver_name}}:{{databaseserver_revision}}"
+#     role: "{{role_arn}}"
+#     deployment_configuration:
+#       minimum_healthy_percent: 0
+#       maximum_percent: 100
+#     desired_count: 1
+#     load_balancers: "{{ lb_dbserver }}"
+#     region: "{{region}}"
+#   register: service_processor_output
 
 - name: listing the contents
   shell: ls

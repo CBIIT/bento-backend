@@ -153,7 +153,7 @@
       - containerPort: "514"
         hostPort: "514"
     network_mode: bridge
-    family: bento-{{tier}}-sumo_syslog
+    family: "{{stack_name }}-{{tier}}-sumo_syslog"
     state: present
     memory: '512'
     cpu: '128'
@@ -186,7 +186,7 @@
       host:
         sourcePath: /var/run/docker.sock
     network_mode: bridge
-    family: bento-{{tier}}-sumo_docker
+    family: "{{stack_name }}-{{tier}}-sumo_docker"
     state: present
     memory: '512'
     cpu: '128'
@@ -227,7 +227,7 @@
       host:
         sourcePath: /
     network_mode: bridge
-    family: bento-{{tier}}-nr_docker
+    family: "{{stack_name }}-{{tier}}-nr_docker"
     state: present
     memory: '128'
     cpu: '128'
@@ -264,19 +264,19 @@
 
 - name: query task definition - sumologic syslog
   ecs_taskdefinition_info:
-    task_definition: bento-{{tier}}-sumo_syslog
+    task_definition: "{{stack_name }}-{{tier}}-sumo_syslog"
     region: "{{region}}" 
   register: task_sumo_syslog
 
 - name: query task definition - sumologic docker
   ecs_taskdefinition_info:
-    task_definition: bento-{{tier}}-sumo_docker
+    task_definition: "{{stack_name }}-{{tier}}-sumo_docker"
     region: "{{region}}" 
   register: task_sumo_docker
 
 - name: query task definition - newrelic docker
   ecs_taskdefinition_info:
-    task_definition: bento-{{tier}}-nr_docker
+    task_definition: "{{stack_name }}-{{tier}}-nr_docker"
     region: "{{region}}" 
   register: task_nr_docker
 
@@ -314,29 +314,29 @@
 #   debug:
 #     msg: "service_etl Version: {{ service_etl }}"
 
-# - name: query sumologic syslog service
-#   ecs_service_info:
-#     cluster: bento-{{tier}}
-#     service: bento-{{tier}}-sumo_syslog
-#     details: true
-#     region: "{{region}}"
-#   register: service_sumo_syslog
+- name: query sumologic syslog service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}"
+    service: "{{stack_name }}-{{tier}}-sumo_syslog"
+    details: true
+    region: "{{region}}"
+  register: service_sumo_syslog
 
-# - name: query sumologic docker service
-#   ecs_service_info:
-#     cluster: bento-{{tier}}
-#     service: bento-{{tier}}-sumo_docker
-#     details: true
-#     region: "{{region}}"
-#   register: service_sumo_docker
+- name: query sumologic docker service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}"
+    service: "{{stack_name }}-{{tier}}-sumo_docker"
+    details: true
+    region: "{{region}}"
+  register: service_sumo_docker
 
-# - name: query newrelic docker service
-#   ecs_service_info:
-#     cluster: bento-{{tier}}
-#     service: bento-{{tier}}-nr_docker
-#     details: true
-#     region: "{{region}}"
-#   register: service_nr_docker
+- name: query newrelic docker service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}"
+    service: "{{stack_name }}-{{tier}}-nr_docker"
+    details: true
+    region: "{{region}}"
+  register: service_nr_docker
 
 ############################################################################################################################
 
@@ -367,8 +367,8 @@
 - name: update sumologic syslog service
   ecs_service:
     state: present
-    name: bento-{{tier}}-sumo_syslog
-    cluster: bento-{{tier}}
+    name: "{{stack_name }}-{{tier}}-sumo_syslog"
+    cluster: "{{stack_name }}-{{tier}}"
     task_definition: "{{task_sumo_syslog_name}}"
     force_new_deployment: no
     deployment_configuration:
@@ -381,8 +381,8 @@
 - name: update sumologic docker service
   ecs_service:
     state: present
-    name: bento-{{tier}}-sumo_docker
-    cluster: bento-{{tier}}
+    name: "{{stack_name }}-{{tier}}-sumo_docker"
+    cluster: "{{stack_name }}-{{tier}}"
     task_definition: "{{task_sumo_docker_name}}"
     force_new_deployment: no
     deployment_configuration:
@@ -395,8 +395,8 @@
 - name: update newrelic docker service
   ecs_service:
     state: present
-    name: bento-{{tier}}-nr_docker
-    cluster: bento-{{tier}}
+    name: "{{stack_name }}-{{tier}}"
+    cluster: "{{stack_name }}-{{tier}}"
     task_definition: "{{task_nr_docker_name}}"
     force_new_deployment: no
     deployment_configuration:

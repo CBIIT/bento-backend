@@ -314,29 +314,29 @@
 #   debug:
 #     msg: "service_etl Version: {{ service_etl }}"
 
-- name: query sumologic syslog service
-  ecs_service_info:
-    cluster: bento-{{tier}}
-    service: bento-{{tier}}-sumo_syslog
-    details: true
-    region: "{{region}}"
-  register: service_sumo_syslog
+# - name: query sumologic syslog service
+#   ecs_service_info:
+#     cluster: bento-{{tier}}
+#     service: bento-{{tier}}-sumo_syslog
+#     details: true
+#     region: "{{region}}"
+#   register: service_sumo_syslog
 
-- name: query sumologic docker service
-  ecs_service_info:
-    cluster: bento-{{tier}}
-    service: bento-{{tier}}-sumo_docker
-    details: true
-    region: "{{region}}"
-  register: service_sumo_docker
+# - name: query sumologic docker service
+#   ecs_service_info:
+#     cluster: bento-{{tier}}
+#     service: bento-{{tier}}-sumo_docker
+#     details: true
+#     region: "{{region}}"
+#   register: service_sumo_docker
 
-- name: query newrelic docker service
-  ecs_service_info:
-    cluster: bento-{{tier}}
-    service: bento-{{tier}}-nr_docker
-    details: true
-    region: "{{region}}"
-  register: service_nr_docker
+# - name: query newrelic docker service
+#   ecs_service_info:
+#     cluster: bento-{{tier}}
+#     service: bento-{{tier}}-nr_docker
+#     details: true
+#     region: "{{region}}"
+#   register: service_nr_docker
 
 ############################################################################################################################
 

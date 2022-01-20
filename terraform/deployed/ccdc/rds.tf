@@ -1,6 +1,8 @@
+
 module "rds_instance" {
-  source = "cloudposse/rds/aws"
-  name                        =  "${var.stack_name}-${var.env}-rds"
+  source = "../../modules/rds/"
+  #name                        =  "${var.stack_name}-${var.env}-rds"
+  identifier                  = var.identifier
   security_group_ids          = [aws_security_group.rds_sg.id]
   allowed_cidr_blocks         = [data.terraform_remote_state.network.outputs.vpc_cidr_block]
   database_name               = var.database_name
@@ -42,6 +44,13 @@ module "rds_instance" {
     }
   ]
 */
+  db_subnet_id_name           = var.db_subnet_id_name
+  tags = merge(
+  {
+    "Name" = format("%s-%s",var.stack_name,"rds-sg")
+  },
+  var.tags
+  )
 }
 
 #create admin password for rds

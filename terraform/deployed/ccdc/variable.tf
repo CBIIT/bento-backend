@@ -256,3 +256,6 @@ variable "etl_rule_priority" {
   type = number
   default = 91
 }
+variable "db_subnet_id_name" {
+  default = ""
+}

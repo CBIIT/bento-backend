@@ -81,3 +81,5 @@ remote_state_bucket_name = "bento-terraform-remote-state"
 redis_node_group = 1
 
 redis_node_type = "cache.t3.medium"
+
+downloader_container_port = 8081

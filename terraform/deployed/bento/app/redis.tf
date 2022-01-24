@@ -9,7 +9,7 @@ resource "aws_elasticache_cluster" "redis_cluster" {
   engine               = "redis"
   node_type            = "cache.t3.medium"
   num_cache_nodes      = 1
-  parameter_group_name = "default.redis6.x.cluster.on"
+//  parameter_group_name = "default.redis6.x.cluster.on"
 //  engine_version       = "3.2.10"
 //  replication_group_id = aws_elasticache_replication_group.replication_group.id
 //  snapshot_retention_limit = 5

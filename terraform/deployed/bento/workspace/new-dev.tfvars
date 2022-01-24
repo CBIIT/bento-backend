@@ -44,13 +44,13 @@ instance_volume_size = 40
 ssh_key_name = "devops"
 
 #specify the aws compute instance type for the bento
-fronted_instance_type = "t3.medium"
+fronted_instance_type = "t3.xlarge"
 
 #provide the name of the admin user for ssh login
 ssh_user = "bento"
 
 #specify the aws compute instance type for the database
-database_instance_type =  "t3.large"
+database_instance_type =  "t3.medium"
 
 #name of the database
 database_name = "neo4j"
@@ -74,10 +74,12 @@ app_name = "bento"
 app_port = 80
 
 #specify private ip of the db instance
-db_private_ip = "172.18.11.35"
+db_private_ip = "172.18.11.42"
 
 remote_state_bucket_name = "bento-terraform-remote-state"
 
 redis_node_group = 1
 
 redis_node_type = "cache.t3.medium"
+
+downloader_container_port = 8081

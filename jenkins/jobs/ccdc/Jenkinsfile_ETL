@@ -1,4 +1,4 @@
-
+ 
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
@@ -55,11 +55,14 @@ pipeline {
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
     extendedChoice( 
-        name: 'Deployment_Type', 
-        defaultValue: 're-depployment', 
-        description: 'Choose the type fo deployment', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'initial-setup,re-deployment' )
+        name: 'DataLoading', 
+        description: 'checkboxes for data loading process', 
+        multiSelectDelimiter: ',',
+        visibleItemCount: 3, 
+        type: 'PT_CHECKBOX',
+        value: DropTable,CreateTable,LoadTable )
+
+
   }
   options {
   	ansiColor('xterm')
@@ -154,11 +157,17 @@ pipeline {
                         digest_file_folder: "{{ lookup('env','S3_FOLDER') }}"
             ],
 						colorized: true)
- 				}
- 			}
- 		}
-  }
-
+ 				  }
+ 			  }
+ 		  }
+    }
+    stage('dropTable'){
+      steps { 
+            script {
+                  println params.DataLoading 
+            }
+        }    
+    }
   }
   post {
 

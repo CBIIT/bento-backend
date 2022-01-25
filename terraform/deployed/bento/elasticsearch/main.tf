@@ -49,15 +49,15 @@ resource "aws_elasticsearch_domain" "es" {
   domain_name = "${var.stack_name}-${terraform.workspace}-elasticsearch"
   elasticsearch_version = var.elasticsearch_version
 
-  cluster_config {
-    instance_count = 2
-    instance_type = var.elasticsearch_instance_type
-    zone_awareness_enabled = true
-
-    zone_awareness_config {
-      availability_zone_count = 2
-    }
-  }
+//  cluster_config {
+//    instance_count = 2
+//    instance_type = var.elasticsearch_instance_type
+//    zone_awareness_enabled = true
+//
+//    zone_awareness_config {
+//      availability_zone_count = 2
+//    }
+//  }
 
   vpc_options {
     subnet_ids = [

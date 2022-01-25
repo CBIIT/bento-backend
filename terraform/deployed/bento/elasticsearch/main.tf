@@ -104,18 +104,13 @@ resource "aws_elasticsearch_domain" "es" {
       {
           "Effect": "Allow",
           "Principal": {
-            "AWS": "*"
+             "AWS": [
+                  "${data.aws_iam_role.data_loader.arn}"
+              ]
           },
           "Action": [
-            "es:ESHttp*"
+            "es:*"
           ],
-          "Condition": {
-            "IpAddress": {
-              "aws:SourceIp": [
-                "172.16.0.0/24"
-              ]
-            }
-          },
         "Resource": "arn:aws:es:${data.aws_region.region.name}:${data.aws_caller_identity.caller.account_id}:domain/${var.domain_name}/*"
     }
   ]

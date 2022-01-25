@@ -26,3 +26,6 @@ data "terraform_remote_state" "bastion" {
     encrypt = true
   }
 }
+data "aws_iam_role" "data_loader" {
+  name = "bento-management-instance-role"
+}

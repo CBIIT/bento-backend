@@ -80,6 +80,7 @@ resource "aws_security_group_rule" "inbound_bastion_frontend" {
   type = "ingress"
 }
 
+
 resource "aws_security_group_rule" "inbound_frontend_alb" {
   from_port = var.frontend_container_port
   protocol = local.tcp_protocol

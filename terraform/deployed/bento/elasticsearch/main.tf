@@ -100,7 +100,24 @@ resource "aws_elasticsearch_domain" "es" {
           "Principal": "*",
           "Effect": "Allow",
           "Resource": "arn:aws:es:${data.aws_region.region.name}:${data.aws_caller_identity.caller.account_id}:domain/${var.domain_name}/*"
-      }
+      },
+      {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "*"
+          },
+          "Action": [
+            "es:ESHttp*"
+          ],
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": [
+                "172.16.0.0/24"
+              ]
+            }
+          },
+        "Resource": "arn:aws:es:${data.aws_region.region.name}:${data.aws_caller_identity.caller.account_id}:domain/${var.domain_name}/*"
+    }
   ]
 }
   CONFIG

@@ -16,3 +16,13 @@ data "terraform_remote_state" "network" {
     encrypt = true
   }
 }
+#collect details from bastion
+data "terraform_remote_state" "bastion" {
+  backend = "s3"
+  config = {
+    bucket = var.remote_state_bucket_name
+    key = "bento/management/terraform.tfstate"
+    region = "us-east-1"
+    encrypt = true
+  }
+}

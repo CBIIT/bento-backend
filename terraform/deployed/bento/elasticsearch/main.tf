@@ -50,12 +50,12 @@ resource "aws_elasticsearch_domain" "es" {
   elasticsearch_version = var.elasticsearch_version
 
   cluster_config {
-    instance_count = 2
+    instance_count = 1
     instance_type = var.elasticsearch_instance_type
     zone_awareness_enabled = true
 
     zone_awareness_config {
-      availability_zone_count = 2
+      availability_zone_count = 1
     }
   }
 

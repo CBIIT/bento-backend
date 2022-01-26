@@ -58,7 +58,7 @@ public class ESService {
     @PostConstruct
     public void init() {
         logger.info("Initializing Elasticsearch client");
-        client = searchClient("es", "");
+        client = searchClient("es", "us-east-1");
     }
 
     @PreDestroy

@@ -40,7 +40,7 @@ public class ESService {
 
     // Base on host name to use signed request (AWS) or not (local)
     public RestClient searchClient(String serviceName, String region) {
-        String host = config.getEsHost();
+        String host = config.getEsHost().trim();
         if (host.contains("amazonaws.com")) {
             AWS4Signer signer = new AWS4Signer();
             signer.setServiceName(serviceName);

@@ -46,7 +46,7 @@ public class ESService {
             signer.setServiceName(serviceName);
             signer.setRegionName(region);
             HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
-            return RestClient.builder(HttpHost.create(config.getEsHost())).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)).build();
+            return RestClient.builder(HttpHost.create(host)).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)).build();
         } else {
             var lowLevelBuilder = RestClient.builder(new HttpHost(host, config.getEsPort(), config.getEsScheme()));
             return lowLevelBuilder.build();

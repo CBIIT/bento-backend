@@ -1,4 +1,4 @@
-import os
+import os, sys
 from configparser import ConfigParser
 from aws_cdk import core
 from aws_cdk import core as cdk
@@ -10,7 +10,12 @@ class BentoStack(cdk.Stack):
     super().__init__(scope, ns, **kwargs)
 
     config = ConfigParser()
+    
     config.read('bento.properties')
+    if not config.has_section(ns):
+      print('Selected tier not found, please verify properties are set')
+      sys.exit(1)
+
     self.config = config
 
     # VPC

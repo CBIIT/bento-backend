@@ -60,7 +60,7 @@ pipeline {
         multiSelectDelimiter: ',',
         visibleItemCount: 3, 
         type: 'PT_CHECKBOX',
-        value: DropTable,CreateTable,LoadTable )
+        value: 'DropTable,CreateTable,LoadTable' )
 
 
   }

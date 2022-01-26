@@ -32,104 +32,23 @@
     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
   with_items: "{{ s3_bucket_items.s3_keys }}"
 
-# - name: build cbiitssrepo/{{etl | lower}} image
-#   docker_image:
-#     build:
-#       path: "{{workspace}}/{{etl}}"
-#       pull: yes
-#       nocache: yes
-#     name: cbiitssrepo/{{etl | lower}}
-#     tag: "{{etl_version}}-{{build_number}}"
-#     push: yes
-#     force_source: yes
-#     source: build
+- name: build cbiitssrepo/{{etl | lower}} image
+  docker_image:
+    build:
+      path: "{{workspace}}/{{etl}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{etl | lower}}
+    tag: "{{etl_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
 
-# - name: Add tag latest to cbiitssrepo/{{ etl | lower}} image
-#   docker_image:
-#     name: "cbiitssrepo/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
-#     repository: cbiitssrepo/{{ etl | lower}}:latest
-#     force_tag: yes
-#     push: yes
-#     source: local
-
-# - name: set environment variables required for js file execution
-#   shell:
-#   environment:
-#     REACT_APP_BACKEND_API: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}"
-#     REACT_APP_ENVIRONMENT: "{{tier}}"
-#     RDB_HOST : "{{ rds_host }}"
-#     RDB_PORT : "{{ rds_port }}"
-#     RDB_USER : "{{ rds_user }}"
-#     RDB_PASSWORD : "{{ rds_password }}"
-#     ES_HOST : "{{ es_host }}"
-#     ES_PORT : "{{ es_port }}"
-#     DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
-
-
-# - name: run npm install in {{workspace}}/{{ etl }}
-#   command: "{{item}}"
-#   args:
-#     chdir: "{{ workspace }}/{{ etl }}"
-#   loop:
-#     - npm install
-#     - npm run build
-
-
-- name: start the application. Run dropTable.js
-  shell:
-    "node dropTable.js" #"docker run --rm -d cbiitssrepo/ccdc-etl:latest ./dropTable.js" #
-  args:
-    chdir: "{{ workspace }}/{{ etl }}"
-  environment:
-    RDB_HOST : "{{ rds_host }}"
-    RDB_PORT : "{{ rds_port }}"
-    RDB_USER : "{{ rds_user }}"
-    RDB_PASSWORD : "{{ rds_password }}"
-    ES_HOST : "{{ es_host }}"
-    ES_PORT : "{{ es_port }}"
-    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
-  when:
-    deployment_type == "re-deployment"
-  register: drop_table
-
-- name: Print drop_table
-  debug:
-    msg: "drop_table output: {{ drop_table }}"
-
-- name: start the application. Run createTable.js
-  shell: 
-    "node createTable.js" #docker run --rm -d cbiitssrepo/ccdc-etl:latest ./createTable.js" #"node createTable.js
-  args:
-    chdir: "{{ workspace }}/{{ etl }}"
-  environment:
-    RDB_HOST : "{{ rds_host }}"
-    RDB_PORT : "{{ rds_port }}"
-    RDB_USER : "{{ rds_user }}"
-    RDB_PASSWORD : "{{ rds_password }}"
-    ES_HOST : "{{ es_host }}"
-    ES_PORT : "{{ es_port }}"
-    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
-  register: create_table
-
-- name: Print create_table
-  debug:
-    msg: "create_table output: {{ create_table }}"
-  
-- name: start the application. Run index.js
-  shell:
-    "node index.js" #"docker run --rm -d cbiitssrepo/ccdc-etl:latest ./index.js"  #"node index.js"
-  environment:
-    RDB_HOST : "{{ rds_host }}"
-    RDB_PORT : "{{ rds_port }}"
-    RDB_USER : "{{ rds_user }}"
-    RDB_PASSWORD : "{{ rds_password }}"
-    ES_HOST : "{{ es_host }}"
-    ES_PORT : "{{ es_port }}"
-    DIGEST_FILE_FOLDER : "{{ digest_file_folder }}"
-  args:
-    chdir: "{{ workspace }}/{{ etl }}"
-  register: loading
-
-- name: Print loading
-  debug:
-    msg: "loading output: {{ loading }}"
+- name: Add tag latest to cbiitssrepo/{{ etl | lower}} image
+  docker_image:
+    name: "cbiitssrepo/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{ etl | lower}}:latest
+    force_tag: yes
+    push: yes
+    source: local

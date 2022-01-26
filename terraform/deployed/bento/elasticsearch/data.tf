@@ -27,5 +27,5 @@ data "terraform_remote_state" "bastion" {
   }
 }
 data "aws_iam_role" "data_loader" {
-  name = "bento-management-instance-role"
+  name = "bento-management-ecs-instance-role"
 }

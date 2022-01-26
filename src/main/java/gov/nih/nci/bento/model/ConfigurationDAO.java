@@ -1,8 +1,15 @@
 package gov.nih.nci.bento.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+
+import java.util.Locale;
 
 /**
  * The Configuration Bean, reads configuration setting from classpath:application.properties.
@@ -10,6 +17,25 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class ConfigurationDAO {
+	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
+
+	@Autowired
+	private Environment env;
+
+	@Bean
+	public DataFetcher dataFetcher() {
+	    String project = env.getProperty("project", "bento").toLowerCase();
+	    switch (project) {
+			case "icdc":
+				return new ICDCESFilter();
+			case "bento":
+				return new BentoESFilter();
+			default:
+				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
+				return new BentoESFilter();
+		}
+	}
+
 
 	//API Version
 	@Value("${bento.api.version}")

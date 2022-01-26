@@ -100,19 +100,7 @@ resource "aws_elasticsearch_domain" "es" {
           "Principal": "*",
           "Effect": "Allow",
           "Resource": "arn:aws:es:${data.aws_region.region.name}:${data.aws_caller_identity.caller.account_id}:domain/${var.domain_name}/*"
-      },
-      {
-          "Effect": "Allow",
-          "Principal": {
-             "AWS": [
-                  "${data.aws_iam_role.data_loader.arn}"
-              ]
-          },
-          "Action": [
-            "es:*"
-          ],
-        "Resource": "arn:aws:es:${data.aws_region.region.name}:${data.aws_caller_identity.caller.account_id}:domain/${var.domain_name}/*"
-    }
+      }
   ]
 }
   CONFIG

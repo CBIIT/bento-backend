@@ -119,7 +119,7 @@ pipeline {
 
   	stage('deploy'){
 	  environment {
-       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       DOWNLOADER_VERSION = "${params.Downloader_Tag}"
        FILES_SLACK_URL = "${FILES_SLACK_URL}"
        TIER = "${params.Environment}"
       }

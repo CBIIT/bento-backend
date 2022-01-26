@@ -21,4 +21,4 @@ remote_state_bucket_name = "bento-terraform-remote-state"
 
 elasticsearch_instance_type = "t3.medium.elasticsearch"
 
-create_es_service_role = true
+create_es_service_role = false

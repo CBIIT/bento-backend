@@ -70,7 +70,8 @@ resource "aws_elasticsearch_domain" "es" {
   cluster_config {
     instance_count = 12
     instance_type = var.elasticsearch_instance_type
-    zone_awareness_enabled = true
+    zone_awareness_enabled = false
+    dedicated_master_count = 1
 
     zone_awareness_config {
       availability_zone_count = 2

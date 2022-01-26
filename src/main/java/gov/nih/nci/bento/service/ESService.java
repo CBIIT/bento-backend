@@ -38,12 +38,19 @@ public class ESService {
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
+    // Base on host name to use signed request (AWS) or not (local)
     public RestClient searchClient(String serviceName, String region) {
-        AWS4Signer signer = new AWS4Signer();
-        signer.setServiceName(serviceName);
-        signer.setRegionName(region);
-        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
-        return RestClient.builder(HttpHost.create(config.getEsHost())).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)).build();
+        String host = config.getEsHost();
+        if (host.contains("amazonaws.com")) {
+            AWS4Signer signer = new AWS4Signer();
+            signer.setServiceName(serviceName);
+            signer.setRegionName(region);
+            HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
+            return RestClient.builder(HttpHost.create(config.getEsHost())).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)).build();
+        } else {
+            var lowLevelBuilder = RestClient.builder(new HttpHost(host, config.getEsPort(), config.getEsScheme()));
+            return lowLevelBuilder.build();
+        }
     }
 
     @PostConstruct

@@ -93,7 +93,7 @@ pipeline {
     
   	stage('build'){
       environment {
-       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       DOWNLOADER_VERSION = "${params.Downloader_Tag}"
        TIER = "${params.Environment}"
       }
  		steps {

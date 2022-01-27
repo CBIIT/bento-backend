@@ -131,7 +131,7 @@ pipeline {
         }
     }
 
-  	stage('build'){
+/*  	stage('build'){
       environment {
        VERSION = "${params.Etl_Tag}"
        ETL_VERSION = "${params.Etl_Tag}"
@@ -160,7 +160,7 @@ pipeline {
  				  }
  			  }
  		  }
-    }
+    } */
     stage('dropTable'){
       steps { 
             script {

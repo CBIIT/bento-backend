@@ -7,7 +7,7 @@
 - name: set tier to prod for dev,qa,perf
   set_fact:
     tier: prod
-  when: tier == 'dev' || tier = 'qa' || tier = 'perf'
+  when: tier == 'dev' or tier = 'qa' or tier = 'perf'
 
 - name: get distribution domain name
   command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName |[0]" --output text

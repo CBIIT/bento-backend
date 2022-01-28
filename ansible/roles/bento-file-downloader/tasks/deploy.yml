@@ -6,7 +6,7 @@
 ############################################################################################################################
 - name: set tier to prod for dev,qa,perf
   set_fact:
-    tier: prod
+    cloudfront_key_group_name: "bento-prod-pub-key"
   when: 
     - tier == 'dev' or tier == 'qa' or tier == 'perf'
     - project == 'bento'
@@ -28,9 +28,6 @@
   debug:
     msg: "{{cloudfront_key_group_id}}"
 
-- name: set tier to it's true value before proceeding
-  set_fact:
-    tier: "{{tier}}"
 
 - name: create task definition - {{project}} filedownloader
   ecs_taskdefinition:

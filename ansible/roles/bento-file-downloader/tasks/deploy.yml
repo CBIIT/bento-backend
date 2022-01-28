@@ -4,6 +4,10 @@
 #     Task Definitions
 
 ############################################################################################################################
+- name: set tier to prod for dev,qa,perf
+  set_fact:
+    tier: prod
+  when: tier == 'dev' || tier = 'qa' || tier = 'perf'
 
 - name: get distribution domain name
   command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName |[0]" --output text
@@ -21,6 +25,10 @@
 - name: show cloudfront_key_group_name
   debug:
     msg: "{{cloudfront_key_group_id}}"
+
+- name: set tier to it's true value before proceeding
+  set_fact:
+    tier: "{{tier}}"
 
 - name: create task definition - {{project}} filedownloader
   ecs_taskdefinition:

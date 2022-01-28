@@ -5,7 +5,7 @@ import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.Request;
+import org.opensearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;

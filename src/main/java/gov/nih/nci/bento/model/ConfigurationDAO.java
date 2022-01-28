@@ -89,6 +89,18 @@ public class ConfigurationDAO {
 	@Value("${es.scheme}")
 	private String esScheme;
 
+	public boolean getEsSignRequests() {
+		return esSignRequests;
+	}
+
+	public void setEsSignRequests(boolean esSignRequests) {
+		this.esSignRequests = esSignRequests;
+	}
+
+	@Value("${es.sign.requests:true}")
+	private boolean esSignRequests;
+
+
 	public int getEsPort() {
 		return esPort;
 	}

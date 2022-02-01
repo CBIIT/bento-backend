@@ -2,6 +2,18 @@
 - name: get db ip
   include_tasks: neo4j-ip.yml
 
+- name: Get the current caller identity information
+  amazon.aws.aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: echo ECR registry name
+  debug:
+    msg: "{{ ecr_repo }}"
+
 ############################################################################################################################
 
 #     Task Definitions
@@ -13,7 +25,7 @@
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/{{ project }}-backend:{{bento_api_version}}"
+      image: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}"
       environment:
         - name: NEO4J_URL
           value: bolt://{{ neo4j_ip }}:7687
@@ -79,7 +91,7 @@
     containers:
     - name: frontend
       essential: true
-      image: "cbiitssrepo/{{ project }}-frontend:{{frontend_version}}"
+      image: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://{{project}}.bento-tools.org/v1/graphql/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 

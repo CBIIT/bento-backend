@@ -39,6 +39,18 @@
   debug:
     msg: "{{ frontend_id.stdout_lines }}"
 
+- name: Get the current caller identity information
+  amazon.aws.aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: echo ECR registry name
+  debug:
+    msg: "{{ ecr_repo }}"
+
 ############################################################################################################################
 
 #     Backend Build
@@ -92,28 +104,28 @@
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
+#- name: log into DockerHub
+#  docker_login:
+#    username: "{{docker_user}}"
+#    password: "{{docker_password}}"
 
-- name: build cbiitssrepo/{{ project }}-backend image
+- name: build {{ project }}-backend image
   docker_image:
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{ project }}-backend
+    name: "{{ ecr_repo }}/{{ project }}-backend"
     tag: "{{bento_api_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/{{ project }}-backend image
+- name: Add tag latest to {{ project }}-backend image
   docker_image:
-    name: "cbiitssrepo/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ project }}-backend:latest
+    name: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project }}-backend:latest"
     force_tag: yes
     push: yes
     source: local
@@ -146,7 +158,7 @@
   args:
     chdir: "{{workspace}}/{{ project }}-frontend"
   loop:
-    - npm install
+    - npm set progress=false && npm install
     - npm run build
 
 - name: copy env to dist
@@ -155,23 +167,23 @@
     dest: "{{workspace}}/{{ project }}-frontend/dist/inject.template.js"
     mode: 0755
           
-- name: build cbiitssrepo/{{ project }}-frontend image
+- name: build {{ project }}-frontend image
   docker_image:
     build:
       path: "{{workspace}}/{{ project }}-frontend"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{ project }}-frontend
+    name: "{{ ecr_repo }}/{{ project }}-frontend"
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/{{ project }}-frontend image
+- name: Add tag latest to {{ project }}-frontend image
   docker_image:
-    name: "cbiitssrepo/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ project }}-frontend:latest
+    name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project }}-frontend:latest"
     force_tag: yes
     push: yes
     source: local

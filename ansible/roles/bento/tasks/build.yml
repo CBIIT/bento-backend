@@ -51,6 +51,11 @@
   debug:
     msg: "{{ ecr_repo }}"
 
+- name: login into ecr
+  shell: "$(/bin/aws ecr get-login-password --region us-east-1 | docker login --username ecr_builder --password-stdin {{ ecr_builder }} )"
+  ignore_errors: True
+  register: ecr_login
+
 ############################################################################################################################
 
 #     Backend Build

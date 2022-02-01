@@ -47,15 +47,6 @@
   set_fact:
     ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
 
-- name: echo ECR registry name
-  debug:
-    msg: "{{ ecr_repo }}"
-
-#- name: login into ecr
-#  shell: "$(aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecr_repo }} )"
-#  ignore_errors: True
-#  register: ecr_login
-
 - name: login into ecr
   shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
   ignore_errors: True
@@ -113,11 +104,6 @@
     remote_src: yes
     src: "{{workspace}}/target/Bento-0.0.1.war"
     dest: "{{workspace}}/target/ROOT.war"
-
-#- name: log into DockerHub
-#  docker_login:
-#    username: "{{docker_user}}"
-#    password: "{{docker_password}}"
 
 - name: build {{ project }}-backend image
   docker_image:

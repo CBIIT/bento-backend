@@ -10,10 +10,6 @@
   set_fact:
     ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
 
-- name: echo ECR registry name
-  debug:
-    msg: "{{ ecr_repo }}"
-
 ############################################################################################################################
 
 #     Task Definitions

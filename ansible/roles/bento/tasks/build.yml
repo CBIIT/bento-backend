@@ -40,7 +40,7 @@
     msg: "{{ frontend_id.stdout_lines }}"
 
 - name: Get the current caller identity information
-  amazon.aws.aws_caller_info:
+  aws_caller_info:
   register: caller_info
 
 - name: set ECR registry name

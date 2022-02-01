@@ -52,7 +52,7 @@
     msg: "{{ ecr_repo }}"
 
 - name: login into ecr
-  shell: "$(aws ecr get-login-password --region us-east-1 | docker login --username ecr_builder --password-stdin {{ ecr_builder }} )"
+  shell: "$(aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin {{ ecr_repo }} )"
   ignore_errors: True
   register: ecr_login
 

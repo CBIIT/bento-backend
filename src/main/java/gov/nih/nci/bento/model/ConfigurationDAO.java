@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import java.util.Locale;
-
 /**
  * The Configuration Bean, reads configuration setting from classpath:application.properties.
  */
@@ -27,12 +25,12 @@ public class ConfigurationDAO {
 	    String project = env.getProperty("project", "bento").toLowerCase();
 	    switch (project) {
 			case "icdc":
-				return new ICDCESFilter();
+				return new IcdcEsFilter();
 			case "bento":
-				return new BentoESFilter();
+				return new BentoEsFilter();
 			default:
 				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
-				return new BentoESFilter();
+				return new BentoEsFilter();
 		}
 	}
 

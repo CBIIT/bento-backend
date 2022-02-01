@@ -13,8 +13,8 @@ import java.util.*;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-public class BentoESFilter implements DataFetcher {
-    private static final Logger logger = LogManager.getLogger(BentoESFilter.class);
+public class BentoEsFilter implements DataFetcher {
+    private static final Logger logger = LogManager.getLogger(BentoEsFilter.class);
 
     // parameters used in queries
     final String PAGE_SIZE = "first";

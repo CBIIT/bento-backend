@@ -51,8 +51,13 @@
   debug:
     msg: "{{ ecr_repo }}"
 
+#- name: login into ecr
+#  shell: "$(aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecr_repo }} )"
+#  ignore_errors: True
+#  register: ecr_login
+
 - name: login into ecr
-  shell: "$(aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecr_repo }} )"
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
   ignore_errors: True
   register: ecr_login
 

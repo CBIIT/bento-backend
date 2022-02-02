@@ -154,8 +154,8 @@
   args:
     chdir: "{{workspace}}/{{ project }}-frontend"
   loop:
-    - npm set progress=false && npm install
-    #- npm install
+    - npm set progress=false
+    - npm install
     - npm run build
 
 - name: copy env to dist

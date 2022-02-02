@@ -1,0 +1,12 @@
+---
+- name: setup ecs agent
+  hosts: all
+  connection: local
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: configure ecs
+      include_role:
+        name: ecs-agent
+        tasks_from: ecs-optimized

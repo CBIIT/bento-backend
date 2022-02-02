@@ -1,0 +1,37 @@
+---
+# tasks file for ecs-agent
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": "{{stack_name}}-{{env}}-frontend"
+      "instance-state-name": running
+      "tag:Environment": "{{env}}"
+  register: node
+
+- name: set instance name
+  set_fact:
+    frontend_ip: "{{ node.instances[0].network_interfaces[0].private_ip_address }}"
+
+- name: create ecs directory
+  file:
+    path: "{{item}}"
+    state: directory
+  loop:
+    - "/etc/ecs"
+    - "/var/log/ecs"
+    - "/var/lib/ecs/data"
+
+- name: copy file ecs.config to /etc/ecs/ecs.config
+  template:
+    src: ecs.config.j2
+    dest: /etc/ecs/ecs.config
+
+- name: rename agent db
+  command: creates="/var/lib/ecs/data/agent.db.old" mv /var/lib/ecs/data/agent.db  /var/lib/ecs/data/agent.db.old
+
+- name: restart ecs service
+  service:
+    name: ecs
+    state: restarted
+

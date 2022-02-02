@@ -4,7 +4,7 @@
     containers:
     - name: backend
       essential: true
-      image: "cbiitssrepo/{{backend | lower}}:{{backend_version}}"
+      image: "{{ ecr_repo }}/{{backend | lower}}:{{backend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 
@@ -49,7 +49,7 @@
     containers:
     - name: frontend
       essential: true
-      image: "cbiitssrepo/{{project | lower}}:{{frontend_version}}"
+      image: "{{ ecr_repo }}/{{project | lower}}:{{frontend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 
@@ -87,7 +87,7 @@
     containers:
     - name: etl
       essential: true
-      image: "cbiitssrepo/{{etl | lower}}:{{etl_version}}"
+      image: "{{ ecr_repo }}/{{etl | lower}}:{{etl_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
           value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 

@@ -1,9 +1,22 @@
 ---
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
+
+# - name: log into DockerHub
+#   docker_login:
+#     username: "{{docker_user}}"
+#     password: "{{docker_password}}"
 
 - name: copy  nginx conf
   copy:
@@ -41,7 +54,7 @@
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-frontend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{project | lower}}
+    name: "{{ ecr_repo }}/{{project | lower}}"
     tag: "{{frontend_version}}-{{build_number}}"
     push: yes
     force_source: yes
@@ -49,8 +62,8 @@
 
 - name: Add tag latest to cbiitssrepo/{{ project | lower }} image
   docker_image:
-    name: "cbiitssrepo/{{ project | lower }}:{{frontend_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ project | lower }}:latest
+    name: "{{ ecr_repo }}/{{ project | lower }}:{{frontend_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project | lower }}:latest"
     force_tag: yes
     push: yes
     source: local
@@ -112,7 +125,7 @@
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-backend-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{ backend | lower}}
+    name: "{{ ecr_repo }}/{{ backend | lower}}"
     tag: "{{backend_version}}-{{build_number}}"
     push: yes
     force_source: yes
@@ -120,8 +133,8 @@
 
 - name: Add tag latest to cbiitssrepo/{{ backend | lower}} image
   docker_image:
-    name: "cbiitssrepo/{{ backend | lower}}:{{backend_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ backend | lower}}:latest
+    name: "{{ ecr_repo }}/{{ backend | lower}}:{{backend_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ backend | lower}}:latest"
     force_tag: yes
     push: yes
     source: local
@@ -175,7 +188,7 @@
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/ccdc-database-dockerfile"
       pull: yes
       nocache: yes
-    name: cbiitssrepo/{{etl | lower}}
+    name: "{{ ecr_repo }}/{{etl | lower}}"
     tag: "{{etl_version}}-{{build_number}}"
     push: yes
     force_source: yes
@@ -183,8 +196,8 @@
 
 - name: Add tag latest to cbiitssrepo/{{ etl | lower}} image
   docker_image:
-    name: "cbiitssrepo/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
-    repository: cbiitssrepo/{{ etl | lower}}:latest
+    name: "{{ ecr_repo }}/{{ etl | lower}}:{{etl_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ etl | lower}}:latest"
     force_tag: yes
     push: yes
     source: local

@@ -99,7 +99,16 @@ public class ESService {
             if (excludedParams.contains(key)) {
                 continue;
             }
-            List<String> valueSet = (List<String>) params.get(key);
+            Object obj = params.get(key);
+
+            List<String> valueSet;
+            if (obj instanceof List) {
+                valueSet = (List<String>) obj;
+            } else {
+                String value = (String)obj;
+                valueSet = List.of(value);
+            }
+
             if (ignoreCase) {
                 List<String> lowerCaseValueSet = new ArrayList<>();
                 for (String value: valueSet) {

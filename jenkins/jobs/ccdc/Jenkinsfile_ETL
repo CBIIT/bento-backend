@@ -162,7 +162,7 @@ pipeline {
  			  }
  		  }
     } 
-    stage('dropTable'){
+    stage('DropTable'){
       steps { 
             when {
                 expression { 
@@ -174,7 +174,7 @@ pipeline {
                 }
             }
     }
-    stage('dropTable'){
+    stage('CreateTable'){
       steps { 
             when {
                 expression { 
@@ -186,7 +186,7 @@ pipeline {
                 }
             }
     }   
-    stage('index'){
+    stage('LoadTable'){
       steps { 
             when {
                 expression { 

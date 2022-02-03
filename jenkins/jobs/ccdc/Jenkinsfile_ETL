@@ -71,6 +71,7 @@ pipeline {
   	maven 'Default' 
     jdk 'Default' 
   }
+
   stages{
   	stage('checkout'){
   		steps {
@@ -163,10 +164,40 @@ pipeline {
     } 
     stage('dropTable'){
       steps { 
-            script {
-                  println params.DataLoading 
+            when {
+                expression { 
+                   return params.DataLoading.contains('DropTable')
+                }
             }
-        }    
+            steps {
+                    echo "stage drop table"
+                }
+            }
+    }
+    stage('dropTable'){
+      steps { 
+            when {
+                expression { 
+                   return params.DataLoading.contains('CreateTable')
+                }
+            }
+            steps {
+                    echo "stage CreateTable "
+                }
+            }
+    }   
+    stage('index'){
+      steps { 
+            when {
+                expression { 
+                   return params.DataLoading.contains('LoadTable')
+                }
+            }
+            steps {
+                    echo "stage LoadTable "
+                }
+            }
+    }
     }
   }
   post {

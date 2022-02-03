@@ -27,9 +27,8 @@ public class IcdcEsFilter implements DataFetcher {
     final String STUDIES_END_POINT = "/studies/_search";
     final String STUDIES_COUNT_END_POINT = "/studies/_count";
 
-    final String SUBJECTS_END_POINT = "/subjects/_search";
-    final String SUBJECTS_COUNT_END_POINT = "/subjects/_count";
-    final String SUBJECT_IDS_END_POINT = "/subject_ids/_search";
+    final String CASES_END_POINT = "/cases/_search";
+    final String CASES_COUNT_END_POINT = "/cases/_count";
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
@@ -97,134 +96,198 @@ public class IcdcEsFilter implements DataFetcher {
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params, String sortDirection) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"subject_id", "subject_ids"},
-                new String[]{"program", "programs"},
-                new String[]{"program_id", "program_id"},
-                new String[]{"study_acronym", "study_acronym"},
-                new String[]{"study_short_description", "study_short_description"},
-                new String[]{"study_info", "studies"},
-                new String[]{"diagnosis", "diagnoses"},
-                new String[]{"recurrence_score", "rc_scores"},
-                new String[]{"tumor_size", "tumor_sizes"},
-                new String[]{"tumor_grade", "tumor_grades"},
-                new String[]{"er_status", "er_status"},
-                new String[]{"pr_status", "pr_status"},
-                new String[]{"chemotherapy", "chemo_regimen"},
-                new String[]{"endocrine_therapy", "endo_therapies"},
-                new String[]{"menopause_status", "meno_status"},
-                new String[]{"age_at_index", "age_at_index"},
-                new String[]{"survival_time", "survival_time"},
-                new String[]{"survival_time_unit", "survival_time_unit"},
+                new String[]{"case_id", "case_ids"},
+                new String[]{"study_code", "study"},
+                new String[]{"study_type", "study_type"},
+                new String[]{"cohort", "cohort"},
+                new String[]{"breed", "breed"},
+                new String[]{"diagnosis", "diagnosis"},
+                new String[]{"stage_of_disease", "stage_of_disease"},
+                new String[]{"age", "age"},
+                new String[]{"sex", "sex"},
+                new String[]{"neutered_status", "neutered_status"},
+                new String[]{"weight", "weight"},
+                new String[]{"response_to_treatment", "response_to_treatment"},
+                new String[]{"disease_site", "disease_site"},
                 new String[]{"files", "files"},
-                new String[]{"samples", "samples"},
-                new String[]{"lab_procedures", "lab_procedures"},
+                new String[]{"other_cases", "other_cases"},
+                new String[]{"individual_id", "individual_id"},
+                new String[]{"primary_disease_site", "disease_site"},
+                new String[]{"date_of_diagnosis", "date_of_diagnosis"},
+                new String[]{"histology_cytopathology", "histology_cytopathology"},
+                new String[]{"histological_grade", "histological_grade"},
+                new String[]{"pathology_report", "pathology_report"},
+                new String[]{"treatment_data", "treatment_data"},
+                new String[]{"follow_up_data", "follow_up_data"},
+                new String[]{"concurrent_disease", "concurrent_disease"},
+                new String[]{"concurrent_disease_type", "concurrent_disease_type"},
+                new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "subject_id_num"; // Default sort order
+        String defaultSort = "case_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("subject_id", "subject_id_num"),
-                Map.entry("program", "programs"),
-                Map.entry("program_id", "program_id"),
-                Map.entry("study_acronym", "study_acronym"),
-                Map.entry("study_short_description", "study_short_description"),
-                Map.entry("study_info", "studies"),
-                Map.entry("diagnosis", "diagnoses"),
-                Map.entry("recurrence_score", "rc_scores"),
-                Map.entry("tumor_size", "tumor_sizes"),
-                Map.entry("tumor_grade", "tumor_grades"),
-                Map.entry("er_status", "er_status"),
-                Map.entry("pr_status", "pr_status"),
-                Map.entry("chemotherapy", "chemo_regimen"),
-                Map.entry("endocrine_therapy", "endo_therapies"),
-                Map.entry("menopause_status", "meno_status"),
-                Map.entry("age_at_index", "age_at_index"),
-                Map.entry("survival_time", "survival_time")
+                Map.entry("study_code", "study"),
+                Map.entry("study_type", "study_type"),
+                Map.entry("cohort", "cohort"),
+                Map.entry("breed", "breed"),
+                Map.entry("diagnosis", "diagnosis"),
+                Map.entry("stage_of_disease", "stage_of_disease"),
+                Map.entry("disease_site", "disease_site"),
+                Map.entry("age", "age"),
+                Map.entry("sex", "sex"),
+                Map.entry("neutered_status", "neutered_status"),
+                Map.entry("weight", "weight"),
+                Map.entry("response_to_treatment", "response_to_treatment"),
+                Map.entry("other_cases", "other_cases"),
+                Map.entry("case_id", "case_ids")
         );
 
-        params.put(SORT_DIRECTION, sortDirection);
+        Map<String, Object> newParams = new HashMap<>(params);
+        newParams.put(SORT_DIRECTION, sortDirection);
 
-        return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(CASES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params, String sortDirection) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"program", "programs"},
-                new String[]{"program_id", "program_id"},
-                new String[]{"arm", "study_acronym"},
-                new String[]{"subject_id", "subject_ids"},
                 new String[]{"sample_id", "sample_ids"},
-                new String[]{"diagnosis", "diagnoses"},
-                new String[]{"tissue_type", "tissue_type"},
-                new String[]{"tissue_composition", "composition"},
-                new String[]{"sample_anatomic_site", "sample_anatomic_site"},
-                new String[]{"sample_procurement_method", "sample_procurement_method"},
-                new String[]{"platform", "platform"},
-                new String[]{"files", "files"}
+                new String[]{"case_id", "case_ids"},
+                new String[]{"breed", "breed"},
+                new String[]{"diagnosis", "diagnosis"},
+                new String[]{"sample_site", "sample_site"},
+                new String[]{"sample_type", "sample_type"},
+                new String[]{"sample_pathology", "sample_pathology"},
+                new String[]{"tumor_grade", "tumor_grade"},
+                new String[]{"sample_chronology", "sample_chronology"},
+                new String[]{"percentage_tumor", "percentage_tumor"},
+                new String[]{"necropsy_sample", "necropsy_sample"},
+                new String[]{"sample_preservation", "sample_preservation"},
+                new String[]{"files", "files"},
+                new String[]{"physical_sample_type", "physical_sample_type"},
+                new String[]{"general_sample_pathology", "general_sample_pathology"},
+                new String[]{"tumor_sample_origin", "tumor_sample_origin"},
+                new String[]{"comment", "comment"},
+                new String[]{"individual_id", "individual_id"},
+                new String[]{"other_cases", "other_cases"},
+                new String[]{"patient_age_at_enrollment", "patient_age_at_enrollment"},
+                new String[]{"sex", "sex"},
+                new String[]{"neutered_indicator", "neutered_indicator"},
+                new String[]{"weight", "weight"},
+                new String[]{"primary_disease_site", "primary_disease_site"},
+                new String[]{"stage_of_disease", "stage_of_disease"},
+                new String[]{"date_of_diagnosis", "date_of_diagnosis"},
+                new String[]{"histology_cytopathology", "histology_cytopathology"},
+                new String[]{"histological_grade", "histological_grade"},
+                new String[]{"best_response", "best_response"},
+                new String[]{"pathology_report", "pathology_report"},
+                new String[]{"treatment_data", "treatment_data"},
+                new String[]{"follow_up_data", "follow_up_data"},
+                new String[]{"concurrent_disease", "concurrent_disease"},
+                new String[]{"concurrent_disease_type", "concurrent_disease_type"},
+                new String[]{"cohort_description", "cohort_description"},
+                new String[]{"arm", "arm"}
         };
 
-        String defaultSort = "sample_id_num"; // Default sort order
+        String defaultSort = "sample_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("program", "programs"),
-                Map.entry("arm", "study_acronym"),
-                Map.entry("subject_id", "subject_id_num"),
-                Map.entry("sample_id", "sample_id_num"),
-                Map.entry("diagnosis", "diagnoses"),
-                Map.entry("tissue_type", "tissue_type"),
-                Map.entry("tissue_composition", "composition"),
-                Map.entry("sample_anatomic_site", "sample_anatomic_site"),
-                Map.entry("sample_procurement_method", "sample_procurement_method"),
-                Map.entry("platform", "platform")
+                Map.entry("sample_id", "sample_ids"),
+                Map.entry("case_id", "case_id"),
+                Map.entry("breed", "breed"),
+                Map.entry("diagnosis", "diagnosis"),
+                Map.entry("sample_site", "sample_site"),
+                Map.entry("sample_type", "sample_type"),
+                Map.entry("sample_pathology", "sample_pathology"),
+                Map.entry("tumor_grade", "tumor_grade"),
+                Map.entry("sample_chronology", "sample_chronology"),
+                Map.entry("percentage_tumor", "percentage_tumor"),
+                Map.entry("necropsy_sample", "necropsy_sample"),
+                Map.entry("sample_preservation", "sample_preservation")
         );
 
-        params.put(SORT_DIRECTION, sortDirection);
+        Map<String, Object> newParams = new HashMap<>(params);
+        newParams.put(SORT_DIRECTION, sortDirection);
 
-        return overview(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(SAMPLES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params, String sortDirection) throws IOException {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"program", "programs"},
-                new String[]{"program_id", "program_id"},
-                new String[]{"arm", "study_acronym"},
-                new String[]{"subject_id", "subject_ids"},
-                new String[]{"sample_id", "sample_ids"},
-                new String[]{"file_id", "file_ids"},
-                new String[]{"file_name", "file_names"},
-                new String[]{"association", "association"},
+                new String[]{"file_name", "file_name"},
+                new String[]{"file_type", "file_type"},
+                new String[]{"association", "parent_type"},
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "file_size"},
-                new String[]{"diagnosis", "diagnoses"}
+                new String[]{"case_id", "case_ids"},
+                new String[]{"breed", "breed"},
+                new String[]{"diagnosis", "diagnosis"},
+                new String[]{"study_code", "study_code"},
+                new String[]{"file_uuid", "file_uuids"},
+                new String[]{"sample_id", "sample_ids"},
+                new String[]{"sample_site", "sample_site"},
+                new String[]{"physical_sample_type", "physical_sample_type"},
+                new String[]{"general_sample_pathology", "general_sample_pathology"},
+                new String[]{"tumor_sample_origin", "tumor_sample_origin"},
+                new String[]{"summarized_sample_type", "summarized_sample_type"},
+                new String[]{"specific_sample_pathology", "specific_sample_pathology"},
+                new String[]{"date_of_sample_collection", "date_of_sample_collection"},
+                new String[]{"tumor_grade", "tumor_grade"},
+                new String[]{"sample_chronology", "sample_chronology"},
+                new String[]{"percentage_tumor", "percentage_tumor"},
+                new String[]{"necropsy_sample", "necropsy_sample"},
+                new String[]{"sample_preservation", "sample_preservation"},
+                new String[]{"comment", "comment"},
+                new String[]{"individual_id", "individual_id"},
+                new String[]{"patient_age_at_enrollment", "patient_age_at_enrollment"},
+                new String[]{"sex", "sex"},
+                new String[]{"neutered_indicator", "neutered_indicator"},
+                new String[]{"weight", "weight"},
+                new String[]{"primary_disease_site", "primary_disease_site"},
+                new String[]{"stage_of_disease", "stage_of_disease"},
+                new String[]{"date_of_diagnosis", "date_of_diagnosis"},
+                new String[]{"histology_cytopathology", "histology_cytopathology"},
+                new String[]{"histological_grade", "histological_grade"},
+                new String[]{"best_response", "best_response"},
+                new String[]{"pathology_report", "pathology_report"},
+                new String[]{"treatment_data", "treatment_data"},
+                new String[]{"follow_up_data", "follow_up_data"},
+                new String[]{"concurrent_disease", "concurrent_disease"},
+                new String[]{"concurrent_disease_type", "concurrent_disease_type"},
+                new String[]{"cohort_description", "cohort_description"},
+                new String[]{"arm", "arm"},
+                new String[]{"other_cases", "other_cases"}
         };
 
         String defaultSort = "file_name"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("program", "programs"),
-                Map.entry("arm", "study_acronym"),
-                Map.entry("subject_id", "subject_id_num"),
-                Map.entry("sample_id", "sample_id_num"),
-                Map.entry("file_id", "file_id_num"),
-                Map.entry("file_name", "file_names"),
-                Map.entry("association", "association"),
+                Map.entry("file_name", "file_name"),
+                Map.entry("file_type", "file_type"),
+                Map.entry("association", "parent_type"),
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("diagnosis", "diagnoses")
+                Map.entry("case_id", "case_id"),
+                Map.entry("breed", "breed"),
+                Map.entry("diagnosis", "diagnosis"),
+                Map.entry("study_code", "study_code"),
+                Map.entry("file_uuid", "file_uuid"),
+                Map.entry("access_file", "file_size")
         );
 
-        params.put(SORT_DIRECTION, sortDirection);
+        Map<String, Object> newParams = new HashMap<>(params);
+        newParams.put(SORT_DIRECTION, sortDirection);
 
-        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(FILES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
 
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));

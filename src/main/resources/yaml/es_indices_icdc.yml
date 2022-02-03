@@ -61,26 +61,28 @@ Indices:
         type: keyword
       other_cases:
         type: keyword
-#      individual_id:
-#        type: keyword
-#      date_of_diagnosis:
-#        type: keyword
-#      histology_cytopathology:
-#        type: keyword
-#      histological_grade:
-#        type: keyword
-#      pathology_report:
-#        type: keyword
-#      treatment_data:
-#        type: keyword
-#      follow_up_data:
-#        type: keyword
-#      concurrent_disease:
-#        type: keyword
-#      concurrent_disease_type:
-#        type: keyword
-#      arm:
-#        type: keyword
+      individual_id:
+        type: keyword
+      primary_disease_site:
+        type: keyword
+      date_of_diagnosis:
+        type: keyword
+      histology_cytopathology:
+        type: keyword
+      histological_grade:
+        type: keyword
+      pathology_report:
+        type: keyword
+      treatment_data:
+        type: keyword
+      follow_up_data:
+        type: keyword
+      concurrent_disease:
+        type: keyword
+      concurrent_disease_type:
+        type: keyword
+      arm:
+        type: keyword
 
 
 
@@ -93,7 +95,8 @@ Indices:
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (f:file)-[*]->(c)
-      WITH DISTINCT c, s, co, demo, diag, f, o
+      OPTIONAL MATCH (co)-->(a:study_arm)
+      WITH DISTINCT c, s, a, co, demo, diag, f, o, i
       return
         c.case_id AS case_ids,
         s.clinical_study_designation AS study,
@@ -102,14 +105,25 @@ Indices:
         demo.breed AS breed,
         diag.disease_term AS diagnosis,
         diag.stage_of_disease AS stage_of_disease,
-        diag.primary_disease_site AS disease_site,
         demo.patient_age_at_enrollment AS age,
         demo.sex AS sex,
         demo.neutered_indicator AS neutered_status,
         demo.weight AS weight,
         diag.best_response AS response_to_treatment,
+        diag.primary_disease_site as disease_site,
         collect(DISTINCT(f.uuid)) AS files,
-        collect(DISTINCT o.case_id) AS other_cases
+        collect(DISTINCT o.case_id) AS other_cases,
+        i.canine_individual_id as individual_id,
+        diag.primary_disease_site as primary_disease_site,
+        diag.date_of_diagnosis as date_of_diagnosis,
+        diag.histology_cytopathology as histology_cytopathology,
+        diag.histological_grade as histological_grade,
+        diag.pathology_report as pathology_report,
+        diag.treatment_data as treatment_data,
+        diag.follow_up_data as follow_up_data,
+        diag.concurrent_disease as concurrent_disease,
+        diag.concurrent_disease_type as concurrent_disease_type,
+        a.arm as arm
       "
   - index_name: samples
     type: neo4j
@@ -151,6 +165,8 @@ Indices:
       tumor_sample_origin:
         type: keyword
       comment:
+        type: keyword
+      individual_id:
         type: keyword
       other_cases:
         type: keyword
@@ -217,6 +233,7 @@ Indices:
         s.general_sample_pathology as general_sample_pathology,
         s.tumor_sample_origin as tumor_sample_origin,
         s.comment as comment,
+        i.individual_id AS individual_id,
         collect(DISTINCT o.case_id) AS other_cases,
         demo.patient_age_at_enrollment AS patient_age_at_enrollment,
         demo.sex AS sex,
@@ -250,8 +267,10 @@ Indices:
         type: keyword
       file_association:
         type: keyword
-      # properties used in return data, name can be different from GraphQL property name
 
+      # properties used in return data, name can be different from GraphQL property name
+      parent_type:
+        type: keyword
       file_name:
         type: keyword
       file_type:
@@ -261,7 +280,7 @@ Indices:
       file_format:
         type: keyword
       file_size:
-        type: keyword
+        type: double
       breed:
         type: keyword
       diagnosis:
@@ -352,7 +371,8 @@ Indices:
       RETURN DISTINCT
         f.file_name as file_name,
         f.file_type as file_type,
-        head(labels(parent)) as file_association,
+        association as file_association,
+        head(labels(parent)) as parent_type,
         f.file_description as file_description,
         f.file_format as file_format,
         f.file_size as file_size,

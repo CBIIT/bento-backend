@@ -417,17 +417,19 @@
 ############################################################################################################################
 
 - name: Remove frontend internal tag
-  docker_image:
-    state: absent
-    name: "{{ ecr_repo }}/{{ project }}-frontend"
-    tag: "internal-{{ frontend_version }}"
+  shell: "aws ecr batch-delete-image --repository-name {{ ecr_repo }}/{{ project }}-frontend --image-ids imageTag=internal-{{ frontend_version }}"
+#  docker_image:
+#    state: absent
+#    name: "{{ ecr_repo }}/{{ project }}-frontend"
+#    tag: "internal-{{ frontend_version }}"
   when: tier == "perf"
 
 - name: Remove backend internal tag
-  docker_image:
-    state: absent
-    name: "{{ ecr_repo }}/{{ project }}-backend"
-    tag: "internal-{{ bento_api_version }}"
+  shell: "aws ecr batch-delete-image --repository-name {{ ecr_repo }}/{{ project }}-backend --image-ids imageTag=internal-{{ backend_version }}"
+#  docker_image:
+#    state: absent
+#    name: "{{ ecr_repo }}/{{ project }}-backend"
+#    tag: "internal-{{ bento_api_version }}"
   when: tier == "perf"
 
 ###############################################################################################################################

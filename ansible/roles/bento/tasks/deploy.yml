@@ -419,9 +419,11 @@
 - name: Add tag internal to {{ project }}-frontend image
   docker_image:
     name: "{{ ecr_repo }}/{{ project }}-frontend:{{ frontend_version }}"
-    repository: "{{ ecr_repo }}/{{ project }}-frontend"
-    tag: "production-{{ frontend_version }}"
+    repository: "{{ ecr_repo }}/{{ project }}-frontend:production-{{ frontend_version }}"
+#    tag: "production-{{ frontend_version }}"
+    force_tag: yes
     push: yes
+    source: pull
   when: tier == "perf"
 
 #- name: Remove frontend internal tag
@@ -432,9 +434,11 @@
 - name: Add tag production to {{ project }}-backend image
   docker_image:
     name: "{{ ecr_repo }}/{{ project }}-backend:{{ bento_api_version }}"
-    repository: "{{ ecr_repo }}/{{ project }}-backend"
-    tag: "production-{{ bento_api_version }}"
+    repository: "{{ ecr_repo }}/{{ project }}-backend:production-{{ bento_api_version }}"
+#    tag: "production-{{ bento_api_version }}"
+    force_tag: yes
     push: yes
+    source: pull
   when: tier == "perf"
 
 #- name: Remove backend internal tag

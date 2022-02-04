@@ -410,6 +410,28 @@
     region: "{{region}}"
   register: service_frontend_output
 
+############################################################################################################################
+
+# Remove the "internal" tag for backend and frontend images if deployed to Prod
+
+############################################################################################################################
+
+- name: Remove frontend internal tag
+  docker_image:
+    state: absent
+    name: "{{ ecr_repo }}/{{ project }}-frontend"
+    tag: "internal-{{ frontend_version }}"
+  when: tier == "prod"
+
+- name: Remove backend internal tag
+  docker_image:
+    state: absent
+    name: "{{ ecr_repo }}/{{ project }}-backend"
+    tag: "internal-{{ bento_api_version }}"
+  when: tier == "prod"
+
+###############################################################################################################################
+
 #- name: Pause for 20 seconds to allow updates to take effect
 #  pause:
 #    seconds: 20

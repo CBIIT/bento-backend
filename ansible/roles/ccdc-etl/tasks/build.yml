@@ -10,6 +10,7 @@
   args:
     chdir: "{{workspace}}/{{etl}}"
   loop:
+    - npm set progress=false
     - npm install
     - npm run build
 

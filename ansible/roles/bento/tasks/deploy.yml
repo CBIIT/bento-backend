@@ -425,30 +425,19 @@
   docker_image:
     name: "{{ ecr_repo }}/{{ project }}-frontend:{{ frontend_version }}"
     repository: "{{ ecr_repo }}/{{ project }}-frontend:production-{{ frontend_version }}"
-#    tag: "production-{{ frontend_version }}"
     force_tag: yes
     push: yes
     source: pull
-  when: tier == "perf"
-
-#- name: Remove frontend internal tag
-#  shell: "aws ecr batch-delete-image --region {{ region }} --repository-name {{ project }}-frontend --image-ids imageTag=internal-{{ frontend_version }}"
-#  when: tier == "prod"
-
+  when: tier == "prod"
 
 - name: Add tag production to {{ project }}-backend image
   docker_image:
     name: "{{ ecr_repo }}/{{ project }}-backend:{{ bento_api_version }}"
     repository: "{{ ecr_repo }}/{{ project }}-backend:production-{{ bento_api_version }}"
-#    tag: "production-{{ bento_api_version }}"
     force_tag: yes
     push: yes
     source: pull
-  when: tier == "perf"
-
-#- name: Remove backend internal tag
-#  shell: "aws ecr batch-delete-image --region {{ region }} --repository-name {{ project }}-backend --image-ids imageTag=internal-{{ bento_api_version }}"
-#  when: tier == "prod"
+  when: tier == "prod"
 
 ###############################################################################################################################
 

@@ -131,7 +131,6 @@ pipeline {
           }
         }
     }
-/*
   	stage('build'){
       environment {
        VERSION = "${params.Etl_Tag}"
@@ -161,7 +160,7 @@ pipeline {
  				  }
  			  }
  		  }
-    } */
+    } 
     stage('DropTable'){
             when {
                 expression { 
@@ -169,8 +168,10 @@ pipeline {
                 }
             }
             steps {
-                    echo "stage drop table"
-                }
+                    docker.image('cbiitssrepo/ccdc-etl').inside{
+                       sh 'ls -l'
+                    }
+            }
     }
     stage('CreateTable'){
 

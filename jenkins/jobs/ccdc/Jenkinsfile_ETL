@@ -139,7 +139,7 @@ pipeline {
        S3_FOLDER = "${params.S3Folder}"
       }
  		steps {
-
+/*
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
@@ -159,11 +159,10 @@ pipeline {
             ],
 						colorized: true)
  				  }
- 			  }
+ 			  }*/
  		  }
     } 
     stage('DropTable'){
-      steps { 
             when {
                 expression { 
                    return params.DataLoading.contains('DropTable')
@@ -172,10 +171,9 @@ pipeline {
             steps {
                     echo "stage drop table"
                 }
-            }
     }
     stage('CreateTable'){
-      steps { 
+
             when {
                 expression { 
                    return params.DataLoading.contains('CreateTable')
@@ -184,10 +182,10 @@ pipeline {
             steps {
                     echo "stage CreateTable "
                 }
-            }
+
     }   
     stage('LoadTable'){
-      steps { 
+
             when {
                 expression { 
                    return params.DataLoading.contains('LoadTable')
@@ -196,7 +194,7 @@ pipeline {
             steps {
                     echo "stage LoadTable "
                 }
-            }
+
     }
     
   }

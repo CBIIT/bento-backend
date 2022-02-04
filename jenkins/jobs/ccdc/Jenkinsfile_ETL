@@ -131,7 +131,7 @@ pipeline {
           }
         }
     }
-
+/*
   	stage('build'){
       environment {
        VERSION = "${params.Etl_Tag}"
@@ -139,7 +139,7 @@ pipeline {
        S3_FOLDER = "${params.S3Folder}"
       }
  		steps {
-/*
+
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
@@ -159,9 +159,9 @@ pipeline {
             ],
 						colorized: true)
  				  }
- 			  }*/
+ 			  }
  		  }
-    } 
+    } */
     stage('DropTable'){
             when {
                 expression { 

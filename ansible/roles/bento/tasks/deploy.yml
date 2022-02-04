@@ -421,14 +421,14 @@
     state: absent
     name: "{{ ecr_repo }}/{{ project }}-frontend"
     tag: "internal-{{ frontend_version }}"
-  when: tier == "prod"
+  when: tier == "perf"
 
 - name: Remove backend internal tag
   docker_image:
     state: absent
     name: "{{ ecr_repo }}/{{ project }}-backend"
     tag: "internal-{{ bento_api_version }}"
-  when: tier == "prod"
+  when: tier == "perf"
 
 ###############################################################################################################################
 

@@ -167,10 +167,15 @@ pipeline {
                    return params.DataLoading.contains('DropTable')
                 }
             }
+            
+
+
             steps {
+                script{
                     docker.image('cbiitssrepo/ccdc-etl').inside{
                        sh 'ls -l'
                     }
+                }
             }
     }
     stage('CreateTable'){

@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,stage,prod' )
+        value: 'dev,qa,demo' )
     gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Etl_Tag', 
@@ -122,6 +122,11 @@ pipeline {
                   env.TIER  = "qa"
                 }
         break
+              case "demo":
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  env.TIER  = "demo"
+                }
+        break
               default:
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
                   env.TIER  = "dev"
@@ -167,13 +172,10 @@ pipeline {
                    return params.DataLoading.contains('DropTable')
                 }
             }
-            
-
-
             steps {
                 script{
-                    sh "cd ${WORKSPACE}/CCDC-ETL"
-                    sh "ls -l"
+                    sh "cd ${WORKSPACE}/CCDC-ETL/CCDC-ETL"
+                    sh "node dropTable.js"
                 }
             }
     }
@@ -185,7 +187,10 @@ pipeline {
                 }
             }
             steps {
-                    echo "stage CreateTable "
+                    script{
+                      sh "cd ${WORKSPACE}/CCDC-ETL/CCDC-ETL"
+                      sh "node createTable.js"
+                    }
                 }
 
     }   
@@ -197,7 +202,10 @@ pipeline {
                 }
             }
             steps {
-                    echo "stage LoadTable "
+                    script{
+                      sh "cd ${WORKSPACE}/CCDC-ETL/CCDC-ETL"
+                      sh "node index.js"
+                    }
                 }
 
     }

@@ -126,13 +126,13 @@
     push: yes
     source: local
 
-- name: Add tag internal to {{ project }}-backend image
-  docker_image:
-    name: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-    repository: "{{ ecr_repo }}/{{ project }}-backend:internal-{{bento_api_version}}-{{build_number}}"
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add tag internal to {{ project }}-backend image
+#  docker_image:
+#    name: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
+#    repository: "{{ ecr_repo }}/{{ project }}-backend:internal-{{bento_api_version}}-{{build_number}}"
+#    force_tag: yes
+#    push: yes
+#    source: local
     
 ############################################################################################################################
 
@@ -193,10 +193,10 @@
     push: yes
     source: local
 
-- name: Add tag internal to {{ project }}-frontend image
-  docker_image:
-    name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
-    repository: "{{ ecr_repo }}/{{ project }}-frontend:internal-{{frontend_version}}-{{build_number}}"
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add tag internal to {{ project }}-frontend image
+#  docker_image:
+#    name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
+#    repository: "{{ ecr_repo }}/{{ project }}-frontend:internal-{{frontend_version}}-{{build_number}}"
+#    force_tag: yes
+#    push: yes
+#    source: local

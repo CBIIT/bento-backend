@@ -12,7 +12,7 @@
   loop:
     - npm set progress=false
     - npm install
-    - npm run build
+    # - npm run build
 
 - name: create digest_file_folder 
   file: 

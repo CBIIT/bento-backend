@@ -417,7 +417,7 @@
 ############################################################################################################################
 
 - name: Remove frontend internal tag
-  shell: "aws ecr batch-delete-image --region {{ region }} --repository-name {{ ecr_repo }}/{{ project }}-frontend --image-ids imageTag=internal-{{ frontend_version }}"
+  shell: "aws ecr batch-delete-image --region {{ region }} --repository-name {{ project }}-frontend --image-ids imageTag=internal-{{ frontend_version }}"
 #  docker_image:
 #    state: absent
 #    name: "{{ ecr_repo }}/{{ project }}-frontend"
@@ -425,7 +425,7 @@
   when: tier == "perf"
 
 - name: Remove backend internal tag
-  shell: "aws ecr batch-delete-image --region {{ region }} --repository-name {{ ecr_repo }}/{{ project }}-backend --image-ids imageTag=internal-{{ backend_version }}"
+  shell: "aws ecr batch-delete-image --region {{ region }} --repository-name {{ project }}-backend --image-ids imageTag=internal-{{ backend_version }}"
 #  docker_image:
 #    state: absent
 #    name: "{{ ecr_repo }}/{{ project }}-backend"

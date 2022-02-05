@@ -174,7 +174,10 @@ pipeline {
             }
             steps {
                 script{
+                    sh "cd ${WORKSPACE}/CCDC-ETL/"
+                    sh "ls -ltr"
                     sh "cd ${WORKSPACE}/CCDC-ETL/CCDC-ETL"
+                    sh "ls -ltr"
                     sh "node dropTable.js"
                 }
             }

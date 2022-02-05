@@ -214,7 +214,7 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      sh "echo $RDB_USER"
+                      echo $RDB_USER
                       sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
                     }
                 }
@@ -242,6 +242,7 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                      echo $RDB_USER
                       sh "node ${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }

@@ -175,8 +175,8 @@ pipeline {
             steps {
                 script{
                     sh "cd ${WORKSPACE}/CCDC-ETL/"
-                    sh "ls -ltr"
-                    sh "node dropTable.js"
+                    sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                    sh "node ${WORKSPACE}/CCDC-ETL/dropTable.js"
                 }
             }
     }
@@ -190,8 +190,8 @@ pipeline {
             steps {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
-                      sh "ls -ltr"
-                      sh "node createTable.js"
+                      sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                      sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
                     }
                 }
 
@@ -206,8 +206,8 @@ pipeline {
             steps {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
-                      sh "ls -ltr"
-                      sh "node index.js"
+                      sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                      sh "node ${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }
 

@@ -136,16 +136,16 @@ pipeline {
           }
         }
     }
-    withEnv(["tier = "${params.Environment}"",
-             "VERSION = "${params.Etl_Tag}"",
-             "ETL_VERSION = "${params.Etl_Tag}"",
-             "S3_FOLDER = "${params.S3Folder}"",
-             "RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"",
-             "RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"",
-             "RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"",
-             "ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"",
-             "ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"",
-             "DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}""]){
+    withEnv([tier = "${params.Environment}",
+             VERSION = "${params.Etl_Tag}",
+             ETL_VERSION = "${params.Etl_Tag}",
+             S3_FOLDER = "${params.S3Folder}",
+             RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}",
+             RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}",
+             RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}",
+             ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}",
+             ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}",
+             DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"]){
   	stage('build'){
       environment {
        VERSION = "${params.Etl_Tag}"
@@ -178,15 +178,15 @@ pipeline {
     } 
     stage('DropTable'){
             environment {
-                tier = "${params.Environment}"
-                VERSION = "${params.Etl_Tag}"
-                ETL_VERSION = "${params.Etl_Tag}"
-                S3_FOLDER = "${params.S3Folder}"
-                RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
-                RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
-                RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
-                ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
-                ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
+                tier = "${params.Environment}",
+                VERSION = ${params.Etl_Tag}",
+                ETL_VERSION = "${params.Etl_Tag}",
+                S3_FOLDER = "${params.S3Folder}",
+                RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}",
+                RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}",
+                RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}",
+                ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}",
+                ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}",
                 DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"
             }
             when {
@@ -204,15 +204,15 @@ pipeline {
     }
     stage('CreateTable'){
             environment {
-                tier = "${params.Environment}"
-                VERSION = "${params.Etl_Tag}"
-                ETL_VERSION = "${params.Etl_Tag}"
-                S3_FOLDER = "${params.S3Folder}"
-                RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
-                RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
-                RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
-                ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
-                ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
+                tier = "${params.Environment}",
+                VERSION = "${params.Etl_Tag}",
+                ETL_VERSION = "${params.Etl_Tag}",
+                S3_FOLDER = "${params.S3Folder}",
+                RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}",
+                RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}",
+                RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}",
+                ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}",
+                ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}",
                 DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"
             }
             when {

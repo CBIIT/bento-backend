@@ -1,7 +1,8 @@
 
 resource "aws_launch_configuration" "asg_launch_config" {
   name              = "${var.stack_name}-${var.env}-launch-configuration"
-  image_id          =  data.aws_ami.centos.id
+#  image_id          =  data.aws_ami.centos.id
+  image_id          =  data.aws_ssm_parameter.ecs_optimized.value
   instance_type     =  var.fronted_instance_type
   iam_instance_profile = aws_iam_instance_profile.ecs-instance-profile.id
   security_groups   = [aws_security_group.frontend_sg.id]

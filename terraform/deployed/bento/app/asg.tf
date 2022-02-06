@@ -321,7 +321,7 @@ mainSteps:
     - pip install ansible==2.8.0 boto boto3 botocore
     - git clone https://github.com/CBIIT/icdc-devops
     - cd icdc-devops/ansible && git checkout master
-    - ansible-playbook ecs-optimized.yml --skip-tags master -e stack_name="${var.stack_name}" -e ecs_cluster_name="${var.ecs_cluster_name}-${var.env}" -e env="${var.env}"
+    - ansible-playbook ecs-optimized-agent.yml --skip-tags master -e stack_name="${var.stack_name}" -e ecs_cluster_name="${var.ecs_cluster_name}-${var.env}" -e env="${var.env}"
     - systemctl restart docker
 DOC
   tags = merge(

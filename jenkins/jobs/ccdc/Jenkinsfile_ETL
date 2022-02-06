@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,stage,prod' )
+        value: 'dev,qa,demo' )
     gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Etl_Tag', 
@@ -71,6 +71,7 @@ pipeline {
   	maven 'Default' 
     jdk 'Default' 
   }
+
   stages{
   	stage('checkout'){
   		steps {
@@ -121,6 +122,11 @@ pipeline {
                   env.TIER  = "qa"
                 }
         break
+              case "demo":
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  env.TIER  = "demo"
+                }
+        break
               default:
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
                   env.TIER  = "dev"
@@ -130,7 +136,16 @@ pipeline {
           }
         }
     }
-
+    withEnv([tier = "${params.Environment}"
+             VERSION = "${params.Etl_Tag}"
+             ETL_VERSION = "${params.Etl_Tag}"
+             S3_FOLDER = "${params.S3Folder}"
+             RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
+             RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
+             RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
+             ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
+             ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
+             DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"]){
   	stage('build'){
       environment {
        VERSION = "${params.Etl_Tag}"
@@ -161,13 +176,57 @@ pipeline {
  			  }
  		  }
     } 
-    stage('dropTable'){
-      steps { 
-            script {
-                  println params.DataLoading 
+    stage('DropTable'){
+            
+            when {
+                expression { 
+                   return params.DataLoading.contains('DropTable')
+                }
             }
-        }    
+            steps {
+                script{
+                    sh "cd ${WORKSPACE}/CCDC-ETL/"
+                    sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                    sh "node ${WORKSPACE}/CCDC-ETL/dropTable.js"
+                }
+            }
     }
+    stage('CreateTable'){
+
+            when {
+                expression { 
+                   return params.DataLoading.contains('CreateTable')
+                }
+            }
+            steps {
+                    script{
+                      sh "cd ${WORKSPACE}/CCDC-ETL/"
+                      sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                      echo $RDB_USER
+                      sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
+                    }
+                }
+
+    }   
+    stage('LoadTable'){
+
+            when {
+                expression { 
+                   return params.DataLoading.contains('LoadTable')
+                }
+            }
+            steps {
+                    script{
+                      sh "cd ${WORKSPACE}/CCDC-ETL/"
+                      sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
+                      sh "echo $RDB_USER"
+                      sh "node ${WORKSPACE}/CCDC-ETL/index.js"
+                    }
+                }
+
+    }
+    }
+    
   }
   post {
 

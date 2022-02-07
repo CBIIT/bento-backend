@@ -417,11 +417,11 @@
 
 ############################################################################################################################
 
-# Remove the "internal" tag for backend and frontend images if deployed to Prod
+# Add the "production" tag for backend and frontend images if deployed to Prod
 
 ############################################################################################################################
 
-- name: Add tag internal to {{ project }}-frontend image
+- name: Add tag production to {{ project }}-frontend image
   docker_image:
     name: "{{ ecr_repo }}/{{ project }}-frontend:{{ frontend_version }}"
     repository: "{{ ecr_repo }}/{{ project }}-frontend:production-{{ frontend_version }}"

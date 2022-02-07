@@ -83,28 +83,25 @@ pipeline {
 //	The GUI definition for this parameter should follow Environment and use the following values:
 //	
 //	Script:
-//		env_value = Environment
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
-//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
-//		List tagnames = tags.collect{ '' + it + '' }
+//		branch_name = Branch
 //
-//		if(env_value.equalsIgnoreCase("dev")) {
-//		  for(int i=0; i < tagnames.size(); i++) {
-//			if(tagnames.get(i).equalsIgnoreCase("integration")) {
-//			  new_value = tagnames[i] + ':selected'
-//			  tagnames.set(i, new_value);
-//			  }
-//			}
+//		def cmd = "/usr/local/bin/aws ecr list-images --repository-name bento-frontend --filter tagStatus=TAGGED --region us-east-1 --output text"
+//		
+//		def ecr_images_json = cmd.execute()
+//		ecr_images_json.waitFor()
+//		
+//		def ecr_images_list = ecr_images_json.text.readLines().collect { it.substring(it.lastIndexOf("\t") + 1) }
+//		ecr_images_list.removeAll(['latest'] as Object[])
+//		ecr_images_list.removeAll { it.contains('internal') }
+//		
+//		List tagnames = ecr_images_list.sort()
+//		
+//		if(!branch_name.equals("Show All Tags")) {
+//		  def filteredtags = tagnames.findAll { it.contains branch_name }
+//		  return filteredtags
 //		  } else {
-//			for(int i=0; i < tagnames.size(); i++) {
-//			  if(tagnames.get(i).equalsIgnoreCase("master")) {
-//				new_value = tagnames[i] + ':selected'
-//				tagnames.set(i, new_value);
-//				}
-//			  }
-//			}
-//
-//		return tagnames
+//		      return tagnames
+//		      }
 //		
 //	Fallback Script:
 //		return ['integration']
@@ -129,25 +126,37 @@ pipeline {
 //	
 //	Script:
 //		front_tag = Frontend_Image
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
-//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
-//		List tagnames = tags.collect{ '' + it + '' }
-//
-//		for(int i=0; i < tagnames.size(); i++) {
-//		  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
-//			new_value = tagnames[i] + ':selected'
-//			tagnames.set(i, new_value);
+//		branch_name = Branch
+//		
+//		def cmd = "/usr/local/bin/aws ecr list-images --repository-name bento-backend --filter tagStatus=TAGGED --region us-east-1 --output text"
+//		
+//		def ecr_images_json = cmd.execute()
+//		ecr_images_json.waitFor()
+//		
+//		def ecr_images_list = ecr_images_json.text.readLines().collect { it.substring(it.lastIndexOf("\t") + 1) }
+//		ecr_images_list.removeAll(['latest'] as Object[])
+//		ecr_images_list.removeAll { it.contains('internal') }
+//		
+//		List tagnames = ecr_images_list.sort()
+//		
+//		if(!branch_name.equals("Show All Tags")) {
+//		  def filteredtags = tagnames.findAll { it.toLowerCase().contains branch_name.toLowerCase() }
+//		  for(int i=0; i < filteredtags.size(); i++) {
+//			if(filteredtags.get(i).equalsIgnoreCase(front_tag)) {
+//			  new_value = filteredtags[i] + ':selected'
+//			  filteredtags.set(i, new_value);
+//			  }
 //			}
-//		  }
-//
-//		for(int i=0; i < tagnames.size(); i++) {
-//		  if(tagnames.get(i).equalsIgnoreCase("Integration")) {
-//			new_value = tagnames[i] + ':selected'
-//			tagnames.set(i, new_value);
-//			}
-//		  }
-//
-//		return tagnames
+//		  return filteredtags
+//		  } else {
+//		    for(int i=0; i < tagnames.size(); i++) {
+//			  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
+//			    new_value = tagnames[i] + ':selected'
+//			    tagnames.set(i, new_value);
+//			    }
+//			  }
+//		        return tagnames
+//		    }
 //		
 //	Fallback Script:
 //		return ['Integration']

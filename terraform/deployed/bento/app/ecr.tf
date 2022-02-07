@@ -1,9 +1,9 @@
 
 resource "aws_ecr_repository" "ecr" {
-  name = "${lower(var.stack_name)}-${var.env}-ecr"
+  name = "${lower(var.stack_name)}-${terraform.workspace}"
   tags = merge(
   {
-    "Name" = format("%s-%s-%s",var.stack_name,var.env,"ecr-registry")
+    "Name" = format("%s-%s-%s",var.stack_name,terraform.workspace,"ecr-registry")
   },
   var.tags,
   )

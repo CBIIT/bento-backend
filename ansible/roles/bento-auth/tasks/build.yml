@@ -1,0 +1,30 @@
+---
+#################################################################################################
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: build cbiitssrepo/{{project}}-filedownloader image
+  docker_image:
+    build:
+      path: "{{workspace}}/bento-files"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/filedownload-dockerfile"
+      pull: yes
+      nocache: yes
+    name: cbiitssrepo/{{project}}-filedownloader
+    tag: "{{downloader_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to cbiitssrepo/{{project}}-filedownloader image
+  docker_image:
+    name: "cbiitssrepo/{{project}}-filedownloader:{{downloader_version}}-{{build_number}}"
+    repository: cbiitssrepo/{{project}}-filedownloader:latest
+    force_tag: yes
+    push: yes
+    source: local
+
+    

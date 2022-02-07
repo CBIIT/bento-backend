@@ -1,0 +1,131 @@
+---
+############################################################################################################################
+
+#     Task Definitions
+
+############################################################################################################################
+- name: set tier to prod for dev,qa,perf
+  set_fact:
+    cloudfront_key_group_name: "bento-prod-pub-key"
+  when: 
+    - tier == 'dev' or tier == 'qa' or tier == 'perf'
+    - project == 'bento'
+
+- name: get distribution domain name
+  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName |[0]" --output text
+  register: dist_info
+
+- name: retrieve key group id 
+  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]" --output text --region us-east-1
+  register: key_group
+
+- name: set facts distribution DomainName and key_group id
+  set_fact:
+    cloudfront_domain_name: "{{dist_info.stdout_lines | map('trim') | list |first}}"
+    cloudfront_key_group_id: "{{key_group.stdout_lines | map('trim') | list |first}}"
+
+- name: show cloudfront_key_group_name
+  debug:
+    msg: "{{cloudfront_key_group_id}}"
+
+
+- name: create task definition - {{project}} filedownloader
+  ecs_taskdefinition:
+    containers:
+    - name: downloader
+      essential: true
+      image: "cbiitssrepo/{{project}}-filedownloader:{{downloader_version}}"
+      environment:
+        - name: VERSION
+          value: "{{downloader_version}}"
+        - name: DATE
+          value: "{{ansible_date_time.date}}"
+        - name: PROJECT
+          value: "{{project}}"
+        - name: CF_URL
+          value: https://{{cloudfront_domain_name}}
+        - name: CF_PRIVATE_KEY
+          value: "{{cloudfront_private_key}}"
+        - name: CF_KEY_PAIR_ID
+          value: "{{cloudfront_key_group_id}}"
+        - name: URL_SRC
+          value: "{{url_src}}"
+        - name: BACKEND_URL
+          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/v1/graphql/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}"
+      portMappings:
+      - containerPort: "8081"
+        hostPort: "8081"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://{{ syslog_host }}:514
+          tag: "{{ app_name }}-file-downloader"
+          syslog-format: "rfc5424micro"
+    network_mode: bridge
+    family: "{{project}}-{{tier}}-file-downloader"
+    state: present
+    memory: '128'
+    cpu: '128'
+    region: "{{region}}"
+  register: task_output
+
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
+- name: query task definition - bento filedownloader
+  ecs_taskdefinition_info:
+    task_definition: "{{project}}-{{tier}}-file-downloader"
+    region: "{{region}}" 
+  register: task_downloader
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
+
+- name: query filedownloader service
+  ecs_service_info:
+    cluster: "{{project}}-{{tier}}"
+    service:  "{{project}}-{{tier}}-file-downloader"
+    details: true
+    region: "{{region}}"
+  register: service_downloader
+
+############################################################################################################################
+
+- name: set facts
+  set_fact:
+    downloader_revision: "{{task_downloader.revision}}"
+    task_downloader_name: "{{task_downloader.family}}"
+    lb_downloader: "{{service_downloader.services[0].loadBalancers}}"
+    role_arn: "{{service_downloader.services[0].roleArn}}"
+
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
+
+- name: update filedownloader service
+  ecs_service:
+    state: present
+    name: "{{project}}-{{tier}}-file-downloader"
+    cluster: "{{project}}-{{tier}}"
+    task_definition: "{{task_downloader_name}}:{{downloader_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_downloader}}"
+    region: "{{region}}"
+  register: service_downloader_output

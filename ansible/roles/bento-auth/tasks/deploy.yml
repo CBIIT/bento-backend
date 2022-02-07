@@ -2,7 +2,7 @@
   include_role:
     name: common
     tasks_from: ecr-login
-    
+
 - name: create task definition - {{project}} auth
   ecs_taskdefinition:
     containers:
@@ -69,9 +69,9 @@
 
 - name: set facts
   set_fact:
-    downloader_revision: "{{task_auth.revision}}"
-    task_downloader_name: "{{task_auth.family}}"
-    lb_downloader: "{{service_auth.services[0].loadBalancers}}"
+    auth_revision: "{{task_auth.revision}}"
+    task_auth_name: "{{task_auth.family}}"
+    lb_auth: "{{service_auth.services[0].loadBalancers}}"
     role_arn: "{{service_auth.services[0].roleArn}}"
 
 ############################################################################################################################
@@ -92,6 +92,6 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
     desired_count: 1
-    load_balancers: "{{ lb_downloader}}"
+    load_balancers: "{{ lb_auth}}"
     region: "{{region}}"
   register: service_auth_output

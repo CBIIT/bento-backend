@@ -83,28 +83,25 @@ pipeline {
 //	The GUI definition for this parameter should follow Environment and use the following values:
 //	
 //	Script:
-//		env_value = Environment
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
-//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
-//		List tagnames = tags.collect{ '' + it + '' }
+//		branch_name = Branch
 //
-//		if(env_value.equalsIgnoreCase("dev")) {
-//		  for(int i=0; i < tagnames.size(); i++) {
-//			if(tagnames.get(i).equalsIgnoreCase("integration")) {
-//			  new_value = tagnames[i] + ':selected'
-//			  tagnames.set(i, new_value);
-//			  }
-//			}
+//		def cmd = "/usr/local/bin/aws ecr list-images --repository-name bento-frontend --filter tagStatus=TAGGED --region us-east-1 --output text"
+//		
+//		def ecr_images_json = cmd.execute()
+//		ecr_images_json.waitFor()
+//		
+//		def ecr_images_list = ecr_images_json.text.readLines().collect { it.substring(it.lastIndexOf("\t") + 1) }
+//		ecr_images_list.removeAll(['latest'] as Object[])
+//		ecr_images_list.removeAll { it.contains('production') }
+//		
+//		List tagnames = ecr_images_list.sort()
+//		
+//		if(!branch_name.equals("Show All Tags")) {
+//		  def filteredtags = tagnames.findAll { it.contains branch_name }
+//		  return filteredtags
 //		  } else {
-//			for(int i=0; i < tagnames.size(); i++) {
-//			  if(tagnames.get(i).equalsIgnoreCase("master")) {
-//				new_value = tagnames[i] + ':selected'
-//				tagnames.set(i, new_value);
-//				}
-//			  }
-//			}
-//
-//		return tagnames
+//		      return tagnames
+//		      }
 //		
 //	Fallback Script:
 //		return ['integration']
@@ -129,25 +126,37 @@ pipeline {
 //	
 //	Script:
 //		front_tag = Frontend_Image
-//		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
-//		def tags = gettags.text.readLines().collect { it.split()[1].replaceAll('refs/heads/', '').replaceAll('refs/tags/', '').replaceAll("\\^\\{\\}", '')}
-//		List tagnames = tags.collect{ '' + it + '' }
-//
-//		for(int i=0; i < tagnames.size(); i++) {
-//		  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
-//			new_value = tagnames[i] + ':selected'
-//			tagnames.set(i, new_value);
+//		branch_name = Branch
+//		
+//		def cmd = "/usr/local/bin/aws ecr list-images --repository-name bento-backend --filter tagStatus=TAGGED --region us-east-1 --output text"
+//		
+//		def ecr_images_json = cmd.execute()
+//		ecr_images_json.waitFor()
+//		
+//		def ecr_images_list = ecr_images_json.text.readLines().collect { it.substring(it.lastIndexOf("\t") + 1) }
+//		ecr_images_list.removeAll(['latest'] as Object[])
+//		ecr_images_list.removeAll { it.contains('production') }
+//		
+//		List tagnames = ecr_images_list.sort()
+//		
+//		if(!branch_name.equals("Show All Tags")) {
+//		  def filteredtags = tagnames.findAll { it.toLowerCase().contains branch_name.toLowerCase() }
+//		  for(int i=0; i < filteredtags.size(); i++) {
+//			if(filteredtags.get(i).equalsIgnoreCase(front_tag)) {
+//			  new_value = filteredtags[i] + ':selected'
+//			  filteredtags.set(i, new_value);
+//			  }
 //			}
-//		  }
-//
-//		for(int i=0; i < tagnames.size(); i++) {
-//		  if(tagnames.get(i).equalsIgnoreCase("Integration")) {
-//			new_value = tagnames[i] + ':selected'
-//			tagnames.set(i, new_value);
-//			}
-//		  }
-//
-//		return tagnames
+//		  return filteredtags
+//		  } else {
+//		    for(int i=0; i < tagnames.size(); i++) {
+//			  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
+//			    new_value = tagnames[i] + ':selected'
+//			    tagnames.set(i, new_value);
+//			    }
+//			  }
+//		        return tagnames
+//		    }
 //		
 //	Fallback Script:
 //		return ['Integration']
@@ -294,7 +303,7 @@ pipeline {
 			expression { params.Flush_Redis }
 			}
 	
-  		environment {
+ 		environment {
 			TIER = "${params.Environment}"
 			}
 
@@ -312,7 +321,7 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-        
+       
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/redis.yml', 
@@ -356,7 +365,7 @@ pipeline {
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)
-  			}
+ 			}
 			
 			script {
 
@@ -378,7 +387,7 @@ pipeline {
             }
 
 		  }
-  		}
+ 		}
   	}
 	
 	stage('update database monitoring agents'){
@@ -400,7 +409,7 @@ pipeline {
 			
 		    echo "Recreating inventory file"
 			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
-            sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+           sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
             sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
@@ -428,6 +437,26 @@ pipeline {
     }
 
 	success {
+
+		script {
+		    if (env.Tier == 'prod') {
+			    withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+				    sh label: 'GIT-Set Releases', script: '''#!/bin/bash
+
+					data={\\"tag_name\\":\\"${Frontend_Image}\\"}
+					curl_cmd='curl -i -u michael-fleming:'${git_token}' POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-frontend/releases -d {"tag_name":"${Frontend_Image}"}'
+					$curl_cmd
+					
+					bento_tag=$(echo "${Backend_Image}" | sed 's/-/-bento-/g')
+					data={\\"tag_name\\":\\"$bento_tag\\"}
+					curl_cmd='curl -i -u michael-fleming:'${git_token}' POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-backend/releases -d '$data''
+					$curl_cmd
+
+				    '''
+
+				    }
+			    }
+			}
 
 		script {
 			if ("${params.Test_Params}"?.trim()) {

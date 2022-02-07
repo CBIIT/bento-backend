@@ -35,15 +35,23 @@ variable "container_replicas" {
 variable "frontend_container_port" {
   description = "port on which the container listens"
   type = number
+  default = 80
 }
 variable "backend_container_port" {
   description = "port on which the container listens"
   type = number
+  default = 8080
 }
 
 variable "downloader_container_port" {
   description = "port on which the container listens"
   type = number
+  default = 8081
+}
+variable "auth_container_port" {
+  description = "port on which the container listens"
+  type = number
+  default = 8082
 }
 variable "app_name" {
   description = "name of the application"
@@ -120,6 +128,11 @@ variable "downloader_rule_priority" {
   description = "priority number to assign to alb rule"
   type = number
   default = 91
+}
+variable "auth_rule_priority" {
+  description = "priority number to assign to alb rule"
+  type = number
+  default = 89
 }
 variable "backend_rule_priority" {
   description = "priority number to assign to alb rule"

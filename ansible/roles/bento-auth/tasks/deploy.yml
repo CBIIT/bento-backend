@@ -1,0 +1,97 @@
+- name: log into ecr
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: create task definition - {{project}} auth
+  ecs_taskdefinition:
+    containers:
+    - name: auth
+      essential: true
+      image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
+      environment:
+        - name: VERSION
+          value: "{{auth_version}}"
+        - name: DATE
+          value: "{{ansible_date_time.date}}"
+        - name: PROJECT
+          value: "{{project}}"
+        - name: BACKEND_URL
+          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/v1/graphql/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
+      portMappings:
+      - containerPort: "8082"
+        hostPort: "8082"
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: tcp://{{ syslog_host }}:514
+          tag: "{{ app_name }}-auth"
+          syslog-format: "rfc5424micro"
+    network_mode: bridge
+    family: "{{project}}-{{tier}}-auth"
+    state: present
+    memory: '128'
+    cpu: '128'
+    region: "{{region}}"
+  register: task_output
+
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
+- name: query task definition - bento auth
+  ecs_taskdefinition_info:
+    task_definition: "{{project}}-{{tier}}-auth"
+    region: "{{region}}" 
+  register: task_auth
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
+
+- name: query auth service
+  ecs_service_info:
+    cluster: "{{project}}-{{tier}}"
+    service:  "{{project}}-{{tier}}-auth"
+    details: true
+    region: "{{region}}"
+  register: service_auth
+
+############################################################################################################################
+
+- name: set facts
+  set_fact:
+    auth_revision: "{{task_auth.revision}}"
+    task_auth_name: "{{task_auth.family}}"
+    lb_auth: "{{service_auth.services[0].loadBalancers}}"
+    role_arn: "{{service_auth.services[0].roleArn}}"
+
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
+
+- name: update auth service
+  ecs_service:
+    state: present
+    name: "{{project}}-{{tier}}-auth"
+    cluster: "{{project}}-{{tier}}"
+    task_definition: "{{task_auth_name}}:{{auth_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_auth}}"
+    region: "{{region}}"
+  register: service_auth_output

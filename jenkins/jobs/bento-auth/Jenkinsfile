@@ -1,0 +1,188 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILES_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline { 
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,perf,icdc,prod' )
+    extendedChoice( 
+        name: 'Project', 
+        defaultValue: 'bento', 
+        description: 'Choose project to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'bento,gmb,icdc,ctdc,c3dc' )
+   	gitParameter(branchFilter: 'origin/(.*)',
+       defaultValue: 'main', 
+       name: 'Auth_Tag',
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/bento-files')
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Auth_Tag}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-files']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-files']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+    
+  	stage('build'){
+      environment {
+       FILES_SLACK_URL = "${FILES_SLACK_URL}"
+       AUTH_VERSION = "${params.Auth_Tag}-${BUILD_NUMBER}"
+      }
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+                  ansiblePlaybook(  			
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-auth.yml',
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						extraVars: [
+                       		tier: "${params.Environment}",
+                            project: "${params.Project}"
+                        ],
+						colorized: true)
+ 			}
+ 		}
+  	}
+
+  	stage('deploy'){
+	  environment {
+       AUTH_VERSION = "${params.Auth_Tag}-${BUILD_NUMBER}"
+       FILES_SLACK_URL = "${FILES_SLACK_URL}"
+      }
+  		steps{
+  		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-auth.yml',
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		extraVars: [
+                     tier: "${params.Environment}",
+                     project: "${params.Project}"
+                    ],
+					colorized: true)
+  			}
+		  }
+  		}
+  	}
+  }
+  post {
+
+	always {
+
+      sendSlackMessage()
+
+    }
+
+	success {
+
+		script {
+			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+				sh label: 'GIT-Tag Auth', script: '''#!/bin/bash
+				cd ${WORKSPACE}/bento-files
+				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+				echo "Applying tag $Auth_Tag to URL:  $gitURL"
+				git config user.email "jenkins@bento-tools.org"
+				git config user.name "Bento Jenkins"
+				git tag --no-sign -a ${Auth_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Auth_Tag}-${BUILD_NUMBER}"
+				git push https://${git_token}:x-oauth-basic@${gitURL} --tags 
+				
+				'''
+			
+				}
+			}
+	
+		
+		}
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

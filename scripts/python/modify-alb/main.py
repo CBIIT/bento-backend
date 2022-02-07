@@ -12,5 +12,23 @@ session = boto3.Session(profile_name="icdc")
 client = session.client('elbv2', config=config)
 
 response = client.describe_load_balancers()
-albs = [alb["LoadBalancerName"] for alb in response["LoadBalancers"]]
-print(albs)
+albs = [{"alb_arn": alb["LoadBalancerArn"], "alb_name": alb["LoadBalancerName"]} for alb in response["LoadBalancers"]]
+
+for alb in albs:
+    response = client.modify_load_balancer_attributes(
+        LoadBalancerArn=alb["alb_arn"],
+        Attributes=[
+            {
+                'Key': 'access_logs.s3.enabled',
+                'Value': 'true'
+            },
+            {
+                'Key': 'access_logs.s3.bucket',
+                'Value': 'bento-alb-access-logs'
+            },
+            {
+                'Key': 'access_logs.s3.prefix',
+                'Value': alb["alb_name"]
+            },
+        ]
+    )

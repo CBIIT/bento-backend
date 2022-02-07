@@ -1,0 +1,15 @@
+---
+# vars file for cicd
+stack_name: "{{project}}"
+platform: aws
+project: "{{project}}"
+tier: "{{ lookup('env','TIER') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
+app_name: "{{project}}-{{platform}}-{{tier}}"
+auth_version: "{{ lookup('env','AUTH_VERSION') }}"
+region: "us-east-1"

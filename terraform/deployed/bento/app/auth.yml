@@ -1,0 +1,8 @@
+---
+- name: auth
+  image: cbiitssrepo/bento-auth:latest
+  essential: true
+  portMappings:
+    - protocol: tcp
+      containerPort: 8082
+      hostPort: 8082

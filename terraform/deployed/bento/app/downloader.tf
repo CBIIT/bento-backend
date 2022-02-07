@@ -17,8 +17,8 @@ resource "aws_ecs_service" "downloader_service" {
 resource "aws_ecs_task_definition" "downloader" {
   family        = "${var.stack_name}-${var.env}-file-downloader"
   network_mode  = "bridge"
-  cpu = "512"
-  memory = "1024"
+  cpu = "256"
+  memory = "512"
   container_definitions = jsonencode(yamldecode(file("downloader.yml")))
   tags = merge(
   {
@@ -88,27 +88,6 @@ resource "aws_lb_listener_rule" "downloader_alb_listener_prod" {
   }
 }
 
-//resource "aws_lb_listener_rule" "downloader_alb_listener_prod_others" {
-//  count =  var.env ==  "prod" ? 1:0
-//  listener_arn = module.alb.alb_https_listener_arn
-//  priority = var.downloader_rule_priority
-//  action {
-//    type = "forward"
-//    target_group_arn = aws_lb_target_group.downloader_target_group.arn
-//  }
-//
-//  condition {
-//    host_header {
-//      values = ["${lower(var.stack_name)}.${var.domain_name}"]
-//    }
-//  }
-//  condition {
-//    path_pattern  {
-//      values = ["/api/files/*"]
-//    }
-//  }
-//}
-
 
 resource "aws_lb_listener_rule" "downloader_alb_listener" {
   count =  var.env !=  "prod" ? 1:0
@@ -131,26 +110,3 @@ resource "aws_lb_listener_rule" "downloader_alb_listener" {
   }
 
 }
-
-
-//resource "aws_lb_listener_rule" "downloader_alb_listener_others" {
-//  count =  var.stack_name != "bento" && var.env !=  "prod" ? 1:0
-//  listener_arn = module.alb.alb_https_listener_arn
-//  priority = var.downloader_rule_priority
-//  action {
-//    type = "forward"
-//    target_group_arn = aws_lb_target_group.downloader_target_group.arn
-//  }
-//
-//  condition {
-//    host_header {
-//      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
-//    }
-//  }
-//  condition {
-//    path_pattern  {
-//      values = ["/api/files/*"]
-//    }
-//  }
-//
-//}

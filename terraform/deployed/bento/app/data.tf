@@ -81,3 +81,7 @@ EOF
     content      = file("ssm.sh")
   }
 }
+
+data "aws_ssm_parameter" "ecs_optimized" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+}

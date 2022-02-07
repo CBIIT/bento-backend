@@ -10,6 +10,11 @@
   set_fact:
     ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
 
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
+
 ############################################################################################################################
 
 #     Task Definitions
@@ -409,6 +414,32 @@
     load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"
   register: service_frontend_output
+
+############################################################################################################################
+
+# Add the "production" tag for backend and frontend images if deployed to Prod
+
+############################################################################################################################
+
+- name: Add tag production to {{ project }}-frontend image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ project }}-frontend:{{ frontend_version }}"
+    repository: "{{ ecr_repo }}/{{ project }}-frontend:production-{{ frontend_version }}"
+    force_tag: yes
+    push: yes
+    source: pull
+  when: tier == "prod"
+
+- name: Add tag production to {{ project }}-backend image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ project }}-backend:{{ bento_api_version }}"
+    repository: "{{ ecr_repo }}/{{ project }}-backend:production-{{ bento_api_version }}"
+    force_tag: yes
+    push: yes
+    source: pull
+  when: tier == "prod"
+
+###############################################################################################################################
 
 #- name: Pause for 20 seconds to allow updates to take effect
 #  pause:

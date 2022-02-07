@@ -1,4 +1,8 @@
-
+- name: log into ecr
+  include_role:
+    name: common
+    tasks_from: ecr-login
+    
 - name: create task definition - {{project}} auth
   ecs_taskdefinition:
     containers:

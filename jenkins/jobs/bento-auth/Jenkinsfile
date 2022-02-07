@@ -48,7 +48,7 @@ pipeline {
         description: 'Choose project to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'bento,gmb,icdc,ctdc,c3dc' )
-   	gitParameter(branchFilter: 'origin/(.*)', 
+   	gitParameter(branchFilter: 'origin/(.*)',
        defaultValue: 'main', 
        name: 'Auth_Tag',
        type: 'PT_BRANCH_TAG',
@@ -70,7 +70,7 @@ pipeline {
   	stage('checkout'){
   		steps {
 			checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Downloader_Tag}"]],
+				branches: [[name: "${params.Auth_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'bento-files']],

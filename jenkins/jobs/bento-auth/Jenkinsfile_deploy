@@ -57,7 +57,7 @@ pipeline {
 	  environment {
 	   FILES_SLACK_URL = "${FILES_SLACK_URL}"
        TIER = "${params.Environment}"
-	   AUTH_VERSION = "${params.Downloader_Tag}"
+	   AUTH_VERSION = "${params.Auth_Tag}"
       }
   		steps{
 		  node('cicd_microservice') {

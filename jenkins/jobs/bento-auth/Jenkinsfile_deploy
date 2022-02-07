@@ -42,6 +42,12 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,perf,icdc,prod')
+    extendedChoice(
+        name: 'Project',
+        defaultValue: 'bento',
+        description: 'Choose project to build',
+        type: 'PT_SINGLE_SELECT',
+        value: 'bento,gmb,icdc,ctdc,c3dc' )
 
 
   }
@@ -79,7 +85,8 @@ pipeline {
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-auth.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
-                     placeholder: 'yes',
+                    tier: "${params.Environment}",
+                    project: "${params.Project}"
                     ],
           colorized: true)
         }

@@ -152,6 +152,7 @@ resource "aws_lb_target_group" "backend_target_group" {
   health_check {
     path = "/ping"
     protocol = "HTTP"
+    port = var.backend_container_port
     matcher = "200"
     interval = 15
     timeout = 3

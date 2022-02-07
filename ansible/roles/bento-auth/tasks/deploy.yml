@@ -4,7 +4,7 @@
     containers:
     - name: auth
       essential: true
-      image: "{{ ecr_repo }}/{{ project }}-{{tier}}/{{project}}-auth:{{auth_version}}"
+      image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
       environment:
         - name: VERSION
           value: "{{auth_version}}"

@@ -21,8 +21,8 @@
 
 - name: Add tag latest to cbiitssrepo/{{project}}-filedownloader image
   docker_image:
-    name: "{{ ecr_repo }}/{{ project }}-{{tier}}/{{project}}-auth:{{auth_version}}"
-    repository: "{{ ecr_repo }}/{{ project }}-{{tier}}/{{project}}-auth:latest"
+    name: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
+    repository: "{{ ecr_repo }}/{{project}}-auth:latest"
     force_tag: yes
     push: yes
     source: local

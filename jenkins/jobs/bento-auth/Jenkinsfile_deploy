@@ -57,7 +57,7 @@ pipeline {
 	  environment {
 	   FILES_SLACK_URL = "${FILES_SLACK_URL}"
        TIER = "${params.Environment}"
-	     DOWNLOADER_VERSION = "${params.Downloader_Tag}"
+	   AUTH_VERSION = "${params.Downloader_Tag}"
       }
   		steps{
 		  node('cicd_microservice') {
@@ -76,7 +76,7 @@ pipeline {
 				])
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-auth.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
                      placeholder: 'yes',

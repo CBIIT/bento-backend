@@ -1,0 +1,12 @@
+---
+- name: build stage of bento-auth
+  hosts: bento
+  connection: local
+  gather_facts: no
+  become: yes
+    
+  tasks:
+    - name: This is a build stage of bento-auth
+      include_role:
+        name: bento-auth
+        tasks_from: build

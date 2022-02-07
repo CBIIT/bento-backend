@@ -50,7 +50,7 @@ pipeline {
         value: 'bento,gmb,icdc,ctdc,c3dc' )
    	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
-       name: 'Downloader_Tag', 
+       name: 'Auth_Tag',
        type: 'PT_BRANCH_TAG',
        quickFilterEnabled: false, 
        selectedValue: 'DEFAULT', 
@@ -98,28 +98,25 @@ pipeline {
   	stage('build'){
       environment {
        FILES_SLACK_URL = "${FILES_SLACK_URL}"
-       DOWNLOADER_VERSION = "${params.Downloader_Tag}"
+       AUTH_VERSION = "${params.Auth_Tag}-${BUILD_NUMBER}"
       }
  		steps {
-
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-file-downloader.yml', 
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-auth.yml',
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                        		tier: "${params.Environment}",
-                          project: "${params.Project}"
+                            project: "${params.Project}"
                         ],
 						colorized: true)
- 				}
  			}
  		}
   	}
 
   	stage('deploy'){
 	  environment {
-       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
+       AUTH_VERSION = "${params.Auth_Tag}-${BUILD_NUMBER}"
        FILES_SLACK_URL = "${FILES_SLACK_URL}"
       }
   		steps{
@@ -140,7 +137,7 @@ pipeline {
 			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-auth.yml',
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                      tier: "${params.Environment}",
@@ -164,13 +161,13 @@ pipeline {
 
 		script {
 			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
-				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
+				sh label: 'GIT-Tag Auth', script: '''#!/bin/bash
 				cd ${WORKSPACE}/bento-files
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
-				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
+				echo "Applying tag $Auth_Tag to URL:  $gitURL"
 				git config user.email "jenkins@bento-tools.org"
 				git config user.name "Bento Jenkins"
-				git tag --no-sign -a ${Downloader_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
+				git tag --no-sign -a ${Auth_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Auth_Tag}-${BUILD_NUMBER}"
 				git push https://${git_token}:x-oauth-basic@${gitURL} --tags 
 				
 				'''

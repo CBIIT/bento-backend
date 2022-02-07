@@ -1,0 +1,12 @@
+---
+- name: deploy stage of bento-auth pipeline
+  hosts: bento
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: deploy stage
+      include_role:
+        name: bento-auth
+        tasks_from: deploy
+    

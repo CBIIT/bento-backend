@@ -114,7 +114,7 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  env.TIER  = "dev"
+                  env.TIER  = "dev",
                   tier = "${params.Environment}",
                   VERSION = "${params.Etl_Tag}",
                   ETL_VERSION = "${params.Etl_Tag}",
@@ -129,7 +129,7 @@ pipeline {
         break
               case "qa":
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  env.TIER  = "qa"
+                  env.TIER  = "qa",
                   tier = "${params.Environment}",
                   VERSION = "${params.Etl_Tag}",
                   ETL_VERSION = "${params.Etl_Tag}",
@@ -144,7 +144,7 @@ pipeline {
         break
               case "demo":
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  env.TIER  = "demo"
+                  env.TIER  = "demo",
                   tier = "${params.Environment}",
                   VERSION = "${params.Etl_Tag}",
                   ETL_VERSION = "${params.Etl_Tag}",

@@ -239,7 +239,7 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      sh "echo $RDB_USER"
+                      sh "echo $S3_FOLDER"
                       sh "node ${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }

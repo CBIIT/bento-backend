@@ -368,6 +368,9 @@
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
+      deployment_circuit_breaker:
+        enable: true
+        rollback: true
     desired_count: 1
     region: "{{region}}"
   register: service_sumo_docker_output
@@ -382,6 +385,9 @@
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
+      deployment_circuit_breaker:
+        enable: true
+        rollback: true
     desired_count: 1
     region: "{{region}}"
   register: service_nr_docker_output
@@ -397,6 +403,9 @@
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
+      deployment_circuit_breaker:
+        enable: true
+        rollback: false
     desired_count: 1
     load_balancers: "{{ lb_backend }}"
     region: "{{region}}"
@@ -413,6 +422,9 @@
     deployment_configuration:
       minimum_healthy_percent: 0
       maximum_percent: 100
+      deployment_circuit_breaker:
+        enable: true
+        rollback: false
     desired_count: 1
     load_balancers: "{{ lb_frontend }}"
     region: "{{region}}"

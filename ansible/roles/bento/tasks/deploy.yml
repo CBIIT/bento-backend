@@ -352,8 +352,8 @@
       minimum_healthy_percent: 0
       maximum_percent: 100
       deployment_circuit_breaker:
-        - enable: true
-        - rollback: true
+        enable: true
+        rollback: true
     desired_count: 1
     region: "{{region}}"
   register: service_sumo_syslog_output

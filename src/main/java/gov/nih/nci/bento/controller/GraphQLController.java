@@ -132,9 +132,8 @@ public class GraphQLController {
 
 	private String query(String sdl, Map<String, Object> variables) {
 		ExecutionInput.Builder builder = ExecutionInput.newExecutionInput().query(sdl);
-		if (variables != null) {
-			builder = builder.variables(variables);
-		}
+		if (variables != null) builder = builder.variables(variables);
+
 		ExecutionInput input = builder.build();
 		ExecutionResult executionResult = graphql.execute(input);
 		Map<String, Object> standardResult = executionResult.toSpecification();

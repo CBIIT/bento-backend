@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import gov.nih.nci.bento.constants.Constants;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.DataFetcher;
@@ -44,7 +45,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -123,11 +126,9 @@ public class GraphQLController {
 			String error = ApiError.jsonApiError(status, "Request type has been disabled", operation+" operations have been disabled in the application configuration.");
 			return logAndReturnError(status, error);
 		}
-		else {
-			HttpStatus status = HttpStatus.BAD_REQUEST;
-			String error = ApiError.jsonApiError(status, "Unknown operation in request", operation+" operation is not recognized.");
-			return logAndReturnError(status, error);
-		}
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		String error = ApiError.jsonApiError(status, "Unknown operation in request", operation+" operation is not recognized.");
+		return logAndReturnError(status, error);
 	}
 
 	private String query(String sdl, Map<String, Object> variables) {
@@ -158,9 +159,7 @@ public class GraphQLController {
 			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
 			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
 		}
-		else{
-			return null;
-		}
+		return null;
 	}
 
 	@NotNull
@@ -177,16 +176,8 @@ public class GraphQLController {
 
 
 	private GraphQLSchema mergeSchema(GraphQLSchema schema1, GraphQLSchema schema2) {
-		String QUERY_TYPE_NAME = "Query";
-		String MUTATION_TYPE_NAME = "Mutation";
-		String SUBSCRIPTION_TYPE_NAME = "Subscription";
-
-		if (schema1 == null) {
-			return schema2;
-		}
-		if (schema2 == null) {
-			return schema1;
-		}
+		if (schema1 == null) return schema2;
+		if (schema2 == null) return schema1;
 
 		var builder = GraphQLSchema.newSchema(schema1);
 		var codeRegistry2 = schema2.getCodeRegistry();
@@ -195,28 +186,21 @@ public class GraphQLController {
 		allTypes.putAll(schema2.getTypeMap());
 
 		//Remove individual schema query, mutation, and subscription types from all types to prevent naming conflicts
-		allTypes = removeQueryMutationSubscription(allTypes, schema1);
-		allTypes = removeQueryMutationSubscription(allTypes, schema2);
+		allTypes = removeQueryMutationSubscription(allTypes, Arrays.asList(schema1, schema2));
 
 		//Add merged query, mutation, and subscription types
 		GraphQLNamedType mergedQuery = mergeType(schema1.getQueryType(), schema2.getQueryType());
-		if (mergedQuery != null){
-			allTypes.put(QUERY_TYPE_NAME, mergedQuery);
-		}
+		if (mergedQuery != null) allTypes.put(Constants.GRAPHQL.QUERY_TYPE_NAME, mergedQuery);
 
 		GraphQLNamedType mergedMutation = mergeType(schema1.getMutationType(), schema2.getMutationType());
-		if (mergedMutation != null){
-			allTypes.put(MUTATION_TYPE_NAME, mergedMutation);
-		}
+		if (mergedMutation != null)	allTypes.put(Constants.GRAPHQL.MUTATION_TYPE_NAME, mergedMutation);
 
 		GraphQLNamedType mergedSubscription = mergeType(schema1.getSubscriptionType(), schema2.getSubscriptionType());
-		if (mergedSubscription != null){
-			allTypes.put(SUBSCRIPTION_TYPE_NAME, mergedSubscription);
-		}
+		if (mergedSubscription != null) allTypes.put(Constants.GRAPHQL.SUBSCRIPTION_TYPE_NAME, mergedSubscription);
 
-		builder.query((GraphQLObjectType) allTypes.get(QUERY_TYPE_NAME));
-		builder.mutation((GraphQLObjectType) allTypes.get(MUTATION_TYPE_NAME));
-		builder.subscription((GraphQLObjectType) allTypes.get(SUBSCRIPTION_TYPE_NAME));
+		builder.query((GraphQLObjectType) allTypes.get(Constants.GRAPHQL.QUERY_TYPE_NAME));
+		builder.mutation((GraphQLObjectType) allTypes.get(Constants.GRAPHQL.MUTATION_TYPE_NAME));
+		builder.subscription((GraphQLObjectType) allTypes.get(Constants.GRAPHQL.SUBSCRIPTION_TYPE_NAME));
 
 		builder.clearAdditionalTypes();
 		allTypes.values().forEach(builder::additionalType);
@@ -225,35 +209,34 @@ public class GraphQLController {
 	}
 
 	private HashMap<String, GraphQLNamedType> removeQueryMutationSubscription(
-			HashMap<String, GraphQLNamedType> allTypes, GraphQLSchema schema){
-		try{
-			String name = schema.getQueryType().getName();
-			allTypes.remove(name);
-		}
-		catch (NullPointerException e){}
+			HashMap<String, GraphQLNamedType> allTypes, List<GraphQLSchema> schemas){
 
-		try{
-			String name = schema.getMutationType().getName();
-			allTypes.remove(name);
-		}
-		catch (NullPointerException e){}
+		schemas.forEach((schema)->{
+			try {
+				String name = schema.getQueryType().getName();
+				allTypes.remove(name);
+			}
+			catch (NullPointerException e){}
 
-		try{
-			String name = schema.getSubscriptionType().getName();
-			allTypes.remove(name);
-		}
-		catch (NullPointerException e){}
+			try {
+				String name = schema.getMutationType().getName();
+				allTypes.remove(name);
+			}
+			catch (NullPointerException e){}
 
+			try {
+				String name = schema.getSubscriptionType().getName();
+				allTypes.remove(name);
+			}
+			catch (NullPointerException e){}
+		});
 		return allTypes;
 	}
 
 	private GraphQLNamedType mergeType(GraphQLObjectType type1, GraphQLObjectType type2) {
-		if (type1 == null) {
-			return type2;
-		}
-		if (type2 == null) {
-			return type1;
-		}
+		if (type1 == null) return type2;
+		if (type2 == null) return type1;
+
 		var builder = GraphQLObjectType.newObject(type1);
 		type2.getFieldDefinitions().forEach(builder::field);
 		return builder.build();

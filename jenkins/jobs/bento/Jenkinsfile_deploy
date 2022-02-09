@@ -273,7 +273,7 @@ pipeline {
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
 				  env.SLACK_CHANNEL = "#system-alerts-prod"
-				  env.ES_HOST = "${ES_HOST}
+				  env.ES_HOST = "${ES_HOST}"
                 }
               break
               case "icdc":

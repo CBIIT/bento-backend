@@ -50,7 +50,7 @@ pipeline {
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: ' https://github.com/CBIIT/CCDC-ETL')
+       useRepository: 'https://github.com/CBIIT/CCDC-ETL')
     string(defaultValue: "etl-digest-files", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -169,7 +169,7 @@ pipeline {
           }
         }
     }
-  	stage('build'){
+/*  	stage('build'){
       environment {
        VERSION = "${params.Etl_Tag}"
        ETL_VERSION = "${params.Etl_Tag}"
@@ -194,7 +194,7 @@ pipeline {
  				  }
  			  }
  		  }
-    } 
+    } */
     stage('DropTable'){
             
             when {
@@ -222,7 +222,7 @@ pipeline {
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
                       echo env.DIGEST_FILE_FOLDER
-                      sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
+                      echo ${params.S3Folder}
                     }
                 }
 
@@ -238,8 +238,6 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      sh "echo $S3_FOLDER"
-                      sh "node ${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }
     }

@@ -3,10 +3,10 @@
 redis_host: 
   dev: "bento-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
   qa: "bento-qa-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
-  perf: "bento-perf-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  perf: "bento-perf-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
   icdc: "bento-icdc-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
   ctdc: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
-  prod: "bento-prod-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+  prod: "bento-prod-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
 
 schema_file: "bento-extended.graphql"
 

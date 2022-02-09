@@ -129,6 +129,16 @@ pipeline {
 				  env.NEO4J_IP       = "${NEO4J_PERF_IP}"
                 }
               break
+              case "prod":
+               withCredentials([usernamePassword(credentialsId: 'bento_perf_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+              		string(credentialsId: 'es_prod_host', variable: 'ES_HOST')]) {
+                      env.ES_HOST          = "https://${ES_HOST}"
+              			env.PROJECT        = "bento"
+              			env.TIER           = "${params.Environment}"
+              			env.NEO4J_PASSWORD = "${neo4j_password}"
+              			env.NEO4J_IP       = "${NEO4J_PERF_IP}"
+                    }
+              break
               case "gitlab":
                 withCredentials([usernamePassword(credentialsId: 'bento_gitlab_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
 				     string(credentialsId: 'es_gitlab_host', variable: 'ES_HOST')]) {

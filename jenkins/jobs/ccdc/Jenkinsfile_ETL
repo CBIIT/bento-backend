@@ -113,8 +113,8 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]),
-                withCredentials([usernamePassword(credentialsId: 'ccdc-dev-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+                usernamePassword(credentialsId: 'ccdc-dev-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
                 string(credentialsId: 'ccdc-dev-es-host', variable: 'ES_HOST')]){
                   env.TIER  = "dev"
                   tier = "${params.Environment}"
@@ -129,8 +129,8 @@ pipeline {
                 }
         break
               case "qa":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]),
-                withCredentials([usernamePassword(credentialsId: 'ccdc-qa-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+                usernamePassword(credentialsId: 'ccdc-qa-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
                 string(credentialsId: 'ccdc-qa-es-host', variable: 'ES_HOST')]){
                   env.TIER  = "dev"
                   tier = "${params.Environment}"
@@ -145,8 +145,8 @@ pipeline {
                 }
         break
               case "demo":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]),
-                withCredentials([usernamePassword(credentialsId: 'ccdc-demo-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+                usernamePassword(credentialsId: 'ccdc-demo-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
                 string(credentialsId: 'ccdc-demo-es-host', variable: 'ES_HOST')]){
                   env.TIER  = "dev"
                   tier = "${params.Environment}"

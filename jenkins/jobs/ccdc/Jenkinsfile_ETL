@@ -223,7 +223,6 @@ pipeline {
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
                       echo env.DIGEST_FILE_FOLDER
                       echo ${params.S3Folder}
-                      sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
                     }
                 }
 
@@ -239,7 +238,6 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      #sh "node ${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }
     }

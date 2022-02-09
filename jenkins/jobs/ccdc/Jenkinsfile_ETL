@@ -221,7 +221,7 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      echo $DIGEST_FILE_FOLDER
+                      echo env.DIGEST_FILE_FOLDER
                       sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
                     }
                 }

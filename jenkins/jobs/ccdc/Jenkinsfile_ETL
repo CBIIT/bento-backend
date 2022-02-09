@@ -113,48 +113,51 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]),
+                withCredentials([usernamePassword(credentialsId: 'ccdc-dev-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
+                string(credentialsId: 'ccdc-dev-es-host', variable: 'ES_HOST')]){
                   env.TIER  = "dev"
                   tier = "${params.Environment}"
                   VERSION = "${params.Etl_Tag}"
                   ETL_VERSION = "${params.Etl_Tag}"
-                  S3_FOLDER = "${params.S3Folder}"
-                  RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
-                  RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
-                  RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
-                  ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
-                  ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
-                  DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"
+                  RDB_PORT = "3306"
+                  env.RDB_USER = ${RDB_USER}"
+                  env.RDB_PASSWORD = ${RDB_PASSWORD}"
+                  env.ES_HOST = "${ES_HOST}"
+                  ES_PORT = "9200"
+                  DIGEST_FILE_FOLDER = "${params.S3Folder}"
                 }
         break
               case "qa":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  env.TIER  = "qa"
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]),
+                withCredentials([usernamePassword(credentialsId: 'ccdc-qa-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
+                string(credentialsId: 'ccdc-qa-es-host', variable: 'ES_HOST')]){
+                  env.TIER  = "dev"
                   tier = "${params.Environment}"
                   VERSION = "${params.Etl_Tag}"
                   ETL_VERSION = "${params.Etl_Tag}"
-                  S3_FOLDER = "${params.S3Folder}"
-                  RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
-                  RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
-                  RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
-                  ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
-                  ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
-                  DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"
+                  RDB_PORT = "3306"
+                  env.RDB_USER = ${RDB_USER}"
+                  env.RDB_PASSWORD = ${RDB_PASSWORD}"
+                  env.ES_HOST = "${ES_HOST}"
+                  ES_PORT = "9200"
+                  DIGEST_FILE_FOLDER = "${params.S3Folder}"
                 }
         break
               case "demo":
-                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  env.TIER  = "demo"
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]),
+                withCredentials([usernamePassword(credentialsId: 'ccdc-demo-rds-cred', passwordVariable: 'RDB_PASSWORD', usernameVariable: 'RDB_USER'),
+                string(credentialsId: 'ccdc-demo-es-host', variable: 'ES_HOST')]){
+                  env.TIER  = "dev"
                   tier = "${params.Environment}"
                   VERSION = "${params.Etl_Tag}"
                   ETL_VERSION = "${params.Etl_Tag}"
-                  S3_FOLDER = "${params.S3Folder}"
-                  RDB_PORT = "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}"
-                  RDB_USER = "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}"
-                  RDB_PASSWORD = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}"
-                  ES_HOST = "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}"
-                  ES_PORT = "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}"
-                  DIGEST_FILE_FOLDER = "{{ lookup('env','S3_FOLDER') }}"
+                  RDB_PORT = "3306"
+                  env.RDB_USER = ${RDB_USER}"
+                  env.RDB_PASSWORD = ${RDB_PASSWORD}"
+                  env.ES_HOST = "${ES_HOST}"
+                  ES_PORT = "9200"
+                  DIGEST_FILE_FOLDER = "${params.S3Folder}"
                 }
         break
               default:
@@ -181,15 +184,11 @@ pipeline {
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                         tier: "${params.Environment}",
-                        s3_folder: "${params.S3Folder}",
+                        DIGEST_FILE_FOLDER: "${params.S3Folder}",
                         deployment_type: "${params.Deployment_Type}",
                         stack_name: "ccdc",
-                        rds_port: "{{ lookup('aws_ssm', 'rds_port', region='us-east-1' ) }}",
-                        rds_user: "{{ lookup('aws_ssm', 'rds_user', region='us-east-1' ) }}",
-                        rds_password: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-rds-password', region='us-east-1' ) }}",
-                        es_host: "{{ lookup('aws_ssm', '{{stack_name}}-{{tier}}-es-host', region='us-east-1' ) }}",
-                        es_port: "{{ lookup('aws_ssm', 'es_port', region='us-east-1' ) }}",
-                        digest_file_folder: "{{ lookup('env','S3_FOLDER') }}"
+                        RDB_PORT: "3306",
+                        ES_PORT: "9200"
             ],
 						colorized: true)
  				  }
@@ -222,7 +221,7 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      echo $S3_FOLDER
+                      echo $DIGEST_FILE_FOLDER
                       sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
                     }
                 }

@@ -43,7 +43,7 @@ public class ESService {
         String host = config.getEsHost().trim();
         String scheme = config.getEsScheme();
         int port = config.getEsPort();
-        if (config.getEsSignRequests()) {
+        if (config.isEsSignRequests()) {
             AWS4Signer signer = new AWS4Signer();
             signer.setServiceName(serviceName);
             signer.setRegionName(region);

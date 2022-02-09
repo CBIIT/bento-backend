@@ -20,12 +20,12 @@ import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -52,17 +52,13 @@ import java.util.Map;
 
 @RestController
 @DependsOn({"neo4jDataFetcher"})
+@RequiredArgsConstructor
 public class GraphQLController {
 
 	private static final Logger logger = LogManager.getLogger(GraphQLController.class);
-
-	@Autowired
-	private ConfigurationDAO config;
-	@Autowired
-	private Neo4jDataFetcher dataFetcherInterceptor;
-	@Autowired
-	private DataFetcher esFilterDataFetcher;
-
+	private final ConfigurationDAO config;
+	private final Neo4jDataFetcher dataFetcherInterceptor;
+	private final DataFetcher esFilterDataFetcher;
 
 	private Gson gson = new GsonBuilder().serializeNulls().create();
 	private GraphQL graphql;
@@ -155,7 +151,7 @@ public class GraphQLController {
 	}
 
 	private GraphQLSchema getEsSchema() throws IOException {
-		if (config.getEsFilterEnabled()){
+		if (config.isEsFilterEnabled()){
 			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
 			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
 		}

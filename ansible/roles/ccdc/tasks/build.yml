@@ -37,6 +37,7 @@
   loop:
     - npm install
     - npm run build
+    - npm install dotenv 
 
 - name: rename build to dist
   command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist

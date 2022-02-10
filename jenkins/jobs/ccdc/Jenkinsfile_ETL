@@ -222,7 +222,6 @@ pipeline {
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
                       sh "echo \$RDB_USER"
-                      sh "echo \$RDB_PASSWORD"
                       sh "node ${WORKSPACE}/CCDC-ETL/createTable.js"
                     }
                 }

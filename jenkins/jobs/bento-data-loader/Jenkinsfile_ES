@@ -130,7 +130,7 @@ pipeline {
                 }
               break
               case "prod":
-               withCredentials([usernamePassword(credentialsId: 'bento_prod_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+               withCredentials([usernamePassword(credentialsId: 'prod_neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
               		string(credentialsId: 'es_prod_host', variable: 'ES_HOST')]) {
                       env.ES_HOST          = "https://${ES_HOST}"
               			env.PROJECT        = "bento"

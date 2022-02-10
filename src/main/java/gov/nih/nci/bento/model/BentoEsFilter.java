@@ -223,6 +223,7 @@ public class BentoEsFilter implements DataFetcher {
         final String[] RANGE_AGG_NAMES = RANGE_AGGS.keySet().toArray(new String[0]);
 
         // Asychronosly TODO
+
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
@@ -245,6 +246,7 @@ public class BentoEsFilter implements DataFetcher {
         subjectRequest.setJsonEntity(gson.toJson(aggQuery));
         JsonObject subjectResult = esService.send(subjectRequest);
         Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, TERM_AGG_NAMES);
+
 
         Map<String, Object> data = new HashMap<>();
         data.put(Const.ES_KEYS.NO_OF_PROGRAMS, aggs.get("programs").size());
@@ -281,14 +283,9 @@ public class BentoEsFilter implements DataFetcher {
             String filterCountQueryName = agg.get(Const.ES_FILTER.FILTER_COUNT_QUERY);
             String endpoint = agg.get(Const.ES_FILTER.AGG_ENDPOINT);
             // subjectCountByXXXX
-            List<Map<String, Object>> widgetData;
-            if (endpoint.equals(SUBJECTS_END_POINT)) {
-                widgetData = getGroupCountHelper(aggs.get(field));
-                data.put(widgetQueryName, widgetData);
-            } else {
-                widgetData = subjectCountBy(field, params, endpoint);;
-                data.put(widgetQueryName, widgetData);
-            }
+            List<Map<String, Object>> widgetData = endpoint.equals(SUBJECTS_END_POINT) ? getGroupCountHelper(aggs.get(field)) : subjectCountBy(field, params, endpoint);
+            data.put(widgetQueryName, widgetData);
+
             // filterSubjectCountByXXXX
             if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
                 List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;

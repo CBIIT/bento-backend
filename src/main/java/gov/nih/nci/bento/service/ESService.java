@@ -2,6 +2,7 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.util.EntityUtils;
@@ -12,7 +13,6 @@ import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Service("ESService")
+@RequiredArgsConstructor
 public class ESService {
     public static final String SCROLL_ENDPOINT = "/_search/scroll";
     public static final String JSON_OBJECT = "jsonObject";
@@ -31,8 +32,7 @@ public class ESService {
 
     private static final Logger logger = LogManager.getLogger(RedisService.class);
 
-    @Autowired
-    private ConfigurationDAO config;
+    private final ConfigurationDAO config;
 
     private RestClient client;
 

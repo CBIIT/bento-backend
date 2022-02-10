@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import gov.nih.nci.bento.constants.Constants;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.DataFetcher;
@@ -186,17 +186,17 @@ public class GraphQLController {
 
 		//Add merged query, mutation, and subscription types
 		GraphQLNamedType mergedQuery = mergeType(schema1.getQueryType(), schema2.getQueryType());
-		if (mergedQuery != null) allTypes.put(Constants.GRAPHQL.QUERY_TYPE_NAME, mergedQuery);
+		if (mergedQuery != null) allTypes.put(Const.GRAPHQL.QUERY_TYPE_NAME, mergedQuery);
 
 		GraphQLNamedType mergedMutation = mergeType(schema1.getMutationType(), schema2.getMutationType());
-		if (mergedMutation != null)	allTypes.put(Constants.GRAPHQL.MUTATION_TYPE_NAME, mergedMutation);
+		if (mergedMutation != null)	allTypes.put(Const.GRAPHQL.MUTATION_TYPE_NAME, mergedMutation);
 
 		GraphQLNamedType mergedSubscription = mergeType(schema1.getSubscriptionType(), schema2.getSubscriptionType());
-		if (mergedSubscription != null) allTypes.put(Constants.GRAPHQL.SUBSCRIPTION_TYPE_NAME, mergedSubscription);
+		if (mergedSubscription != null) allTypes.put(Const.GRAPHQL.SUBSCRIPTION_TYPE_NAME, mergedSubscription);
 
-		builder.query((GraphQLObjectType) allTypes.get(Constants.GRAPHQL.QUERY_TYPE_NAME));
-		builder.mutation((GraphQLObjectType) allTypes.get(Constants.GRAPHQL.MUTATION_TYPE_NAME));
-		builder.subscription((GraphQLObjectType) allTypes.get(Constants.GRAPHQL.SUBSCRIPTION_TYPE_NAME));
+		builder.query((GraphQLObjectType) allTypes.get(Const.GRAPHQL.QUERY_TYPE_NAME));
+		builder.mutation((GraphQLObjectType) allTypes.get(Const.GRAPHQL.MUTATION_TYPE_NAME));
+		builder.subscription((GraphQLObjectType) allTypes.get(Const.GRAPHQL.SUBSCRIPTION_TYPE_NAME));
 
 		builder.clearAdditionalTypes();
 		allTypes.values().forEach(builder::additionalType);

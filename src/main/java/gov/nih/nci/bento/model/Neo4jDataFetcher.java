@@ -7,6 +7,7 @@ import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLType;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 @Service("neo4jDataFetcher")
 @DependsOn({"redisService"})
+@RequiredArgsConstructor
 public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
     private static final Logger logger = LogManager.getLogger(Neo4jDataFetcher.class);
 
@@ -46,10 +48,8 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
     private int cacheMisses = 0;
 
     private Driver driver;
-    @Autowired
-    private ConfigurationDAO config;
-    @Autowired
-    private RedisService redisService;
+    private final ConfigurationDAO config;
+    private final RedisService redisService;
 
     @PostConstruct
     public void connect() {
@@ -171,9 +171,8 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
             return true;
         } else if (type instanceof GraphQLNonNull) {
             return isList(((GraphQLNonNull) type).getWrappedType());
-        } else {
-            return false;
         }
+        return false;
     }
 }
 

@@ -239,7 +239,6 @@ public class BentoEsFilter implements DataFetcher {
         JsonObject subjectCountResult = esService.send(subjectCountRequest);
         int numberOfSubjects = subjectCountResult.get("count").getAsInt();
 
-
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
         Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
@@ -256,6 +255,26 @@ public class BentoEsFilter implements DataFetcher {
         data.put(Const.ES_KEYS.NO_OF_FILES, numberOfFiles);
         data.put(Const.ES_KEYS.NO_OF_ARMS_PROGRAM, armsByPrograms(params));
         // widgets data and facet filter counts
+        addWidgetData(data, TERM_AGGS, params, aggs);
+
+        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(subjectResult, RANGE_AGG_NAMES);
+        addFilterCountData(data, RANGE_AGG_NAMES, rangeAggs, params, RANGE_AGGS);
+        return data;
+    }
+
+    private void addFilterCountData(Map<String, Object> data, String[] RANGE_AGG_NAMES, Map<String, JsonObject> rangeAggs, Map<String, Object> params, Map<String, String> RANGE_AGGS) throws IOException {
+        for (String field: RANGE_AGG_NAMES) {
+            String filterCountQueryName = RANGE_AGGS.get(field);
+            if (params.containsKey(field) && ((List<Double>)params.get(field)).size() >= 2) {
+                Map<String, Object> filterCount = rangeFilterSubjectCountBy(field, params);;
+                data.put(filterCountQueryName, filterCount);
+            } else {
+                data.put(filterCountQueryName, getRange(rangeAggs.get(field)));
+            }
+        }
+    }
+
+    private void addWidgetData(Map<String, Object> data, List<Map<String, String>> TERM_AGGS, Map<String, Object> params, Map<String, JsonArray> aggs) throws IOException {
         for (var agg: TERM_AGGS) {
             String field = agg.get(Const.ES_FILTER.AGG_NAME);
             String widgetQueryName = agg.get(Const.ES_FILTER.WIDGET_QUERY);
@@ -278,20 +297,6 @@ public class BentoEsFilter implements DataFetcher {
                 data.put(filterCountQueryName, widgetData);
             }
         }
-
-        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(subjectResult, RANGE_AGG_NAMES);
-
-        for (String field: RANGE_AGG_NAMES) {
-            String filterCountQueryName = RANGE_AGGS.get(field);
-            if (params.containsKey(field) && ((List<Double>)params.get(field)).size() >= 2) {
-                Map<String, Object> filterCount = rangeFilterSubjectCountBy(field, params);;
-                data.put(filterCountQueryName, filterCount);
-            } else {
-                data.put(filterCountQueryName, getRange(rangeAggs.get(field)));
-            }
-        }
-
-        return data;
     }
 
     private List<Map<String, Object>> subjectOverview(Map<String, Object> params) throws IOException {

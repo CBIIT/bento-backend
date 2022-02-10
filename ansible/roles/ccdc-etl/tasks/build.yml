@@ -12,6 +12,7 @@
   loop:
     - npm set progress=false
     - npm install
+    - npm install dotenv 
     # - npm run build
 
 - name: create digest_file_folder 

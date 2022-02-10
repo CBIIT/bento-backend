@@ -20,25 +20,25 @@
     path: "{{workspace}}/{{etl}}/{{ digest_file_folder }}"
     state: directory
 
-- name: Get list of files from S3
-  aws_s3:
-    mode: list
-    bucket: "{{ aws_storage_bucket_name }}"
-    prefix: "{{ digest_file_folder }}/"
-    marker: "{{ digest_file_folder }}/"
-  register: s3_bucket_items
+# - name: Get list of files from S3
+#   aws_s3:
+#     mode: list
+#     bucket: "{{ aws_storage_bucket_name }}"
+#     prefix: "{{ digest_file_folder }}/"
+#     marker: "{{ digest_file_folder }}/"
+#   register: s3_bucket_items
 
-- name: Print s3_bucket_items
-  debug:
-    msg: "s3_bucket_items Version: {{ s3_bucket_items.s3_keys }}"
+# - name: Print s3_bucket_items
+#   debug:
+#     msg: "s3_bucket_items Version: {{ s3_bucket_items.s3_keys }}"
 
-- name: Download files from S3
-  aws_s3:
-    mode: get
-    bucket: "{{ aws_storage_bucket_name }}"
-    object: "{{ item }}"
-    dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
-  with_items: "{{ s3_bucket_items.s3_keys }}"
+# - name: Download files from S3
+#   aws_s3:
+#     mode: get
+#     bucket: "{{ aws_storage_bucket_name }}"
+#     object: "{{ item }}"
+#     dest: "{{workspace}}/{{etl}}/{{ digest_file_folder }}/{{ item|basename }}"
+#   with_items: "{{ s3_bucket_items.s3_keys }}"
 
 # - name: build cbiitssrepo/{{etl | lower}} image
 #   docker_image:

@@ -244,7 +244,7 @@ pipeline {
                     script{
                       sh "cd ${WORKSPACE}/CCDC-ETL/"
                       sh "ls -ltr ${WORKSPACE}/CCDC-ETL/"
-                      sh "node ${WORKSPACE}/CCDC-ETL/index.js"
+                      sh "/usr/bin/node ${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }
     }

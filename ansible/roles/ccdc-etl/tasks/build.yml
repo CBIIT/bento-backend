@@ -1,7 +1,12 @@
 ---
 
 - name: testing contents {{workspace}}/{{etl}}
-  command: "ls {{workspace}}/{{etl}}"
+  command: "{{ item }}"
+  args:
+    chdir: "{{workspace}}"
+  loop:
+    - pwd
+    - ls
 
 - name: run npm install in {{workspace}}/{{etl}}
   command: "{{item}}"

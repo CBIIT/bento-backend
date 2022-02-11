@@ -242,9 +242,10 @@ pipeline {
             }
             steps {
                     script{
-                      sh "cd \${WORKSPACE}/CCDC-ETL/"
+                      sh "cd \${WORKSPACE}/CCDC-ETL"
                       sh "ls -ltr"
-                      sh "/usr/bin/node \${WORKSPACE}/CCDC-ETL/index.js"
+                      sh "pwd"
+                      // sh "/usr/bin/node \${WORKSPACE}/CCDC-ETL/index.js"
                     }
                 }
     }

@@ -19,6 +19,14 @@
 - debug: var={{item}}
   with_items: dir_out.stdout_lines
 
+- name: Install reqired packages
+  apt: name={{ item }} state=present
+  with_items:
+      - git
+      - curl
+      - wget
+      - nginx
+      - nodejs
 
 - name: run npm install in {{workspace}}/{{etl}}
   command: "{{item}}"
@@ -26,7 +34,6 @@
     chdir: "{{workspace}}/{{etl}}"
   become: yes
   loop:
-    - nodejs install
     - npm set progress=false
     - npm install
     - npm install dotenv 

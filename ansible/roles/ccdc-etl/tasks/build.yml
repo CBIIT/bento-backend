@@ -22,7 +22,7 @@
 - name: install dependencies
   yum:
     name:
-     - git
+      - git
       - curl
       - wget
       - nginx

@@ -13,6 +13,7 @@ public class AWSClient extends AbstractClient {
 
     private final String serviceName ="es";
     private final String region = "us-east-1";
+    static final AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
 
     public AWSClient(ConfigurationDAO config) {
         super(config);
@@ -21,7 +22,6 @@ public class AWSClient extends AbstractClient {
     @Override
     public RestClient getRestClient() {
 
-        AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
         AWS4Signer signer = new AWS4Signer();
         signer.setServiceName(serviceName);
         signer.setRegionName(region);

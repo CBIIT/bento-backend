@@ -15,6 +15,11 @@
     - npm install dotenv 
     # - npm run build
 
+- name: install python3
+  yum:
+    name: python3
+    state: installed
+
 - name: create digest_file_folder 
   file: 
     path: "{{workspace}}/{{etl}}/{{ digest_file_folder }}"

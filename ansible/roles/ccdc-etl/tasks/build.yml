@@ -1,5 +1,10 @@
 ---
 
+- name: install python3
+  yum:
+    name: python3
+    state: installed
+    
 - name: testing contents {{workspace}}/{{etl}}
   command: "{{ item }}"
   args:
@@ -18,10 +23,7 @@
     - npm install dotenv 
     # - npm run build
 
-- name: install python3
-  yum:
-    name: python3
-    state: installed
+
 
 - name: create digest_file_folder 
   file: 

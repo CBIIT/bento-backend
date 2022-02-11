@@ -241,12 +241,10 @@ pipeline {
                 }
             }
             steps {
-                    script{
                       sh "cd \${WORKSPACE}/CCDC-ETL"
                       sh "ls -ltr"
                       sh "pwd"
                       // sh "/usr/bin/node \${WORKSPACE}/CCDC-ETL/index.js"
-                    }
                 }
     }
   }

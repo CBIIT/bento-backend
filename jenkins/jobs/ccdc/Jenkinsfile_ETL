@@ -162,8 +162,8 @@ pipeline {
                   env.RDB_PASSWORD = "${RDB_PASSWORD}"
                   env.ES_HOST = "${ES_HOST}"
                   env.RDB_HOST = "${RDB_HOST}"
-                  ES_PORT = "9200"
-                  DIGEST_FILE_FOLDER = "${params.S3Folder}"
+                  env.ES_PORT = "9200"
+                  env.DIGEST_FILE_FOLDER = "${params.S3Folder}"
                 }
         break
               default:

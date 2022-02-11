@@ -19,14 +19,15 @@
 - debug: var={{item}}
   with_items: dir_out.stdout_lines
 
-- name: Install reqired packages
-  apt: name={{ item }} state=present
-  with_items:
-      - git
+- name: install dependencies
+  yum:
+    name:
+     - git
       - curl
       - wget
       - nginx
       - nodejs
+    state: installed
 
 - name: run npm install in {{workspace}}/{{etl}}
   command: "{{item}}"

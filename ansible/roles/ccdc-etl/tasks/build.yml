@@ -4,14 +4,21 @@
   yum:
     name: python3
     state: installed
-    
+
 - name: testing contents {{workspace}}/{{etl}}
-  command: "{{ item }}"
-  args:
-    chdir: "{{workspace}}"
-  loop:
-    - pwd
-    - ls
+  command: "ls {{workspace}}"
+  register: dir_out
+
+- debug: var={{item}}
+  with_items: dir_out.stdout_lines
+
+- name: testing contents {{workspace}}/{{etl}}
+  command: "ls {{workspace}}/{{etl}}"
+  register: dir_out
+
+- debug: var={{item}}
+  with_items: dir_out.stdout_lines
+
 
 - name: run npm install in {{workspace}}/{{etl}}
   command: "{{item}}"

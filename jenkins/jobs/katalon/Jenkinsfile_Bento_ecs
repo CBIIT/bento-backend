@@ -44,7 +44,7 @@ pipeline {
         description: 'Enter the Katalon Project file (include the path relative to the repo root):', 
         name: 'KatalonPrj')
 
-    string(defaultValue: "Test Suites/Bento_TestSuite", 
+    string(defaultValue: "Test Suites/Bento_Smoke", 
         description: 'Enter the Katalon Suite Path (not including the test suite file):', 
         name: 'KatalonSuite')
 
@@ -57,12 +57,12 @@ pipeline {
 		
 	extendedChoice( 
         name: 'Profile', 
-        defaultValue: 'QA_PROD', 
+        defaultValue: 'PERF_PROD', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_PROD,PERF_PROD,BENTO_ICDC' )
+        value: 'PERF_PROD' )
 
-	string(defaultValue: "gayathri.radhakrishnan@nih.gov,laxmi.lolla@nih.gov,sohil.sohil@nih.gov", 
+	string(defaultValue: "michael.fleming@nih.gov", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
         name: 'EmailRecipients')
 

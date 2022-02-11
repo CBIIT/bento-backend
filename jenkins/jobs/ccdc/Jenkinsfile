@@ -60,15 +60,15 @@ pipeline {
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
        useRepository: 'https://github.com/CBIIT/CCDC-WebPortal')
-    gitParameter(branchFilter: 'origin/(.*)', 
-       defaultValue: 'main', 
-       name: 'Etl_Tag', 
-       type: 'PT_BRANCH_TAG',
-       quickFilterEnabled: false, 
-       selectedValue: 'DEFAULT', 
-       sortMode: 'ASCENDING_SMART', 
-       tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/CCDC-ETL')
+    // gitParameter(branchFilter: 'origin/(.*)', 
+    //    defaultValue: 'main', 
+    //    name: 'Etl_Tag', 
+    //    type: 'PT_BRANCH_TAG',
+    //    quickFilterEnabled: false, 
+    //    selectedValue: 'DEFAULT', 
+    //    sortMode: 'ASCENDING_SMART', 
+    //    tagFilter: '*', 
+    //    useRepository: 'https://github.com/CBIIT/CCDC-ETL')
     string(defaultValue: "etl-digest-files", 
         description: 'S3 Folder to load data from', 
         name: 'S3Folder')
@@ -100,14 +100,14 @@ pipeline {
 					userRemoteConfigs: 
 					[[url: 'https://github.com/CBIIT/CCDC-WebPortal']]])
 
-				checkout([$class: 'GitSCM',
-					branches: [[name: "${params.Etl_Tag}"]],
-					doGenerateSubmoduleConfigurations: false,
-					extensions: [[$class: 'RelativeTargetDirectory',
-					relativeTargetDir: 'CCDC-ETL']],
-					submoduleCfg: [],
-					userRemoteConfigs: 
-					[[url: 'https://github.com/CBIIT/CCDC-ETL']]])
+				// checkout([$class: 'GitSCM',
+				// 	branches: [[name: "${params.Etl_Tag}"]],
+				// 	doGenerateSubmoduleConfigurations: false,
+				// 	extensions: [[$class: 'RelativeTargetDirectory',
+				// 	relativeTargetDir: 'CCDC-ETL']],
+				// 	submoduleCfg: [],
+				// 	userRemoteConfigs: 
+				// 	[[url: 'https://github.com/CBIIT/CCDC-ETL']]])
 
   			checkout( poll: false, 
 				changelog:false,

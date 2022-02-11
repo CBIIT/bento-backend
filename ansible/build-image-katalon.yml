@@ -1,0 +1,13 @@
+---
+- name: build katalon jenkins agent image
+  hosts: all
+  connection: local
+  #become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: build katalon image
+      include_role:
+        name: build-image-bento
+        tasks_from: katalon
+        vars_from: bento

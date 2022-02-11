@@ -2,7 +2,7 @@
 # tasks file for build-image-bento
 - name: list all dockerfiles in katalon_agent directory
   find: 
-    path: ../bento/katalon_agent
+    path: ../bento/katalon
     patterns: 'Dockerfile'
     file_type: file
   register: katalon_dockerfile

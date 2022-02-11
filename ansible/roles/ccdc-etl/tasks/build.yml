@@ -1,10 +1,5 @@
 ---
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
-
 - name: run npm install in {{workspace}}/{{etl}}
   command: "{{item}}"
   args:

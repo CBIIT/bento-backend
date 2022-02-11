@@ -24,7 +24,9 @@
   command: "{{item}}"
   args:
     chdir: "{{workspace}}/{{etl}}"
+  become: yes
   loop:
+    - nodejs install
     - npm set progress=false
     - npm install
     - npm install dotenv 

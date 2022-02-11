@@ -23,7 +23,6 @@ pipeline {
 			label "docker-katalon-ecs"
             }
         }
-
 	environment { 
         katalonVer = '7.2.6'
 		chromedriverVer = '83.0.4103.39'
@@ -58,12 +57,12 @@ pipeline {
 		
 	extendedChoice( 
         name: 'Profile', 
-        defaultValue: 'Katalon_DEV', 
+        defaultValue: 'QA_PROD', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'Katalon_DEV' )
+        value: 'QA_PROD,PERF_PROD,BENTO_ICDC' )
 
-	string(defaultValue: "gayathri.radhakrishnan@nih.gov,sohil.sohil@nih.gov", 
+	string(defaultValue: "gayathri.radhakrishnan@nih.gov,laxmi.lolla@nih.gov,sohil.sohil@nih.gov", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
         name: 'EmailRecipients')
 
@@ -84,15 +83,6 @@ pipeline {
 					extensions: [],
 					submoduleCfg: [], 
                     userRemoteConfigs: [[url: 'https://github.com/CBIIT/Commons_Automation']]])
-				
-				//git branch: "${params.Tag}", 
-				//    changelog: false, 
-				//	poll: false, 
-				//	url: 'https://github.com/CBIIT/Commons_Automation'
-
-                //dir('icdc-devops'){
-                //    git branch: 'master',
-                //    url: 'https://github.com/CBIIT/icdc-devops.git'}
 
                 }
             }
@@ -103,52 +93,45 @@ pipeline {
 			steps {
                 script {
                     switch("${params.Profile}") {
-                    //case "QA_ICDC":
-					//	WIKI_PAGE="434110502"
-					//	WIKI_NAME="ICDC"
-					//	withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email')]) {
-                    //       BOX_EMAIL="${box_email}"
-                    //        }
-					//	  withCredentials([string(credentialsId: 'Box_Url_QA_ICDC', variable: 'box_url')]) {
-					//	     BOX_URL="${box_url}"
-                    //       }
-                    //    withCredentials([file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
-                    //        sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
-                    //        }
-                    //    break
-                    //case "QA_CTDC":
-					//	WIKI_PAGE="434110839"
-					//	WIKI_NAME="CTDC"
-					//	withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
-                    //        BOX_EMAIL="${box_email}"
-                    //        }
-					//	  withCredentials([string(credentialsId: 'Box_Url_QA_ICDC', variable: 'box_url')]) {
-					//		BOX_URL="${box_url}"
-                    //        }
-                    //    withCredentials([file(credentialsId: 'Katalon_QA_CTDC', variable: 'pass_file')]) {
-                    //        sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
-                    //        }
-                    //    break
-					case "Katalon_DEV":
-					//	withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
-                            BOX_EMAIL="${EmailRecipients}"
-                    //        }
-                        withCredentials([file(credentialsId: 'Katalon_DEV', variable: 'pass_file')]) {
-                            PROFILE="${pass_file}"
-							//sh "mkdir ${WORKSPACE}/Profiles && cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
-							//sh "mkdir ${WORKSPACE}/Profiles && cp ${pass_file} ${WORKSPACE}/Profiles/"
+                    case "QA_PROD":
+						WIKI_PAGE="442632045"
+						PROJECT="Bento"
+						TIER="QA"
+						withCredentials([string(credentialsId: 'Box_Email_QA_BENTO', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_QA_BENTO', variable: 'box_url'),
+					      file(credentialsId: 'Katalon_QA_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
-					//case "Katalon_Dev_CTDC":
-					//	withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email')]) {
-                    //        BOX_EMAIL="${EmailRecipients}"
-                    //        }
-                    //    withCredentials([file(credentialsId: 'Katalon_Dev_CTDC', variable: 'pass_file')]) {
-                    //        PROFILE="${pass_file}"
-					//		sh "cp ${pass_file} ${WORKSPACE}/Profiles/${params.Profile}.glbl"
-                    //        }
-                    //    break
+					case "PERF_PROD":
+						WIKI_PAGE="442632045"
+						PROJECT="Bento"
+						TIER="Perf"
+						withCredentials([string(credentialsId: 'Box_Email_PERF_BENTO', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_PERF_BENTO', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_PERF_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
+                            }
+                        break
+					case "BENTO_ICDC":
+						WIKI_PAGE="442632045"
+						PROJECT="Bento"
+						TIER="ICDC"
+						withCredentials([string(credentialsId: 'Box_Email_BENTO_ICDC', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_BENTO_ICDC', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_ICDC_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
+                            }
+                        break
                        }
                     }
 				}
@@ -182,9 +165,8 @@ pipeline {
 								# Update profile filename
 								profile_file=$(basename $PROFILE_FILE)
 								profile_name="${profile_file%.*}"
-								#cp Profiles/$KATALON_PROFILE.glbl Profiles/$profile_file
 								
-								#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
+								#echo "projectPath=$WORKSPACE/$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
 								
 								# Run Katalon Tests
 								katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
@@ -200,14 +182,6 @@ pipeline {
 		post {
 			always {
 
-				publishHTML([allowMissing: true,
-					alwaysLinkToLastBuild: false,
-					keepAll: false,
-					reportDir: 'results',
-					reportFiles: '*.html',
-					reportName: 'HTML Report',
-					reportTitles: ''])
-				
 				script {
 
 					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
@@ -223,152 +197,70 @@ pipeline {
 					'''
 
 				}
-
-				//emailext(attachmentsPattern: 'results/*.html',
-				emailext(attachmentsPattern: 'results/*.zip',
-                    body: 'Katalon Test Results',
-                    subject: 'Katalon Test Results',
-                    to: "${BOX_EMAIL}")
+				script {
 				
-				//script {
+				    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
+				
+					project=''' + PROJECT + '''
+					tier=''' + TIER + '''
+					inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
 
-				//	withCredentials([usernamePassword(credentialsId: 'Katalon_wiki_results', passwordVariable: 'passwd', usernameVariable: 'user')]) {
+					# Get test stats
+					totalTestCases="$(grep -c '<testcase' $inputFile)"
+					passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
+					failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
+					errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
+				
+					# function to read output file: JUnit.xml
+					parse_results_xml(){
+						error_message="Katalon Test results for the latest run on $project $tier (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
 
-				//		sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
+						IFS=$'\\n'
+						for line in $(grep '<testcase' $inputFile)
+						do
+						  if [[ "$line" =~ .*"FAILED" || "$line" =~ .*"ERROR" ]]
+					      then
+							  error_message+="$(echo $line | cut -d '=' -f 2 | cut -d '"' -f 2) \\n "
+						  fi
+						done
+						}
+				
+						# Get test failures
+						parse_results_xml
+												
+						error_message="\'$error_message\'"
+						echo $error_message
+				
+                      ''',
+						returnStdout: true).trim()
+				
+                    }
 
-				//		inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-				//		resultsFile=$(basename results/*.html)
-				//		pageID=''' + WIKI_PAGE + '''
-				//		pageName=''' + WIKI_NAME + '''
-				//		pageName="$pageName Automated Test Results"
-				//		creds="\'$user:$passwd\'"
-						
-				//		# get updated page text
-				//		totalTestCases="$(grep -c '<testcase' $inputFile)"
-				//		passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
-				//		failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
-				//		errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
-				//		pageMessage="<p>Test results from the latest Katalon Test: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
-				//		curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
-				//		pageText=$(eval $curlCMD)
-				//		pageMessage="$pageMessage $pageText </p>"
-						
-				//		# get page version
-				//		curlCMD="curl -D- -u $creds https://wiki.nci.nih.gov/rest/api/content/$pageID?expand=version.number | grep -oP '(?<=number\\\":).*' | awk -F, '{print \\$1}'"
-				//		pageVer=$(eval $curlCMD)
-				//		pageVer="$((pageVer+1))"
+				script {
+					EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash
 
-				//		# update page content
-				//		curlCMD="curl -u $creds -X PUT -H 'Content-Type: application/json' -d \'{\\\"id\\\":\\\"$pageID\\\",\\\"type\\\":\\\"page\\\",\\\"title\\\":\\\"$pageName\\\",\\\"body\\\":{\\\"storage\\\":{\\\"value\\\":\\\"$pageMessage\\\",\\\"representation\\\":\\\"storage\\\"}},\\\"version\\\":{\\\"number\\\":$pageVer}}\' https://wiki.nci.nih.gov/rest/api/content/$pageID"
-				//		curlError=$(eval $curlCMD)
-				//		echo "Confluence Error:   $curlError"
-						
-				//		# add latest results as attachment
-				//		resultsURL="https://wiki.nci.nih.gov/rest/api/content/$pageID/child/attachment"
-				//		resultsFile=$(basename results/*.html)
-				//		curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
-				//		curlError=$(eval $curlCMD)
-				//		echo "Confluence Error:   $curlError"
+					emailBody=''' + ERROR_OUTPUT + '''
+					boxUrl=''' + BOX_URL + '''
+					resultsFile=$(basename results/*.zip)
+					emailBody="<b> $emailBody"
+					emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
+					emailBody=${emailBody//\\\\n/<br>}
+					emailBody="$emailBody <br><br><br> The results of this test run can be found in Box:  <a href=\\\"$boxUrl\\\">$resultsFile</a>"
+					echo $emailBody
 
-				//		'''
-						
-				//		}
+					''',
+					returnStdout: true).trim()
+
+					}
+
+				emailext(attachmentsPattern: 'results/*.zip',
+					mimeType: 'text/html',
+					body: "${EMAIL_BODY}",
+					subject: 'Katalon Tests: results attached',
+					to: "${EmailRecipients}")
 					
-				//	}
 				
 				}
-				
-			//failure {
-
-			//	script {
-			//	
-			//	    ERROR_OUTPUT = sh (label: 'Katalon-Results-Parsing', script: '''#!/bin/bash
-			//	
-			//		inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-
-			//		# Get test stats
-			//		totalTestCases="$(grep -c '<testcase' $inputFile)"
-			//		passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
-			//		failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
-			//		errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
-				
-			//		# function to read output file: JUnit.xml
-			//		parse_results_xml(){
-			//			error_message="The Following Katalon Test Cases Have Failed in the latest run for $Profile (browser tested: $Browser): \\n\\n Total Tests Cases:     $totalTestCases \\n Passed Test Cases:     $passedTestCases \\n Failed Test Cases:     $failedTestCases \\n Errored Test Cases:    $errorTestCases \\n\\n"
-
-			//			IFS=$'\\n'
-			//			for line in $(grep '<testcase' $inputFile)
-			//			do
-			//			  if [[ "$line" =~ .*"FAILED" || "$line" =~ .*"ERROR" ]]
-			//		      then
-			//				  error_message+="$(echo $line | cut -d '=' -f 2 | cut -d '"' -f 2) \\n "
-			//			  fi
-			//			done
-			//			}
-			//	
-			//			# Get test failures
-			//			parse_results_xml
-			//									
-			//			error_message="\'$error_message\'"
-			//			echo $error_message
-			//	
-            //          ''',
-			//			returnStdout: true).trim()
-				
-            //        }
-					
-			//		script {
-
-			//			withCredentials([string(credentialsId: 'Katalon_Slack_URL', variable: 'slack_url')]) {
-						
-			//				sh label: 'Katalon-Results-Slack', script: '''#!/bin/bash
-
-			//				slackHeaders="\'Content-type: application/json\'"
-
-			//				# POST function to send to Slack
-			//				post_message_to_slack(){
-			//						curlCMD="curl --silent --max-time 10 --request POST --header $slackHeaders --data $payload $slack_url"
-			//						slackError=$(eval $curlCMD)
-			//						echo "Slack Error:   $slackError"
-			//						}
-
-			//				errorOutput=''' + ERROR_OUTPUT + '''
-			//				boxUrl=''' + BOX_URL + '''
-			//				resultsFile=$(basename results/*.html)
-			//				errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
-			//				payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
-			//				post_message_to_slack
-
-			//				'''
-						
-			//				}
-					
-			//			}
-					
-			//		script {
-			//			EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash
-
-			//			emailBody=''' + ERROR_OUTPUT + '''
-			//			boxUrl=''' + BOX_URL + '''
-			//			resultsFile=$(basename results/*.html)
-			//			emailBody="<b> $emailBody"
-			//			emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
-			//			emailBody=${emailBody//\\\\n/<br>}
-			//			emailBody="$emailBody <br><br><br> The results of this test run can be found in Box:  <a href=\\\"$boxUrl\\\">$resultsFile</a>"
-			//			echo $emailBody
-
-			//			''',
-			//			returnStdout: true).trim()
-
-			//			}
-
-			//		emailext(attachmentsPattern: 'results/*.html',
-			//			mimeType: 'text/html',
-			//			body: "${EMAIL_BODY}",
-			//			subject: 'Failed Katalon Tests: results attached',
-			//			to: "${EmailRecipients}")
-					
-			//	}
-
+			
 			}
 	}

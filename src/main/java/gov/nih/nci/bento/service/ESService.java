@@ -2,8 +2,8 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.service.connector.AWSClient;
-import gov.nih.nci.bento.service.connector.LocalClient;
+import gov.nih.nci.bento.service.connector.DefaultClient;
+import gov.nih.nci.bento.service.connector.AbstractClient;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,8 +35,8 @@ public class ESService {
     public void init() {
         logger.info("Initializing Elasticsearch client");
         // Base on host name to use signed request (AWS) or not (local)
-        if (config.isEsSignRequests()) client = new AWSClient(config).getRestClient();
-        else client = new LocalClient(config).getRestClient();
+        AbstractClient restConnector = new DefaultClient(config);
+        client = restConnector.getRestConnector();
     }
 
     @PreDestroy

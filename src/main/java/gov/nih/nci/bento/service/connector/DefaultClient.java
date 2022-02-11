@@ -1,13 +1,14 @@
 package gov.nih.nci.bento.service.connector;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
 import org.opensearch.client.RestClient;
 
-@RequiredArgsConstructor
-public class LocalClient implements IClient {
-    protected final ConfigurationDAO config;
+public class DefaultClient extends AbstractClient {
+
+    public DefaultClient(ConfigurationDAO config) {
+        super(config);
+    }
 
     @Override
     public RestClient getRestClient() {

@@ -5,17 +5,19 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.opensearch.client.RestClient;
 
-@RequiredArgsConstructor
-public class AWSClient implements IClient {
+public class AWSClient extends AbstractClient {
 
     private final String serviceName ="es";
     private final String region = "us-east-1";
-    protected final ConfigurationDAO config;
+
+    public AWSClient(ConfigurationDAO config) {
+        super(config);
+    }
+
     @Override
     public RestClient getRestClient() {
 

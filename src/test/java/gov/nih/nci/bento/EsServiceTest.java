@@ -3,10 +3,15 @@ package gov.nih.nci.bento;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.service.connector.AbstractClient;
+import gov.nih.nci.bento.service.connector.DefaultClient;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensearch.client.Request;
+import org.opensearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,6 +29,16 @@ public class EsServiceTest {
     @Autowired
     private ESService esService;
     private Gson gson = new GsonBuilder().serializeNulls().create();
+    private RestClient client;
+
+    @Autowired
+    private ConfigurationDAO config;
+
+    @Before
+    public void init() {
+        AbstractClient restClient = new DefaultClient(config);
+        client = restClient.getRestConnector();
+    }
 
     @Test
     public void testbuildListQuery() {
@@ -60,4 +75,20 @@ public class EsServiceTest {
         assertThat(count).isGreaterThan(0);
     }
 
+    @Test
+    public void multiple_requests_Test() throws IOException, InterruptedException {
+
+        final String index = "/samples/_count";
+        Map<String, Object> params = new HashMap<>();
+        params.put("subject_ids", new ArrayList<>());
+        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        Request sampleCountRequest = new Request("GET", index);
+
+        sampleCountRequest.setJsonEntity(gson.toJson(query));
+        HashMap<String, Request> requestHashMap = new HashMap<>();
+        requestHashMap.put("SAMPLE", sampleCountRequest);
+
+        Map<String, JsonObject> resultMaps = esService.asyncSend(requestHashMap);
+        assertThat(resultMaps.size()).isGreaterThan(0);
+    }
 }

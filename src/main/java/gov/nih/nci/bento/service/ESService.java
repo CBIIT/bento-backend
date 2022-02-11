@@ -2,14 +2,15 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.service.connector.DefaultClient;
 import gov.nih.nci.bento.service.connector.AbstractClient;
+import gov.nih.nci.bento.service.connector.DefaultClient;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.opensearch.client.Response;
+import org.opensearch.client.ResponseListener;
 import org.opensearch.client.RestClient;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 @Service("ESService")
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class ESService {
         client.close();
     }
 
-    public JsonObject send(Request request) throws IOException{
+    public JsonObject send(Request request) throws IOException {
         Response response = client.performRequest(request);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != 200) {
@@ -53,6 +55,38 @@ public class ESService {
             throw new IOException(msg);
         }
         return getJSonFromResponse(response);
+    }
+
+    public Map<String, JsonObject> asyncSend(Map<String, Request> requestMap) throws InterruptedException {
+
+        final CountDownLatch latch = new CountDownLatch(requestMap.size());
+
+        Map<String, JsonObject> result = new HashMap<>();
+        requestMap.forEach((key,request)-> {
+            client.performRequestAsync(
+                    request,
+                    new ResponseListener() {
+                        @Override
+                        public void onSuccess(Response response) {
+                            try {
+                                JsonObject jsonObject = getJSonFromResponse(response);
+                                result.put(key, jsonObject);
+                            } catch (IOException e) {
+                                logger.error("Elasticsearch returned error msg: " + e.toString());
+                            } finally {
+                                latch.countDown();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Exception exception) {
+                            logger.error("Elasticsearch returned error msg: " + exception.toString());
+                            latch.countDown();
+                        }
+                    }
+            );
+        });
+        latch.await();
+        return result;
     }
 
     public JsonObject getJSonFromResponse(Response response) throws IOException {

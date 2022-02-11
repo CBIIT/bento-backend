@@ -208,45 +208,56 @@ public class BentoEsFilter implements DataFetcher {
     }
 
 
-    private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
-        // Query related values
-        final List<Map<String, String>> TERM_AGGS = GetTermsAggregations();
+    private void createEsRequests(Map<String, Request> requestedMap, Request request, Map<String, Object> query) {
+        request.setJsonEntity(gson.toJson(query));
+        requestedMap.put(request.getEndpoint(), request);
+    }
 
-        List<String> agg_names = new ArrayList<>();
-        for (var agg: TERM_AGGS) {
-            agg_names.add(agg.get(Const.ES_FILTER.AGG_NAME));
-        }
-        final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
-
+    private Map<String, String> getSubjectMap() {
         final Map<String, String> RANGE_AGGS = new HashMap<>();
         RANGE_AGGS.put("age_at_index",  "filterSubjectCountByAge");
-        final String[] RANGE_AGG_NAMES = RANGE_AGGS.keySet().toArray(new String[0]);
+        return RANGE_AGGS;
+    }
 
-        // Asychronosly TODO
+    private String[] getSubjectMapRange() {
+        final String[] RANGE_AGG_NAMES = getSubjectMap().keySet().toArray(new String[0]);
+        return RANGE_AGG_NAMES;
+    }
+
+
+    private String[] getTermAggNames(List<Map<String, String>> TERM_AGGS) {
+        // Get aggregations
+        List<String> agg_names = new ArrayList<>();
+        for (var agg: TERM_AGGS) agg_names.add(agg.get(Const.ES_FILTER.AGG_NAME));
+        final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
+        return TERM_AGG_NAMES;
+    }
+
+    private Map<String, Object> getSubjectQuery(Map<String, Object> query) {
+        // Query related values
+        final List<Map<String, String>> TERM_AGGS = GetTermsAggregations();
+        final String[] TERM_AGG_NAMES = getTermAggNames(TERM_AGGS);
+        return esService.addAggregations(query, TERM_AGG_NAMES, getSubjectMapRange());
+    }
+
+    private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException, InterruptedException {
 
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
-        Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
-        sampleCountRequest.setJsonEntity(gson.toJson(query));
-        JsonObject sampleCountResult = esService.send(sampleCountRequest);
-        int numberOfSamples = sampleCountResult.get("count").getAsInt();
+        Map<String, Request> requestHashMap = new HashMap<>();
+        createEsRequests(requestHashMap, new Request("GET", SAMPLES_COUNT_END_POINT), query);
+        createEsRequests(requestHashMap, new Request("GET", FILES_COUNT_END_POINT), query);
+        createEsRequests(requestHashMap, new Request("GET", SUBJECTS_COUNT_END_POINT), query);
 
-        Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
-        fileCountRequest.setJsonEntity(gson.toJson(query));
-        JsonObject fileCountResult = esService.send(fileCountRequest);
-        int numberOfFiles = fileCountResult.get("count").getAsInt();
+        Map<String, Object> aggQuery = getSubjectQuery(query);
+        createEsRequests(requestHashMap, new Request("GET", SUBJECTS_END_POINT), aggQuery);
+        Map<String, JsonObject> result = esService.asyncSend(requestHashMap);
 
-        Request subjectCountRequest = new Request("GET", SUBJECTS_COUNT_END_POINT);
-        subjectCountRequest.setJsonEntity(gson.toJson(query));
-        JsonObject subjectCountResult = esService.send(subjectCountRequest);
-        int numberOfSubjects = subjectCountResult.get("count").getAsInt();
+        int numberOfSamples = result.get(SAMPLES_COUNT_END_POINT).get("count").getAsInt();
+        int numberOfFiles = result.get(FILES_COUNT_END_POINT).get("count").getAsInt();
+        int numberOfSubjects = result.get(SUBJECTS_COUNT_END_POINT).get("count").getAsInt();
 
-        // Get aggregations
-        Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
-        Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
-        subjectRequest.setJsonEntity(gson.toJson(aggQuery));
-        JsonObject subjectResult = esService.send(subjectRequest);
-        Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, TERM_AGG_NAMES);
-
+        final List<Map<String, String>> TERM_AGGS = GetTermsAggregations();
+        Map<String, JsonArray> aggs = esService.collectTermAggs(result.get(SUBJECTS_END_POINT), getTermAggNames(TERM_AGGS));
 
         Map<String, Object> data = new HashMap<>();
         data.put(Const.ES_KEYS.NO_OF_PROGRAMS, aggs.get("programs").size());
@@ -259,8 +270,8 @@ public class BentoEsFilter implements DataFetcher {
         // widgets data and facet filter counts
         addWidgetData(data, TERM_AGGS, params, aggs);
 
-        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(subjectResult, RANGE_AGG_NAMES);
-        addFilterCountData(data, RANGE_AGG_NAMES, rangeAggs, params, RANGE_AGGS);
+        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(result.get(SUBJECTS_END_POINT), getSubjectMapRange());
+        addFilterCountData(data, getSubjectMapRange(), rangeAggs, params, getSubjectMap());
         return data;
     }
 
@@ -276,7 +287,7 @@ public class BentoEsFilter implements DataFetcher {
         }
     }
 
-    private void addWidgetData(Map<String, Object> data, List<Map<String, String>> TERM_AGGS, Map<String, Object> params, Map<String, JsonArray> aggs) throws IOException {
+    private void addWidgetData(Map<String, Object> data, List<Map<String, String>> TERM_AGGS, Map<String, Object> params, Map<String, JsonArray> aggs) throws IOException, InterruptedException {
         for (var agg: TERM_AGGS) {
             String field = agg.get(Const.ES_FILTER.AGG_NAME);
             String widgetQueryName = agg.get(Const.ES_FILTER.WIDGET_QUERY);
@@ -503,7 +514,7 @@ public class BentoEsFilter implements DataFetcher {
 
     }
 
-    private List<Map<String, Object>> getGroupCountHelper(JsonArray buckets) throws IOException {
+    private List<Map<String, Object>> getGroupCountHelper(JsonArray buckets) {
         List<Map<String, Object>> data = new ArrayList<>();
         for (JsonElement group: buckets) {
             data.add(Map.of("group", group.getAsJsonObject().get("key").getAsString(),

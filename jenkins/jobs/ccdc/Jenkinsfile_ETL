@@ -241,6 +241,7 @@ pipeline {
                 }
             }
             steps {
+                      sh "echo \$ES_HOST && echo \$RDB_HOST"
                       sh "cd ${WORKSPACE}/CCDC-ETL && ls -ltr && pwd && /usr/bin/node index.js"
                 }
     }

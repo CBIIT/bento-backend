@@ -79,7 +79,7 @@ public class GraphQLBuilder {
         allTypes.putAll(schema2.getTypeMap());
 
         //Remove individual schema query, mutation, and subscription types from all types to prevent naming conflicts
-        allTypes = removeQueryMutationSubscription(allTypes, Arrays.asList(schema1, schema2));
+        removeQueryMutationSubscription(allTypes, Arrays.asList(schema1, schema2));
 
         //Add merged query, mutation, and subscription types
         GraphQLNamedType mergedQuery = mergeType(schema1.getQueryType(), schema2.getQueryType());
@@ -101,7 +101,7 @@ public class GraphQLBuilder {
         return builder.build();
     }
 
-    private HashMap<String, GraphQLNamedType> removeQueryMutationSubscription(
+    private void removeQueryMutationSubscription(
             HashMap<String, GraphQLNamedType> allTypes, List<GraphQLSchema> schemas){
 
         schemas.forEach((schema)->{
@@ -123,7 +123,6 @@ public class GraphQLBuilder {
             }
             catch (NullPointerException e){}
         });
-        return allTypes;
     }
 
     private GraphQLNamedType mergeType(GraphQLObjectType type1, GraphQLObjectType type2) {

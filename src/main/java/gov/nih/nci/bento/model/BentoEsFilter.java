@@ -58,11 +58,10 @@ public class BentoEsFilter implements DataFetcher {
     final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
-
     @Autowired
     ESService esService;
 
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    private final Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {
@@ -220,8 +219,7 @@ public class BentoEsFilter implements DataFetcher {
     }
 
     private String[] getSubjectMapRange() {
-        final String[] RANGE_AGG_NAMES = getSubjectMap().keySet().toArray(new String[0]);
-        return RANGE_AGG_NAMES;
+        return getSubjectMap().keySet().toArray(new String[0]);
     }
 
 
@@ -229,8 +227,7 @@ public class BentoEsFilter implements DataFetcher {
         // Get aggregations
         List<String> agg_names = new ArrayList<>();
         for (var agg: TERM_AGGS) agg_names.add(agg.get(Const.ES_FILTER.AGG_NAME));
-        final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
-        return TERM_AGG_NAMES;
+        return agg_names.toArray(new String[TERM_AGGS.size()]);
     }
 
     private Map<String, Object> getSubjectQuery(Map<String, Object> query) {
@@ -271,15 +268,17 @@ public class BentoEsFilter implements DataFetcher {
         addWidgetData(data, TERM_AGGS, params, aggs);
 
         Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(result.get(SUBJECTS_END_POINT), getSubjectMapRange());
-        addFilterCountData(data, getSubjectMapRange(), rangeAggs, params, getSubjectMap());
+        addFilterCountData(data, rangeAggs, params);
         return data;
     }
 
-    private void addFilterCountData(Map<String, Object> data, String[] RANGE_AGG_NAMES, Map<String, JsonObject> rangeAggs, Map<String, Object> params, Map<String, String> RANGE_AGGS) throws IOException {
+    private void addFilterCountData(Map<String, Object> data, Map<String, JsonObject> rangeAggs, Map<String, Object> params) throws IOException {
+        Map<String, String> RANGE_AGGS = getSubjectMap();
+        String[] RANGE_AGG_NAMES = getSubjectMapRange();
         for (String field: RANGE_AGG_NAMES) {
             String filterCountQueryName = RANGE_AGGS.get(field);
             if (params.containsKey(field) && ((List<Double>)params.get(field)).size() >= 2) {
-                Map<String, Object> filterCount = rangeFilterSubjectCountBy(field, params);;
+                Map<String, Object> filterCount = rangeFilterSubjectCountBy(field, params);
                 data.put(filterCountQueryName, filterCount);
             } else {
                 data.put(filterCountQueryName, getRange(rangeAggs.get(field)));
@@ -299,7 +298,7 @@ public class BentoEsFilter implements DataFetcher {
 
             // filterSubjectCountByXXXX
             if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
-                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
+                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);
                 data.put(filterCountQueryName, filterCount);
             } else {
                 data.put(filterCountQueryName, widgetData);
@@ -436,8 +435,7 @@ public class BentoEsFilter implements DataFetcher {
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
         int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
-        List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
-        return page;
+        return esService.collectPage(request, query, properties, pageSize, offset);
     }
 
     private Map<String, String> mapSortOrder(String order_by, String direction, String defaultSort, Map<String, String> mapping) {

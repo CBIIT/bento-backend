@@ -1,4 +1,4 @@
-FROM vdonkor/jenkins-agent
+FROM jenkins/inbound-agent:latest-jdk11
 
 ENV JAVA_HOME /usr/lib/jvm/jre-11-openjdk
 ENV MAVEN_HOME /usr/local/maven

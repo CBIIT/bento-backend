@@ -199,7 +199,7 @@ pipeline {
   			checkout( poll: false, 
 				changelog:false,
 				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
+				branches: [[name: '*/katalon_image_build']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 

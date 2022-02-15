@@ -223,7 +223,10 @@ pipeline {
 			println $ASSUME_ROLE_CMD
 			
 			ASSUME_ROLE_OUTPUT=$($ASSUME_ROLE_CMD)
-			ASSUME_ROLE_ENVIRONMENT=$(echo $ASSUME_ROLE_OUTPUT | jq -r '.Credentials | .["AWS_ACCESS_KEY_ID"] = .AccessKeyId | .["AWS_SECRET_ACCESS_KEY"] = .SecretAccessKey | .["AWS_SESSION_TOKEN"] = .SessionToken | del(.AccessKeyId, .SecretAccessKey, .SessionToken, .Expiration) | to_entries[] | "export \(.key)=\(.value)"')
+			
+			ASSUME_ENV_CMD="echo $ASSUME_ROLE_OUTPUT | jq -r '.Credentials | .["AWS_ACCESS_KEY_ID"] = .AccessKeyId | .["AWS_SECRET_ACCESS_KEY"] = .SecretAccessKey | .["AWS_SESSION_TOKEN"] = .SessionToken | del(.AccessKeyId, .SecretAccessKey, .SessionToken, .Expiration) | to_entries[] | "export \(.key)=\(.value)"'"
+			println $ASSUME_ENV_CMD
+			ASSUME_ROLE_ENVIRONMENT=$($ASSUME_ENV_CMD)
 			eval $ASSUME_ROLE_ENVIRONMENT
 			println $AWS_ACCESS_KEY_ID
 			println $AWS_SECRET_ACCESS_KEY

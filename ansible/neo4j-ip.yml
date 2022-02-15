@@ -1,3 +1,11 @@
+- name: get role name
+  set_fact:
+    current_role: "{{ role_name }}"
+
+- name: echo role name
+  debug:
+    msg: "{{ current_role }}"
+
 - name: gather instance facts
   ec2_instance_facts:
     region: us-east-1

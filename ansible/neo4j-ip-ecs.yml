@@ -1,6 +1,7 @@
 - name: gather instance facts
   ec2_instance_facts:
     region: us-east-1
+    security_token: "{{ assumed_role.sts_creds.session_token }}"
     filters:
       "tag:Name": "{{project}}-{{tier}}-neo4j-4"
       "instance-state-name": running

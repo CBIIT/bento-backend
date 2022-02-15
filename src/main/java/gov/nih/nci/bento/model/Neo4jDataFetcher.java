@@ -20,7 +20,6 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.DataFetchingInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +59,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         driver.close();
     }
 
@@ -90,10 +89,9 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
                 int ratio = (int) ((double)cacheHits/(double)(cacheHits+cacheMisses)*100);
                 logger.info(String.format("Cache Hit-Miss Ratio: %s-%s, %s%%", cacheHits, cacheMisses, ratio));
                 return values;
-            } else {
-                logger.info("Cache Disabled: Executing query");
-                return executeQuery(session, cypher, transformedParams);
             }
+            logger.info("Cache Disabled: Executing query");
+            return executeQuery(session, cypher, transformedParams);
         }
     }
 
@@ -125,7 +123,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    private Object deserializeObject(String s) throws IOException, ClassNotFoundException {
+    private Object deserializeObject(String s) {
         try{
             byte[] data = Base64.getDecoder().decode(s);
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));

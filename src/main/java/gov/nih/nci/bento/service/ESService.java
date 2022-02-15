@@ -57,38 +57,6 @@ public class ESService {
         return getJSonFromResponse(response);
     }
 
-    public Map<String, JsonObject> asyncSend(Map<String, Request> requestMap) throws InterruptedException {
-
-        final CountDownLatch latch = new CountDownLatch(requestMap.size());
-
-        Map<String, JsonObject> result = new HashMap<>();
-        requestMap.forEach((key,request)-> {
-            client.performRequestAsync(
-                    request,
-                    new ResponseListener() {
-                        @Override
-                        public void onSuccess(Response response) {
-                            try {
-                                JsonObject jsonObject = getJSonFromResponse(response);
-                                result.put(key, jsonObject);
-                            } catch (IOException e) {
-                                logger.error("Elasticsearch returned error msg: " + e.toString());
-                            } finally {
-                                latch.countDown();
-                            }
-                        }
-                        @Override
-                        public void onFailure(Exception exception) {
-                            logger.error("Elasticsearch returned error msg: " + exception.toString());
-                            latch.countDown();
-                        }
-                    }
-            );
-        });
-        latch.await();
-        return result;
-    }
-
     public JsonObject getJSonFromResponse(Response response) throws IOException {
         String responseBody = EntityUtils.toString(response.getEntity());
         JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);

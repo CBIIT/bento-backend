@@ -206,12 +206,6 @@ public class BentoEsFilter implements DataFetcher {
         return TERM_AGGS;
     }
 
-
-    private void createEsRequests(Map<String, Request> requestedMap, Request request, Map<String, Object> query) {
-        request.setJsonEntity(gson.toJson(query));
-        requestedMap.put(request.getEndpoint(), request);
-    }
-
     private Map<String, String> getSubjectMap() {
         final Map<String, String> RANGE_AGGS = new HashMap<>();
         RANGE_AGGS.put("age_at_index",  "filterSubjectCountByAge");
@@ -237,39 +231,60 @@ public class BentoEsFilter implements DataFetcher {
         return esService.addAggregations(query, TERM_AGG_NAMES, getSubjectMapRange());
     }
 
+    @FunctionalInterface
+    private interface GetResultType<T> {
+        T get(JsonObject obj);
+    }
+
+    private JsonObject send(Request r) {
+        JsonObject json = null;
+        try {
+            json = esService.send(r);
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
+        return json;
+    }
+
+    private Object searchES(Request request, GetResultType type) {
+        JsonObject json = send(request);
+        return type.get(json);
+    }
+
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException, InterruptedException {
 
+        Map<String, Object> result = new HashMap<>();
+
+        Map<String, Request> map = Map.of(
+                Const.ES_KEYS.NO_OF_SUBJECTS, new Request("GET", SAMPLES_COUNT_END_POINT),
+                Const.ES_KEYS.NO_OF_SAMPLES, new Request("GET", FILES_COUNT_END_POINT),
+                Const.ES_KEYS.NO_OF_FILES, new Request("GET", SUBJECTS_COUNT_END_POINT)
+        );
+
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
-        Map<String, Request> requestHashMap = new HashMap<>();
-        createEsRequests(requestHashMap, new Request("GET", SAMPLES_COUNT_END_POINT), query);
-        createEsRequests(requestHashMap, new Request("GET", FILES_COUNT_END_POINT), query);
-        createEsRequests(requestHashMap, new Request("GET", SUBJECTS_COUNT_END_POINT), query);
+        GetResultType type = (json)-> json.get("count").getAsInt();
+        map.forEach((k, request)->{
+                    request.setJsonEntity(gson.toJson(query));
+                    result.put(k, searchES(request, type));
+        });
 
-        Map<String, Object> aggQuery = getSubjectQuery(query);
-        createEsRequests(requestHashMap, new Request("GET", SUBJECTS_END_POINT), aggQuery);
-        Map<String, JsonObject> result = esService.asyncSend(requestHashMap);
-
-        int numberOfSamples = result.get(SAMPLES_COUNT_END_POINT).get("count").getAsInt();
-        int numberOfFiles = result.get(FILES_COUNT_END_POINT).get("count").getAsInt();
-        int numberOfSubjects = result.get(SUBJECTS_COUNT_END_POINT).get("count").getAsInt();
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+        request.setJsonEntity(gson.toJson(getSubjectQuery(query)));
+        JsonObject subjectResult = (JsonObject) searchES(request, (j)-> j);
 
         final List<Map<String, String>> TERM_AGGS = GetTermsAggregations();
-        Map<String, JsonArray> aggs = esService.collectTermAggs(result.get(SUBJECTS_END_POINT), getTermAggNames(TERM_AGGS));
+        Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, getTermAggNames(TERM_AGGS));
 
-        Map<String, Object> data = new HashMap<>();
-        data.put(Const.ES_KEYS.NO_OF_PROGRAMS, aggs.get("programs").size());
-        data.put(Const.ES_KEYS.NO_OF_STUDIES, aggs.get("studies").size());
-        data.put(Const.ES_KEYS.NO_OF_PROCEDURES, aggs.get("lab_procedures").size());
-        data.put(Const.ES_KEYS.NO_OF_SUBJECTS, numberOfSubjects);
-        data.put(Const.ES_KEYS.NO_OF_SAMPLES, numberOfSamples);
-        data.put(Const.ES_KEYS.NO_OF_FILES, numberOfFiles);
-        data.put(Const.ES_KEYS.NO_OF_ARMS_PROGRAM, armsByPrograms(params));
+        result.put(Const.ES_KEYS.NO_OF_PROGRAMS, aggs.get("programs").size());
+        result.put(Const.ES_KEYS.NO_OF_STUDIES, aggs.get("studies").size());
+        result.put(Const.ES_KEYS.NO_OF_PROCEDURES, aggs.get("lab_procedures").size());
+        result.put(Const.ES_KEYS.NO_OF_ARMS_PROGRAM, armsByPrograms(params));
         // widgets data and facet filter counts
-        addWidgetData(data, TERM_AGGS, params, aggs);
+        addWidgetData(result, TERM_AGGS, params, aggs);
 
-        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(result.get(SUBJECTS_END_POINT), getSubjectMapRange());
-        addFilterCountData(data, rangeAggs, params);
-        return data;
+        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(subjectResult, getSubjectMapRange());
+        addFilterCountData(result, rangeAggs, params);
+        return result;
     }
 
     private void addFilterCountData(Map<String, Object> data, Map<String, JsonObject> rangeAggs, Map<String, Object> params) throws IOException {
@@ -518,7 +533,6 @@ public class BentoEsFilter implements DataFetcher {
             data.add(Map.of("group", group.getAsJsonObject().get("key").getAsString(),
                     "subjects", group.getAsJsonObject().get("doc_count").getAsInt()
             ));
-
         }
         return data;
     }

@@ -219,6 +219,12 @@ pipeline {
         steps {
           script {
 			
+			ASSUME_ROLE_OUTPUT=$(aws sts assume-role --role-arn "${ROLE_ARN}" --role-session-name jenkins)
+			ASSUME_ROLE_ENVIRONMENT=$(echo $ASSUME_ROLE_OUTPUT | jq -r '.Credentials | .["AWS_ACCESS_KEY_ID"] = .AccessKeyId | .["AWS_SECRET_ACCESS_KEY"] = .SecretAccessKey | .["AWS_SESSION_TOKEN"] = .SessionToken | del(.AccessKeyId, .SecretAccessKey, .SessionToken, .Expiration) | to_entries[] | "export \(.key)=\(.value)"')
+			eval $ASSUME_ROLE_ENVIRONMENT
+			println $AWS_ACCESS_KEY_ID
+			println $AWS_SECRET_ACCESS_KEY
+			
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([string(credentialsId: 'es_dev_host', variable: 'ES_HOST'),

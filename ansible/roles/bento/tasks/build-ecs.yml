@@ -6,14 +6,10 @@
 
 ############################################################################################################################
 
-- name: Get the current caller identity information
-  aws_caller_info:
-  register: caller_info
-
 - name: set assumed role credentials
   sts_assume_role:
-    role_arn: "arn:aws:iam::{{ caller_info.account }}:role/jenkins-execution-role"
-    role_session_name: "someRoleSession"
+    role_arn: "{{ exec_role }}"
+    role_session_name: "ECSRoleSession"
   register: assumed_role
 
 - name: get db ip
@@ -48,6 +44,10 @@
 - name: echo frontend id
   debug:
     msg: "{{ frontend_id.stdout_lines }}"
+
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
 
 - name: set ECR registry name
   set_fact:

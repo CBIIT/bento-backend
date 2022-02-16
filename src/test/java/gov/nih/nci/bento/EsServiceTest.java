@@ -42,7 +42,6 @@ public class EsServiceTest {
         AbstractClient restClient = new DefaultClient(config);
         client = restClient.getRestConnector();
 
-        final String index = "/samples/_count";
         Map<String, Object> params = new HashMap<>();
         params.put("subject_ids", new ArrayList<>());
         query = esService.buildFacetFilterQuery(params);

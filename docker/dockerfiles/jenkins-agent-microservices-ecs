@@ -6,7 +6,7 @@ ENV NODE_VERSION=15.13.0
 ARG MAVEN_VERSION=3.6.3
 USER root
 RUN apt-get update \
-  && apt-get -y install wget lvm2 redis \
+  && apt-get -y install openjdk-11-jdk wget lvm2 redis \
   && wget https://downloads.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz -P /tmp \
   && tar xf /tmp/apache-maven-$MAVEN_VERSION-bin.tar.gz -C /usr/local \
   && ln -s /usr/local/apache-maven-$MAVEN_VERSION /usr/local/maven 

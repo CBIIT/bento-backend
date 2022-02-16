@@ -7,7 +7,9 @@ ARG MAVEN_VERSION=3.6.3
 USER root
 RUN apt-get update \
   && apt-get -y install openjdk-11-jdk wget lvm2 redis \
-  && wget https://downloads.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz -P /tmp \
+  && apt-get clean
+
+RUN wget https://downloads.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz -P /tmp \
   && tar xf /tmp/apache-maven-$MAVEN_VERSION-bin.tar.gz -C /usr/local \
   && ln -s /usr/local/apache-maven-$MAVEN_VERSION /usr/local/maven 
 
@@ -17,7 +19,8 @@ RUN apt-get update \
   && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
   && apt-get update \
   && apt-cache policy docker-ce \
-  && apt-get install -y docker-ce docker-ce-cli containerd.io
+  && apt-get install -y docker-ce docker-ce-cli containerd.io \
+  && apt-get clean
 
 RUN curl -sL https://deb.nodesource.com/setup_15.x | bash - \
   && apt-get update \
@@ -25,18 +28,19 @@ RUN curl -sL https://deb.nodesource.com/setup_15.x | bash - \
   && npm install -g n \
   && n $NODE_VERSION \
   && npm install -g yarn \
-  && yarn --version
+  && yarn --version \
+  && apt-get clean
 
 RUN apt-get install -y jq python3 python3-pip \
   && /usr/bin/pip3 install pip -U \
   && /usr/bin/pip3 install ansible==2.9.0 awscli jmespath docker boto botocore boto3 \
-  && mkdir -p /var/cert
+  && mkdir -p /var/cert \
+  && apt-get clean
 
 RUN apt-get install -y unzip \
   && curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip \
   && unzip awscliv2.zip \
-  && ./aws/install
-
-RUN apt-get clean
+  && ./aws/install \
+  && apt-get clean
 
 ENTRYPOINT ["/usr/local/bin/jenkins-agent"]

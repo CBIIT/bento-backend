@@ -34,10 +34,18 @@ public class EsServiceTest {
     @Autowired
     private ConfigurationDAO config;
 
+
+    private Map<String, Object> query;
+
     @Before
-    public void init() {
+    public void init() throws IOException {
         AbstractClient restClient = new DefaultClient(config);
         client = restClient.getRestConnector();
+
+        final String index = "/samples/_count";
+        Map<String, Object> params = new HashMap<>();
+        params.put("subject_ids", new ArrayList<>());
+        query = esService.buildFacetFilterQuery(params);
     }
 
     @Test
@@ -64,32 +72,11 @@ public class EsServiceTest {
     public void send_Test() throws IOException {
 
         final String index = "/samples/_count";
-        Map<String, Object> params = new HashMap<>();
-        params.put("subject_ids", new ArrayList<>());
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
         Request sampleCountRequest = new Request("GET", index);
-
         sampleCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(sampleCountRequest);
         int count = jsonObject.get("count").getAsInt();
         assertThat(count).isGreaterThan(0);
     }
 
-    @Test
-    // TODO
-    public void multiple_requests_Test() throws IOException, InterruptedException {
-
-        final String index = "/samples/_count";
-        Map<String, Object> params = new HashMap<>();
-        params.put("subject_ids", new ArrayList<>());
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
-        Request sampleCountRequest = new Request("GET", index);
-
-        sampleCountRequest.setJsonEntity(gson.toJson(query));
-        HashMap<String, Request> requestHashMap = new HashMap<>();
-        requestHashMap.put("SAMPLE", sampleCountRequest);
-
-//        Map<String, JsonObject> resultMaps = esService.asyncSend(requestHashMap);
-//        assertThat(resultMaps.size()).isGreaterThan(0);
-    }
 }

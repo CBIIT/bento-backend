@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.opensearch.client.Response;
-import org.opensearch.client.ResponseListener;
 import org.opensearch.client.RestClient;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 @Service("ESService")
 @RequiredArgsConstructor
@@ -76,18 +74,9 @@ public class ESService {
 
         List<Object> filter = new ArrayList<>();
         for (var key: params.keySet()) {
-            if (excludedParams.contains(key)) {
-                continue;
-            }
+            if (excludedParams.contains(key)) continue;
             Object obj = params.get(key);
-
-            List<String> valueSet;
-            if (obj instanceof List) {
-                valueSet = (List<String>) obj;
-            } else {
-                String value = (String)obj;
-                valueSet = List.of(value);
-            }
+            List<String> valueSet = (obj instanceof List) ? (List<String>) obj : List.of((String)obj);
 
             if (ignoreCase) {
                 List<String> lowerCaseValueSet = new ArrayList<>();
@@ -97,11 +86,7 @@ public class ESService {
                 valueSet = lowerCaseValueSet;
             }
             // list with only one empty string [""] means return all records
-            if (valueSet.size() == 1) {
-                if (valueSet.get(0).equals("")) {
-                    continue;
-                }
-            }
+            if (valueSet.size() == 1 && valueSet.get(0).equals("")) continue;
             filter.add(Map.of(
                     "terms", Map.of( key, valueSet)
             ));
@@ -124,9 +109,7 @@ public class ESService {
 
         List<Object> filter = new ArrayList<>();
         for (var key: params.keySet()) {
-            if (excludedParams.contains(key)) {
-                continue;
-            }
+            if (excludedParams.contains(key)) continue;
 
             if (rangeParams.contains(key)) {
                 // Range parameters, should contain two doubles, first lower bound, then upper bound
@@ -241,8 +224,6 @@ public class ESService {
         return data;
     }
 
-
-
     public List<String> collectBucketKeys(JsonArray buckets) {
         List<String> keys = new ArrayList<>();
         for (var bucket: buckets) {
@@ -355,15 +336,14 @@ public class ESService {
         return collectPage(jsonObject, properties, null, pageSize, offset);
     }
 
-    public List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, String[][] highlights, int pageSize, int offset) throws IOException {
-        List<Map<String, Object>> data = new ArrayList<>();
+    public List<Map<String, Object>> collectPage(JsonObject jsonObject, String[][] properties, String[][] highlights, int pageSize, int offset) {
+        List<Map<String, Object>> result = new ArrayList<>();
 
         JsonArray searchHits = jsonObject.getAsJsonObject("hits").getAsJsonArray("hits");
         for (int i = 0; i < searchHits.size(); i++) {
             // skip offset number of documents
-            if (i + 1 <= offset) {
-                continue;
-            }
+            if (i + 1 <= offset) continue;
+
             Map<String, Object> row = new HashMap<>();
             for (String[] prop: properties) {
                 String propName = prop[0];
@@ -381,33 +361,32 @@ public class ESService {
                     }
                 }
             }
-            data.add(row);
-            if (data.size() >= pageSize) {
+            result.add(row);
+            if (result.size() >= pageSize) {
                 break;
             }
         }
-        return data;
+        return result;
     }
 
     // Convert JsonElement into Java collections and primitives
     private Object getValue(JsonElement element) {
         Object value = null;
-        if (element == null || element.isJsonNull()) {
-            return null;
-        } else if (element.isJsonObject()) {
+        if (element == null || element.isJsonNull()) return null;
+        if (element.isJsonObject()) {
             value = new HashMap<String, Object>();
             JsonObject object = element.getAsJsonObject();
             for (String key: object.keySet()) {
                 ((Map<String, Object>) value).put(key, getValue(object.get(key)));
             }
+            return value;
         } else if (element.isJsonArray()) {
             value = new ArrayList<>();
             for (JsonElement entry: element.getAsJsonArray()) {
                 ((List<Object>)value).add(getValue(entry));
             }
-        } else {
-            value = element.getAsString();
+            return value;
         }
-        return value;
+        return element.getAsString();
     }
 }

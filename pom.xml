@@ -208,6 +208,20 @@
             <version>1.12.147</version>
             <scope>compile</scope>
         </dependency>
+		<!-- Spring Lombok	-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- AssertJ Import	-->
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.22.0</version>
+			<scope>test</scope>
+		</dependency>
 
 
     </dependencies>

@@ -1,6 +1,7 @@
 package gov.nih.nci.bento.error;
 
 import com.google.gson.GsonBuilder;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
 public class ApiError extends Throwable {
 
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -50,19 +52,4 @@ public class ApiError extends Throwable {
 		this.time = formatter.format(LocalDateTime.now());
 	}
 
-	public HttpStatus getStatus() {
-		return status;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public List<String> getErrors() {
-		return errors;
-	}
-
-	public String getTime() {
-		return time;
-	}
 }

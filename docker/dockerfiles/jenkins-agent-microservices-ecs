@@ -1,5 +1,6 @@
 FROM jenkins/inbound-agent:latest-jdk11
 
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV MAVEN_HOME /usr/local/maven
 ENV PATH $MAVEN_HOME/bin:$PATH
 ENV NODE_VERSION=15.13.0

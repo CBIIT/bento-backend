@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
+import gov.nih.nci.bento.model.C3DCElasticSearchDataFetcher;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.DataFetcher;
 import gov.nih.nci.bento.model.Neo4jDataFetcher;

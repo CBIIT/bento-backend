@@ -1,0 +1,101 @@
+type SubjectOverview {
+    pcdc_subject_id: String
+    race: String
+    sex: String
+    disease_phase: String
+    treatment_arm: String
+    disease_site: String
+    data_contributor_id: String
+    ae_grade: String
+    ae_outcome: String
+    study_id: String
+    program_id: String
+    cancer: String
+}
+
+type FileOverview {
+    file_name: String
+    file_type: String
+    file_description: String
+    file_format: String
+    file_size: String
+    md5sum: String
+    file_status: String
+    uuid: String
+    file_location: String
+    pcdc_subject_id: String
+    study_id: String
+    program_id: String
+    cancer: String
+}
+
+type SearchResult {
+    numOfPrograms: Int
+    numberOfSubjects: Int
+    num_of_studies: Int
+    numberOfFiles: Int
+    fileIds: [String],
+    subjectIds: [String]
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+
+    searchSubjects(
+        race: [String] = [],
+        sex: [String] = [],
+        disease_phase: [String] = [],
+        treatment_arm: [String] = [],
+        disease_site: [String] = [],
+        data_contributor_id: [String] = [],
+        ae_grade: [String] = [],
+        ae_outcome: [String] = [],
+        study_id: [String] = [],
+        program_id: [String] = [],
+        cancer: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): SearchResult
+
+
+    subjectOverview (
+        race: [String] = [],
+        sex: [String] = [],
+        disease_phase: [String] = [],
+        treatment_arm: [String] = [],
+        disease_site: [String] = [],
+        data_contributor_id: [String] = [],
+        ae_grade: [String] = [],
+        ae_outcome: [String] = [],
+        study_id: [String] = [],
+        program_id: [String] = [],
+        cancer: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectOverview]
+
+    fileOverview(
+        race: [String] = [],
+        sex: [String] = [],
+        disease_phase: [String] = [],
+        treatment_arm: [String] = [],
+        disease_site: [String] = [],
+        data_contributor_id: [String] = [],
+        ae_grade: [String] = [],
+        ae_outcome: [String] = [],
+        study_id: [String] = [],
+        program_id: [String] = [],
+        cancer: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverview]
+}

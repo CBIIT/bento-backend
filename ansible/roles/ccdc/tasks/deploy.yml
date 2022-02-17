@@ -19,6 +19,8 @@
           value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/service/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/service/{% endif %}" 
         - name: REACT_APP_ENVIRONMENT
           value: "{{tier}}"
+        - name: ORIGIN_DOMAIN
+          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}" 
         - name: SOFTWARE_VERSION
           value: "{{ software_version }}"
         - name: NEW_RELIC_LICENSE_KEY

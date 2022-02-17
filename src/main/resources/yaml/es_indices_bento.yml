@@ -1,0 +1,471 @@
+# Indices settings
+Indices:
+  # First index
+  # Name of the index to be created, existing index with same name will be deleted
+  - index_name: subjects
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      programs:
+        type: keyword
+      program_id:
+        type: keyword
+      studies:
+        type: keyword
+      study_acronym:
+        type: keyword
+      study_short_description:
+        type: keyword
+      lab_procedures:
+        type: keyword
+      subject_ids:
+        type: keyword
+      subject_id_num:
+        type: integer
+      subject_id_gs:
+        type: search_as_you_type
+      diagnoses:
+        type: keyword
+      diagnosis_gs:
+        type: search_as_you_type
+      rc_scores:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
+        type: keyword
+      tumor_grades:
+        type: keyword
+      er_status:
+        type: keyword
+      pr_status:
+        type: keyword
+      endo_therapies:
+        type: keyword
+      meno_status:
+        type: keyword
+      age_at_index:
+        type: integer
+      age_at_index_gs:
+        type: search_as_you_type
+      survival_time:
+        type: integer
+      survival_time_unit:
+        type: keyword
+      tissue_type:
+        type: keyword
+      composition:
+        type: keyword
+      association:
+        type: keyword
+      file_type:
+        type: keyword
+      samples:
+        type: keyword
+      files:
+        type: keyword
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      MATCH (ss)<-[*..2]-(parent)<--(f:file)
+      OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+      RETURN DISTINCT
+      p.program_acronym AS programs,
+      p.program_id AS program_id,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      s.study_acronym AS study_acronym,
+      s.study_short_description AS study_short_description,
+      COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
+      ss.study_subject_id AS subject_ids,
+      ss.study_subject_id AS subject_id_gs,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+      ss.disease_subtype AS diagnoses,
+      ss.disease_subtype AS diagnosis_gs,
+      sf.grouped_recurrence_score AS rc_scores,
+      d.tumor_size_group AS tumor_sizes,
+      tp.chemotherapy_regimen AS chemo_regimen,
+      d.tumor_grade AS tumor_grades,
+      d.er_status AS er_status,
+      d.pr_status AS pr_status,
+      tp.endocrine_therapy_type AS endo_therapies,
+      demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
+      demo.age_at_index AS age_at_index_gs,
+      demo.survival_time AS survival_time,
+      demo.survival_time_unit AS survival_time_unit,
+      COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
+      COLLECT(DISTINCT samp.composition) AS composition,
+      COLLECT(DISTINCT head(labels(parent))) AS association,
+      COLLECT(DISTINCT f.file_type) AS file_type,
+      COLLECT(DISTINCT f.file_id) AS files,
+      COLLECT(DISTINCT samp.sample_id) AS samples
+      "
+
+  - index_name: subject_ids
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      program_id:
+        type: keyword
+      subject_id:
+        type: keyword
+      subject_ids:
+        type: keyword
+      subject_id_num:
+        type: integer
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      RETURN DISTINCT
+      p.program_id AS program_id,
+      ss.study_subject_id AS subject_id,
+      toLower(ss.study_subject_id) AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num
+      "
+
+  - index_name: samples
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      programs:
+        type: keyword
+      program_id:
+        type: keyword
+      study_acronym:
+        type: keyword
+      studies:
+        type: keyword
+      subject_ids:
+        type: keyword
+      subject_id_num:
+        type: keyword
+      sample_ids:
+        type: keyword
+      sample_id_gs:
+        type: search_as_you_type
+      sample_id_num:
+        type: integer
+      diagnoses:
+        type: keyword
+      rc_scores:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
+        type: keyword
+      tumor_grades:
+        type: keyword
+      er_status:
+        type: keyword
+      pr_status:
+        type: keyword
+      endo_therapies:
+        type: keyword
+      meno_status:
+        type: keyword
+      tissue_type:
+        type: keyword
+      tissue_type_gs:
+        type: search_as_you_type
+      composition:
+        type: keyword
+      sample_anatomic_site:
+        type: keyword
+      sample_anatomic_site_gs:
+        type: search_as_you_type
+      sample_procurement_method:
+        type: keyword
+      files:
+        type: keyword
+      platform:
+        type: keyword
+      association:
+        type: keyword
+      file_type:
+        type: keyword
+      age_at_index:
+        type: integer
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      MATCH (samp)<-[*]-(f:file)
+      MATCH (parent)<--(f)
+      OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+      RETURN DISTINCT
+      p.program_acronym AS programs,
+      p.program_id AS program_id,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      s.study_acronym AS study_acronym,
+      samp.sample_id AS sample_ids,
+      samp.sample_id AS sample_id_gs,
+      samp.sample_anatomic_site AS sample_anatomic_site,
+      samp.sample_anatomic_site AS sample_anatomic_site_gs,
+      samp.method_of_sample_procurement AS sample_procurement_method,
+      lp.test_name AS platform,
+      toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
+      ss.study_subject_id AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+      ss.disease_subtype AS diagnoses,
+      sf.grouped_recurrence_score AS rc_scores,
+      d.tumor_size_group AS tumor_sizes,
+      tp.chemotherapy_regimen AS chemo_regimen,
+      d.tumor_grade AS tumor_grades,
+      d.er_status AS er_status,
+      d.pr_status AS pr_status,
+      tp.endocrine_therapy_type AS endo_therapies,
+      demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
+      samp.tissue_type AS tissue_type,
+      samp.tissue_type AS tissue_type_gs,
+      samp.composition AS composition,
+      COLLECT(DISTINCT f.file_id) AS files,
+      COLLECT(DISTINCT head(labels(parent))) AS association,
+      COLLECT(DISTINCT f.file_type) AS file_type
+      "
+  - index_name: files
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      programs:
+        type: keyword
+      program_id:
+        type: keyword
+      studies:
+        type: keyword
+      study_acronym:
+        type: keyword
+      subject_ids:
+        type: keyword
+      subject_id_num:
+        type: integer
+      sample_ids:
+        type: keyword
+      sample_id_num:
+        type: integer
+      file_ids:
+        type: keyword
+      file_id_num:
+        type: integer
+      file_id_gs:
+        type: search_as_you_type
+      file_names:
+        type: keyword
+      file_name_gs:
+        type: search_as_you_type
+      file_description:
+        type: keyword
+      file_format:
+        type: keyword
+      file_format_gs:
+        type: search_as_you_type
+      file_size:
+        type: double
+      md5sum:
+        type: keyword
+      diagnoses:
+        type: keyword
+      rc_scores:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
+        type: keyword
+      tumor_grades:
+        type: keyword
+      er_status:
+        type: keyword
+      pr_status:
+        type: keyword
+      endo_therapies:
+        type: keyword
+      meno_status:
+        type: keyword
+      tissue_type:
+        type: keyword
+      composition:
+        type: keyword
+      association:
+        type: keyword
+      file_type:
+        type: keyword
+      age_at_index:
+        type: integer
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (ss:study_subject)<-[*..2]-(parent)<--(f:file)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
+      MATCH (ss)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
+      MATCH (f)-[*]->(samp:sample)
+      RETURN DISTINCT
+      p.program_acronym AS programs,
+      p.program_id AS program_id,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
+      s.study_acronym AS study_acronym,
+      ss.study_subject_id AS subject_ids,
+      toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
+      f.file_id AS file_ids,
+      f.file_id AS file_id_gs,
+      f.file_name AS file_names,
+      f.file_name AS file_name_gs,
+      f.file_description AS file_description,
+      f.file_format AS file_format,
+      f.file_format AS file_format_gs,
+      f.file_size AS file_size,
+      f.md5sum AS md5sum,
+      toInteger(split(f.file_id,'-')[2]) AS file_id_num,
+      ss.disease_subtype AS diagnoses,
+      sf.grouped_recurrence_score AS rc_scores,
+      d.tumor_size_group AS tumor_sizes,
+      tp.chemotherapy_regimen AS chemo_regimen,
+      d.tumor_grade AS tumor_grades,
+      d.er_status AS er_status,
+      d.pr_status AS pr_status,
+      tp.endocrine_therapy_type AS endo_therapies,
+      demo.menopause_status AS  meno_status,
+      demo.age_at_index AS age_at_index,
+      samp.sample_id AS sample_ids,
+      toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
+      samp.tissue_type AS tissue_type,
+      samp.composition AS composition,
+      head(labels(parent)) AS association,
+      f.file_type AS file_type
+      order by f.file_id
+      "
+
+  - index_name: programs
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      program_code:
+        type: search_as_you_type
+      program_id:
+        type: search_as_you_type
+      program_id_kw:
+        type: keyword
+      program_file_names:
+        type: search_as_you_type
+      program_name:
+        type: search_as_you_type
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (p:program)
+      OPTIONAL MATCH (p)<--(pf:file)
+      RETURN DISTINCT
+        p.program_acronym AS program_code,
+        p.program_id AS program_id,
+        p.program_id AS program_id_kw,
+        p.program_name AS program_name,
+        COLLECT(DISTINCT pf.file_name) AS program_file_names
+      "
+  - index_name: studies
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      program_id:
+        type: search_as_you_type
+      study_code:
+        type: search_as_you_type
+      study_id:
+        type: search_as_you_type
+      study_id_kw:
+        type: keyword
+      study_name:
+        type: search_as_you_type
+      study_type:
+        type: search_as_you_type
+      study_file_names:
+        type: search_as_you_type
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (s:study)
+      OPTIONAL MATCH (s)<--(sf:file)
+      OPTIONAL MATCH (s)-->(p:program)
+      RETURN DISTINCT
+        p.program_id AS program_id,
+        s.study_id AS study_id,
+        s.study_id AS study_id_kw,
+        s.study_acronym AS study_code,
+        s.study_name AS study_name,
+        s.study_type AS study_type,
+        COLLECT(DISTINCT sf.file_name) AS study_file_names
+      "
+
+  - index_name: about_page
+    type: about_file
+    # type mapping for each property of the index
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
+  - index_name: model_nodes
+    type: model
+    subtype: node
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      node_kw:
+        type: keyword
+
+  - index_name: model_properties
+    type: model
+    subtype: property
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_kw:
+        type: keyword
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+
+  - index_name: model_values
+    type: model
+    subtype: value
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+      value:
+        type: search_as_you_type
+      value_kw:
+        type: keyword

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>gov.nih.nci.bento</groupId>
+    <groupId>gov.nih.nci.bento</groupId>
 	<artifactId>Bento</artifactId>
 	<version>0.0.1</version>
 	<packaging>war</packaging>
@@ -193,9 +193,38 @@
 			<version>13.0</version>
 		</dependency>
 
+        <!-- OpenSearch Java High level REST API -->
+        <!-- https://mvnrepository.com/artifact/org.opensearch.client/opensearch-rest-client -->
+        <dependency>
+            <groupId>org.opensearch.client</groupId>
+            <artifactId>opensearch-rest-client</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.amazonaws.auth/aws-java-sdk -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>1.12.147</version>
+            <scope>compile</scope>
+        </dependency>
+		<!-- Spring Lombok	-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- AssertJ Import	-->
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.22.0</version>
+			<scope>test</scope>
+		</dependency>
 
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>

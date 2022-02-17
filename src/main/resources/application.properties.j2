@@ -1,6 +1,9 @@
 #API Version
 bento.api.version={{bento_api_version}}
 
+# Project
+project = {{project}}
+
 #Spring
 spring.mvc.throw-exception-if-no-handler-found=true
 spring.mvc.view.prefix=/WEB-INF/
@@ -15,7 +18,7 @@ error.redirect_url=http://localhost/error.html
 
 #GraphQL
 graphql.schema=graphql/{{schema_file}}
-graphql.redis_schema=graphql/{{redis_schema_file}}
+graphql.es_schema = graphql/{{es_schema_file}}
 
 #Query Restrictions
 allow_graphql_query = true
@@ -29,10 +32,13 @@ allow_graphql_mutation =false
 # redis.port =
 redis.ttl=-1
 
-#Redis Filtering
-# following properties will be read from environment variables
-# redis.filter.enable =
-redis.filter.init_queries_file = yaml/{{redis_init_queries_file}}
+# Elasticsearch Filtering
+# es.host = {{es_host}} # This will be reading from env_var ES_HOST
+es.port = 443
+es.scheme = https
+es.filter.enabled = true
+# use es.sign.requests = true if running AWS OpenSearch
+es.sign.requests = true
 
 #Testing
 test.queries_file = yaml/{{test_queries_file}}

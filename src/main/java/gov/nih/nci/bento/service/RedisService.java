@@ -1,9 +1,9 @@
 package gov.nih.nci.bento.service;
 
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
@@ -19,11 +19,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service("redisService")
+@RequiredArgsConstructor
 public class RedisService {
     private static final Logger logger = LogManager.getLogger(RedisService.class);
 
-    @Autowired
-    private ConfigurationDAO config;
+    private final ConfigurationDAO config;
 
     private JedisPool pool;
     private JedisCluster cluster;
@@ -253,14 +253,14 @@ public class RedisService {
     }
 
     private boolean connect() {
-        if (!config.getRedisEnabled()) {
+        if (!config.isRedisEnabled()) {
             logger.warn("Redis not connected, connection disabled in Bento configuration");
             return false;
         }
         try {
             String host = config.getRedisHost();
             int port = config.getRedisPort();
-            useCluster = config.getRedisUseCluster();
+            useCluster = config.isRedisUseCluster();
             ttl = config.getRedisTTL();
 
             if (host.isBlank()) {

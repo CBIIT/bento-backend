@@ -1,12 +1,13 @@
-package gov.nih.nci.bento.service;
+package gov.nih.nci.bento.model;
 
-import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.service.RedisService;
 import graphql.language.VariableReference;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLType;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,6 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.DataFetchingInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +39,7 @@ import java.util.Map;
 
 @Service("neo4jDataFetcher")
 @DependsOn({"redisService"})
+@RequiredArgsConstructor
 public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
     private static final Logger logger = LogManager.getLogger(Neo4jDataFetcher.class);
 
@@ -46,10 +47,8 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
     private int cacheMisses = 0;
 
     private Driver driver;
-    @Autowired
-    private ConfigurationDAO config;
-    @Autowired
-    private RedisService redisService;
+    private final ConfigurationDAO config;
+    private final RedisService redisService;
 
     @PostConstruct
     public void connect() {
@@ -60,7 +59,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         driver.close();
     }
 
@@ -90,10 +89,9 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
                 int ratio = (int) ((double)cacheHits/(double)(cacheHits+cacheMisses)*100);
                 logger.info(String.format("Cache Hit-Miss Ratio: %s-%s, %s%%", cacheHits, cacheMisses, ratio));
                 return values;
-            } else {
-                logger.info("Cache Disabled: Executing query");
-                return executeQuery(session, cypher, transformedParams);
             }
+            logger.info("Cache Disabled: Executing query");
+            return executeQuery(session, cypher, transformedParams);
         }
     }
 
@@ -125,7 +123,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    private Object deserializeObject(String s) throws IOException, ClassNotFoundException {
+    private Object deserializeObject(String s) {
         try{
             byte[] data = Base64.getDecoder().decode(s);
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
@@ -171,9 +169,8 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
             return true;
         } else if (type instanceof GraphQLNonNull) {
             return isList(((GraphQLNonNull) type).getWrappedType());
-        } else {
-            return false;
         }
+        return false;
     }
 }
 

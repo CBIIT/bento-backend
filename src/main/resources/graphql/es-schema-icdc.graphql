@@ -1,0 +1,127 @@
+type CaseOverviewES {
+    case_id: String
+    study_code: String
+    study_type: String
+    cohort: String
+    breed: String
+    diagnosis: String
+    stage_of_disease: String
+    age: Float
+    sex: String
+    neutered_status: String
+    weight: Float
+    response_to_treatment: String
+    disease_site: String
+    files: [String]
+    other_cases: [String]
+    individual_id: String
+    primary_disease_site: String
+    date_of_diagnosis: String
+    histology_cytopathology: String
+    histological_grade: String
+    pathology_report: String
+    treatment_data: String
+    follow_up_data: String
+    concurrent_disease: String
+    concurrent_disease_type: String
+    arm: String
+}
+
+type SampleOverviewES {
+    sample_id: String
+    case_id: String
+    breed: String
+    diagnosis: String
+    sample_site: String
+    sample_type: String
+    sample_pathology: String
+    tumor_grade: String
+    sample_chronology: String
+    percentage_tumor: String
+    necropsy_sample: String
+    sample_preservation: String
+    files: [String]
+    physical_sample_type: String
+    general_sample_pathology: String
+    tumor_sample_origin: String
+    comment: String
+    individual_id: String
+    other_cases: [String]
+    patient_age_at_enrollment: String
+    sex: String
+    neutered_indicator: String
+    weight: String
+    primary_disease_site: String
+    stage_of_disease: String
+    date_of_diagnosis: String
+    histology_cytopathology: String
+    histological_grade: String
+    best_response: String
+    pathology_report: String
+    treatment_data: String
+    follow_up_data: String
+    concurrent_disease: String
+    concurrent_disease_type: String
+    cohort_description: String
+    arm: String
+}
+
+type FileOverviewES {
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    case_id: String
+    breed: String
+    diagnosis: String
+    study_code: String
+    file_uuid: String
+    sample_id: String
+    sample_site: String
+    physical_sample_type: String
+    general_sample_pathology: String
+    tumor_sample_origin: String
+    summarized_sample_type: String
+    specific_sample_pathology: String
+    date_of_sample_collection: String
+    tumor_grade: String
+    sample_chronology: String
+    percentage_tumor: String
+    necropsy_sample: String
+    sample_preservation: String
+    comment: String
+    individual_id: String
+    patient_age_at_enrollment: String
+    sex: String
+    neutered_indicator: String
+    weight: String
+    primary_disease_site: String
+    stage_of_disease: String
+    date_of_diagnosis: String
+    histology_cytopathology: String
+    histological_grade: String
+    best_response: String
+    pathology_report: String
+    treatment_data: String
+    follow_up_data: String
+    concurrent_disease: String
+    concurrent_disease_type: String
+    cohort_description: String
+    arm: String
+    other_cases: [String]
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+    caseOverviewPaged (case_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
+    caseOverviewPagedDesc (case_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
+    sampleOverview(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
+    sampleOverviewDesc(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
+    fileOverview(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
+    fileOverviewDesc(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
+}

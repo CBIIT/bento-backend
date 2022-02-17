@@ -64,6 +64,7 @@ public class QueryVerificationTests {
                     .content(query.get("request"))
                     .characterEncoding("UTF-8"))
                     .andExpect(MockMvcResultMatchers.content().json(query.get("response")));
+
         }
     }
 

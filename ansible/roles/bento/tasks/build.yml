@@ -94,12 +94,18 @@
     dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
+- name: get JAVA_HOME
+  shell: echo $JAVA_HOME
+  register: java_home_var
+
+- name: echo JAVA_HOME
+  debug:
+    msg: "{{ java_home_var.stdout_lines }}"
+
 - name: build springboot code
   command: mvn package -DskipTests
   args:
     chdir: "{{workspace}}"
-  environment:
-    java_home: /usr/lib/jvm/java-11-openjdk-amd64
 
 - name: copy Bento-0.0.1.war to ROOT.war
   copy:

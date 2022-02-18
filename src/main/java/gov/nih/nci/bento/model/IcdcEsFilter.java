@@ -1,7 +1,13 @@
 package gov.nih.nci.bento.model;
 
-import com.google.gson.*;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.utility.ElasticUtility;
+import graphql.schema.*;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,7 +15,10 @@ import org.elasticsearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
@@ -68,19 +77,23 @@ public class IcdcEsFilter implements DataFetcher {
                 .type(newTypeWiring("QueryType")
                         .dataFetcher("caseOverviewPaged", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return caseOverview(args, "asc");
+                            Map<String, String> returnTypes = getReturnType(env.getFieldType());
+                            return caseOverview_Test(args, returnTypes,"asc");
                         })
                         .dataFetcher("caseOverviewPagedDesc", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return caseOverview(args, "desc");
+                            Map<String, String> returnTypes = getReturnType(env.getFieldType());
+                            return caseOverview_Test(args, returnTypes,"desc");
                         })
                         .dataFetcher("sampleOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return sampleOverview(args, "asc");
+                            Map<String, String> returnTypes = getReturnType(env.getFieldType());
+                            return sampleOverview(args, returnTypes, "asc");
                         })
                         .dataFetcher("sampleOverviewDesc", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return sampleOverview(args, "desc");
+                            Map<String, String> returnTypes = getReturnType(env.getFieldType());
+                            return sampleOverview(args, returnTypes,"desc");
                         })
                         .dataFetcher("fileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
@@ -94,122 +107,113 @@ public class IcdcEsFilter implements DataFetcher {
                 .build();
     }
 
-    private List<Map<String, Object>> caseOverview(Map<String, Object> params, String sortDirection) throws IOException {
-        final String[][] PROPERTIES = new String[][]{
-                new String[]{"case_id", "case_ids"},
-                new String[]{"study_code", "study"},
-                new String[]{"study_type", "study_type"},
-                new String[]{"cohort", "cohort"},
-                new String[]{"breed", "breed"},
-                new String[]{"diagnosis", "diagnosis"},
-                new String[]{"stage_of_disease", "stage_of_disease"},
-                new String[]{"age", "age"},
-                new String[]{"sex", "sex"},
-                new String[]{"neutered_status", "neutered_status"},
-                new String[]{"weight", "weight"},
-                new String[]{"response_to_treatment", "response_to_treatment"},
-                new String[]{"disease_site", "disease_site"},
-                new String[]{"files", "files"},
-                new String[]{"other_cases", "other_cases"},
-                new String[]{"individual_id", "individual_id"},
-                new String[]{"primary_disease_site", "disease_site"},
-                new String[]{"date_of_diagnosis", "date_of_diagnosis"},
-                new String[]{"histology_cytopathology", "histology_cytopathology"},
-                new String[]{"histological_grade", "histological_grade"},
-                new String[]{"pathology_report", "pathology_report"},
-                new String[]{"treatment_data", "treatment_data"},
-                new String[]{"follow_up_data", "follow_up_data"},
-                new String[]{"concurrent_disease", "concurrent_disease"},
-                new String[]{"concurrent_disease_type", "concurrent_disease_type"},
-                new String[]{"arm", "arm"}
-        };
+    // TODO Create Param Parse as a Class, caseIDS, Szie
+    // TODO ES Service Editing
+    private List<Map<String, Object>> caseOverview_Test(Map<String, Object> params, Map<String, String> returnTypes, String sortDirection) throws IOException {
+        Query query = new Query.Builder()
+                .wildcard(t -> t
+                        .field("case_id")
+                        .value("*")
+                )
+                .build();
 
-        String defaultSort = "case_ids"; // Default sort order
-
-        Map<String, String> mapping = Map.ofEntries(
-                Map.entry("study_code", "study"),
-                Map.entry("study_type", "study_type"),
-                Map.entry("cohort", "cohort"),
-                Map.entry("breed", "breed"),
-                Map.entry("diagnosis", "diagnosis"),
-                Map.entry("stage_of_disease", "stage_of_disease"),
-                Map.entry("disease_site", "disease_site"),
-                Map.entry("age", "age"),
-                Map.entry("sex", "sex"),
-                Map.entry("neutered_status", "neutered_status"),
-                Map.entry("weight", "weight"),
-                Map.entry("response_to_treatment", "response_to_treatment"),
-                Map.entry("other_cases", "other_cases"),
-                Map.entry("case_id", "case_ids")
-        );
-
-        Map<String, Object> newParams = new HashMap<>(params);
-        newParams.put(SORT_DIRECTION, sortDirection);
-
-        return overview(CASES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
+        int pageSize = (int) params.get(PAGE_SIZE);
+        int offset = (int) params.get(OFFSET);
+        String sortField = params.get(ORDER_BY).equals("") ? "case_id" : (String) params.get(ORDER_BY);
+        SearchRequest request = SearchRequest.of(r->r
+                .index(Const.ES_INDEX.CASES)
+                .sort(s ->
+                        s.field(f ->
+                                f.field(sortField).order(ElasticUtility.getSortType(sortDirection))))
+                .size(pageSize)
+                .from(offset)
+                .query(query));
+        return esService.elasticSend(returnTypes, request);
     }
 
-    private List<Map<String, Object>> sampleOverview(Map<String, Object> params, String sortDirection) throws IOException {
-        final String[][] PROPERTIES = new String[][]{
-                new String[]{"sample_id", "sample_ids"},
-                new String[]{"case_id", "case_ids"},
-                new String[]{"breed", "breed"},
-                new String[]{"diagnosis", "diagnosis"},
-                new String[]{"sample_site", "sample_site"},
-                new String[]{"sample_type", "sample_type"},
-                new String[]{"sample_pathology", "sample_pathology"},
-                new String[]{"tumor_grade", "tumor_grade"},
-                new String[]{"sample_chronology", "sample_chronology"},
-                new String[]{"percentage_tumor", "percentage_tumor"},
-                new String[]{"necropsy_sample", "necropsy_sample"},
-                new String[]{"sample_preservation", "sample_preservation"},
-                new String[]{"files", "files"},
-                new String[]{"physical_sample_type", "physical_sample_type"},
-                new String[]{"general_sample_pathology", "general_sample_pathology"},
-                new String[]{"tumor_sample_origin", "tumor_sample_origin"},
-                new String[]{"comment", "comment"},
-                new String[]{"individual_id", "individual_id"},
-                new String[]{"other_cases", "other_cases"},
-                new String[]{"patient_age_at_enrollment", "patient_age_at_enrollment"},
-                new String[]{"sex", "sex"},
-                new String[]{"neutered_indicator", "neutered_indicator"},
-                new String[]{"weight", "weight"},
-                new String[]{"primary_disease_site", "primary_disease_site"},
-                new String[]{"stage_of_disease", "stage_of_disease"},
-                new String[]{"date_of_diagnosis", "date_of_diagnosis"},
-                new String[]{"histology_cytopathology", "histology_cytopathology"},
-                new String[]{"histological_grade", "histological_grade"},
-                new String[]{"best_response", "best_response"},
-                new String[]{"pathology_report", "pathology_report"},
-                new String[]{"treatment_data", "treatment_data"},
-                new String[]{"follow_up_data", "follow_up_data"},
-                new String[]{"concurrent_disease", "concurrent_disease"},
-                new String[]{"concurrent_disease_type", "concurrent_disease_type"},
-                new String[]{"cohort_description", "cohort_description"},
-                new String[]{"arm", "arm"}
-        };
+    private List<Map<String, Object>> sampleOverview(Map<String, Object> params, Map<String, String> returnTypes, String sortDirection) throws IOException {
+        Query query = new Query.Builder()
+                .wildcard(t -> t
+                        .field("case_id")
+                        .value("*")
+                )
+                .build();
 
-        String defaultSort = "sample_ids"; // Default sort order
+        int pageSize = (int) params.get(PAGE_SIZE);
+        int offset = (int) params.get(OFFSET);
+        String sortField = params.get(ORDER_BY).equals("") ? "sample_id" : (String) params.get(ORDER_BY);
+        SearchRequest request = SearchRequest.of(r->r
+                .index(Const.ES_INDEX.SAMPLES)
+                .sort(s ->
+                        s.field(f ->
+                                f.field(sortField).order(ElasticUtility.getSortType(sortDirection))))
+                .size(pageSize)
+                .from(offset)
+                .query(query));
 
-        Map<String, String> mapping = Map.ofEntries(
-                Map.entry("sample_id", "sample_ids"),
-                Map.entry("case_id", "case_id"),
-                Map.entry("breed", "breed"),
-                Map.entry("diagnosis", "diagnosis"),
-                Map.entry("sample_site", "sample_site"),
-                Map.entry("sample_type", "sample_type"),
-                Map.entry("sample_pathology", "sample_pathology"),
-                Map.entry("tumor_grade", "tumor_grade"),
-                Map.entry("sample_chronology", "sample_chronology"),
-                Map.entry("percentage_tumor", "percentage_tumor"),
-                Map.entry("necropsy_sample", "necropsy_sample"),
-                Map.entry("sample_preservation", "sample_preservation")
-        );
-
-        Map<String, Object> newParams = new HashMap<>(params);
-        newParams.put(SORT_DIRECTION, sortDirection);
-
-        return overview(SAMPLES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
+        return esService.elasticSend(returnTypes, request);
+//
+//
+//        final String[][] PROPERTIES = new String[][]{
+//                new String[]{"sample_id", "sample_ids"},
+//                new String[]{"case_id", "case_ids"},
+//                new String[]{"breed", "breed"},
+//                new String[]{"diagnosis", "diagnosis"},
+//                new String[]{"sample_site", "sample_site"},
+//                new String[]{"sample_type", "sample_type"},
+//                new String[]{"sample_pathology", "sample_pathology"},
+//                new String[]{"tumor_grade", "tumor_grade"},
+//                new String[]{"sample_chronology", "sample_chronology"},
+//                new String[]{"percentage_tumor", "percentage_tumor"},
+//                new String[]{"necropsy_sample", "necropsy_sample"},
+//                new String[]{"sample_preservation", "sample_preservation"},
+//                new String[]{"files", "files"},
+//                new String[]{"physical_sample_type", "physical_sample_type"},
+//                new String[]{"general_sample_pathology", "general_sample_pathology"},
+//                new String[]{"tumor_sample_origin", "tumor_sample_origin"},
+//                new String[]{"comment", "comment"},
+//                new String[]{"individual_id", "individual_id"},
+//                new String[]{"other_cases", "other_cases"},
+//                new String[]{"patient_age_at_enrollment", "patient_age_at_enrollment"},
+//                new String[]{"sex", "sex"},
+//                new String[]{"neutered_indicator", "neutered_indicator"},
+//                new String[]{"weight", "weight"},
+//                new String[]{"primary_disease_site", "primary_disease_site"},
+//                new String[]{"stage_of_disease", "stage_of_disease"},
+//                new String[]{"date_of_diagnosis", "date_of_diagnosis"},
+//                new String[]{"histology_cytopathology", "histology_cytopathology"},
+//                new String[]{"histological_grade", "histological_grade"},
+//                new String[]{"best_response", "best_response"},
+//                new String[]{"pathology_report", "pathology_report"},
+//                new String[]{"treatment_data", "treatment_data"},
+//                new String[]{"follow_up_data", "follow_up_data"},
+//                new String[]{"concurrent_disease", "concurrent_disease"},
+//                new String[]{"concurrent_disease_type", "concurrent_disease_type"},
+//                new String[]{"cohort_description", "cohort_description"},
+//                new String[]{"arm", "arm"}
+//        };
+//
+//        String defaultSort = "sample_ids"; // Default sort order
+//
+//        Map<String, String> mapping = Map.ofEntries(
+//                Map.entry("sample_id", "sample_ids"),
+//                Map.entry("case_id", "case_id"),
+//                Map.entry("breed", "breed"),
+//                Map.entry("diagnosis", "diagnosis"),
+//                Map.entry("sample_site", "sample_site"),
+//                Map.entry("sample_type", "sample_type"),
+//                Map.entry("sample_pathology", "sample_pathology"),
+//                Map.entry("tumor_grade", "tumor_grade"),
+//                Map.entry("sample_chronology", "sample_chronology"),
+//                Map.entry("percentage_tumor", "percentage_tumor"),
+//                Map.entry("necropsy_sample", "necropsy_sample"),
+//                Map.entry("sample_preservation", "sample_preservation")
+//        );
+//
+//        Map<String, Object> newParams = new HashMap<>(params);
+//        newParams.put(SORT_DIRECTION, sortDirection);
+//
+//        return overview(SAMPLES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params, String sortDirection) throws IOException {
@@ -284,6 +288,20 @@ public class IcdcEsFilter implements DataFetcher {
         return overview(FILES_END_POINT, newParams, PROPERTIES, defaultSort, mapping);
     }
 
+    private List<Map<String, Object>> overview_Test(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
+
+        Request request = new Request("GET", endpoint);
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        String order_by = (String)params.get(ORDER_BY);
+        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
+        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        int pageSize = (int) params.get(PAGE_SIZE);
+        int offset = (int) params.get(OFFSET);
+        List<Map<String, Object>> page = esService.collectPage(request, query, properties, pageSize, offset);
+        return page;
+    }
+
+
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
 
         Request request = new Request("GET", endpoint);
@@ -310,5 +328,20 @@ public class IcdcEsFilter implements DataFetcher {
             logger.info("Order: \"" + order_by + "\" not recognized, use default order");
         }
         return Map.of(sortOrder, sortDirection);
+    }
+    // TODO Add Key FIELD TYPE
+    Map<String, String> getReturnType(GraphQLOutputType outputType) {
+        Map<String, String> result = new HashMap<>();
+        SchemaElementChildrenContainer container = outputType.getChildrenWithTypeReferences();
+        // TODO Only one
+        List<GraphQLSchemaElement> elements = container.getChildrenAsList();
+        elements.forEach((e)->{
+            GraphQLObjectType type = (GraphQLObjectType) e;
+            List<GraphQLFieldDefinition> lists = type.getFieldDefinitions();
+            lists.forEach(field->{
+                result.put(field.getName(), field.getName());
+            });
+        });
+        return  result;
     }
 }

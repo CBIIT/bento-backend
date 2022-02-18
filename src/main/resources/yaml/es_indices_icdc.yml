@@ -8,16 +8,16 @@ Indices:
 
     mapping:
       # properties used as facet filters (can be also used to return data), name matches GraphQL parameter names
-#      program:
-#        type: keyword
-      study:
+      #      program:
+      #        type: keyword
+      study_code:
         type: keyword
       study_type:
         type: keyword
-#      biobank:
-#        type: keyword
-#      study_participation:
-#        type: keyword
+      #      biobank:
+      #        type: keyword
+      #      study_participation:
+      #        type: keyword
       breed:
         type: keyword
       diagnosis:
@@ -33,22 +33,22 @@ Indices:
       neutered_status:
         type: keyword
 
-#      sample_type:
-#        type: keyword
-#      sample_pathology:
-#        type: keyword
-#      sample_site:
-#        type: keyword
-#
-#      file_association:
-#        type: keyword
-#      file_type:
-#        type: keyword
-#      file_format:
-#        type: keyword
+      #      sample_type:
+      #        type: keyword
+      #      sample_pathology:
+      #        type: keyword
+      #      sample_site:
+      #        type: keyword
+      #
+      #      file_association:
+      #        type: keyword
+      #      file_type:
+      #        type: keyword
+      #      file_format:
+      #        type: keyword
 
       # properties used in list search, could also used in return data
-      case_ids:
+      case_id:
         type: keyword
       # properties used in return data, name can be different from GraphQL property name
       cohort:
@@ -98,8 +98,8 @@ Indices:
       OPTIONAL MATCH (co)-->(a:study_arm)
       WITH DISTINCT c, s, a, co, demo, diag, f, o, i
       return
-        c.case_id AS case_ids,
-        s.clinical_study_designation AS study,
+        c.case_id AS case_id,
+        s.clinical_study_designation AS study_code,
         s.clinical_study_type AS study_type,
         co.cohort_description AS cohort,
         demo.breed AS breed,

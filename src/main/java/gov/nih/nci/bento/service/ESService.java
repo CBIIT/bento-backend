@@ -1,6 +1,8 @@
 package gov.nih.nci.bento.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.connector.AbstractClient;
@@ -47,6 +49,22 @@ public class ESService {
     @PreDestroy
     private void close() throws IOException {
         client.close();
+        elasticClient=null;
+    }
+
+    public List<Map<String, Object>> elasticSend(Map<String, String> resultType, SearchRequest request) throws IOException {
+
+        SearchResponse<Object> searchResponse = elasticClient.search(request, Object.class);
+        List<Map<String, Object>> result = new ArrayList<>();
+        searchResponse.hits().hits().forEach((hit)->{
+            Map<String, Object> maps = (LinkedHashMap) hit.source();
+            Map<String, Object> prasedMap = new HashMap<>();
+            resultType.forEach((k,v)->{
+                if (maps.containsKey(k)) prasedMap.put(k, maps.get(v));
+            });
+            if (prasedMap.size() > 0) result.add(prasedMap);
+        });
+        return result;
     }
 
     public JsonObject send(Request request) throws IOException {

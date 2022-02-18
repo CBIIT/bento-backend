@@ -1,17 +1,21 @@
 package gov.nih.nci.bento;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.ESService;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RestClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opensearch.client.Request;
-import org.opensearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,8 +30,10 @@ import static org.junit.Assert.assertNotNull;
 @RunWith( SpringRunner.class )
 @SpringBootTest
 public class EsServiceTest {
+
     @Autowired
-    private ESService esService;
+    ESService esService;
+
     private Gson gson = new GsonBuilder().serializeNulls().create();
     private RestClient client;
 
@@ -78,4 +84,26 @@ public class EsServiceTest {
         assertThat(count).isGreaterThan(0);
     }
 
+    @Test
+    public void elastic_Test() throws IOException {
+
+        Query query = new Query.Builder()
+                .wildcard(t -> t
+                        .field("case_ids")
+                        .value("*")
+                )
+                .build();
+
+        SearchRequest request = SearchRequest.of(r->r
+                .index(Const.ES_INDEX.CASES)
+                .sort(s -> s.field(f -> f.field("case_ids").order(SortOrder.Asc)))
+                .size(10)
+                .query(query));
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put("case_ids", "case_ids");
+        returnTypes.put("cohort", "cohort");
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request);
+        assertThat(result.size()).isGreaterThan(0);
+    }
 }

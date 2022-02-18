@@ -29,5 +29,11 @@ public class Const {
 
     }
 
+    public static class ES_INDEX {
+        public static final String SAMPLES = "samples";
+        public static final String FILES = "files";
+        public static final String CASES = "cases";
+    }
+
 
 }

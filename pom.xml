@@ -223,7 +223,11 @@
 			<scope>test</scope>
 		</dependency>
 
-
+		<dependency>
+			<groupId>co.elastic.clients</groupId>
+			<artifactId>elasticsearch-java</artifactId>
+			<version>7.16.3</version>
+		</dependency>
     </dependencies>
 
 	<build>

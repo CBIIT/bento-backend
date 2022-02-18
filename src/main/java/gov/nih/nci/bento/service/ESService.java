@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.service.connector.AbstractClient;
@@ -8,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.client.Request;
-import org.opensearch.client.Response;
-import org.opensearch.client.RestClient;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +29,7 @@ public class ESService {
     private static final Logger logger = LogManager.getLogger(RedisService.class);
     private final ConfigurationDAO config;
     private RestClient client;
+    private ElasticsearchClient elasticClient;
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -35,8 +37,11 @@ public class ESService {
     public void init() {
         logger.info("Initializing Elasticsearch client");
         // Base on host name to use signed request (AWS) or not (local)
+        // TODO Restconnector TOBE DELETED
         AbstractClient restConnector = new DefaultClient(config);
+        AbstractClient elasticConnector = new DefaultClient(config);
         client = restConnector.getRestConnector();
+        elasticClient = elasticConnector.getElasticRestClient();
     }
 
     @PreDestroy

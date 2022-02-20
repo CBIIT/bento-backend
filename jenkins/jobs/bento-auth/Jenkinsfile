@@ -56,7 +56,7 @@ pipeline {
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/bento-files')
+       useRepository: 'https://github.com/CBIIT/bento-auth')
 
   }
   options {

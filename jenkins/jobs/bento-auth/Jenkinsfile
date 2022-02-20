@@ -48,15 +48,15 @@ pipeline {
         description: 'Choose project to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'bento,gmb,icdc,ctdc,c3dc' )
-   	// gitParameter(branchFilter: 'origin/(.*)',
-    //    defaultValue: 'main', 
-    //    name: 'Auth_Tag',
-    //    type: 'PT_BRANCH_TAG',
-    //    quickFilterEnabled: false, 
-    //    selectedValue: 'DEFAULT', 
-    //    sortMode: 'ASCENDING_SMART', 
-    //    tagFilter: '*', 
-    //    useRepository: 'https://github.com/CBIIT/bento-auth')
+   	gitParameter(branchFilter: 'origin/(.*)',
+       defaultValue: 'master', 
+       name: 'Auth_Tag',
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/bento-auth')
 
   }
   options {

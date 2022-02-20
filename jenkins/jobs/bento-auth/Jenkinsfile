@@ -76,7 +76,7 @@ pipeline {
 				relativeTargetDir: 'bento-files']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-files']]])
+				[[url: 'https://github.com/CBIIT/bento-auth']]])
 
   			checkout( poll: false, 
 				changelog:false,

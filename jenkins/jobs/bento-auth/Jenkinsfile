@@ -73,7 +73,7 @@ pipeline {
 				branches: [[name: "${params.Auth_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-files']],
+				relativeTargetDir: 'bento-auth']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-auth']]])

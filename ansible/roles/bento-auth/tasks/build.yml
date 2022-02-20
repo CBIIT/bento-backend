@@ -9,7 +9,7 @@
 - name: build {{ project }}-auth image
   docker_image:
     build:
-      path: "{{workspace}}/bento-files"
+      path: "{{workspace}}/bento-auth"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/auth-dockerfile"
       pull: yes
       nocache: yes
@@ -19,7 +19,7 @@
     force_source: yes
     source: build
 
-- name: Add tag latest to cbiitssrepo/{{project}}-filedownloader image
+- name: Add tag latest to cbiitssrepo/{{project}}-auth image
   docker_image:
     name: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
     repository: "{{ ecr_repo }}/{{project}}-auth:latest"

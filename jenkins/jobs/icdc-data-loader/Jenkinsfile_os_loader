@@ -155,7 +155,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  					
 			ansiblePlaybook( 
-            	playbook: '${WORKSPACE}/icdc-devops/ansible/bento-es-loader.yml', 
+            	playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-es-loader.yml', 
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		colorized: true) 
  			}

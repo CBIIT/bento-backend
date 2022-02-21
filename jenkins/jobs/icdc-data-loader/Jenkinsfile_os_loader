@@ -1,0 +1,171 @@
+pipeline {
+	agent {
+		node {
+			label 'data-loader'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master',
+        name: 'Opensearch_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Backend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-backend')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Frontend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-frontend')
+	extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,perf,gitlab' )
+  }
+  // options {
+  // 	ansiColor('xterm')
+  // }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Opensearch_Branch}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+                recursiveSubmodules: true,
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops-frontend']]])
+			
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Backend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-backend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-backend']]])
+            
+			sh 'git submodule update --init'
+  			
+			checkout([$class: 'GitSCM',
+				branches: [[name: "master"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'icdc-devops']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops']]])
+			
+			dir('bento-model'){
+                git branch: 'master',
+                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'}
+
+  		}
+ 
+  	}
+
+    stage('set-environment'){
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+				     string(credentialsId: 'icdc_es_dev_host', variable: 'ES_HOST')]) {
+          env.ES_HOST        = "https://${ES_HOST}"
+				  env.PROJECT        = "icdc"
+				  env.TIER           = "${params.Environment}"
+				  env.NEO4J_PASSWORD = "${neo4j_password}"
+				  env.NEO4J_IP       = "${NEO4J_ICDC_DEV_IP}"
+                }
+              break
+              case "qa":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+				     string(credentialsId: 'icdc_es_qa_host', variable: 'ES_HOST')]) {
+          env.ES_HOST        = "https://${ES_HOST}"
+				  env.PROJECT        = "icdc"
+				  env.TIER           = "${params.Environment}"
+				  env.NEO4J_PASSWORD = "${neo4j_password}"
+				  env.NEO4J_IP       = "${NEO4J_ICDC_QA_IP}"
+                }
+              break
+              case "stage":
+                withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_stage_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+				     string(credentialsId: 'icdc_es_stage_host', variable: 'ES_HOST')]) {
+          env.ES_HOST        = "https://${ES_HOST}"
+				  env.PROJECT        = "icdc"
+				  env.TIER           = "${params.Environment}"
+				  env.NEO4J_PASSWORD = "${neo4j_password}"
+				  env.NEO4J_IP       = "${NEO4J_ICDC_STAGE_IP}"
+                }
+              break
+              case "prod":
+               withCredentials([usernamePassword(credentialsId: 'neo4j_icdc_prod_cred', passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user'),
+              		string(credentialsId: 'es_prod_host', variable: 'ES_HOST')]) {
+                      env.ES_HOST          = "https://${ES_HOST}"
+              			env.PROJECT        = "bento"
+              			env.TIER           = "${params.Environment}"
+              			env.NEO4J_PASSWORD = "${neo4j_password}"
+              			env.NEO4J_IP       = "${NEO4J_ICDC_PROD_IP}"
+                    }
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+  	stage('load-es-data'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+			FRONTEND_BRANCH = "${params.frontend_branch}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 					
+			ansiblePlaybook( 
+            	playbook: '${WORKSPACE}/icdc-devops/ansible/bento-es-loader.yml', 
+					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		colorized: true) 
+ 			}
+ 		}
+    }
+
+  }
+  post {
+    always {
+	  cleanWs()
+    }
+  }
+}

@@ -1,10 +1,10 @@
 pipeline {
-	agent {
-		node {
-			label 'slave-ncias-d2320-c'
-		}
-	}
-	parameters {
+  agent {
+    node {
+      label 'slave-ncias-d2320-c'
+    }
+  }
+  parameters {
     gitParameter(branchFilter: 'origin/(.*)', 
         defaultValue: 'master', 
         name: 'Tag', 
@@ -53,40 +53,40 @@ pipeline {
         multiSelectDelimiter: ',',
         value: 'false,true',
         type: 'PT_SINGLE_SELECT')
-	booleanParam(
-		defaultValue: true,
-		description: 'Flush the Redis cache',
-		name: 'Flush_Redis')		
+  booleanParam(
+    defaultValue: true,
+    description: 'Flush the Redis cache',
+    name: 'Flush_Redis')    
   }
   // options {
-  // 	ansiColor('xterm')
+  //  ansiColor('xterm')
   // }
   tools {
-  	maven 'Default' 
+    maven 'Default' 
     jdk 'Default' 
   }
   stages{
-  	stage('checkout'){
-  		steps {
-  			checkout([$class: 'GitSCM', 
-  				branches: [[name: "${params.Tag}"]], 
-  				doGenerateSubmoduleConfigurations: 
-  				false, extensions: [], submoduleCfg: [], 
+    stage('checkout'){
+      steps {
+        checkout([$class: 'GitSCM', 
+          branches: [[name: "${params.Tag}"]], 
+          doGenerateSubmoduleConfigurations: 
+          false, extensions: [], submoduleCfg: [], 
           recursiveSubmodules: true,
-  				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+          userRemoteConfigs: 
+          [[url: 'https://github.com/CBIIT/icdc-dataloader']]])
           sh 'git submodule update --init'
-  			dir('icdc-devops'){
-  				git branch: 'master',
-    				url: 'https://github.com/CBIIT/icdc-devops.git'
-  			}
+        dir('icdc-devops'){
+          git branch: 'master',
+            url: 'https://github.com/CBIIT/icdc-devops.git'
+        }
         dir('icdc-model'){
           git branch: 'master',
           url: 'https://github.com/CBIIT/icdc-model-tool'
         }
-  		}
+      }
  
-  	}
+    }
     stage('set-environment'){
         steps {
           script {
@@ -171,85 +171,84 @@ pipeline {
           }
         }
     }
-  	stage('loader-data'){
- 		environment {
- 			SLACK_URL = "${SLACK_URL}"
- 		}
- 		steps {
- 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 					ansiblePlaybook( 
-            			playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-loader.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-						extraVars: [
+    stage('loader-data'){
+    environment {
+      SLACK_URL = "${SLACK_URL}"
+    }
+    steps {
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+          ansiblePlaybook( 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/icdc-data-loader.yml', 
+                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+            extraVars: [
                           neo4j_ip: "${NEO4J_IP}",
                         ],
-						credentialsId: 'commonsdocker',
-            			colorized: true) 
- 			}
- 		}
+            credentialsId: 'commonsdocker',
+                  colorized: true) 
+      }
     }
-	
-	stage('clear redis cache'){
-		agent { label 'commons-docker-ncias-p2236-v' }
-		when {
-		    allOf {
+    }
+  
+  stage('clear redis cache'){
+    agent { label 'commons-docker-ncias-p2236-v' }
+    when {
+        allOf {
 
-		        not { expression { params.Environment == 'stage' } }
-				not { expression { params.Environment == 'prod' } }
-				expression { params.Flush_Redis }
-			    
-				}
+            not { expression { params.Environment == 'stage' } }
+        not { expression { params.Environment == 'prod' } }
+        expression { params.Flush_Redis }
+          
+        }
 
-			}
-	
-  		environment {
-			TIER = "${params.Environment}"
-			}
+      }
+  
+      environment {
+      TIER = "${params.Environment}"
+      }
 
-		steps{
-			checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
+    steps{
+      checkout( changelog:false,
+        poll: false,
+        scm: [$class: 'GitSCM', 
+        branches: [[name: '*/master']], 
+        doGenerateSubmoduleConfigurations: false, 
+        extensions: [[$class: 'DisableRemotePoll'],
+        [$class: 'PathRestriction', excludedRegions: '*'], 
+        [$class: 'RelativeTargetDirectory', 
+        relativeTargetDir: 'icdc-devops']], 
+        submoduleCfg: [], 
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/icdc-devops.git']]
+        ])
         
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-			
-			  script {
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+      
+        script {
                 sh label: 'database-hosts', script: '''#!/bin/bash
                   echo "Creating inventory file"
                   echo "[icdc]" > ${WORKSPACE}/icdc-devops/ansible/hosts
                   echo ${NEO4J_IP} >> ${WORKSPACE}/icdc-devops/ansible/hosts
-
                 '''
 
               }
-			
-			  ansiblePlaybook( 
+      
+        ansiblePlaybook( 
                  playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml',
                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-				 credentialsId: 'commonsdocker',
+         credentialsId: 'commonsdocker',
                  colorized: true)
-			}
-		}
-	}
-	
+      }
+    }
+  }
+  
  }
  post {
    
    cleanup {
-	
-		cleanWs()
+  
+    cleanWs()
     
-	}
-	
+  }
+  
  }
 }

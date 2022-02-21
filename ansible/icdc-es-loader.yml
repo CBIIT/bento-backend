@@ -1,9 +1,9 @@
 ---
 - name: load data to elasticsearch
-  hosts: all
+  hosts: loader
   connection: local
-  become: yes
   gather_facts: yes
+  become: yes
     
   tasks:
     - name: perform data loading

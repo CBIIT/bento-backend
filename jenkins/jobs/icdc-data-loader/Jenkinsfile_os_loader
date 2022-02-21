@@ -1,7 +1,7 @@
 pipeline {
 	agent {
 		node {
-			label 'data-loader'
+			label 'slave-ncias-d2320-c'
 		}
 	}
 	parameters {
@@ -65,7 +65,7 @@ pipeline {
 				relativeTargetDir: 'bento-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-icdc-frontend']]])
 			
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
@@ -89,7 +89,7 @@ pipeline {
 			
 			dir('bento-model'){
                 git branch: 'master',
-                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'}
+                url: 'https://github.com/CBIIT/icdc-model-tool'}
 
   		}
  

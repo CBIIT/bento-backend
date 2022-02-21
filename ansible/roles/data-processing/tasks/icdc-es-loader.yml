@@ -1,0 +1,47 @@
+---
+- name: set model files location for icdc
+  set_fact:
+    model_file1: "{{workspace}}/icdc-model/model-desc/icdc-model.yml"
+    model_file2: "{{workspace}}/icdc-model/model-desc/icdc-model-props.yml"
+    property_file: "config/props-icdc-pmvp.yml"
+  when: project == "icdc"
+
+- name: set content location
+  set_fact:
+    content_location: "{% if tier == 'dev' or tier == 'qa' %}pre-prod{% else %}prod{% endif %}"
+
+- name: set about_file location for icdc
+  set_fact:
+    about_file: "{{workspace}}/bento-frontend/src/content/{{ content_location }}/aboutPagesContent.yaml"
+
+- name: update indices file
+  template:
+    dest: "{{workspace}}/config/es_indices_icdc.yml"
+    src: "{{workspace}}/bento-backend/src/main/resources/yaml/es_indices_bento.yml"
+
+- name: update server config file
+  template:
+    dest: "{{workspace}}/config/es_loader_icdc.yml"
+    src: "{{workspace}}/config/es_loader.yml.j2"
+
+- name: install python3
+  yum:
+    name: python3
+    state: installed
+
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/requirements.txt"
+    executable: pip3
+
+
+- name: load data
+  shell:
+    cmd: >
+      python3 es_loader.py config/es_indices_icdc.yml config/es_loader_icdc.yml
+    chdir: "{{workspace}}"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

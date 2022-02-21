@@ -87,7 +87,7 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops']]])
 			
-			dir('bento-model'){
+			dir('icdc-model'){
                 git branch: 'master',
                 url: 'https://github.com/CBIIT/icdc-model-tool'}
 

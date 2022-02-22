@@ -1,0 +1,124 @@
+type SubjectOverview {
+    pcdc_subject_id: String
+    race: String
+    sex: String
+    disease_phase: String
+    treatment_arm: String
+    disease_site: String
+    data_contributor_id: String
+    ae_grade: String
+    ae_outcome: String
+    study_id: String
+    program_id: String
+    cancer: String
+}
+
+type FileOverview {
+    file_name: String
+    file_type: String
+    file_description: String
+    file_format: String
+    file_size: String
+    md5sum: String
+    file_status: String
+    uuid: String
+    file_location: String
+    pcdc_subject_id: String
+    study_id: String
+    program_id: String
+    cancer: String
+}
+
+type SearchResult {
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfFiles: Int
+
+    subjectCountByProgram: [GroupCount2]
+    subjectCountByStudy: [GroupCount2]
+    subjectCountByDataContributorId: [GroupCount2]
+    subjectCountBySex: [GroupCount2]
+    subjectCountByRace: [GroupCount2]
+    subjectCountByDiseasePhase: [GroupCount2]
+    subjectCountByAEGrade: [GroupCount2]
+    subjectCountByAEOutcome: [GroupCount2]
+    subjectCountByDiseaseSite: [GroupCount2]
+
+    filterSubjectCountByProgram: [GroupCount2]
+    filterSubjectCountByStudy: [GroupCount2]
+    filterSubjectCountByDataContributor: [GroupCount2]
+    filterSubjectCountBySex: [GroupCount2]
+    filterSubjectCountByRace: [GroupCount2]
+    filterSubjectCountByDiseasePhase: [GroupCount2]
+    filterSubjectCountByAEGrade: [GroupCount2]
+    filterSubjectCountByAEOutcome: [GroupCount2]
+    filterSubjectCountByDiseaseSite: [GroupCount2]
+}
+
+type GroupCount2 {
+    group: String
+    subjects: Int
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+
+    searchSubjects(
+        race: [String] = [],
+        sex: [String] = [],
+        disease_phase: [String] = [],
+        treatment_arm: [String] = [],
+        disease_site: [String] = [],
+        data_contributor_id: [String] = [],
+        ae_grade: [String] = [],
+        ae_outcome: [String] = [],
+        study_id: [String] = [],
+        program_id: [String] = [],
+        cancer: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): SearchResult
+
+
+    subjectOverview (
+        race: [String] = [],
+        sex: [String] = [],
+        disease_phase: [String] = [],
+        treatment_arm: [String] = [],
+        disease_site: [String] = [],
+        data_contributor_id: [String] = [],
+        ae_grade: [String] = [],
+        ae_outcome: [String] = [],
+        study_id: [String] = [],
+        program_id: [String] = [],
+        cancer: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectOverview]
+
+    fileOverview(
+        race: [String] = [],
+        sex: [String] = [],
+        disease_phase: [String] = [],
+        treatment_arm: [String] = [],
+        disease_site: [String] = [],
+        data_contributor_id: [String] = [],
+        ae_grade: [String] = [],
+        ae_outcome: [String] = [],
+        study_id: [String] = [],
+        program_id: [String] = [],
+        cancer: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverview]
+}

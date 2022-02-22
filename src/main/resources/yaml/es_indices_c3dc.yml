@@ -1,0 +1,129 @@
+# Indices settings
+Indices:
+  # First index
+  # Name of the index to be created, existing index with same name will be deleted
+  - index_name: subject_characteristics
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      pcdc_subject_id:
+        type: keyword
+      race:
+        type: keyword
+      sex:
+        type: keyword
+      disease_phase:
+        type: keyword
+      treatment_arm:
+        type: keyword
+      disease_site:
+        type: keyword
+      data_contributor_id:
+        type: keyword
+      ae_grade:
+        type: keyword
+      ae_outcome:
+        type: keyword
+      study_id:
+        type: keyword
+      program_id:
+        type: keyword
+      cancer:
+        type: keyword
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: 
+      "
+        MATCH (sc: Subject_Characteristics_Table)
+        OPTIONAL MATCH (p: Program)<--(s: Study)<--(sc)
+        OPTIONAL MATCH (demo: Demographics_Table)-->(sc)
+        OPTIONAL MATCH (dpt: Disease_Phase_Timing_Table)-->(sc)
+        OPTIONAL MATCH (dc: Disease_Characteristics_Table)-->(sc)
+        OPTIONAL MATCH (ae: Adverse_Events_Table)-->(sc)
+        RETURN DISTINCT
+          sc.PCDC_SUBJECT_ID AS pcdc_subject_id,
+          demo.RACE AS race,
+          demo.SEX AS sex,
+          dpt.DISEASE_PHASE AS disease_phase,
+          sc.TREATMENT_ARM AS treatment_arm,
+          dc.DISEASE_SITE AS disease_site,
+          sc.DATA_CONTRIBUTOR_ID AS data_contributor_id,
+          ae.AE_GRADE AS ae_grade,
+          ae.AE_OUTCOME AS ae_outcome,
+          s.STUDY_ID AS study_id,
+          p.PROGRAM_ID as program_id,
+          p.Cancer as cancer
+      "
+  - index_name: files
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      pcdc_subject_id:
+        type: keyword
+      race:
+        type: keyword
+      sex:
+        type: keyword
+      disease_phase:
+        type: keyword
+      treatment_arm:
+        type: keyword
+      disease_site:
+        type: keyword
+      data_contributor_id:
+        type: keyword
+      ae_grade:
+        type: keyword
+      ae_outcome:
+        type: keyword
+      study_id:
+        type: keyword
+      program_id:
+        type: keyword
+      file_name:
+        type: keyword
+      file_type: 
+        type: keyword
+      file_description:
+        type: keyword
+      file_format: 
+        type: keyword
+      file_size: 
+        type: keyword
+      md5sum: 
+        type: keyword
+      file_status: 
+        type: keyword
+      uuid:
+        type: keyword
+      file_location: 
+        type: keyword
+    cypher_query: 
+      "
+        MATCH (f:File)
+        OPTIONAL MATCH (f)-->(sc:Subject_Characteristics_Table)-->(s:Study)-->(p:Program)
+        OPTIONAL MATCH (demo: Demographics_Table)-->(sc)
+        OPTIONAL MATCH (dpt: Disease_Phase_Timing_Table)-->(sc)
+        OPTIONAL MATCH (dc: Disease_Characteristics_Table)-->(sc)
+        OPTIONAL MATCH (ae: Adverse_Events_Table)-->(sc)
+        RETURN DISTINCT
+          sc.PCDC_SUBJECT_ID AS pcdc_subject_id,
+          s.STUDY_ID AS study_id,
+          p.PROGRAM_ID AS program_id,
+          demo.RACE AS race,
+          demo.SEX AS sex,
+          dpt.DISEASE_PHASE AS disease_phase,
+          sc.TREATMENT_ARM AS treatment_arm,
+          dc.DISEASE_SITE AS disease_site,
+          sc.DATA_CONTRIBUTOR_ID AS data_contributor_id,
+          ae.AE_GRADE AS ae_grade,
+          ae.AE_OUTCOME AS ae_outcome,
+          f.FILE_NAME AS file_name,
+          f.FILE_TYPE AS file_type,
+          f.FILE_DESCRIPTION AS file_description,
+          f.FILE_FORMAT AS file_format,
+          f.FILE_SIZE AS file_size,
+          f.MD5SUM AS md5sum,
+          f.FILE_STATUS AS file_status,
+          f.UUID AS uuid,
+          f.FILE_LOCATION AS file_location
+      "

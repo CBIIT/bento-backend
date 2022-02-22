@@ -88,15 +88,11 @@ public class EsServiceTest {
     public void elastic_Test() throws IOException {
 
         Query query = new Query.Builder()
-                .wildcard(t -> t
-                        .field("case_ids")
-                        .value("*")
-                )
-                .build();
+                .matchAll(v->v.queryName("TEST")).build();
 
         SearchRequest request = SearchRequest.of(r->r
                 .index(Const.ES_INDEX.CASES)
-                .sort(s -> s.field(f -> f.field("case_ids").order(SortOrder.Asc)))
+                .sort(s -> s.field(f -> f.field("case_id").order(SortOrder.Asc)))
                 .size(10)
                 .query(query));
 

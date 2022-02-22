@@ -96,6 +96,8 @@
 
 - name: get JAVA_HOME
   shell: echo $JAVA_HOME
+  environment:
+    JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
   register: java_home_var
 
 - name: echo JAVA_HOME

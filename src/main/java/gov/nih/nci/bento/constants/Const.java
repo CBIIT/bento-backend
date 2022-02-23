@@ -33,6 +33,7 @@ public class Const {
         public static final String SAMPLES = "samples";
         public static final String FILES = "files";
         public static final String CASES = "cases";
+        public static final String STUDIES = "studies";
     }
 
 

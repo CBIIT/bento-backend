@@ -1,6 +1,8 @@
 package gov.nih.nci.bento;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.aggregations.*;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import com.google.gson.Gson;
@@ -99,7 +101,50 @@ public class EsServiceTest {
         Map<String, String> returnTypes = new HashMap<>();
         returnTypes.put("case_ids", "case_ids");
         returnTypes.put("cohort", "cohort");
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request);
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request,esService.getDefault());
         assertThat(result.size()).isGreaterThan(0);
+    }
+
+    // COUNT TEST
+    @Test
+    public void elastic_query_count_Test() throws IOException {
+
+        Query caseIds = new Query.Builder().term(v->v.field("case_ids_case_to_member_of_to_study").value(value->value.stringValue("NCATS-COP01-CCB070020"))).build();
+        BoolQuery boolQuery = new BoolQuery.Builder()
+                .must(caseIds).build();
+
+        Query query = new Query.Builder()
+                            .bool(boolQuery).build();
+
+        SearchRequest request = SearchRequest.of(r->r
+                .index(Const.ES_INDEX.STUDIES)
+                .size(10)
+                .query(query));
+
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put("clinical_study_designation", "clinical_study_designation");
+        List<Map<String, Object>> result = (List<Map<String, Object>>) esService.elasticSend(returnTypes, request, esService.getDefault());
+        assertThat(result.size()).isGreaterThan(0);
+    }
+
+    @Test
+    public void elastic_aggregation_Test() throws IOException {
+
+        final Aggregation termsQuery = Aggregation.of(a -> a.terms(v -> v.field("clinical_study_designation")));
+        SearchRequest request = SearchRequest.of(r->r
+                .index(Const.ES_INDEX.CASES)
+                .size(10)
+                .aggregations("avgSize",termsQuery)
+        );
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put("group", "group");
+        returnTypes.put("group", "group");
+
+
+        Object result = esService.elasticSend(returnTypes, request, esService.getAggregate());
+        System.out.println();
+
     }
 }

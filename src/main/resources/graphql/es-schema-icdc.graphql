@@ -113,6 +113,11 @@ type FileOverviewES {
     other_cases: [String]
 }
 
+type CaseGroupCount {
+    group: String
+    count: Int
+}
+
 schema {
     query: QueryType
 }

@@ -83,8 +83,10 @@ Indices:
         type: keyword
       arm:
         type: keyword
-
-
+      canine_individual:
+        type: keyword
+      clinical_study_designation:
+        type: keyword
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -96,7 +98,9 @@ Indices:
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (f:file)-[*]->(c)
       OPTIONAL MATCH (co)-->(a:study_arm)
-      WITH DISTINCT c, s, a, co, demo, diag, f, o, i
+      OPTIONAL MATCH (c)-->(ci:canine_individual)
+      OPTIONAL MATCH (ss:study)<-[:member_of]-(c)      
+      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci
       return
         c.case_id AS case_id,
         s.clinical_study_designation AS study_code,
@@ -123,7 +127,9 @@ Indices:
         diag.follow_up_data as follow_up_data,
         diag.concurrent_disease as concurrent_disease,
         diag.concurrent_disease_type as concurrent_disease_type,
-        a.arm as arm
+        a.arm as arm,
+        CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS canine_individual,
+        s.clinical_study_designation as clinical_study_designation
       "
   - index_name: samples
     type: neo4j
@@ -351,7 +357,8 @@ Indices:
         type: keyword
       other_cases:
         type: keyword
-
+      case_id_file_to_all_to_case:
+        type: keyword
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -368,6 +375,7 @@ Indices:
       OPTIONAL MATCH (enroll:enrollment)-[:of_case]->(c)
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (co)-->(a:study_arm)
+      OPTIONAL MATCH (f)-[*]->(fc:case)
       RETURN DISTINCT
         f.file_name as file_name,
         f.file_type as file_type,
@@ -415,5 +423,259 @@ Indices:
         diag.concurrent_disease_type as concurrent_disease_type,
         co.cohort_description as cohort_description,
         a.arm as arm,
-        collect(DISTINCT o.case_id) AS other_cases
+        collect(DISTINCT o.case_id) AS other_cases,
+        fc.case_id AS case_id_file_to_all_to_case
+    "
+  - index_name: samples
+    type: neo4j
+    # type mapping for each property of the index
+
+    mapping:
+      # properties used in list search, could also used in return data
+      case_ids:
+        type: keyword
+      sample_ids:
+        type: keyword
+      # properties used in return data, name can be different from GraphQL property name
+      breed:
+        type: keyword
+      diagnosis:
+        type: keyword
+      sample_site:
+        type: keyword
+      sample_type:
+        type: keyword
+      sample_pathology:
+        type: keyword
+      tumor_grade:
+        type: keyword
+      sample_chronology:
+        type: keyword
+      percentage_tumor:
+        type: keyword
+      necropsy_sample:
+        type: keyword
+      sample_preservation:
+        type: keyword
+      files:
+        type: keyword
+      physical_sample_type:
+        type: keyword
+      general_sample_pathology:
+        type: keyword
+      tumor_sample_origin:
+        type: keyword
+      comment:
+        type: keyword
+      individual_id:
+        type: keyword
+      other_cases:
+        type: keyword
+      patient_age_at_enrollment:
+        type: keyword
+      sex:
+        type: keyword
+      neutered_indicator:
+        type: keyword
+      weight:
+        type: keyword
+      primary_disease_site:
+        type: keyword
+      stage_of_disease:
+        type: keyword
+      date_of_diagnosis:
+        type: keyword
+      histology_cytopathology:
+        type: keyword
+      histological_grade:
+        type: keyword
+      best_response:
+        type: keyword
+      pathology_report:
+        type: keyword
+      treatment_data:
+        type: keyword
+      follow_up_data:
+        type: keyword
+      concurrent_disease:
+        type: keyword
+      concurrent_disease_type:
+        type: keyword
+      cohort_description:
+        type: keyword
+      arm:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (s:sample)
+      OPTIONAL MATCH (s)-[:of_case]->(c:case)
+      OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
+      OPTIONAL MATCH (c)<-[:of_case]-(d:diagnosis)
+      OPTIONAL MATCH (f:file)-[:of_sample]->(s)
+      OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+      OPTIONAL MATCH (c)-->(co:cohort)
+      OPTIONAL MATCH (co)-->(a:study_arm)
+      RETURN DISTINCT
+        s.sample_id as sample_ids,
+        c.case_id as case_ids,
+        demo.breed as breed,
+        d.disease_term as diagnosis,
+        s.sample_site as sample_site,
+        s.summarized_sample_type as sample_type,
+        s.specific_sample_pathology as sample_pathology,
+        s.tumor_grade as tumor_grade,
+        s.sample_chronology as sample_chronology,
+        s.percentage_tumor as percentage_tumor,
+        s.necropsy_sample as necropsy_sample,
+        s.sample_preservation as sample_preservation,
+        collect(DISTINCT(f.uuid)) AS files,
+        s.physical_sample_type as physical_sample_type,
+        s.general_sample_pathology as general_sample_pathology,
+        s.tumor_sample_origin as tumor_sample_origin,
+        s.comment as comment,
+        i.individual_id AS individual_id,
+        collect(DISTINCT o.case_id) AS other_cases,
+        demo.patient_age_at_enrollment AS patient_age_at_enrollment,
+        demo.sex AS sex,
+        demo.neutered_indicator AS neutered_indicator,
+        demo.weight as weight,
+        d.primary_disease_site as primary_disease_site,
+        d.stage_of_disease as stage_of_disease,
+        d.date_of_diagnosis as date_of_diagnosis,
+        d.histology_cytopathology as histology_cytopathology,
+        d.histological_grade as histological_grade,
+        d.best_response as best_response,
+        d.pathology_report as pathology_report,
+        d.treatment_data as treatment_data,
+        d.follow_up_data as follow_up_data,
+        d.concurrent_disease as concurrent_disease,
+        d.concurrent_disease_type as concurrent_disease_type,
+        co.cohort_description as cohort_description,
+        a.arm as arm
+    "
+  - index_name: studies
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      clinical_study_designation:
+        type: keyword
+      study_disposition:
+        type: keyword
+      clinical_study_type:
+        type: keyword
+      case_ids_case_to_member_of_to_study:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+    MATCH (s:study)
+    OPTIONAL MATCH (s:study)<-[:member_of]-(c:case)
+    RETURN DISTINCT
+      s.clinical_study_designation AS clinical_study_designation,
+      s.study_disposition AS study_disposition,
+      s.clinical_study_type AS clinical_study_type,
+      COLLECT(DISTINCT c.case_id) AS case_ids_case_to_member_of_to_study
+    "
+  - index_name: diagnosis
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      stage_of_disease:
+        type: keyword
+      primary_disease_site:
+        type: keyword
+      disease_term:
+        type: keyword
+      case_id_diag_to_case_of_to_case:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+    MATCH (d:diagnosis)
+    OPTIONAL MATCH (d)-[:of_case]->(c:case)
+    RETURN DISTINCT
+      d.disease_term AS disease_term,
+      d.primary_disease_site AS primary_disease_site,
+      d.stage_of_disease AS stage_of_disease,
+      c.case_id AS case_id_diag_to_case_of_to_case
+      "
+  - index_name: demographic
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      sex:
+        type: keyword
+      case_id_demogr_to_case_of_to_case:
+        type: search_as_you_type
+      breed:
+        type: keyword
+      neutered_indicator:
+        type: keyword
+      patient_age_at_enrollment:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+    MATCH (dg:demographic)
+    OPTIONAL MATCH (dg)-[:of_case]->(c:case)
+    RETURN DISTINCT
+      dg.sex AS sex,
+      dg.breed AS breed,
+      dg.neutered_indicator AS neutered_indicator,
+      dg.patient_age_at_enrollment AS patient_age_at_enrollment,
+      dg.case_id AS case_id_demogr_to_case_of_to_case
+      "
+  - index_name: program
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      case_ids_case_to_member_of_member_of_to_p:
+        type: keyword
+      case_ids_case_to_member_of_member_of_to_p_count:
+        type: keyword
+      program_acronym:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+    MATCH (p:program)
+    OPTIONAL MATCH (p)<-[:member_of]-(s)<-[:member_of]-(c:case)
+    RETURN DISTINCT
+      p.program_acronym AS program_acronym,
+      COLLECT(c.case_id) AS case_ids_case_to_member_of_member_of_to_p,
+      count(c.case_id) as case_ids_case_to_member_of_member_of_to_p_count
+    "
+
+  - index_name: registration
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      registration_origin:
+        type: keyword
+      case_ids_biobank_cases:
+        type: keyword
+      biobank_cases_group:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+    MATCH (r:registration)
+    OPTIONAL MATCH (r)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (c:case)-->(s:study)
+    OPTIONAL MATCH (r:registration)-->(c)
+    WHERE
+    (NOT c.case_id IN biobank_cases
+    OR NOT r.registration_origin = s.clinical_study_designation)
+    WITH c,r,
+    CASE c.case_id IN biobank_cases
+    WHEN TRUE THEN r.registration_origin
+    ELSE 'Not Applicable'
+    END AS group
+    RETURN 
+      r.registration_origin as registration_origin,
+      c.case_id as case_ids_biobank_cases,
+      group as biobank_cases_group
     "

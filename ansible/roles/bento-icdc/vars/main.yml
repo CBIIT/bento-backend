@@ -57,3 +57,4 @@ frontend_url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/{% else %
 
 ##ES###
 es_schema_file: "es-schema-icdc.graphql"
+es_host: "{{ lookup('env','ES_HOST') }}"

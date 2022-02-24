@@ -3,7 +3,7 @@
 - name: list all dockerfiles in katalon_agent directory
   find: 
     path: ../docker/dockerfiles
-    patterns: 'jenkins-agent-microservices'
+    patterns: 'jenkins-agent-microservices-ecs'
     file_type: file
   register: cicd_dockerfile
 
@@ -20,10 +20,10 @@
   docker_image:
     build:
       path: "{{ item | dirname }}"
-      dockerfile: "jenkins-agent-microservices"
+      dockerfile: "jenkins-agent-microservices-ecs"
       pull: yes
       nocache: yes
-    name: "{{ dockerhub_path }}/cicd-microservices"
+    name: "{{ dockerhub_path }}/cicd-microservices-ecs"
     tag: "latest"
     push: yes
     force_source: yes

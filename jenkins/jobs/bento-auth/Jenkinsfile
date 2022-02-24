@@ -149,6 +149,7 @@ pipeline {
                      dp_client_id: "${IDP_CLIENT_ID}",
 					 idp_client_secret: "${IDP_CLIENT_SECRET}",
 					 cookie_secret: "${COOKIE_SECRET}",
+					 idp_provider: "google"
                     ],
 					colorized: true)
   			}

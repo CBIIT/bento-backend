@@ -94,20 +94,8 @@
     dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
-- name: get JAVA_HOME
-  shell: echo $JAVA_HOME
-  environment:
-    JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
-  register: java_home_var
-
-- name: echo JAVA_HOME
-  debug:
-    msg: "{{ java_home_var.stdout_lines }}"
-
 - name: build springboot code
   command: mvn package -DskipTests
-  environment:
-    JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
   args:
     chdir: "{{workspace}}"
 

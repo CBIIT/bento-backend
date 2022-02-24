@@ -15,6 +15,10 @@ public class Const {
         public static final String FILTER_COUNT_QUERY = "filterCountQueryName";
     }
 
+    public static class ES_UNITS {
+        public static final int DEFAULT_SIZE = 10000;
+    }
+
     public static class ES_KEYS {
         public static final String NO_OF_PROGRAMS = "numberOfPrograms";
         public static final String NO_OF_STUDIES = "numberOfStudies";
@@ -40,12 +44,18 @@ public class Const {
         public static final String FILE_NAME = "file_name";
         public static final String CASE_MEMBER_OF_STUDY = "case_ids_case_to_member_of_to_study";
         public static final String DIAG_OF_CASE_CASE = "case_id_diag_to_case_of_to_case";
+        public static final String DEMOG_OF_CASE_CASE = "case_id_demogr_to_case_of_to_case";
+        public static final String DIAG_CASE_OF_CASE = "case_id_diag_to_case_of_to_case";
 
         public static final String COUNT = "count";
         public static final String GROUP = "group";
         public static final String SEX = "sex";
         public static final String SAMPLE_ID = "sample_id";
         public static final String DISEASE_TERM = "disease_term";
+        public static final String BREED = "breed";
+        public static final String NEUTERED_INDICATOR = "neutered_indicator";
+        public static final String STAGE_OF_DISEASE = "stage_of_disease";
+        public static final String PRIMARY_DISEASE_SITE = "primary_disease_site";
     }
 
     public static class ES_INDEX {

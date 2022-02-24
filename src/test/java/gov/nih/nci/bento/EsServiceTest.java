@@ -218,19 +218,8 @@ public class EsServiceTest {
                 .from(offset)
                 .query(query));
 
-        Object object= esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
-
         return esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
     }
 
-    @Test
-    public void test_ssss() {
-
-
-        List<String> list = null;
-        list.forEach((i)->{
-            System.out.println("sss");
-        });
-    }
 
 }

@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.aggregations.*;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.google.gson.*;
+import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.TypeResolver;
 import gov.nih.nci.bento.service.connector.AbstractClient;
@@ -428,8 +429,8 @@ public class ESService {
     }
 
     public TypeResolver getAggregate() {
-        TypeResolver resolver = (response, returnType) -> {
-            Aggregate aggregate = response.aggregations().get("avgSize");
+        TypeResolver resolver = (response, t) -> {
+            Aggregate aggregate = response.aggregations().get(ES_PARAMS.TERMS_AGGS);
             TermsAggregateBase base = (TermsAggregateBase) aggregate._get();
 
             Buckets tBuckets= base.buckets();

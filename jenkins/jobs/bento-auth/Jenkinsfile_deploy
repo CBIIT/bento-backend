@@ -80,16 +80,26 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+      withCredentials([string(credentialsId: 'idp_google_client_secret', variable: 'IDP_CLIENT_SECRET'),
+        string(credentialsId: 'idp_google_client_id', variable: 'IDP_CLIENT_ID'),
+        string(credentialsId: 'cookie_secret', variable: 'COOKIE_SECRET')
+        ]){
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-auth.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
-                    tier: "${params.Environment}",
-                    project: "${params.Project}"
+                     tier: "${params.Environment}",
+                     project: "${params.Project}",
+                     idp_client_id: "${IDP_CLIENT_ID}",
+           idp_client_secret: "${IDP_CLIENT_SECRET}",
+           cookie_secret: "${COOKIE_SECRET}",
+           idp_provider: "google"
                     ],
           colorized: true)
         }
+
+      }
 		  }
   		}
   	}

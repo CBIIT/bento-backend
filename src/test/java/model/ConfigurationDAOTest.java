@@ -1,5 +1,7 @@
-package gov.nih.nci.bento.model;
+package model;
 
+import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.model.DataFetcher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class ConfigurationDAOTest {
 
+    // TODO No Bean
     @Autowired
     public ConfigurationDAO dao;
 

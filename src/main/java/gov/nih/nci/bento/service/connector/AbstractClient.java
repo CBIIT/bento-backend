@@ -1,9 +1,9 @@
 package gov.nih.nci.bento.service.connector;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 @RequiredArgsConstructor
 public abstract class AbstractClient {
@@ -15,12 +15,12 @@ public abstract class AbstractClient {
         return getRestClient();
     }
 
-    public ElasticsearchClient getElasticRestClient() {
+    public RestHighLevelClient getElasticRestClient() {
         if (config.isEsSignRequests()) new AWSClient(config).getElasticClient();
         return getElasticClient();
     }
 
 
     public abstract RestClient getRestClient();
-    public abstract ElasticsearchClient getElasticClient();
+    public abstract RestHighLevelClient getElasticClient();
 }

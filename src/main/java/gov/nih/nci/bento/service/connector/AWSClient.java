@@ -1,9 +1,5 @@
 package gov.nih.nci.bento.service.connector;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.ElasticsearchTransport;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
@@ -12,6 +8,7 @@ import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 public class AWSClient extends AbstractClient {
 
@@ -34,17 +31,14 @@ public class AWSClient extends AbstractClient {
     }
 
     @Override
-    public ElasticsearchClient getElasticClient() {
+    public RestHighLevelClient getElasticClient() {
         AWS4Signer signer = new AWS4Signer();
         signer.setServiceName(serviceName);
         signer.setRegionName(region);
         HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
 
-        RestClient client = RestClient.builder(new HttpHost(config.getEsHost(), config.getEsPort(), config.getEsScheme())).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)).build();
-        ElasticsearchTransport transport = new RestClientTransport(
-                client, new JacksonJsonpMapper());
-
-        return new ElasticsearchClient(transport);
-
+        return new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost(config.getEsHost(), config.getEsPort(), config.getEsScheme())).setHttpClientConfigCallback(hacb -> hacb.addInterceptorLast(interceptor)));
     }
 }

@@ -1,23 +1,17 @@
 package gov.nih.nci.bento.service;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.aggregations.*;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.google.gson.*;
-import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.TypeResolver;
+import gov.nih.nci.bento.model.ReturnTypeMapper;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-import org.jetbrains.annotations.NotNull;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +29,7 @@ public class ESService {
     private static final Logger logger = LogManager.getLogger(RedisService.class);
     private final ConfigurationDAO config;
     private RestClient client;
-    private ElasticsearchClient elasticClient;
+    private RestHighLevelClient elasticClient;
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -53,13 +47,14 @@ public class ESService {
     @PreDestroy
     private void close() throws IOException {
         client.close();
+        elasticClient.close();
         elasticClient=null;
     }
 
-    public List<Map<String, Object>> elasticSend(Map<String, String> resultType, SearchRequest request, TypeResolver resolver) throws IOException {
+    public List<Map<String, Object>> elasticSend(Map<String, String> resultType, SearchRequest request, ReturnTypeMapper mapper) throws IOException {
 
-        SearchResponse<Object> searchResponse = elasticClient.search(request, Object.class);
-        return resolver.getResolver(searchResponse, resultType);
+        SearchResponse searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);
+        return mapper.getResolver(searchResponse, resultType);
     }
 
     public JsonObject send(Request request) throws IOException {
@@ -394,7 +389,7 @@ public class ESService {
         if (element.isJsonObject()) {
             value = new HashMap<String, Object>();
             JsonObject object = element.getAsJsonObject();
-            for (String key: object.keySet()) {
+           for (String key: object.keySet()) {
                 ((Map<String, Object>) value).put(key, getValue(object.get(key)));
             }
             return value;
@@ -406,46 +401,5 @@ public class ESService {
             return value;
         }
         return element.getAsString();
-    }
-    // ElasticSearch Default Mapping Value Resolver
-    public TypeResolver getDefault() {
-        TypeResolver resolver = (response, resultType) -> getMaps(response, resultType);
-        return resolver;
-    }
-    // ElasticSearch Aggregate Mapping Value Resolver
-    @NotNull
-    private List<Map<String, Object>> getMaps(SearchResponse<Object> response, Map<String, String> resultType) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        response.hits().hits().forEach((hit)->{
-            Map<String, Object> maps = (LinkedHashMap) hit.source();
-            Map<String, Object> prasedMap = new HashMap<>();
-            resultType.forEach((k,v)->{
-//                maps.computeIfPresent(k,(key,value) -> prasedMap.put(key, maps.get(value)));
-                if (maps.containsKey(k)) prasedMap.put(k, maps.get(v));
-            });
-            if (prasedMap.size() > 0) result.add(prasedMap);
-        });
-        return result;
-    }
-
-    public TypeResolver getAggregate() {
-        TypeResolver resolver = (response, t) -> {
-            Aggregate aggregate = response.aggregations().get(ES_PARAMS.TERMS_AGGS);
-            TermsAggregateBase base = (TermsAggregateBase) aggregate._get();
-
-            Buckets tBuckets= base.buckets();
-            List<StringTermsBucket> arrays= tBuckets.array();
-
-            List<Map<String, Object>> result = new ArrayList<>();
-            arrays.forEach(bucket->{
-                Map<String,Object> map = Map.of(
-                        "group", bucket.key(),
-                        "count", bucket.docCount()
-                );
-                result.add(map);
-            });
-            return result;
-        };
-        return resolver;
     }
 }

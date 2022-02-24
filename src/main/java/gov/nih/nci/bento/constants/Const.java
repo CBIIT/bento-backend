@@ -19,6 +19,7 @@ public class Const {
         public static final int DEFAULT_SIZE = 10000;
     }
 
+    // TODO MOVE TO PRIVATE
     public static class ES_KEYS {
         public static final String NO_OF_PROGRAMS = "numberOfPrograms";
         public static final String NO_OF_STUDIES = "numberOfStudies";

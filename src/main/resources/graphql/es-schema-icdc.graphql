@@ -113,7 +113,7 @@ type FileOverviewES {
     other_cases: [String]
 }
 
-type CaseGroupCount {
+type GroupCountTest {
     group: String
     count: Int
 }
@@ -129,4 +129,6 @@ type QueryType {
     sampleOverviewDesc(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
     fileOverview(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
     fileOverviewDesc(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
+    caseCountByDiagnosis(case_ids: [String] = []): [GroupCountTest]
+    caseCountByGender(case_ids: [String] = [""]): [GroupCountTest]
 }

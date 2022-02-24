@@ -1,11 +1,13 @@
 package gov.nih.nci.bento.model;
 
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import gov.nih.nci.bento.classes.QueryParam;
-import gov.nih.nci.bento.constants.Const;
+import gov.nih.nci.bento.constants.Const.ES_FIELDS;
 import gov.nih.nci.bento.constants.Const.ES_INDEX;
+import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
@@ -23,11 +25,6 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 public class IcdcEsFilter implements DataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
-
-    // parameters used in queries
-    final String PAGE_SIZE = "first";
-    final String OFFSET = "offset";
-    final String ORDER_BY = "order_by";
 
     @Autowired
     ESService esService;
@@ -48,14 +45,49 @@ public class IcdcEsFilter implements DataFetcher {
                                 fileOverview(CreateQueryParam(env), "asc"))
                         .dataFetcher("fileOverviewDesc", env ->
                                 fileOverview(CreateQueryParam(env), "desc"))
+                        .dataFetcher("caseCountByDiagnosis", env ->
+                                caseCountByDiagnosis(CreateQueryParam(env)))
+                        .dataFetcher("caseCountByGender", env ->
+                                caseCountByGender(CreateQueryParam(env)))
 //                        .dataFetcher("caseCountByStudyCode", env ->
-//                                        caseCountByStudyCode(CreateQueryParam(env)))
-
-
-//                        .dataFetcher("caseCountByDiagnosis", env ->
-//                                caseCountByDiagnosis(CreateQueryParam(env)))
+//                                caseCountByStudyCode(CreateQueryParam(env)))
                 )
                 .build();
+    }
+
+    private Query getCaseIdsQuery(List<String> caseStrIds, String field) {
+
+        if (caseStrIds.size() == 0 || caseStrIds == null) return null;
+        List<Query> queries = new ArrayList<>();
+        caseStrIds.forEach((caseId)->{
+            if (!caseId.equals("")) {
+                queries.add(new Query.Builder().term(v->v.field(field).value(value->value.stringValue(caseId))).build());
+            }
+        });
+        Query query = new Query.Builder()
+                    .bool(
+                            new BoolQuery
+                                .Builder()
+                                .should(queries)
+                                .build()
+                    ).build();
+        return queries.size() == 0 ? null : query;
+    }
+
+    // case ids exists -> show all types of aggregation
+    // others -> aggregation filter by case_ids
+    private Object caseCountByGender(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        final Aggregation termsQuery = Aggregation.of(a -> a.terms(v -> v.field(ES_FIELDS.SEX)));
+        Query query = getCaseIdsQuery(strIds, ES_FIELDS.CASE_ID);
+        SearchRequest request = SearchRequest.of(r->r
+                .index(ES_INDEX.DEMOGRAPHIC)
+                .size(0)
+                .aggregations(ES_PARAMS.TERMS_AGGS, termsQuery)
+                .query(query)
+        );
+        return esService.elasticSend(param.getReturnTypes(), request, esService.getAggregate());
     }
 
     private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
@@ -65,34 +97,6 @@ public class IcdcEsFilter implements DataFetcher {
                 .build();
     }
 
-//    private List<Map<String, Object>>  caseCountByStudyCode(QueryParam param) {
-//
-//        Query query = new Query.Builder()
-//                .matchAll(v->v.queryName("caseCountByStudyCode"))
-//                .build();
-//
-//        Aggregate aggregate = new Aggregate.Builder()
-//                .
-//
-//
-//        Map<String, Object> args = param.getArgs();
-//        List<String> ids = (List<String>) args.get("case_ids");
-//
-//
-//        // if size(ids) ==0 -> show all aggregation
-//        // if size(ids) > 0 -> aggregation filter by case_ids
-//
-//
-////            caseCountByStudyCode(case_ids: [String] = []): [GroupCount] @cypher(statement: """
-////    MATCH (s:study)<-[:member_of]-(c:case)
-////      WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
-////    RETURN {
-////      group: s.clinical_study_designation,
-////      count: count(DISTINCT(c))
-////    }
-////  """, passThrough: true)
-//
-//    }
 
     // TODO Create Param Parse as a Class, caseIDS, Szie
     // TODO ES Service Editing
@@ -103,9 +107,9 @@ public class IcdcEsFilter implements DataFetcher {
 
         Map<String, Object> args = param.getArgs();
 
-        int pageSize = (int) args.get(PAGE_SIZE);
-        int offset = (int) args.get(OFFSET);
-        String sortField = args.get(ORDER_BY).equals("") ? "case_id" : (String) args.get(ORDER_BY);
+        int pageSize = (int) args.get(ES_PARAMS.PAGE_SIZE);
+        int offset = (int) args.get(ES_PARAMS.OFFSET);
+        String sortField = args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.CASE_ID : (String) args.get(ES_PARAMS.ORDER_BY);
         SearchRequest request = SearchRequest.of(r->r
                 .index(ES_INDEX.CASES)
                 .sort(s ->
@@ -123,9 +127,9 @@ public class IcdcEsFilter implements DataFetcher {
                 .build();
 
         Map<String, Object> args = param.getArgs();
-        int pageSize = (int) args.get(PAGE_SIZE);
-        int offset = (int) args.get(OFFSET);
-        String sortField = args.get(ORDER_BY).equals("") ? "sample_id" : (String) args.get(ORDER_BY);
+        int pageSize = (int) args.get(ES_PARAMS.PAGE_SIZE);
+        int offset = (int) args.get(ES_PARAMS.OFFSET);
+        String sortField = args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.SAMPLE_ID : (String) args.get(ES_PARAMS.ORDER_BY);
         SearchRequest request = SearchRequest.of(r->r
                 .index(ES_INDEX.SAMPLES)
                 .sort(s ->
@@ -138,33 +142,48 @@ public class IcdcEsFilter implements DataFetcher {
         return esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
     }
 
-    private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
-        // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
+    private List<Map<String, Object>>  caseCountByStudyCode(QueryParam param) throws IOException {
+
+        Query query = null;
         Map<String, Object> args = param.getArgs();
-        List<String> ids = (List<String>) args.get("case_ids");
-        List<Query> queries = new ArrayList<>();
-        ids.forEach(id->{
-            queries.add(new Query.Builder()
-                    .term(v->v
-                            .field("case_ids_case_to_member_of_to_study")
-                            .value(value->value.stringValue(id)))
-                    .build());
-
-        });
-
-        BoolQuery boolQuery = new BoolQuery.Builder()
-                .must(queries).build();
-
-        Query query = new Query.Builder()
-                .bool(boolQuery).build();
-
+        List<String> caseStrIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        if (caseStrIds.size() > 0) {
+            List<Query> queries = null;
+            caseStrIds.forEach((caseId)->{
+                queries.add(new Query.Builder().term(v->v.field("case_id").value(value->value.stringValue(caseId))).build());
+            });
+            query = new Query.Builder()
+                    .bool(
+                            new BoolQuery.Builder()
+                                    .should(queries).build()
+                    ).build();
+        }
+        // if size(ids) ==0 -> show all aggregation
+        // if size(ids) > 0 -> aggregation filter by case_ids
+        final Aggregation termsQuery = Aggregation.of(a -> a.terms(v -> v.field(ES_FIELDS.CLINICAL_STUDY)));
+        Query finalQuery = query;
         SearchRequest request = SearchRequest.of(r->r
-                .index(Const.ES_INDEX.STUDIES)
-                .size(10)
+                .index(ES_INDEX.CASES)
+                .size(0)
+                .aggregations(ES_PARAMS.TERMS_AGGS, termsQuery)
+                .query(finalQuery)
+        );
+        return esService.elasticSend(param.getReturnTypes(), request, esService.getAggregate());
+    }
+
+    private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
+
+        Map<String, Object> args = param.getArgs();
+        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        Query query = getCaseIdsQuery(strIds, ES_FIELDS.DIAG_OF_CASE_CASE);
+        final Aggregation termsQuery = Aggregation.of(a -> a.terms(v -> v.field(ES_FIELDS.DISEASE_TERM)));
+        SearchRequest request = SearchRequest.of(r->r
+                .index(ES_INDEX.DIAGNOSIS)
+                .size(0)
+                .aggregations(ES_PARAMS.TERMS_AGGS, termsQuery)
                 .query(query));
 
-        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
-
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request,esService.getAggregate());
         return result;
     }
 
@@ -174,18 +193,18 @@ public class IcdcEsFilter implements DataFetcher {
                 .matchAll(v->v.queryName("FILE_OVERVIEW"))
                 .build();
         Map<String, Object> args = param.getArgs();
-        int pageSize = (int) args.get(PAGE_SIZE);
-        int offset = (int) args.get(OFFSET);
-        String sortField = args.get(ORDER_BY).equals("") ? "file_name" : (String) args.get(ORDER_BY);
+        // TODO
+        int pageSize = (int) args.get(ES_PARAMS.PAGE_SIZE);
+        int offset = (int) args.get(ES_PARAMS.OFFSET);
+        String sortField = args.get(ES_PARAMS.ORDER_BY).equals("") ? "file_name" : (String) args.get(ES_PARAMS.ORDER_BY);
         SearchRequest request = SearchRequest.of(r->r
                 .index(ES_INDEX.FILES)
                 .sort(s ->
                         s.field(f ->
                                 f.field(sortField).order(getSortType(sortDirection))))
-                .size(pageSize)
+                .size(10)
                 .from(offset)
                 .query(query));
-
         return esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
     }
 

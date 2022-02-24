@@ -25,8 +25,27 @@ public class Const {
         public static final String NO_OF_ARMS_PROGRAM = "armsByPrograms";
     }
 
-    public static class ES_TERMS {
+    public static class ES_PARAMS {
+        public static final String PAGE_SIZE = "first";
+        public static final String OFFSET = "offset";
+        public static final String ORDER_BY = "order_by";
+        public static final String TERMS_AGGS = "terms_aggs";
 
+        public static final String CASE_IDS = "case_ids";
+    }
+
+    public static class ES_FIELDS {
+        public static final String CLINICAL_STUDY = "clinical_study_designation";
+        public static final String CASE_ID = "case_id";
+        public static final String FILE_NAME = "file_name";
+        public static final String CASE_MEMBER_OF_STUDY = "case_ids_case_to_member_of_to_study";
+        public static final String DIAG_OF_CASE_CASE = "case_id_diag_to_case_of_to_case";
+
+        public static final String COUNT = "count";
+        public static final String GROUP = "group";
+        public static final String SEX = "sex";
+        public static final String SAMPLE_ID = "sample_id";
+        public static final String DISEASE_TERM = "disease_term";
     }
 
     public static class ES_INDEX {
@@ -34,6 +53,8 @@ public class Const {
         public static final String FILES = "files";
         public static final String CASES = "cases";
         public static final String STUDIES = "studies";
+        public static final String DEMOGRAPHIC = "demographic";
+        public static final String DIAGNOSIS = "diagnosis";
     }
 
 

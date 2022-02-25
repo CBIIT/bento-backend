@@ -21,13 +21,14 @@ public class ConfigurationDAO {
 
 	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 	private final Environment env;
+	private final TypeMapper typeMapper;
 
 	@Bean
 	public DataFetcher dataFetcher() {
 	    String project = env.getProperty("project", "bento").toLowerCase();
 	    switch (project) {
 			case "icdc":
-				return new IcdcEsFilter();
+				return new IcdcEsFilter(typeMapper);
 			case "bento":
 				return new BentoEsFilter();
 			default:

@@ -44,6 +44,7 @@ public class Const {
         public static final String CLINICAL_STUDY = "clinical_study_designation";
         public static final String CASE_ID = "case_id";
         public static final String FILE_NAME = "file_name";
+        public static final String FILE_TYPE = "file_type";
         public static final String CASE_MEMBER_OF_STUDY = "case_ids_case_to_member_of_to_study";
         public static final String DIAG_OF_CASE_CASE = "case_id_diag_to_case_of_to_case";
         public static final String DEMOG_OF_CASE_CASE = "case_id_demogr_to_case_of_to_case";

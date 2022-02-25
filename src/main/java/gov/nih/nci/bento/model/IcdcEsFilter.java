@@ -1,29 +1,22 @@
 package gov.nih.nci.bento.model;
 
-import gov.nih.nci.bento.classes.QueryParam;
-import gov.nih.nci.bento.constants.Const.ES_FIELDS;
-import gov.nih.nci.bento.constants.Const.ES_UNITS;
-import gov.nih.nci.bento.constants.Const.ES_INDEX;
-import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.service.ESService;
-import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
+import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
+
+@RequiredArgsConstructor
 public class IcdcEsFilter implements DataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
-
     @Autowired
     ESService esService;
+
+    public final TypeMapper typeMapper;
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

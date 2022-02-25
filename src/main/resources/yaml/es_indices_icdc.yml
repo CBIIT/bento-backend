@@ -265,7 +265,7 @@ Indices:
 
     mapping:
       # properties used in list search, could also used in return data
-      case_ids:
+      case_id:
         type: keyword
       sample_ids:
         type: keyword
@@ -384,7 +384,7 @@ Indices:
         f.file_description as file_description,
         f.file_format as file_format,
         f.file_size as file_size,
-        c.case_id as case_ids,
+        c.case_id as case_id,
         demo.breed as breed,
         diag.disease_term as diagnosis,
         CASE WHEN s.clinical_study_designation IS NULL

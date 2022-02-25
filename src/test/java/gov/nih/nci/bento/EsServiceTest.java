@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.ReturnTypeMapperImpl;
+import gov.nih.nci.bento.model.TypeMapper;
 import gov.nih.nci.bento.service.ESService;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
@@ -40,7 +40,7 @@ public class EsServiceTest {
     ESService esService;
 
     @Autowired
-    ReturnTypeMapperImpl typeMapper;
+    TypeMapper typeMapper;
 
     @Autowired
     private ConfigurationDAO config;
@@ -96,12 +96,12 @@ public class EsServiceTest {
     @Test
     public void elastic_Test() throws IOException {
 
-        SearchRequest request = new SearchRequest();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchSourceBuilder.size(10);
         searchSourceBuilder.sort(ES_FIELDS.CASE_ID, SortOrder.ASC);
 
+        SearchRequest request = new SearchRequest();
         request.indices(Const.ES_INDEX.CASES);
         request.source(searchSourceBuilder);
         Map<String, String> returnTypes = new HashMap<>();
@@ -117,11 +117,11 @@ public class EsServiceTest {
     // COUNT TEST
     @Test
     public void elastic_query_one_case_Test() throws IOException {
-        SearchRequest request = new SearchRequest();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.termsQuery(ES_FIELDS.CASE_MEMBER_OF_STUDY, List.of("NCATS-COP01-CCB070020")));
         searchSourceBuilder.size(1);
 
+        SearchRequest request = new SearchRequest();
         request.indices(Const.ES_INDEX.STUDIES);
         request.source(searchSourceBuilder);
         Map<String, String> returnTypes = new HashMap<>();
@@ -134,12 +134,8 @@ public class EsServiceTest {
     }
 
     @Test
-    public void elastic_aggregation_many_cases_Test() throws IOException {
-        SearchRequest request = new SearchRequest();
-        request.indices(Const.ES_INDEX.CASES);
+    public void elastic_aggregation_no_caseIds_Test() throws IOException {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        // Set Filter
-//        searchSourceBuilder.query(QueryBuilders.termsQuery(ES_FIELDS.CASE_MEMBER_OF_STUDY, _caseIds));
         // Set Aggregate
         TermsAggregationBuilder aggregation = AggregationBuilders
                 .terms(Const.ES_PARAMS.TERMS_AGGS)
@@ -147,6 +143,9 @@ public class EsServiceTest {
                 .field(Const.ES_FIELDS.CLINICAL_STUDY);
         searchSourceBuilder.aggregation(aggregation);
         searchSourceBuilder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ES_INDEX.CASES);
         request.source(searchSourceBuilder);
 
         List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
@@ -154,66 +153,48 @@ public class EsServiceTest {
         assertThat(result.get(0).get(ES_FIELDS.GROUP)).isNotNull();
         assertThat(result.get(0).get(ES_FIELDS.COUNT)).isNotNull();
     }
-//
-//
-//    @Test
-//    public void elastic_aggregation_no_cases_Test() throws IOException {
-//
-//        final Aggregation termAgg = Aggregation.of(a -> a.terms(v -> v.field(ES_FIELDS.CLINICAL_STUDY))                                );
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(Const.ES_INDEX.CASES)
-//                .size(0)
-//                .aggregations(Const.ES_PARAMS.TERMS_AGGS, termAgg)
-//        );
-//
-//        List<Map<String, Object>> result = esService.elasticSend(null, request, esService.getAggregate());
-//        assertThat(result.size()).isGreaterThan(0);
-//        assertThat(result.get(0).get(ES_FIELDS.COUNT)).isNotNull();
-//        assertThat(result.get(0).get(ES_FIELDS.GROUP)).isNotNull();
-//    }
-//
-//    @Test
-//    public void fileOverViewTest() throws IOException {
-//
-//
-//        Query query = new Query.Builder()
-//                .matchAll(v->v.queryName("TEST")).build();
-//
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(Const.ES_INDEX.FILES)
-//                .sort(s -> s.field(f -> f.field(ES_FIELDS.FILE_NAME).order(SortOrder.Asc)))
-//                .size(10)
-//                .from(0)
-//                .query(query));
-//
-//        Map<String, String> returnTypes = new HashMap<>();
-//        returnTypes.put("file_name", "file_name");
-//        returnTypes.put("file_type", "file_type");
-//        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request,esService.getDefault());
-//        assertThat(result.size()).isGreaterThan(0);
-//    }
-//
-//
-//    private List<Map<String, Object>> fileOverview(QueryParam param, String sortDirection) throws IOException {
-//        // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
-//        Query query = new Query.Builder()
-//                .matchAll(v->v.queryName("FILE_OVERVIEW"))
-//                .build();
-//        Map<String, Object> args = param.getArgs();
-//        int pageSize = (int) args.get(Const.ES_PARAMS.PAGE_SIZE);
-//        int offset = (int) args.get(Const.ES_PARAMS.OFFSET);
-//        String sortField = args.get(Const.ES_PARAMS.ORDER_BY).equals("") ? "file_name" : (String) args.get(Const.ES_PARAMS.ORDER_BY);
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(Const.ES_INDEX.FILES)
-//                .sort(s ->
-//                        s.field(f ->
-//                                f.field(sortField).order(getSortType(sortDirection))))
-//                .size(pageSize)
-//                .from(offset)
-//                .query(query));
-//
-//        return esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
-//    }
-//
 
+
+    @Test
+    public void elastic_aggregation_with_caseIds_Test() throws IOException {
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Set Filter
+        searchSourceBuilder.query(QueryBuilders.termsQuery(ES_FIELDS.CASE_ID, _caseIds));
+        // Set Aggregate
+        TermsAggregationBuilder aggregation = AggregationBuilders
+                .terms(Const.ES_PARAMS.TERMS_AGGS)
+                .size(Const.ES_PARAMS.AGGS_SIZE)
+                .field(Const.ES_FIELDS.CLINICAL_STUDY);
+        searchSourceBuilder.aggregation(aggregation);
+        searchSourceBuilder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ES_INDEX.CASES);
+        request.source(searchSourceBuilder);
+
+        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        assertThat(result.size()).isGreaterThan(0);
+        assertThat(result.get(0).get(ES_FIELDS.GROUP)).isNotNull();
+        assertThat(result.get(0).get(ES_FIELDS.COUNT)).isNotNull();
+    }
+
+    @Test
+    public void fileOverViewTest() throws IOException {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Set Filter
+        searchSourceBuilder.query(QueryBuilders.termsQuery(ES_FIELDS.CASE_ID, _caseIds));
+        searchSourceBuilder.from(0);
+        searchSourceBuilder.size(10);
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ES_INDEX.FILES);
+        request.source(searchSourceBuilder);
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put(ES_FIELDS.FILE_NAME, ES_FIELDS.FILE_NAME);
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getAggregate());
+        assertThat(result.size()).isGreaterThan(0);
+        assertThat(result.get(0).get(ES_FIELDS.FILE_NAME)).isNotNull();
+    }
 }

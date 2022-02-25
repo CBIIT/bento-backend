@@ -13,11 +13,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ReturnTypeMapperImpl {
+public class TypeMapper {
 
 
     // ElasticSearch Default Mapping Value Resolver
-    public ReturnTypeMapper getDefault() {
+    public ITypeMapper getDefault() {
         return (response, returnTypes) -> getMaps(response, returnTypes);
     }
     // ElasticSearch Aggregate Mapping Value Resolver
@@ -35,7 +35,7 @@ public class ReturnTypeMapperImpl {
         return result;
     }
 
-    public ReturnTypeMapper getAggregate() {
+    public ITypeMapper getAggregate() {
         return (response, t) -> {
             Aggregations aggregate = response.getAggregations();
             Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
@@ -52,5 +52,4 @@ public class ReturnTypeMapperImpl {
             return result;
         };
     }
-
 }

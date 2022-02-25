@@ -2,7 +2,7 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.ReturnTypeMapper;
+import gov.nih.nci.bento.model.ITypeMapper;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class ESService {
         elasticClient=null;
     }
 
-    public List<Map<String, Object>> elasticSend(Map<String, String> resultType, SearchRequest request, ReturnTypeMapper mapper) throws IOException {
+    public List<Map<String, Object>> elasticSend(Map<String, String> resultType, SearchRequest request, ITypeMapper mapper) throws IOException {
 
         SearchResponse searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);
         return mapper.getResolver(searchResponse, resultType);

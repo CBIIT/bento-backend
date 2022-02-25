@@ -5,6 +5,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import java.util.List;
 import java.util.Map;
 
-public interface ReturnTypeMapper {
+public interface ITypeMapper {
     List<Map<String, Object>> getResolver(SearchResponse response, Map<String, String> resultType);
 }

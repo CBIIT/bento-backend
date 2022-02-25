@@ -193,7 +193,7 @@ public class EsServiceTest {
 
         Map<String, String> returnTypes = new HashMap<>();
         returnTypes.put(ES_FIELDS.FILE_NAME, ES_FIELDS.FILE_NAME);
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.get(0).get(ES_FIELDS.FILE_NAME)).isNotNull();
     }

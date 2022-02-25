@@ -25,6 +25,7 @@
 		<spring.version>5.1.17.RELEASE</spring.version>
 		<spring.restdocs.version>2.0.5.RELEASE</spring.restdocs.version>
         <log4j2.version>2.17.1</log4j2.version>
+		<elasticsearch.version>7.10.2</elasticsearch.version>
 	</properties>
 
 	<dependencies>
@@ -208,7 +209,29 @@
             <version>1.12.147</version>
             <scope>compile</scope>
         </dependency>
-
+		<!-- Spring Lombok	-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Elasticsearch HighLevel Client-->
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-high-level-client</artifactId>
+			<version>${elasticsearch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${elasticsearch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId> org.elasticsearch.client </groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<version>${elasticsearch.version}</version>
+		</dependency>
 
     </dependencies>
 

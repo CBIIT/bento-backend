@@ -155,7 +155,7 @@ public class GraphQLController {
 	}
 
 	private GraphQLSchema getEsSchema() throws IOException {
-		if (config.getEsFilterEnabled()){
+		if (config.isEsFilterEnabled()){
 			File schemaFile = new DefaultResourceLoader().getResource("classpath:" + config.getEsSchemaFile()).getFile();
 			return new SchemaGenerator().makeExecutableSchema(new SchemaParser().parse(schemaFile), esFilterDataFetcher.buildRuntimeWiring());
 		}

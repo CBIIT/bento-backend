@@ -10,9 +10,7 @@ import gov.nih.nci.bento.service.ESService;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -135,7 +133,6 @@ public class EsServiceTest {
         assertThat(result.get(0).get("clinical_study_designation")).isNotNull();
     }
 
-    // TODO WORKING ON AGGREGATION
     @Test
     public void elastic_aggregation_many_cases_Test() throws IOException {
         SearchRequest request = new SearchRequest();
@@ -146,41 +143,16 @@ public class EsServiceTest {
         // Set Aggregate
         TermsAggregationBuilder aggregation = AggregationBuilders
                 .terms(Const.ES_PARAMS.TERMS_AGGS)
+                .size(Const.ES_PARAMS.AGGS_SIZE)
                 .field(Const.ES_FIELDS.CLINICAL_STUDY);
         searchSourceBuilder.aggregation(aggregation);
         searchSourceBuilder.size(0);
         request.source(searchSourceBuilder);
 
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("clinical_study_designation", "clinical_study_designation");
-
-        SearchResponse searchResponse = client.search(request, RequestOptions.DEFAULT);
-
-        System.out.println("s");
-//        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
-//        assertThat(result.size()).isGreaterThan(0);
-//        assertThat(result.size()).isEqualTo(1);
-//        assertThat(result.get(0).get("clinical_study_designation")).isNotNull();
-
-
-//        Query query = new Query.Builder()
-//            .bool(
-//                new BoolQuery.Builder()
-//                        .should(queries).build()
-//            ).build();
-//
-//        final Aggregation termAgg = Aggregation.of(a -> a.terms(v -> v.field(Const.ES_FIELDS.CLINICAL_STUDY))                                );
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(Const.ES_INDEX.CASES)
-//                .size(0)
-//                .query(query)
-//                .aggregations(Const.ES_PARAMS.TERMS_AGGS,termAgg)
-//        );
-//
-//        List<Map<String, Object>> result = esService.elasticSend(null, request, esService.getAggregate());
-//        assertThat(result.size()).isGreaterThan(0);
-//        assertThat(result.get(0).get(ES_FIELDS.COUNT)).isNotNull();
-//        assertThat(result.get(0).get(ES_FIELDS.GROUP)).isNotNull();
+        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        assertThat(result.size()).isGreaterThan(0);
+        assertThat(result.get(0).get(ES_FIELDS.GROUP)).isNotNull();
+        assertThat(result.get(0).get(ES_FIELDS.COUNT)).isNotNull();
     }
 //
 //

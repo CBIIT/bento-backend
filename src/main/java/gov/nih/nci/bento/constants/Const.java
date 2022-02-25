@@ -37,6 +37,7 @@ public class Const {
         public static final String TERMS_AGGS = "terms_aggs";
 
         public static final String CASE_IDS = "case_ids";
+        public static final int AGGS_SIZE = 1000;
     }
 
     public static class ES_FIELDS {

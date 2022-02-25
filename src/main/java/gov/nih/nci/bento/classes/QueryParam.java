@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.classes;
 
+import gov.nih.nci.bento.constants.Const;
 import graphql.schema.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,11 +14,15 @@ public class QueryParam {
 
     private Map<String, Object> args;
     private Map<String, String> returnTypes;
+    private int pageSize;
+    private int offSet;
 
     @Builder
     public QueryParam(Map<String, Object> args, GraphQLOutputType outputType) {
         this.args = args;
         this.returnTypes = getReturnType(outputType);
+        this.pageSize = args.containsKey(Const.ES_PARAMS.PAGE_SIZE) ?  (int) args.get(Const.ES_PARAMS.PAGE_SIZE) : -1;
+        this.offSet = args.containsKey(Const.ES_PARAMS.OFFSET) ?  (int) args.get(Const.ES_PARAMS.OFFSET) : -1;
     }
 
     private Map<String, String> getReturnType(GraphQLOutputType outputType) {

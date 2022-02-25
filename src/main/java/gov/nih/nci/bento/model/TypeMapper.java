@@ -25,13 +25,20 @@ public class TypeMapper {
     private List<Map<String, Object>> getMaps(SearchResponse response, Map<String, String> returnTypes) {
         List<Map<String, Object>> result = new ArrayList<>();
         SearchHit[] hits = response.getHits().getHits();
-        Arrays.asList(hits).forEach(hit->{
-            Map<String, Object> source = hit.getSourceAsMap();
-            Map<String, Object> returnMap = returnTypes.entrySet().stream()
-                    .filter(p->source.containsKey(p.getKey()))
-                    .collect(Collectors.toMap(k->k.getKey(), v->v.getValue()));
-            if (returnMap.size() > 0) result.add(returnMap);
+        Arrays.asList(hits).forEach(hit-> {
+                    Map<String, Object> source = hit.getSourceAsMap();
+                    Map<String, Object> returnMap = new HashMap<>();
+                    returnTypes.forEach((k, v) -> {
+                        if (source.containsKey(k)) returnMap.put(k, source.get(v));
+                    });
+                    if (returnMap.size() > 0) result.add(returnMap);
         });
+// TODO
+//                Map<String, Object> returnMap = returnTypes.entrySet().stream()
+//                        .filter(p->source.containsKey(p.getKey()))
+//                        .collect(Collectors.toMap(k->k.getKey(), v->source.get(v.getKey())));
+//                if (returnMap.size() > 0) result.add(returnMap);
+//            return result;
         return result;
     }
 

@@ -123,5 +123,16 @@ schema {
 }
 
 type QueryType {
-
+    caseOverviewPaged (case_ids: [String] = [], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
+    caseOverviewPagedDesc (case_ids: [String] = [], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
+    sampleOverview(case_ids: [String] = [], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
+    sampleOverviewDesc(case_ids: [String] = [], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
+    fileOverview(case_ids: [String] = [], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
+    fileOverviewDesc(case_ids: [String] = [], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
+    caseCountByDiagnosis(case_ids: [String] = []): [CaseGroupCount]
+    caseCountByGender(case_ids: [String] = []): [CaseGroupCount]
+    caseCountByBreed(case_ids: [String] = []): [CaseGroupCount]
+    caseCountByNeuteredStatus(case_ids: [String] = []): [CaseGroupCount]
+    caseCountByStageOfDisease(case_ids: [String] = []): [CaseGroupCount]
+    caseCountByDiseaseSite(case_ids: [String] = []): [CaseGroupCount]
 }

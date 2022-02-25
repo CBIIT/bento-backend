@@ -432,7 +432,7 @@ Indices:
 
     mapping:
       # properties used in list search, could also used in return data
-      case_ids:
+      case_id:
         type: keyword
       sample_ids:
         type: keyword
@@ -518,7 +518,7 @@ Indices:
       OPTIONAL MATCH (co)-->(a:study_arm)
       RETURN DISTINCT
         s.sample_id as sample_ids,
-        c.case_id as case_ids,
+        c.case_id as case_id,
         demo.breed as breed,
         d.disease_term as diagnosis,
         s.sample_site as sample_site,
@@ -607,7 +607,7 @@ Indices:
       sex:
         type: keyword
       case_id_demogr_to_case_of_to_case:
-        type: search_as_you_type
+        type: keyword
       breed:
         type: keyword
       neutered_indicator:

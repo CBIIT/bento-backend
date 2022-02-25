@@ -1,11 +1,28 @@
 package gov.nih.nci.bento.model;
 
+import gov.nih.nci.bento.classes.QueryParam;
+import gov.nih.nci.bento.constants.Const;
+import gov.nih.nci.bento.constants.Const.ES_PARAMS;
+import gov.nih.nci.bento.constants.Const.ES_FIELDS;
+import gov.nih.nci.bento.constants.Const.ES_INDEX;
 import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.utility.ElasticUtil;
+import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
@@ -22,236 +39,245 @@ public class IcdcEsFilter implements DataFetcher {
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
-//                                .dataFetcher("caseOverviewPaged", env ->
-//                                        caseOverview(CreateQueryParam(env),"asc"))
-//                                .dataFetcher("caseOverviewPagedDesc", env ->
-//                                        caseOverview(CreateQueryParam(env),"desc"))
-//                                .dataFetcher("sampleOverview", env ->
-//                                        sampleOverview(CreateQueryParam(env), "asc"))
-//                                .dataFetcher("sampleOverviewDesc", env ->
-//                                        sampleOverview(CreateQueryParam(env),"desc"))
-//                                .dataFetcher("fileOverview", env ->
-//                                        fileOverview(CreateQueryParam(env), "asc"))
-//                                .dataFetcher("fileOverviewDesc", env ->
-//                                        fileOverview(CreateQueryParam(env), "desc"))
-//                                .dataFetcher("caseCountByDiagnosis", env ->
-//                                        caseCountByDiagnosis(CreateQueryParam(env)))
-//                                .dataFetcher("caseCountByGender", env ->
-//                                        caseCountByGender(CreateQueryParam(env)))
-//                                .dataFetcher("caseCountByBreed", env ->
-//                                        caseCountByBreed(CreateQueryParam(env)))
-//                                .dataFetcher("caseCountByNeuteredStatus", env ->
-//                                        caseCountByNeuteredStatus(CreateQueryParam(env)))
-//                                .dataFetcher("caseCountByStageOfDisease", env ->
-//                                        caseCountByStageOfDisease(CreateQueryParam(env)))
-//                                .dataFetcher("caseCountByDiseaseSite", env ->
-//                                        caseCountByDiseaseSite(CreateQueryParam(env)))
-//                        .dataFetcher("caseCountByStudyCode", env ->
-//                                caseCountByStudyCode(CreateQueryParam(env)))
+                                .dataFetcher("caseOverviewPaged", env ->
+                                        caseOverview(CreateQueryParam(env),"asc"))
+                                .dataFetcher("caseOverviewPagedDesc", env ->
+                                        caseOverview(CreateQueryParam(env),"desc"))
+                                .dataFetcher("sampleOverview", env ->
+                                        sampleOverview(CreateQueryParam(env), "asc"))
+                                .dataFetcher("sampleOverviewDesc", env ->
+                                        sampleOverview(CreateQueryParam(env),"desc"))
+                                .dataFetcher("fileOverview", env ->
+                                        fileOverview(CreateQueryParam(env), "asc"))
+                                .dataFetcher("fileOverviewDesc", env ->
+                                        fileOverview(CreateQueryParam(env), "desc"))
+                                .dataFetcher("caseCountByDiagnosis", env ->
+                                        caseCountByDiagnosis(CreateQueryParam(env)))
+                                .dataFetcher("caseCountByGender", env ->
+                                        caseCountByGender(CreateQueryParam(env)))
+                                .dataFetcher("caseCountByBreed", env ->
+                                        caseCountByBreed(CreateQueryParam(env)))
+                                .dataFetcher("caseCountByNeuteredStatus", env ->
+                                        caseCountByNeuteredStatus(CreateQueryParam(env)))
+                                .dataFetcher("caseCountByStageOfDisease", env ->
+                                        caseCountByStageOfDisease(CreateQueryParam(env)))
+                                .dataFetcher("caseCountByDiseaseSite", env ->
+                                        caseCountByDiseaseSite(CreateQueryParam(env)))
+//                                .dataFetcher("caseCountByStudyCode", env ->
+//                                        caseCountByStudyCode(CreateQueryParam(env)))
                 )
                 .build();
     }
 
-//    private List<Map<String, Object>> caseCountByDiseaseSite(QueryParam params) throws IOException {
-//
-//        Map<String, Object> args = params.getArgs();
-//        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
-//        final Aggregation termQuery = Aggregation.of(agg ->
-//                agg.terms(
-//                        v -> v.field(ES_FIELDS.PRIMARY_DISEASE_SITE).size(ES_UNITS.DEFAULT_SIZE)
-//                ));
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.DIAGNOSIS)
-//                .size(0)
-//                .aggregations(ES_PARAMS.TERMS_AGGS, termQuery)
-//                .query(createBoolQuery(strIds, ES_FIELDS.DIAG_CASE_OF_CASE))
-//        );
-//        List<Map<String, Object>> result = esService.elasticSend(params.getReturnTypes(), request, esService.getAggregate());
-//        return result;
-//    }
-//
-//    private List<Map<String, Object>> caseCountByStageOfDisease(QueryParam param) throws IOException {
-//        Map<String, Object> args = param.getArgs();
-//        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
-//        final Aggregation termQuery = Aggregation.of(agg ->
-//                agg.terms(
-//                        v -> v.field(ES_FIELDS.STAGE_OF_DISEASE).size(ES_UNITS.DEFAULT_SIZE)
-//                ));
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.DIAGNOSIS)
-//                .size(0)
-//                .aggregations(ES_PARAMS.TERMS_AGGS, termQuery)
-//                .query(createBoolQuery(strIds, ES_FIELDS.DIAG_CASE_OF_CASE))
-//        );
-//        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, esService.getAggregate());
-//        return result;
-//    }
-//
-//
-//    private List<Map<String, Object>> caseCountByNeuteredStatus(QueryParam param) throws IOException {
-//        Map<String, Object> args = param.getArgs();
-//        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
-//        final Aggregation termQuery = Aggregation.of(agg ->
-//                agg.terms(
-//                        v -> v.field(ES_FIELDS.NEUTERED_INDICATOR).size(ES_UNITS.DEFAULT_SIZE)
-//                ));
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.DEMOGRAPHIC)
-//                .size(0)
-//                .aggregations(ES_PARAMS.TERMS_AGGS, termQuery)
-//                .query(createBoolQuery(strIds, ES_FIELDS.DEMOG_OF_CASE_CASE))
-//        );
-//        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, esService.getAggregate());
-//        return result;
-//    }
+    private List<Map<String, Object>> caseCountByDiseaseSite(QueryParam params) throws IOException {
+
+        Map<String, Object> args = params.getArgs();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // Get Params
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        // Set Filter
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.DIAG_CASE_OF_CASE, ids);
+
+        if (ids.size() > 0) builder.query(filter);
+        // Set Aggregate
+        builder.aggregation(ElasticUtil.getTermsAggregation(ES_FIELDS.PRIMARY_DISEASE_SITE));
+        builder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(ES_INDEX.DIAGNOSIS);
+        request.source(builder);
+        List<Map<String, Object>> result = esService.elasticSend(params.getReturnTypes(), request, typeMapper.getAggregate());
+        return result;
+    }
+
+    private List<Map<String, Object>> caseCountByStageOfDisease(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // Get Params
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        // Set Filter
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.DIAG_CASE_OF_CASE, ids);
+        if (ids.size() > 0) builder.query(filter);
+        // Set Aggregate
+        builder.aggregation(ElasticUtil.getTermsAggregation(ES_FIELDS.STAGE_OF_DISEASE));
+        builder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(ES_INDEX.DIAGNOSIS);
+        request.source(builder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getAggregate());
+        return result;
+    }
 //
 //
-//    private Query createBoolQuery(List<String> ids, String field) {
+    private List<Map<String, Object>> caseCountByNeuteredStatus(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // Get Params
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        // Set Filter
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.NEUTERED_INDICATOR, ids);
+        if (ids.size() > 0) builder.query(filter);
+        // Set Aggregate
+        TermsAggregationBuilder aggregation = ElasticUtil.getTermsAggregation(ES_FIELDS.DEMOG_OF_CASE_CASE);
+        builder.aggregation(aggregation);
+        builder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(ES_INDEX.DEMOGRAPHIC);
+        request.source(builder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getAggregate());
+        return result;
+    }
+
+    private List<Map<String, Object>> caseCountByBreed(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // Get Params
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        // Set Filter
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.DEMOG_OF_CASE_CASE, ids);
+        if (ids.size() > 0) builder.query(filter);
+        // Set Aggregate
+        builder.aggregation(ElasticUtil.getTermsAggregation(ES_FIELDS.BREED));
+        builder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ES_INDEX.DEMOGRAPHIC);
+        request.source(builder);
+
+        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        return result;
+    }
+
+    // case ids exists -> show all types of aggregation
+    // others -> aggregation filter by case_ids
+    private List<Map<String, Object>> caseCountByGender(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        // Get Params
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        // Set Filter
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.DEMOG_OF_CASE_CASE, ids);
+        if (ids.size() > 0) builder.query(filter);
+        // Set Aggregate
+        TermsAggregationBuilder aggregation = AggregationBuilders
+                .terms(ES_PARAMS.TERMS_AGGS)
+                .size(ES_PARAMS.AGGS_SIZE)
+                .field(ES_FIELDS.SEX);
+        builder.aggregation(aggregation);
+        builder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ES_INDEX.DEMOGRAPHIC);
+        request.source(builder);
+
+        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        return result;
+    }
 //
-//        if (ids.size() == 0 || ids == null) return null;
-//        List<Query> queries = new ArrayList<>();
-//        ids.forEach((caseId)->{
-//            queries.add(new Query.Builder().term(v->v.field(field).value(value->value.stringValue(caseId))).build());
-//        });
-//        Query query = new Query.Builder()
-//                .bool(
-//                        new BoolQuery
-//                                .Builder()
-//                                .should(queries)
-//                                .build()
-//                ).build();
-//        return queries.size() == 0 ? null : query;
-//    }
-//
-//    private List<Map<String, Object>> caseCountByBreed(QueryParam param) throws IOException {
-//
-//        Map<String, Object> args = param.getArgs();
-//        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
-//        final Aggregation termQuery = Aggregation.of(agg ->
-//                agg.terms(
-//                        v -> v.field(ES_FIELDS.BREED).size(ES_UNITS.DEFAULT_SIZE)
-//                ));
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.DEMOGRAPHIC)
-//                .size(0)
-//                .aggregations(ES_PARAMS.TERMS_AGGS, termQuery)
-//                .query(createBoolQuery(strIds, ES_FIELDS.DEMOG_OF_CASE_CASE))
-//        );
-//        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, esService.getAggregate());
-//        return result;
-//    }
-//
-//    // case ids exists -> show all types of aggregation
-//    // others -> aggregation filter by case_ids
-//    private List<Map<String, Object>> caseCountByGender(QueryParam param) throws IOException {
-//        Map<String, Object> args = param.getArgs();
-//        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
-//        final Aggregation termQuery = Aggregation.of(agg ->
-//                agg.terms(
-//                        v -> v.field(ES_FIELDS.SEX).size(ES_UNITS.DEFAULT_SIZE)
-//                ));
-//        Query query = createBoolQuery(strIds, ES_FIELDS.DEMOG_OF_CASE_CASE);
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.DEMOGRAPHIC)
-//                .size(0)
-//                .aggregations(ES_PARAMS.TERMS_AGGS, termQuery)
-//                .query(query)
-//        );
-//
-//        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, esService.getAggregate());
-//        return result;
-//    }
-//
-//    private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
-//        return QueryParam.builder()
-//                .args(env.getArguments())
-//                .outputType(env.getFieldType())
-//                .build();
-//    }
-//
-//
-//    // TODO Create Param Parse as a Class, caseIDS, size
-//    // TODO ES Service Editing
-//    private List<Map<String, Object>> caseOverview(QueryParam param, String sortDirection) throws IOException {
-//        Query query = new Query.Builder()
-//                .matchAll(v->v.queryName("CASE_OVERVIEW"))
-//                .build();
-//
-//        Map<String, Object> args = param.getArgs();
-//
-//        int pageSize = (int) args.get(ES_PARAMS.PAGE_SIZE);
-//        int offset = (int) args.get(ES_PARAMS.OFFSET);
-//        String sortField = args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.CASE_ID : (String) args.get(ES_PARAMS.ORDER_BY);
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.CASES)
-//                .sort(s ->
-//                        s.field(f ->
-//                                f.field(sortField).order(getSortType(sortDirection))))
-//                .size(pageSize)
-//                .from(offset)
-//                .query(query));
-//        return esService.elasticSend(param.getReturnTypes(), request, esService.getDefault());
-//    }
-//
-//    private List<Map<String, Object>> sampleOverview(QueryParam param, String sortDirection) throws IOException {
-//        Query query = new Query.Builder()
-//                .matchAll(v->v.queryName("SAMPLE_OVERVIEW"))
-//                .build();
-//
-//        Map<String, Object> args = param.getArgs();
-//        int pageSize = (int) args.get(ES_PARAMS.PAGE_SIZE);
-//        int offset = (int) args.get(ES_PARAMS.OFFSET);
-//        String sortField = args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.SAMPLE_ID : (String) args.get(ES_PARAMS.ORDER_BY);
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.SAMPLES)
-//                .sort(s ->
-//                        s.field(f ->
-//                                f.field(sortField).order(getSortType(sortDirection))))
-//                .size(pageSize)
-//                .from(offset)
-//                .query(query));
-//
-//        return esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
-//    }
-//
-//    private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
-//
-//        Map<String, Object> args = param.getArgs();
-//        List<String> strIds = (List<String>) args.get(ES_PARAMS.CASE_IDS);
-//        Query query = createBoolQuery(strIds, ES_FIELDS.DIAG_OF_CASE_CASE);
-//        final Aggregation termQuery = Aggregation.of(agg ->
-//                agg.terms(
-//                        v -> v.field(ES_FIELDS.DISEASE_TERM).size(ES_UNITS.DEFAULT_SIZE)
-//                ));
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.DIAGNOSIS)
-//                .size(0)
-//                .aggregations(ES_PARAMS.TERMS_AGGS, termQuery)
-//                .query(query));
-//
-//        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request,esService.getAggregate());
-//        return result;
-//    }
-//
-//    private List<Map<String, Object>> fileOverview(QueryParam param, String sortDirection) throws IOException {
-//        // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
-//        Query query = new Query.Builder()
-//                .matchAll(v->v.queryName("FILE_OVERVIEW"))
-//                .build();
-//        Map<String, Object> args = param.getArgs();
-//        // TODO
-//        int pageSize = (int) args.get(ES_PARAMS.PAGE_SIZE);
-//        int offset = (int) args.get(ES_PARAMS.OFFSET);
-//        String sortField = args.get(ES_PARAMS.ORDER_BY).equals("") ? "file_name" : (String) args.get(ES_PARAMS.ORDER_BY);
-//        SearchRequest request = SearchRequest.of(r->r
-//                .index(ES_INDEX.FILES)
-//                .sort(s ->
-//                        s.field(f ->
-//                                f.field(sortField).order(getSortType(sortDirection))))
-//                .size(10)
-//                .from(offset)
-//                .query(query));
-//        return esService.elasticSend(param.getReturnTypes(), request,esService.getDefault());
-//    }
+    private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
+        return QueryParam.builder()
+                .args(env.getArguments())
+                .outputType(env.getFieldType())
+                .build();
+    }
+
+    // TODO Create Param Parse as a Class, caseIDS, size
+    // TODO ES Service Editing
+    private List<Map<String, Object>> caseOverview(QueryParam param, String sortDirection) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Set Filter
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.CASE_ID, ids);
+        searchSourceBuilder.query(
+                ids.size() > 0 ? filter : QueryBuilders.matchAllQuery()
+        );
+        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.sort(
+                // Get Default Sort Type or Pre-defined Sort Field
+                args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.CASE_ID : (String) args.get(ES_PARAMS.ORDER_BY),
+                ElasticUtil.getSortType(sortDirection));
+        searchSourceBuilder.size(param.getPageSize());
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(ES_INDEX.CASES);
+        request.source(searchSourceBuilder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        return result;
+    }
+
+    private List<Map<String, Object>> sampleOverview(QueryParam param, String sortDirection) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Set Filter
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.CASE_ID, ids);
+        searchSourceBuilder.query(
+                ids.size() > 0 ? filter : QueryBuilders.matchAllQuery()
+        );
+        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.sort(
+                // Get Default Sort Type or Pre-defined Sort Field
+                args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.SAMPLE_ID : (String) args.get(ES_PARAMS.ORDER_BY),
+                ElasticUtil.getSortType(sortDirection));
+        searchSourceBuilder.size(param.getPageSize());
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(ES_INDEX.SAMPLES);
+        request.source(searchSourceBuilder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        return result;
+    }
+
+    private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Get Params
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        // Set Filter
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.DIAG_OF_CASE_CASE, ids);
+        searchSourceBuilder.query(
+                ids.size() == 0 ? QueryBuilders.matchAllQuery() : filter
+        );
+        // Set Aggregate
+        TermsAggregationBuilder aggregation = AggregationBuilders
+                .terms(ES_PARAMS.TERMS_AGGS)
+                .size(ES_PARAMS.AGGS_SIZE)
+                .field(ES_FIELDS.DISEASE_TERM);
+        searchSourceBuilder.aggregation(aggregation);
+        searchSourceBuilder.size(0);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ES_INDEX.DIAGNOSIS);
+        request.source(searchSourceBuilder);
+
+        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        return result;
+    }
+
+    private List<Map<String, Object>> fileOverview(QueryParam param, String sortDirection) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Set Filter
+        List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
+        QueryBuilder filter = QueryBuilders.termsQuery(ES_FIELDS.CASE_ID, ids);
+        searchSourceBuilder.query(
+                ids.size() > 0 ? filter : QueryBuilders.matchAllQuery()
+        );
+        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.sort(
+                // Get Default Sort Type or Pre-defined Sort Field
+                args.get(ES_PARAMS.ORDER_BY).equals("") ? ES_FIELDS.FILE_NAME : (String) args.get(ES_PARAMS.ORDER_BY),
+                ElasticUtil.getSortType(sortDirection));
+        searchSourceBuilder.size(param.getPageSize());
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(ES_INDEX.FILES);
+        request.source(searchSourceBuilder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        return result;
+    }
 
 }

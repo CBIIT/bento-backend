@@ -11,7 +11,7 @@ type File {
 }
 
 
-type SubjectOverview {
+type ESSubjectOverview {
     subject_id: String
     program: String
     program_id: String
@@ -35,7 +35,7 @@ type SubjectOverview {
     lab_procedures: [String]
 }
 
-type SampleOverview {
+type ESSampleOverview {
     program: String
     program_id: String
     arm: String
@@ -65,7 +65,7 @@ type FileOverview2 {
     diagnosis: String
 }
 
-type SearchResult {
+type ESSearchResult {
     numberOfPrograms: Int
     numberOfStudies: Int
     numberOfSubjects: Int
@@ -131,7 +131,7 @@ type ProgramArms2 {
     children: [ArmInfo2]
 }
 
-type FileDetail {
+type ESFileDetail {
     study_code: String
     subject_id: String
     file_name: String
@@ -259,7 +259,7 @@ type QueryType {
         association: [String] = [],
         file_type: [String] = [],
         age_at_index: [Float] = []
-    ): SearchResult
+    ): ESSearchResult
 
     subjectOverview (
         subject_ids: [String] = [],
@@ -283,7 +283,7 @@ type QueryType {
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
-    ): [SubjectOverview]
+    ): [ESSubjectOverview]
 
     sampleOverview (
         subject_ids: [String] = [],
@@ -308,7 +308,7 @@ type QueryType {
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
-    ): [SampleOverview]
+    ): [ESSampleOverview]
 
     fileOverview (
         subject_ids: [String] = [],
@@ -347,7 +347,7 @@ type QueryType {
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
-    ): [FileDetail]
+    ): [ESFileDetail]
 
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 

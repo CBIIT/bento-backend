@@ -9,5 +9,5 @@ redis_host:
   prod: "bento-prod-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
 
 schema_file: "bento-extended.graphql"
-
 about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"
+app_googlee_client_id: sumo_access_key: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1' ) }}"

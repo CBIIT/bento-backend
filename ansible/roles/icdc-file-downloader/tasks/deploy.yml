@@ -5,10 +5,10 @@
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
 
-- name: remove frontend container
-  docker_container:
-    name: file-downloader
-    state: absent
+#- name: remove frontend container
+#  docker_container:
+#    name: file-downloader
+#    state: absent
 
 - name: clean up 
   command: docker system prune -a -f
@@ -50,7 +50,7 @@
     - { 'key': 'PROJECT' , 'value': "ICDC" }
     - { 'key': 'NEW_RELIC_APP_NAME' , 'value': "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}" }
     - { 'key': 'NEW_RELIC_LICENSE_KEY' , 'value': "{{license_key}}" }
-  when: tier == "dev" or tier == "qa"
+  when: tier == "stage" or tier == "prod"
 
 - name: echo docker_env
   debug:

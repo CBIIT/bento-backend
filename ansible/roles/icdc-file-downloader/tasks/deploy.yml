@@ -18,39 +18,39 @@
     path: /local/content/k9dc/file-downloader
     state: directory
 
- - name: Create docker environment variables - lower tiers
-   set_fact: 
-     docker_env : "{{ docker_env | default({}) | combine ({ item.key : item.value }) }}"
-   with_items:
-     - { 'key': 'CF_URL' , 'value': "https://{{cloudfront_domain_name}}" }
-     - { 'key': 'URL_SRC' , 'value': 'indexd' }
-     - { 'key': 'INDEXD_URL' , 'value': "{{indexd_url}}" }
-     - { 'key': 'CF_PRIVATE_KEY' , 'value': "{{cloudfront_private_key}}" }
-     - { 'key': 'CF_KEY_PAIR_ID' , 'value': "{{cloudfront_key_group_id}}" }
-     - { 'key': 'URL_SRC' , 'value': "{{url_src}}" }
-     - { 'key': 'BACKEND_URL' , 'value': "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" }
-     - { 'key': 'VERSION' , 'value': "{{downloader_version}}" }
-     - { 'key': 'DATE' , 'value': "{{ansible_date_time.date}}" }
-     - { 'key': 'PROJECT' , 'value': "ICDC" }
-     - { 'key': 'NEW_RELIC_APP_NAME' , 'value': "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}" }
-     - { 'key': 'NEW_RELIC_LICENSE_KEY' , 'value': "{{license_key}}" }
-   when: tier == "dev" or tier == "qa"
+- name: Create docker environment variables - lower tiers
+  set_fact: 
+    docker_env : "{{ docker_env | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'CF_URL' , 'value': "https://{{cloudfront_domain_name}}" }
+    - { 'key': 'URL_SRC' , 'value': 'indexd' }
+    - { 'key': 'INDEXD_URL' , 'value': "{{indexd_url}}" }
+    - { 'key': 'CF_PRIVATE_KEY' , 'value': "{{cloudfront_private_key}}" }
+    - { 'key': 'CF_KEY_PAIR_ID' , 'value': "{{cloudfront_key_group_id}}" }
+    - { 'key': 'URL_SRC' , 'value': "{{url_src}}" }
+    - { 'key': 'BACKEND_URL' , 'value': "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" }
+    - { 'key': 'VERSION' , 'value': "{{downloader_version}}" }
+    - { 'key': 'DATE' , 'value': "{{ansible_date_time.date}}" }
+    - { 'key': 'PROJECT' , 'value': "ICDC" }
+    - { 'key': 'NEW_RELIC_APP_NAME' , 'value': "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}" }
+    - { 'key': 'NEW_RELIC_LICENSE_KEY' , 'value': "{{license_key}}" }
+  when: tier == "dev" or tier == "qa"
 
 - name: Create docker environment variables - upper tiers
-   set_fact: 
-     docker_env : "{{ docker_env | default({}) | combine ({ item.key : item.value }) }}"
-   with_items:
-     - { 'key': 'CF_URL' , 'value': "https://{{cloudfront_domain_name}}" }
-     - { 'key': 'CF_PRIVATE_KEY' , 'value': "{{cloudfront_private_key}}" }
-     - { 'key': 'CF_KEY_PAIR_ID' , 'value': "{{cloudfront_key_group_id}}" }
-     - { 'key': 'URL_SRC' , 'value': "{{url_src}}" }
-     - { 'key': 'BACKEND_URL' , 'value': "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" }
-     - { 'key': 'VERSION' , 'value': "{{downloader_version}}" }
-     - { 'key': 'DATE' , 'value': "{{ansible_date_time.date}}" }
-     - { 'key': 'PROJECT' , 'value': "ICDC" }
-     - { 'key': 'NEW_RELIC_APP_NAME' , 'value': "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}" }
-     - { 'key': 'NEW_RELIC_LICENSE_KEY' , 'value': "{{license_key}}" }
-   when: tier == "dev" or tier == "qa"
+  set_fact: 
+    docker_env : "{{ docker_env | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'CF_URL' , 'value': "https://{{cloudfront_domain_name}}" }
+    - { 'key': 'CF_PRIVATE_KEY' , 'value': "{{cloudfront_private_key}}" }
+    - { 'key': 'CF_KEY_PAIR_ID' , 'value': "{{cloudfront_key_group_id}}" }
+    - { 'key': 'URL_SRC' , 'value': "{{url_src}}" }
+    - { 'key': 'BACKEND_URL' , 'value': "{% if tier == 'prod' %}https://caninecommons.cancer.gov/v1/graphql/{% else %}https://caninecommons-{{ tier }}.cancer.gov/v1/graphql/{% endif %}" }
+    - { 'key': 'VERSION' , 'value': "{{downloader_version}}" }
+    - { 'key': 'DATE' , 'value': "{{ansible_date_time.date}}" }
+    - { 'key': 'PROJECT' , 'value': "ICDC" }
+    - { 'key': 'NEW_RELIC_APP_NAME' , 'value': "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}" }
+    - { 'key': 'NEW_RELIC_LICENSE_KEY' , 'value': "{{license_key}}" }
+  when: tier == "dev" or tier == "qa"
 
 - name: echo docker_env
   debug:

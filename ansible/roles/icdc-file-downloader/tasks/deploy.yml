@@ -51,10 +51,6 @@
     - { 'key': 'NEW_RELIC_LICENSE_KEY' , 'value': "{{license_key}}" }
   when: tier == "stage" or tier == "prod"
 
-- name: echo docker_env
-  debug:
-    msg: "{{ docker_env }}"
-
 - name: launch the new file-downloader
   docker_container:
     name: file-downloader

@@ -5,10 +5,10 @@
     password: "{{ docker_password }}"
     registry: https://ncidockerhub.nci.nih.gov
 
-#- name: remove frontend container
-#  docker_container:
-#    name: file-downloader
-#    state: absent
+- name: remove frontend container
+  docker_container:
+    name: file-downloader
+    state: absent
 
 - name: clean up 
   command: docker system prune -a -f
@@ -56,11 +56,11 @@
   debug:
     msg: "{{ docker_env }}"
 
-#- name: launch the new file-downloader
-#  docker_container:
-#    name: file-downloader
-#    image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{downloader_version}}
-#    env: "{{ docker_env }}"
+- name: launch the new file-downloader
+  docker_container:
+    name: file-downloader
+    image: ncidockerhub.nci.nih.gov/icdc/icdc-filedownloader:{{downloader_version}}
+    env: "{{ docker_env }}"
 
 #    env:
 #      CF_URL: "https://{{cloudfront_domain_name}}"
@@ -76,18 +76,18 @@
 #      NEW_RELIC_APP_NAME: "{{stack_name}}-{{tier}}-file-downloader-{{ansible_hostname}}"
 #      NEW_RELIC_LICENSE_KEY: "{{license_key}}"
 
-#    restart_policy: always
-#    ports:
-#      - "8081:8081"
-#    volumes:
-#      - "/local/content/k9dc/file-downloader:/var/log"
+    restart_policy: always
+    ports:
+      - "8081:8081"
+    volumes:
+      - "/local/content/k9dc/file-downloader:/var/log"
 
-#- name: "wait for file-downloader service to become available"
-#  uri:
-#   url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/ping{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/ping{% endif %}"
-#   follow_redirects: none
-#   method: GET
-#  register: _result
-#  until: ('status' in _result) and (_result.status == 200)
-#  retries: 100
-#  delay: 10
+- name: "wait for file-downloader service to become available"
+  uri:
+   url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/ping{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/ping{% endif %}"
+   follow_redirects: none
+   method: GET
+  register: _result
+  until: ('status' in _result) and (_result.status == 200)
+  retries: 100
+  delay: 10

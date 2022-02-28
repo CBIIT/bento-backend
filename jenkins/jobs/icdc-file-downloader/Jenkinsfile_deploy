@@ -43,9 +43,9 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,stage,prod')
     string(
-    defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
-    description: 'Provide indexd url',
-    name: 'IndexD_Url')
+        defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+        description: 'Provide indexd url',
+        name: 'IndexD_Url')
 
   }
   options {

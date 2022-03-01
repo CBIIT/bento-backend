@@ -941,7 +941,7 @@ public class BentoEsFilter implements DataFetcher {
         return esService.collectTerms(jsonObject, collectField);
     }
     // TODO
-    public Map<String, Object> multiSearchTest(Map<String, Object> args) throws IOException {
+    private Map<String, Object> multiSearchTest(Map<String, Object> args) throws IOException {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.size(0);
@@ -1226,7 +1226,7 @@ public class BentoEsFilter implements DataFetcher {
         return result;
     }
 
-    private SearchSourceBuilder createArmProgramQuery() {
+    public SearchSourceBuilder createArmProgramQuery() {
         return new SearchSourceBuilder()
                 .size(0)
                 .aggregation(AggregationBuilders
@@ -1242,7 +1242,7 @@ public class BentoEsFilter implements DataFetcher {
     }
 
     // TODO
-    private SearchSourceBuilder createTermsQuery() {
+    public SearchSourceBuilder createTermsQuery() {
         SearchSourceBuilder builder = new SearchSourceBuilder();
 
         Map<String, Object> params = Map.of(
@@ -1265,7 +1265,7 @@ public class BentoEsFilter implements DataFetcher {
     }
 
     // TODO Filter Param
-    private SearchSourceBuilder createRangeQuery() {
+    public SearchSourceBuilder createRangeQuery() {
         SearchSourceBuilder builder = new SearchSourceBuilder();
 //        Map<String, Object> params = Map.of(
 //
@@ -1279,7 +1279,7 @@ public class BentoEsFilter implements DataFetcher {
                         .min("min").field(BENTO_FIELDS.AGE_AT_INDEX));
     }
 
-    private SearchSourceBuilder createTermsAggSource(String field) {
+    public SearchSourceBuilder createTermsAggSource(String field) {
         return new SearchSourceBuilder()
                 .size(0)
                 .aggregation(AggregationBuilders

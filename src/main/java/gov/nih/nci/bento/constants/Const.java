@@ -101,6 +101,9 @@ public class Const {
         public static final String CHILDREN = "children";
         public static final String ARM = "arm";
         public static final String SIZE = "size";
+        // Sort Purpose
+        public static final String SUBJECT_ID_NUM = "subject_id_num";
+
     }
 
     public static class BENTO_INDEX {
@@ -111,6 +114,7 @@ public class Const {
         public static final String REGISTRATION = "registration";
         public static final String PROGRAMS = "programs";
         public static final String PROGRAM = "program";
+        public static final String CASES = "cases";
     }
 
 

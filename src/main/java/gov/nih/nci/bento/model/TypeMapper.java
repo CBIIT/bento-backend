@@ -28,19 +28,12 @@ public class TypeMapper {
         List<Map<String, Object>> result = new ArrayList<>();
         SearchHit[] hits = response.getHits().getHits();
         Arrays.asList(hits).forEach(hit-> {
-                    Map<String, Object> source = hit.getSourceAsMap();
-                    Map<String, Object> returnMap = new HashMap<>();
-                    returnTypes.forEach((k, v) -> {
-                        if (source.containsKey(k)) returnMap.put(k, source.get(v));
-                    });
-                    if (returnMap.size() > 0) result.add(returnMap);
+            Map<String, Object> source = hit.getSourceAsMap();
+            Map<String, Object> returnMap = returnTypes.entrySet().stream()
+                    .filter(p->source.containsKey(p.getKey()))
+                    .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
+            if (returnMap.size() > 0) result.add(returnMap);
         });
-// TODO
-//                Map<String, Object> returnMap = returnTypes.entrySet().stream()
-//                        .filter(p->source.containsKey(p.getKey()))
-//                        .collect(Collectors.toMap(k->k.getKey(), v->source.get(v.getKey())));
-//                if (returnMap.size() > 0) result.add(returnMap);
-//            return result;
         return result;
     }
 
@@ -66,25 +59,17 @@ public class TypeMapper {
     public ITypeMapper getAggregate() {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
-            try {
-                Aggregations aggregate = response.getAggregations();
-                Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
-                List<Terms.Bucket> buckets = (List<Terms.Bucket>) terms.getBuckets();
-
-                buckets.forEach(bucket->
-                        result.add(
-                                Map.of(
-                                        BENTO_FIELDS.GROUP, bucket.getKey(),
-                                        BENTO_FIELDS.SUBJECTS, (int) bucket.getDocCount()
-                                )
-                        )
-                );
-            }catch (Exception e) {
-
-                System.out.println(e.toString());
-            }
-
-
+            Aggregations aggregate = response.getAggregations();
+            Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
+            List<Terms.Bucket> buckets = (List<Terms.Bucket>) terms.getBuckets();
+            buckets.forEach(bucket->
+                    result.add(
+                            Map.of(
+                                    BENTO_FIELDS.GROUP,bucket.getKey(),
+                                    BENTO_FIELDS.SUBJECTS,bucket.getDocCount()
+                            )
+                    )
+            );
             return result;
         };
     }
@@ -92,29 +77,19 @@ public class TypeMapper {
     public ITypeMapper getIntTotal() {
         return (response, t) -> {
             TotalHits hits = response.getHits().getTotalHits();
-            return (int) hits.value;
+            return hits.value;
         };
     }
 
     public ITypeMapper getRange() {
-
-        // TODO
         return (response, t) -> {
             Aggregations aggregate = response.getAggregations();
             Map<String, Aggregation> responseMap = aggregate.getAsMap();
-
             Map<String, Object> result = new HashMap<>();
             result.put(BENTO_FIELDS.LOWER_BOUND, responseMap.containsKey("max") ? 100 : null);
             result.put(BENTO_FIELDS.UPPER_BOUND, responseMap.containsKey("min") ? 200 : null);
-
+            // TODO
             result.put(BENTO_FIELDS.SUBJECTS, 100);
-
-
-//            Map<String, Object> result = Map.of(
-//                    ES_FIELDS.LOWER_BOUND, responseMap.containsKey("max") ? responseMap.get("max") : null,
-//                    ES_FIELDS.UPPER_BOUND, responseMap.containsKey("min") ? responseMap.get("min") : null,
-//                    ES_FIELDS.SUBJECTS, 100
-//            );
             return result;
         };
     }
@@ -133,15 +108,15 @@ public class TypeMapper {
                         List<Map<String, Object>> studies = new ArrayList<>();
                         subBuckets.forEach((subBucket)->{
                             studies.add(Map.of(
-                                    BENTO_FIELDS.ARM, subBucket.getKey(),
-                                    BENTO_FIELDS.CASE_SIZE, (int) subBucket.getDocCount(),
-                                    BENTO_FIELDS.SIZE, (int) subBucket.getDocCount()
+                                    BENTO_FIELDS.ARM,subBucket.getKey(),
+                                    BENTO_FIELDS.CASE_SIZE,subBucket.getDocCount(),
+                                    BENTO_FIELDS.SIZE,subBucket.getDocCount()
                             ));
                         });
                         result.add(
                                 Map.of(
                                         BENTO_FIELDS.PROGRAM, bucket.getKey(),
-                                        BENTO_FIELDS.CASE_SIZE, (int) bucket.getDocCount(),
+                                        BENTO_FIELDS.CASE_SIZE,bucket.getDocCount(),
                                         BENTO_FIELDS.CHILDREN, studies
                                 )
                         );

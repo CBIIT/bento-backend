@@ -11,7 +11,7 @@ type File {
 }
 
 
-type SubjectOverview {
+type ESSubjectOverview {
     subject_id: String
     program: String
     program_id: String
@@ -283,7 +283,7 @@ type QueryType {
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
-    ): [SubjectOverview]
+    ): [ESSubjectOverview]
 
     sampleOverview (
         subject_ids: [String] = [],

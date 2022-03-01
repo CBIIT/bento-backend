@@ -30,10 +30,10 @@ public class ConfigurationDAO {
 			case "icdc":
 				return new IcdcEsFilter(typeMapper);
 			case "bento":
-				return new BentoEsFilter();
+				return new BentoEsFilter(typeMapper);
 			default:
 				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
-				return new BentoEsFilter();
+				return new BentoEsFilter(typeMapper);
 		}
 	}
 

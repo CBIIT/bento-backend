@@ -40,7 +40,7 @@ public class Const {
         public static final int AGGS_SIZE = 1000;
     }
 
-    public static class ES_FIELDS {
+    public static class ICDC_FIELDS {
         public static final String CLINICAL_STUDY = "clinical_study_designation";
         public static final String CASE_ID = "case_id";
         public static final String FILE_NAME = "file_name";
@@ -61,13 +61,56 @@ public class Const {
         public static final String PRIMARY_DISEASE_SITE = "primary_disease_site";
     }
 
-    public static class ES_INDEX {
+    public static class ICDC_INDEX {
         public static final String SAMPLES = "samples";
         public static final String FILES = "files";
         public static final String CASES = "cases";
         public static final String STUDIES = "studies";
         public static final String DEMOGRAPHIC = "demographic";
         public static final String DIAGNOSIS = "diagnosis";
+    }
+
+    public static class BENTO_FIELDS {
+        public static final String STUDIES = "studies";
+        public static final String PROGRAMS = "programs";
+        public static final String DIAGNOSES = "diagnoses";
+        public static final String RC_SCORES = "rc_scores";
+        public static final String TUMOR_SIZES = "tumor_sizes";
+        public static final String TUMOR_GRADES = "tumor_grades";
+        public static final String ER_STATUS = "er_status";
+        public static final String PR_STATUS = "pr_status";
+        public static final String CHEMO_REGIMEN = "chemo_regimen";
+        public static final String ENDO_THERAPIES = "endo_therapies";
+        public static final String MENO_STATUS = "meno_status";
+        public static final String TISSUE_TYPE = "tissue_type";
+        public static final String COMPOSITION = "composition";
+        public static final String ASSOCIATION = "association";
+        public static final String FILE_TYPE = "file_type";
+        public static final String LAB_PROCEDURES = "lab_procedures";
+        public static final String SUBJECT_IDS = "subject_ids";
+        public static final String AGE_AT_INDEX = "age_at_index";
+
+        public static final String LOWER_BOUND = "lowerBound";
+        public static final String UPPER_BOUND = "upperBound";
+        public static final String SUBJECTS = "subjects";
+
+        public static final String COUNT = "count";
+        public static final String GROUP = "group";
+        public static final String PROGRAM = "program";
+        public static final String CASE_SIZE = "caseSize";
+        public static final String CHILDREN = "children";
+        public static final String ARM = "arm";
+        public static final String SIZE = "size";
+    }
+
+    public static class BENTO_INDEX {
+        public static final String SUBJECTS = "subjects";
+        public static final String FILES = "files";
+        public static final String STUDIES = "studies";
+        public static final String SAMPLES = "samples";
+        public static final String REGISTRATION = "registration";
+        public static final String PROGRAMS = "programs";
+        public static final String PROGRAM = "program";
     }
 
 

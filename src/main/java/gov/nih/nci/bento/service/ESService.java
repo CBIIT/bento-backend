@@ -1,6 +1,7 @@
 package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
+import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.ITypeMapper;
 import gov.nih.nci.bento.service.connector.AbstractClient;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.search.MultiSearchRequest;
+import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
@@ -51,10 +54,26 @@ public class ESService {
         elasticClient=null;
     }
 
-    public List<Map<String, Object>> elasticSend(Map<String, String> resultType, SearchRequest request, ITypeMapper mapper) throws IOException {
+    public <T> T elasticSend(Map<String, String> resultType, SearchRequest request, ITypeMapper mapper) throws IOException {
 
         SearchResponse searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);
-        return mapper.getResolver(searchResponse, resultType);
+        return (T) mapper.getResolver(searchResponse, resultType);
+    }
+
+    public Map<String, Object> elasticMultiSend(List<MultipleRequests> requests) throws IOException {
+        MultiSearchRequest multiRequests = new MultiSearchRequest();
+        requests.forEach(r->multiRequests.add(r.getRequest()));
+        MultiSearchResponse response = elasticClient.msearch(multiRequests, RequestOptions.DEFAULT);
+        MultiSearchResponse.Item[] responseResponses = response.getResponses();
+
+        final int[] index = {0};
+        Map<String, Object> result = new HashMap<>();
+        List.of(responseResponses).forEach(item->{
+            MultipleRequests data = requests.get(index[0]);
+            result.put(data.getName(),data.getTypeMapper().getResolver(item.getResponse(),null));
+            index[0] += 1;
+        });
+        return result;
     }
 
     public JsonObject send(Request request) throws IOException {

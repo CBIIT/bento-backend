@@ -33,11 +33,11 @@ pip3 install --ignore-installed -r requirements.txt
 After modules are installed you can run cdk commands on your stack:
 
 ```bash
-cdk synth -a "python3 app.py -t <tier>"
-cdk bootstrap -a "python3 app.py -t <tier>"
-cdk deploy -a "python3 app.py -t <tier>"
-cdk diff -a "python3 app.py -t <tier>"
-cdk destroy -a "python3 app.py -t <tier>"
+cdk synth
+cdk bootstrap
+cdk deploy
+cdk diff
+cdk destroy
 ```
 
 * Note: an appropriate tier must be specified in bento.properties in order to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes

@@ -1,58 +1,43 @@
+# Bento cdk project:  Bento AWS
 
-# Welcome to your CDK Python project!
+## Prerequisites
 
-This is a blank project for Python development with CDK.
+This project was built based on the python implementation detailed at:
+- https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+The project can be built using the included docker-compose file to install prerequisites or they can be installed locally. 
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
 
-To manually create a virtualenv on MacOS and Linux:
+### Using docker-compose
 
-```
-$ python3 -m venv .venv
+Once the repo has been cloned a dev container can be started from the cdk/awscdk folder using the following command:
+
+```bash
+docker-compose run aws-cdk sh
 ```
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+This will start a container with all required applications installed and map the awscdk/bento folder as its workspace.
 
-```
-$ source .venv/bin/activate
-```
 
-If you are a Windows platform, you would activate the virtualenv like this:
+## Initialize the bento cdk project
 
-```
-% .venv\Scripts\activate.bat
+In order to build the bento cdk files you will need to get the required python modules (this command should be run in the bento folder):
+
+```bash
+pip3 install --ignore-installed -r requirements.txt
 ```
 
-Once the virtualenv is activated, you can install the required dependencies.
 
+## Build Cloudformation scripts for the bento cdk project
+
+After modules are installed you can run cdk commands on your stack:
+
+```bash
+cdk synth -a "python3 app.py -t <tier>"
+cdk bootstrap -a "python3 app.py -t <tier>"
+cdk deploy -a "python3 app.py -t <tier>"
+cdk diff -a "python3 app.py -t <tier>"
+cdk destroy -a "python3 app.py -t <tier>"
 ```
-$ pip install -r requirements.txt
-```
 
-At this point you can now synthesize the CloudFormation template for this code.
-
-```
-$ cdk synth
-```
-
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
-
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
+* Note: an appropriate tier must be specified in bento.properties in order to build the bento scripts - if valid tiers are created or removed for this project getArgs.py must be updated to reflect these changes

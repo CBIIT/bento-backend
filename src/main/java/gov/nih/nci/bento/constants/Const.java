@@ -35,7 +35,7 @@ public class Const {
         public static final String OFFSET = "offset";
         public static final String ORDER_BY = "order_by";
         public static final String TERMS_AGGS = "terms_aggs";
-
+        public static final String SORT_DIRECTION = "sort_direction";
         public static final String CASE_IDS = "case_ids";
         public static final int AGGS_SIZE = 1000;
     }
@@ -71,23 +71,23 @@ public class Const {
     }
 
     public static class BENTO_FIELDS {
-        public static final String STUDIES = "studies";
-        public static final String PROGRAMS = "programs";
-        public static final String DIAGNOSES = "diagnoses";
-        public static final String RC_SCORES = "rc_scores";
-        public static final String TUMOR_SIZES = "tumor_sizes";
-        public static final String TUMOR_GRADES = "tumor_grades";
+        public static final String STUDIES = "study_info";
+//        public static final String PROGRAMS = "programs";
+        public static final String DIAGNOSES = "diagnosis";
+        public static final String RC_SCORES = "recurrence_score";
+        public static final String TUMOR_SIZES = "tumor_size";
+        public static final String TUMOR_GRADES = "tumor_grade";
         public static final String ER_STATUS = "er_status";
         public static final String PR_STATUS = "pr_status";
-        public static final String CHEMO_REGIMEN = "chemo_regimen";
-        public static final String ENDO_THERAPIES = "endo_therapies";
-        public static final String MENO_STATUS = "meno_status";
+        public static final String CHEMO_REGIMEN = "chemotherapy";
+        public static final String ENDO_THERAPIES = "endocrine_therapy";
+        public static final String MENO_STATUS = "menopause_status";
         public static final String TISSUE_TYPE = "tissue_type";
         public static final String COMPOSITION = "composition";
         public static final String ASSOCIATION = "association";
         public static final String FILE_TYPE = "file_type";
         public static final String LAB_PROCEDURES = "lab_procedures";
-        public static final String SUBJECT_IDS = "subject_ids";
+        public static final String SUBJECT_ID = "subject_id";
         public static final String AGE_AT_INDEX = "age_at_index";
 
         public static final String LOWER_BOUND = "lowerBound";
@@ -103,7 +103,7 @@ public class Const {
         public static final String SIZE = "size";
         // Sort Purpose
         public static final String SUBJECT_ID_NUM = "subject_id_num";
-
+        public static final String STUDY_ACRONYM = "study_acronym";
     }
 
     public static class BENTO_INDEX {

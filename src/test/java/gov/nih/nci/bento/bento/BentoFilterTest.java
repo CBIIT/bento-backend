@@ -92,7 +92,7 @@ public class BentoFilterTest {
                 MultipleRequests.builder()
                         .name("PROGRAM")
                         .request(new SearchRequest()
-                                .indices(Const.BENTO_FIELDS.PROGRAMS)
+                                .indices(BENTO_FIELDS.PROGRAM)
                                 .source(searchSourceBuilder))
                         .typeMapper(typeMapper.getIntTotal()).build());
 

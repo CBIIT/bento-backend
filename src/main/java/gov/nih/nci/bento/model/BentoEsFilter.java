@@ -2,10 +2,12 @@ package gov.nih.nci.bento.model;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.service.ESService;
+import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -86,8 +89,8 @@ public class BentoEsFilter implements DataFetcher {
 //                            return searchSubjects(args);
                         })
                         .dataFetcher("subjectOverview", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return subjectOverview(args);
+//                            Map<String, Object> args = env.getArguments();
+                            return subjectOverview(CreateQueryParam(env));
                         })
                         .dataFetcher("sampleOverview", env -> {
                             Map<String, Object> args = env.getArguments();
@@ -335,54 +338,100 @@ public class BentoEsFilter implements DataFetcher {
         }
     }
 
-    private List<Map<String, Object>> subjectOverview(Map<String, Object> params) throws IOException {
-        final String[][] PROPERTIES = new String[][]{
-                new String[]{"subject_id", "subject_ids"},
-                new String[]{"program", "programs"},
-                new String[]{"program_id", "program_id"},
-                new String[]{"study_acronym", "study_acronym"},
-                new String[]{"study_short_description", "study_short_description"},
-                new String[]{"study_info", "studies"},
-                new String[]{"diagnosis", "diagnoses"},
-                new String[]{"recurrence_score", "rc_scores"},
-                new String[]{"tumor_size", "tumor_sizes"},
-                new String[]{"tumor_grade", "tumor_grades"},
-                new String[]{"er_status", "er_status"},
-                new String[]{"pr_status", "pr_status"},
-                new String[]{"chemotherapy", "chemo_regimen"},
-                new String[]{"endocrine_therapy", "endo_therapies"},
-                new String[]{"menopause_status", "meno_status"},
-                new String[]{"age_at_index", "age_at_index"},
-                new String[]{"survival_time", "survival_time"},
-                new String[]{"survival_time_unit", "survival_time_unit"},
-                new String[]{"files", "files"},
-                new String[]{"samples", "samples"},
-                new String[]{"lab_procedures", "lab_procedures"},
-        };
+    private QueryBuilder createBoolFromParams(Map<String, Object> args) {
+        Map<String, Object> cloneMap = new HashMap<>(args);
+        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+        cloneMap.keySet().removeAll(sets);
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        cloneMap.forEach((k,v)->{
+            List<String> list = (List<String>) args.get(k);
+            if (list.size() > 0) {
+                bool.should(
+                        QueryBuilders.termsQuery(k, (List<String>) args.get(k)));
+            }
+        });
+        return bool.should().size() > 0 ? bool : QueryBuilders.matchAllQuery();
+    }
 
-        String defaultSort = "subject_id_num"; // Default sort order
-
-        Map<String, String> mapping = Map.ofEntries(
-                Map.entry("subject_id", "subject_id_num"),
-                Map.entry("program", "programs"),
-                Map.entry("program_id", "program_id"),
-                Map.entry("study_acronym", "study_acronym"),
-                Map.entry("study_short_description", "study_short_description"),
-                Map.entry("study_info", "studies"),
-                Map.entry("diagnosis", "diagnoses"),
-                Map.entry("recurrence_score", "rc_scores"),
-                Map.entry("tumor_size", "tumor_sizes"),
-                Map.entry("tumor_grade", "tumor_grades"),
-                Map.entry("er_status", "er_status"),
-                Map.entry("pr_status", "pr_status"),
-                Map.entry("chemotherapy", "chemo_regimen"),
-                Map.entry("endocrine_therapy", "endo_therapies"),
-                Map.entry("menopause_status", "meno_status"),
-                Map.entry("age_at_index", "age_at_index"),
-                Map.entry("survival_time", "survival_time")
+    private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(
+                createBoolFromParams(args)
         );
+        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.sort(
+                // Set Sort
+                param.getOrderBy().equals("") ? BENTO_FIELDS.SUBJECT_ID_NUM : param.getOrderBy(),
+                param.getSortDirection());
+        searchSourceBuilder.size(param.getPageSize());
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(BENTO_INDEX.SUBJECTS);
+        request.source(searchSourceBuilder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        return result;
 
-        return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
+
+
+//        Request request = new Request("GET", endpoint);
+//        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+//        String order_by = (String)params.get(ORDER_BY);
+//        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
+//        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+//        int pageSize = (int) params.get(PAGE_SIZE);
+//        int offset = (int) params.get(OFFSET);
+//        return esService.collectPage(request, query, properties, pageSize, offset);
+
+
+
+//        final String[][] PROPERTIES = new String[][]{
+//                new String[]{"subject_id", "subject_ids"},
+//                new String[]{"program", "programs"},
+//                new String[]{"program_id", "program_id"},
+//                new String[]{"study_acronym", "study_acronym"},
+//                new String[]{"study_short_description", "study_short_description"},
+//                new String[]{"study_info", "studies"},
+//                new String[]{"diagnosis", "diagnoses"},
+//                new String[]{"recurrence_score", "rc_scores"},
+//                new String[]{"tumor_size", "tumor_sizes"},
+//                new String[]{"tumor_grade", "tumor_grades"},
+//                new String[]{"er_status", "er_status"},
+//                new String[]{"pr_status", "pr_status"},
+//                new String[]{"chemotherapy", "chemo_regimen"},
+//                new String[]{"endocrine_therapy", "endo_therapies"},
+//                new String[]{"menopause_status", "meno_status"},
+//                new String[]{"age_at_index", "age_at_index"},
+//                new String[]{"survival_time", "survival_time"},
+//                new String[]{"survival_time_unit", "survival_time_unit"},
+//                new String[]{"files", "files"},
+//                new String[]{"samples", "samples"},
+//                new String[]{"lab_procedures", "lab_procedures"},
+//        };
+//
+//        String defaultSort = "subject_id_num"; // Default sort order
+//
+//        Map<String, String> mapping = Map.ofEntries(
+//                Map.entry("subject_id", "subject_id_num"),
+//                Map.entry("program", "programs"),
+//                Map.entry("program_id", "program_id"),
+//                Map.entry("study_acronym", "study_acronym"),
+//                Map.entry("study_short_description", "study_short_description"),
+//                Map.entry("study_info", "studies"),
+//                Map.entry("diagnosis", "diagnoses"),
+//                Map.entry("recurrence_score", "rc_scores"),
+//                Map.entry("tumor_size", "tumor_sizes"),
+//                Map.entry("tumor_grade", "tumor_grades"),
+//                Map.entry("er_status", "er_status"),
+//                Map.entry("pr_status", "pr_status"),
+//                Map.entry("chemotherapy", "chemo_regimen"),
+//                Map.entry("endocrine_therapy", "endo_therapies"),
+//                Map.entry("menopause_status", "meno_status"),
+//                Map.entry("age_at_index", "age_at_index"),
+//                Map.entry("survival_time", "survival_time")
+//        );
+//
+//        return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
@@ -949,7 +998,7 @@ public class BentoEsFilter implements DataFetcher {
                 MultipleRequests.builder()
                         .name("numberOfPrograms")
                         .request(new SearchRequest()
-                                .indices(BENTO_FIELDS.PROGRAMS)
+                                .indices(BENTO_INDEX.PROGRAMS)
                                 .source(searchSourceBuilder))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
@@ -986,7 +1035,7 @@ public class BentoEsFilter implements DataFetcher {
                         .name("subjectCountByProgram")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.PROGRAMS))
+                                .source(createTermsAggSource(BENTO_FIELDS.PROGRAM))
                         )
                         .typeMapper(typeMapper.getAggregate()).build(),
                 // TODO
@@ -994,7 +1043,7 @@ public class BentoEsFilter implements DataFetcher {
                         .name("filterSubjectCountByProgram")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.PROGRAMS)
-                                .source(createTermsAggSource(BENTO_FIELDS.PROGRAMS)))
+                                .source(createTermsAggSource(BENTO_FIELDS.PROGRAM)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name("subjectCountByStudy")
@@ -1232,16 +1281,16 @@ public class BentoEsFilter implements DataFetcher {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field("programs")
+                        .field(BENTO_FIELDS.PROGRAM)
                         .subAggregation(
                                 AggregationBuilders
                                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                                        .field("study_acronym")
+                                        .field(BENTO_FIELDS.STUDY_ACRONYM)
                         ));
     }
 
-    // TODO
+    // TODO TOBE DELETED
     public SearchSourceBuilder createTermsQuery() {
         SearchSourceBuilder builder = new SearchSourceBuilder();
 
@@ -1254,10 +1303,10 @@ public class BentoEsFilter implements DataFetcher {
         List<String> paramList = new ArrayList<>();
         if (params.containsKey("subject_ids"))
             bool.should(
-                    QueryBuilders.termsQuery(BENTO_FIELDS.SUBJECT_IDS, (List<String>) params.get("subject_ids")));
+                    QueryBuilders.termsQuery(BENTO_FIELDS.SUBJECT_ID, (List<String>) params.get("subject_ids")));
         if (params.containsKey("programs"))
             bool.should(
-                    QueryBuilders.termsQuery(BENTO_FIELDS.PROGRAMS, (List<String>) params.get("programs"))
+                    QueryBuilders.termsQuery(BENTO_FIELDS.PROGRAM, (List<String>) params.get("programs"))
             );
         builder.query(QueryBuilders.matchAllQuery());
         builder.size(1);
@@ -1286,5 +1335,12 @@ public class BentoEsFilter implements DataFetcher {
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
                         .field(field));
+    }
+
+    private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
+        return QueryParam.builder()
+                .args(env.getArguments())
+                .outputType(env.getFieldType())
+                .build();
     }
 }

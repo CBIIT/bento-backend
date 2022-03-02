@@ -43,7 +43,12 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod' )
     
-   	gitParameter(branchFilter: 'origin/(.*)', 
+   	string(
+        defaultValue: "https://nci-crdc.datacommons.io/user/data/download/dg.4DFC",
+        description: 'Provide indexd url',
+        name: 'IndexD_Url')
+	
+	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Downloader_Tag', 
        type: 'PT_BRANCH_TAG',
@@ -140,8 +145,8 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-icdc-file-downloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                     //indexd_url: "${params.IndexD_Url}",
                      tier: "${params.Environment}",
+					 indexd_url: "${params.IndexD_Url}",
                      cloudfront_private_key: "${CLOUDFRONT_PRIVATE_KEY}",
                      cloudfront_domain_name: "${CLOUDFRONT_DOMAIN_NAME}",
                      cloudfront_key_group_id: "${CLOUDFRONT_KEY_GROUP_ID}"

@@ -83,9 +83,9 @@ public class BentoEsFilter implements DataFetcher {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
                         .dataFetcher("searchSubjects", env -> {
-                            Map<String, Object> args = env.getArguments();
 
-                            return multiSearchTest(args);
+                            return multiSearchTest(CreateQueryParam(env));
+//                            Map<String, Object> args = env.getArguments();
 //                            return searchSubjects(args);
                         })
                         .dataFetcher("subjectOverview", env -> {
@@ -93,8 +93,10 @@ public class BentoEsFilter implements DataFetcher {
                             return subjectOverview(CreateQueryParam(env));
                         })
                         .dataFetcher("sampleOverview", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return sampleOverview(args);
+//                            Map<String, Object> args = env.getArguments();
+//                            return sampleOverview(args);
+
+                            return sampleOverviewTest(CreateQueryParam(env));
                         })
                         .dataFetcher("fileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
@@ -343,11 +345,24 @@ public class BentoEsFilter implements DataFetcher {
         Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
         cloneMap.keySet().removeAll(sets);
         BoolQueryBuilder bool = new BoolQueryBuilder();
+        // TODO TOBE DELETED
+        Map<String, String> keyMap= new HashMap<>();
+        keyMap.put("diagnoses", "diagnosis");
+        keyMap.put("rc_scores", "recurrence_score");
+        keyMap.put("tumor_sizes", "tumor_size");
+        keyMap.put("chemo_regimen", "chemotherapy");
+        keyMap.put("tumor_grades", "tumor_grade");
+        keyMap.put("subject_ids", "subject_id");
+        keyMap.put("studies", "study_info");
+        keyMap.put("meno_status", "menopause_status");
+        keyMap.put("programs", "program");
+        keyMap.put("endo_therapies", "endocrine_therapy");
+
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
             if (list.size() > 0) {
                 bool.should(
-                        QueryBuilders.termsQuery(k, (List<String>) args.get(k)));
+                        QueryBuilders.termsQuery(keyMap.containsKey(k) ? keyMap.get(k): k, (List<String>) args.get(k)));
             }
         });
         return bool.should().size() > 0 ? bool : QueryBuilders.matchAllQuery();
@@ -432,6 +447,26 @@ public class BentoEsFilter implements DataFetcher {
 //        );
 //
 //        return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
+    }
+
+    private List<Map<String, Object>> sampleOverviewTest(QueryParam param) throws IOException {
+        Map<String, Object> args = param.getArgs();
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(
+                createBoolFromParams(args)
+        );
+        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.sort(
+                // Set Sort
+                param.getOrderBy().equals("") ? BENTO_FIELDS.SAMPLE_ID_NUM : param.getOrderBy(),
+                param.getSortDirection());
+        searchSourceBuilder.size(param.getPageSize());
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(BENTO_INDEX.SAMPLES);
+        request.source(searchSourceBuilder);
+        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        return result;
     }
 
     private List<Map<String, Object>> sampleOverview(Map<String, Object> params) throws IOException {
@@ -990,9 +1025,13 @@ public class BentoEsFilter implements DataFetcher {
         return esService.collectTerms(jsonObject, collectField);
     }
     // TODO
-    private Map<String, Object> multiSearchTest(Map<String, Object> args) throws IOException {
+    private Map<String, Object> multiSearchTest(QueryParam param) throws IOException {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        Map<String, Object> args = param.getArgs();
+        // Set Global Filter
+        QueryBuilder query = createBoolFromParams(args);
+
         searchSourceBuilder.size(0);
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
@@ -1074,13 +1113,13 @@ public class BentoEsFilter implements DataFetcher {
                         .name("subjectCountByRecurrenceScore")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.RC_SCORES)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.RC_SCORES,query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name("filterSubjectCountByRecurrenceScore")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.RC_SCORES)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.RC_SCORES, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -1089,13 +1128,13 @@ public class BentoEsFilter implements DataFetcher {
                         .name("subjectCountByTumorSize")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.TUMOR_SIZES)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.TUMOR_SIZES, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name("filterSubjectCountByTumorSize")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.RC_SCORES)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.RC_SCORES, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -1133,26 +1172,26 @@ public class BentoEsFilter implements DataFetcher {
                         .name("subjectCountByPrStatus")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.PR_STATUS)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.PR_STATUS, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name("filterSubjectCountByPrStatus")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.PR_STATUS)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.PR_STATUS, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
                 MultipleRequests.builder()
                         .name("subjectCountByChemotherapyRegimen")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.CHEMO_REGIMEN)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name("filterSubjectCountByChemotherapyRegimen")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(createTermsAggSource(BENTO_FIELDS.CHEMO_REGIMEN)))
+                                .source(createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
                 MultipleRequests.builder()
@@ -1276,6 +1315,7 @@ public class BentoEsFilter implements DataFetcher {
     }
 
     public SearchSourceBuilder createArmProgramQuery() {
+        // TODO Add Filter Query
         return new SearchSourceBuilder()
                 .size(0)
                 .aggregation(AggregationBuilders
@@ -1326,6 +1366,16 @@ public class BentoEsFilter implements DataFetcher {
                         .max("max").field(BENTO_FIELDS.AGE_AT_INDEX))
                 .aggregation(AggregationBuilders
                         .min("min").field(BENTO_FIELDS.AGE_AT_INDEX));
+    }
+
+    public SearchSourceBuilder createTermsAggSourceTest(String field, QueryBuilder query) {
+        return new SearchSourceBuilder()
+                .size(0)
+                .query(query)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(field));
     }
 
     public SearchSourceBuilder createTermsAggSource(String field) {

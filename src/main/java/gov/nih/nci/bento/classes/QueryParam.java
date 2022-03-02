@@ -14,8 +14,8 @@ import java.util.Map;
 @Getter
 public class QueryParam {
 
-    private Map<String, Object> args;
-    private Map<String, String> returnTypes;
+    private final Map<String, Object> args;
+    private final Map<String, String> returnTypes;
     private final int pageSize;
     private final int offSet;
     private final SortOrder sortDirection;
@@ -30,7 +30,7 @@ public class QueryParam {
         this.pageSize = args.containsKey(Const.ES_PARAMS.PAGE_SIZE) ?  (int) args.get(Const.ES_PARAMS.PAGE_SIZE) : -1;
         this.offSet = args.containsKey(Const.ES_PARAMS.OFFSET) ?  (int) args.get(Const.ES_PARAMS.OFFSET) : -1;
         this.sortDirection = getSortType();
-        this.orderBy = args.containsKey(Const.ES_PARAMS.OFFSET) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
+        this.orderBy = args.containsKey(Const.ES_PARAMS.ORDER_BY) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
     }
 
     private SortOrder getSortType() {
@@ -45,11 +45,16 @@ public class QueryParam {
         // TODO Only one
         List<GraphQLSchemaElement> elements = container.getChildrenAsList();
         elements.forEach((e) -> {
-            GraphQLObjectType type = (GraphQLObjectType) e;
-            List<GraphQLFieldDefinition> lists = type.getFieldDefinitions();
-            lists.forEach(field -> {
-                result.put(field.getName(), field.getName());
-            });
+
+            if (e instanceof GraphQLObjectType) {
+                GraphQLObjectType type = (GraphQLObjectType) e;
+                List<GraphQLFieldDefinition> lists = type.getFieldDefinitions();
+                lists.forEach(field -> result.put(field.getName(), field.getName()));
+                // TODO
+            } else {
+                GraphQLFieldDefinition field = (GraphQLFieldDefinition) e;
+                result.put(field.getName(), field.getType().toString());
+            }
         });
         return result;
     }

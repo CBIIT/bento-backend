@@ -4,10 +4,12 @@ import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
+import gov.nih.nci.bento.model.BentoEsFilter;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.TypeMapper;
 import gov.nih.nci.bento.service.ESService;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -98,6 +100,50 @@ public class BentoFilterTest {
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
         assertThat(result.size(), greaterThan(0));
+    }
+
+    @Test
+    public void chemoChartAndFilter_Test() throws IOException {
+
+        // TODO
+//        Map<String, Object>
+
+
+//        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+//        searchSourceBuilder.size(0);
+//
+//        BoolQueryBuilder bool = new BoolQueryBuilder();
+//        bool.should(
+//                QueryBuilders.termsQuery("diagnoses", (List<String>) args.get(k)));
+//
+//
+//        List<MultipleRequests> requests = List.of(
+//                        MultipleRequests.builder()
+//                .name("subjectCountByChemotherapyRegimen")
+//                .request(new SearchRequest()
+//                        .indices(BENTO_INDEX.SUBJECTS)
+//                        .source(new BentoEsFilter(typeMapper).createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN)))
+//                .typeMapper(typeMapper.getAggregate()).build());
+//
+//        Map<String, Object> result = esService.elasticMultiSend(requests);
+//        assertThat(result.size(), greaterThan(0));
+
+
+//        MultipleRequests.builder()
+//                .name("subjectCountByChemotherapyRegimen")
+//                .request(new SearchRequest()
+//                        .indices(BENTO_INDEX.SUBJECTS)
+//                        .source(createTermsAggSource(BENTO_FIELDS.CHEMO_REGIMEN)))
+//                .typeMapper(typeMapper.getAggregate()).build(),
+//                MultipleRequests.builder()
+//                        .name("filterSubjectCountByChemotherapyRegimen")
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.SUBJECTS)
+//                                .source(createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN, query)))
+//                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+
     }
 
 

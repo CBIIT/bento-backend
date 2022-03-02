@@ -104,6 +104,7 @@ public class Const {
         // Sort Purpose
         public static final String SUBJECT_ID_NUM = "subject_id_num";
         public static final String STUDY_ACRONYM = "study_acronym";
+        public static final String SAMPLE_ID_NUM = "sample_id_num";
     }
 
     public static class BENTO_INDEX {

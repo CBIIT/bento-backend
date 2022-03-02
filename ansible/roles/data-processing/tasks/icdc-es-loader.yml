@@ -17,7 +17,7 @@
 - name: update indices file
   template:
     dest: "{{workspace}}/config/es_indices_icdc.yml"
-    src: "{{workspace}}/bento-backend/src/main/resources/yaml/es_indices_bento.yml"
+    src: "{{workspace}}/bento-backend/src/main/resources/yaml/es_indices_icdc.yml"
 
 - name: update server config file
   template:

@@ -2,10 +2,13 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryParam;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.ITypeMapper;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
+import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +18,11 @@ import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +42,7 @@ public class ESService {
     private RestClient client;
     private RestHighLevelClient elasticClient;
 
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    private final Gson gson = new GsonBuilder().serializeNulls().create();
 
     @PostConstruct
     public void init() {
@@ -420,5 +428,100 @@ public class ESService {
             return value;
         }
         return element.getAsString();
+    }
+
+    public SearchSourceBuilder createSourceBuilder(QueryParam param) {
+        return new SearchSourceBuilder()
+                .query(
+                        createBentoBoolFromParams(param.getArgs())
+                )
+                .size(param.getPageSize());
+    }
+
+    public QueryParam CreateQueryParam(DataFetchingEnvironment env) {
+        return QueryParam.builder()
+                .args(env.getArguments())
+                .outputType(env.getFieldType())
+                .build();
+    }
+
+    public SearchSourceBuilder createTermsAggSource(String field) {
+        return new SearchSourceBuilder()
+                .size(0)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(field));
+    }
+
+    public SearchSourceBuilder createTermsAggSourceTest(String field, QueryBuilder query) {
+        return new SearchSourceBuilder()
+                .size(0)
+                .query(query)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(field));
+    }
+
+    // TODO Filter Param
+    public SearchSourceBuilder createRangeQuery() {
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+//        Map<String, Object> params = Map.of(
+//
+//                "age_at_index", Set.of(0,100)
+//        );
+        return new SearchSourceBuilder()
+                .size(0)
+                .aggregation(AggregationBuilders
+                        .max("max").field(Const.BENTO_FIELDS.AGE_AT_INDEX))
+                .aggregation(AggregationBuilders
+                        .min("min").field(Const.BENTO_FIELDS.AGE_AT_INDEX));
+    }
+
+    public SearchSourceBuilder createPageSourceBuilder(QueryParam param, String defaultField) {
+        Map<String, Object> args = param.getArgs();
+        return new SearchSourceBuilder()
+                .query(
+                        createBentoBoolFromParams(args)
+                )
+                .from(param.getOffSet())
+                .sort(
+                        param.getOrderBy().equals("") ? defaultField : param.getOrderBy(),
+                        param.getSortDirection())
+                .size(param.getPageSize());
+    }
+
+    // TODO REMOVE DEPENDENCY
+    public QueryBuilder createBentoBoolFromParams(Map<String, Object> args) {
+        Map<String, Object> cloneMap = new HashMap<>(args);
+        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+        cloneMap.keySet().removeAll(sets);
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        // TODO TOBE DELETED
+        Map<String, String> keyMap= new HashMap<>();
+        // Subject Index
+        keyMap.put("diagnoses", "diagnosis");
+        keyMap.put("rc_scores", "recurrence_score");
+        keyMap.put("tumor_sizes", "tumor_size");
+        keyMap.put("chemo_regimen", "chemotherapy");
+        keyMap.put("tumor_grades", "tumor_grade");
+        keyMap.put("subject_ids", "subject_id");
+        keyMap.put("studies", "study_info");
+        keyMap.put("meno_status", "menopause_status");
+        keyMap.put("programs", "program");
+        keyMap.put("endo_therapies", "endocrine_therapy");
+        // Files Index
+        keyMap.put("file_ids", "file_id");
+
+        cloneMap.forEach((k,v)->{
+            List<String> list = (List<String>) args.get(k);
+            if (list.size() > 0) {
+                bool.should(
+                        QueryBuilders.termsQuery(
+                                keyMap.getOrDefault(keyMap.get(k), k), (List<String>) args.get(k)));
+            }
+        });
+        return bool.should().size() > 0 ? bool : QueryBuilders.matchAllQuery();
     }
 }

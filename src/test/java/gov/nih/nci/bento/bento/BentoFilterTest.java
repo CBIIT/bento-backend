@@ -1,10 +1,8 @@
 package gov.nih.nci.bento.bento;
 
 import gov.nih.nci.bento.classes.MultipleRequests;
-import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
-import gov.nih.nci.bento.model.BentoEsFilter;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.TypeMapper;
 import gov.nih.nci.bento.service.ESService;
@@ -41,10 +39,15 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
+    List<String> _subjectIds;
+
 //    private RestHighLevelClient client;
 
     @Before
-    public void init() throws IOException {
+    public void init() {
+        _subjectIds = List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713");
+
+
 //        AbstractClient restClient = new DefaultClient(config);
 //        client = restClient.getElasticRestClient();
     }
@@ -83,6 +86,33 @@ public class BentoFilterTest {
         // Check Size
         assertThat(result.size(), equalTo(10));
     }
+
+    @Test
+    public void findSubjectIdsInList_Test() throws IOException {
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.query(QueryBuilders.matchAllQuery());
+        builder.size(10);
+        builder.sort(BENTO_FIELDS.SUBJECT_ID_NUM, SortOrder.DESC);
+        // Set Filter
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        bool.should(QueryBuilders.termsQuery("subject_id", _subjectIds));
+        builder.query(bool);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(BENTO_INDEX.SUBJECTS);
+        request.source(builder);
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put("subject_id", "subject_id");
+        returnTypes.put("program_id", "program_id");
+
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        assertThat(result.size(), greaterThan(0));
+        assertThat(result.get(0), hasKey("subject_id"));
+        // Check Result as expected size
+        assertThat(result.size(), equalTo(2));
+    }
+
 
 
     @Test

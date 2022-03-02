@@ -17,6 +17,7 @@ public class Const {
 
     public static class ES_UNITS {
         public static final int DEFAULT_SIZE = 10000;
+        public static final int MAX_SIZE = 10000;
     }
 
     // TODO MOVE TO PRIVATE

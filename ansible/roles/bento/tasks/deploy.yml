@@ -117,7 +117,7 @@
         - name: NEW_RELIC_LABELS
           value: "Project:{{ project }};Environment:{{ tier }}"
         - name: REACT_APP_GOOGLE_CLIENT_ID
-          value: "{{app_googlee_client_id}}"
+          value: "{{ app_google_client_id }}"
         - name: REACT_APP_AUTH_API
           value: "{% if tier == 'prod' %}https://{{project}}.bento-tools.org{% else %}https://{{project}}-{{ tier }}.bento-tools.org{% endif %}" 
       portMappings:

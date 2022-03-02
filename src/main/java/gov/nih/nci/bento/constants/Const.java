@@ -105,11 +105,14 @@ public class Const {
         public static final String SUBJECT_ID_NUM = "subject_id_num";
         public static final String STUDY_ACRONYM = "study_acronym";
         public static final String SAMPLE_ID_NUM = "sample_id_num";
+        public static final String FILE_NAME = "file_name";
     }
 
     public static class BENTO_INDEX {
         public static final String SUBJECTS = "subjects";
         public static final String FILES = "files";
+        // TODO TOBE DELETED
+        public static final String FILES_TEST = "files_test";
         public static final String STUDIES = "studies";
         public static final String SAMPLES = "samples";
         public static final String REGISTRATION = "registration";

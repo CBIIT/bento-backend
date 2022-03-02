@@ -51,7 +51,7 @@ public class QueryParam {
                 List<GraphQLFieldDefinition> lists = type.getFieldDefinitions();
                 lists.forEach(field -> result.put(field.getName(), field.getName()));
                 // TODO
-            } else {
+            } else if (e instanceof GraphQLFieldDefinition){
                 GraphQLFieldDefinition field = (GraphQLFieldDefinition) e;
                 result.put(field.getName(), field.getType().toString());
             }

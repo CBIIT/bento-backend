@@ -40,13 +40,14 @@ public class BentoFilterTest {
     ConfigurationDAO config;
 
     List<String> _subjectIds;
+    List<String> _fileNames;
 
 //    private RestHighLevelClient client;
 
     @Before
     public void init() {
         _subjectIds = List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713");
-
+        _fileNames = List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt");
 
 //        AbstractClient restClient = new DefaultClient(config);
 //        client = restClient.getElasticRestClient();
@@ -130,6 +131,30 @@ public class BentoFilterTest {
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
         assertThat(result.size(), greaterThan(0));
+    }
+
+
+    @Test
+    public void fileIDsFromListTest() throws  IOException {
+
+
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+//        builder.query(QueryBuilders.matchAllQuery());
+        // Set Filter
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        bool.should(QueryBuilders.termsQuery("file_name", _fileNames));
+        builder.query(bool);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(BENTO_INDEX.FILES_TEST);
+        request.source(builder);
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put("file_id", "file_id");
+
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getStrList("file_id"));
+        System.out.println("");
     }
 
     @Test

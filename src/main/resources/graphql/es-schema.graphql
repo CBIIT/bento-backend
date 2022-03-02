@@ -336,9 +336,9 @@ type QueryType {
     ): [FileOverview2]
 
     fileIDsFromList(
-        subject_ids: [String] = [""],
-        sample_ids: [String] = [""],
-        file_names: [String] = [""]
+        subject_ids: [String] = [],
+        sample_ids: [String] = [],
+        file_names: [String] = []
     ): [String]
 
     filesInList(

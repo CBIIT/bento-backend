@@ -434,8 +434,8 @@ public class ESService {
         return new SearchSourceBuilder()
                 .query(
                         createBentoBoolFromParams(param.getArgs())
-                )
-                .size(param.getPageSize());
+                );
+        // TODO consider set size
     }
 
     public QueryParam CreateQueryParam(DataFetchingEnvironment env) {
@@ -513,13 +513,15 @@ public class ESService {
         keyMap.put("endo_therapies", "endocrine_therapy");
         // Files Index
         keyMap.put("file_ids", "file_id");
+        keyMap.put("file_names", "file_name");
+        keyMap.put("sample_ids", "sample_id");
 
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
             if (list.size() > 0) {
+                // TODO consider remove empty string
                 bool.should(
-                        QueryBuilders.termsQuery(
-                                keyMap.getOrDefault(keyMap.get(k), k), (List<String>) args.get(k)));
+                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
             }
         });
         return bool.should().size() > 0 ? bool : QueryBuilders.matchAllQuery();

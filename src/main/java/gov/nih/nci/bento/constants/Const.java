@@ -87,6 +87,7 @@ public class Const {
         public static final String COMPOSITION = "composition";
         public static final String ASSOCIATION = "association";
         public static final String FILE_TYPE = "file_type";
+        public static final String FILE_ID = "file_id";
         public static final String LAB_PROCEDURES = "lab_procedures";
         public static final String SUBJECT_ID = "subject_id";
         public static final String AGE_AT_INDEX = "age_at_index";

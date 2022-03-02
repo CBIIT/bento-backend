@@ -74,6 +74,22 @@ public class TypeMapper {
         };
     }
 
+    public ITypeMapper getStrList(String field) {
+        return (response, returnTypes) -> createStrList(response, field);
+    }
+    // Required Only One Argument
+    @NotNull
+    private List<String> createStrList(SearchResponse response, String field) {
+        List<String> result = new ArrayList<>();
+        SearchHit[] hits = response.getHits().getHits();
+        Arrays.asList(hits).forEach(hit-> {
+            Map<String, Object> source = hit.getSourceAsMap();
+            if (!source.containsKey(field)) throw new IllegalArgumentException();
+            result.add((String) source.get(field));
+        });
+        return result;
+    }
+
     public ITypeMapper getIntTotal() {
         return (response, t) -> {
             TotalHits hits = response.getHits().getTotalHits();

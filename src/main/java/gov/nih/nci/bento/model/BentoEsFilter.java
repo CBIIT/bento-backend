@@ -998,14 +998,15 @@ public class BentoEsFilter implements DataFetcher {
         List<Map<String, Object>> result = esService.collectPage(request, query, properties, pageSize, offset);
         return result;
     }
-    // DOUBLE CHECK RETURN TYPE
+
     private List<String> fileIDsFromListTest(QueryParam param) throws IOException {
         SearchSourceBuilder builder = esService.createSourceBuilder(param);
+        builder.size(Const.ES_UNITS.MAX_SIZE);
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.SAMPLES);
+        request.indices(BENTO_INDEX.FILES_TEST);
         request.source(builder);
-        List<String> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        List<String>  result = esService.elasticSend(null, request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
         return result;
     }
 

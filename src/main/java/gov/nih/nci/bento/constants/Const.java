@@ -116,6 +116,11 @@ public class Const {
         public static final String STUDY_TYPE = "study_type";
         public static final String STUDY_CODE = "study_code";
         public static final String STUDY_NAME = "study_name";
+        public static final String NODE = "node";
+        public static final String PROPERTY = "property";
+        public static final String PROPERTY_TYPE = "property_type";
+        public static final String PROPERTY_REQUIRED = "property_required";
+        public static final String PROPERTY_DESCRIPTION = "property_description";
     }
 
     public static class BENTO_INDEX {

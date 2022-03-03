@@ -16,19 +16,9 @@ public class Const {
     }
 
     public static class ES_UNITS {
-        public static final int DEFAULT_SIZE = 10000;
+        public static final int DEFAULT_SIZE = 10;
         public static final int MAX_SIZE = 10000;
-    }
-
-    // TODO MOVE TO PRIVATE
-    public static class ES_KEYS {
-        public static final String NO_OF_PROGRAMS = "numberOfPrograms";
-        public static final String NO_OF_STUDIES = "numberOfStudies";
-        public static final String NO_OF_PROCEDURES = "numberOfLabProcedures";
-        public static final String NO_OF_SUBJECTS = "numberOfSubjects";
-        public static final String NO_OF_SAMPLES = "numberOfSamples";
-        public static final String NO_OF_FILES = "numberOfFiles";
-        public static final String NO_OF_ARMS_PROGRAM = "armsByPrograms";
+        public static final String GS_HIGHLIGHT_DELIMITER = "$";
     }
 
     public static class ES_PARAMS {
@@ -107,7 +97,25 @@ public class Const {
         public static final String SUBJECT_ID_NUM = "subject_id_num";
         public static final String STUDY_ACRONYM = "study_acronym";
         public static final String SAMPLE_ID_NUM = "sample_id_num";
+        public static final String SAMPLE_ID = "sample_id";
         public static final String FILE_NAME = "file_name";
+        public static final String PAGE = "page";
+        public static final String TITLE = "title";
+        public static final String TYPE = "type";
+        public static final String TEXT = "text";
+        public static final String ABOUT = "about";
+        public static final String CONTENT_PARAGRAPH = "content.paragraph";
+        public static final String PROGRAM_ID = "program_id";
+        public static final String PROGRAM_CODE = "program_code";
+        public static final String PROGRAM_NAME = "program_name";
+        public static final String SAMPLE_ANATOMIC_SITE = "sample_anatomic_site";
+        public static final String SAMPLE_ID_GS = "sample_id_gs";
+        public static final String SAMPLE_ANATOMIC_SITE_GS = "sample_anatomic_site_gs";
+        public static final String TISSUE_TYPE_GS = "tissue_type_gs";
+        public static final String STUDY_ID = "study_id";
+        public static final String STUDY_TYPE = "study_type";
+        public static final String STUDY_CODE = "study_code";
+        public static final String STUDY_NAME = "study_name";
     }
 
     public static class BENTO_INDEX {
@@ -121,6 +129,9 @@ public class Const {
         public static final String PROGRAMS = "programs";
         public static final String PROGRAM = "program";
         public static final String CASES = "cases";
+        public static final String MODEL_NODES = "model_nodes";
+        public static final String MODEL_PROPERTIES = "model_properties";
+        public static final String ABOUT = "about_page";
     }
 
 

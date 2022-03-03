@@ -39,16 +39,19 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
-    List<String> _subjectIds;
-    List<String> _fileNames;
+    List<String> _subjectIds = List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713");
+    List<String> _fileNames = List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt");
+    final String _programNameText = "TAILORx";
+    final String _programId = "NCT00310180";
+    final String _sampleId = "BENTO-BIOS-5707938";
+    final String _tissueType = "Tumor";
+    final String _sampleAnatomicSite = "Breast";
+
 
 //    private RestHighLevelClient client;
 
     @Before
     public void init() {
-        _subjectIds = List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713");
-        _fileNames = List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt");
-
 //        AbstractClient restClient = new DefaultClient(config);
 //        client = restClient.getElasticRestClient();
     }

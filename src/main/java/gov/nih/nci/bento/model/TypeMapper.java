@@ -5,10 +5,12 @@ import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,11 @@ public class TypeMapper {
     public ITypeMapper getDefault() {
         return (response, returnTypes) -> getMaps(response, returnTypes);
     }
+
+    public ITypeMapper getDefaultReturnTypes(Map<String, String> returnTypes) {
+        return (response, r) -> getMaps(response, returnTypes);
+    }
+
     // ElasticSearch Aggregate Mapping Value Resolver
     @NotNull
     private List<Map<String, Object>> getMaps(SearchResponse response, Map<String, String> returnTypes) {
@@ -106,6 +113,49 @@ public class TypeMapper {
             result.put(BENTO_FIELDS.UPPER_BOUND, responseMap.containsKey("min") ? 200 : null);
             // TODO
             result.put(BENTO_FIELDS.SUBJECTS, 100);
+            return result;
+        };
+    }
+
+    public ITypeMapper getAboutPage() {
+        return (response, t) -> {
+            List<Map<String, Object>> result = new ArrayList<>();
+            SearchHit[] hits = response.getHits().getHits();
+            Arrays.asList(hits).forEach(hit-> {
+                Map<String, HighlightField> highlightFieldMap = hit.getHighlightFields();
+                Map<String, Object> source = hit.getSourceAsMap();
+                HighlightField field = highlightFieldMap.get(BENTO_FIELDS.CONTENT_PARAGRAPH);
+                Text[] texts = field.getFragments();
+                Arrays.stream(texts).forEach(text->{
+                    result.add(
+                            Map.of(
+                                    BENTO_FIELDS.TYPE, BENTO_FIELDS.ABOUT,
+                                    BENTO_FIELDS.PAGE, source.get(BENTO_FIELDS.PAGE),
+                                    BENTO_FIELDS.TITLE,source.get(BENTO_FIELDS.TITLE),
+                                    BENTO_FIELDS.TEXT, text
+                            )
+                    );
+                });
+            });
+            return result;
+        };
+    }
+
+    public ITypeMapper getHighLightFragments(String field, IBentoHighLightMapper mapper) {
+        return (response, t) -> {
+            List<Map<String, Object>> result = new ArrayList<>();
+            SearchHit[] hits = response.getHits().getHits();
+            Arrays.asList(hits).forEach(hit-> {
+                Map<String, HighlightField> highlightFieldMap = hit.getHighlightFields();
+                Map<String, Object> source = hit.getSourceAsMap();
+                HighlightField highlightField = highlightFieldMap.get(field);
+                Text[] texts = highlightField.getFragments();
+                Arrays.stream(texts).forEach(text->{
+                    result.add(
+                            mapper.getMap(source, text)
+                    );
+                });
+            });
             return result;
         };
     }

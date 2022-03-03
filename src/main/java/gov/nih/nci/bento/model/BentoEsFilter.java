@@ -276,9 +276,9 @@ public class BentoEsFilter implements DataFetcher {
         Map<String, Object> result = new HashMap<>();
 
         Map<String, Request> map = Map.of(
-                Const.ES_KEYS.NO_OF_SUBJECTS, new Request("GET", SAMPLES_COUNT_END_POINT),
-                Const.ES_KEYS.NO_OF_SAMPLES, new Request("GET", FILES_COUNT_END_POINT),
-                Const.ES_KEYS.NO_OF_FILES, new Request("GET", SUBJECTS_COUNT_END_POINT)
+                Bento_GraphQL_KEYS.NO_OF_SUBJECTS, new Request("GET", SAMPLES_COUNT_END_POINT),
+                Bento_GraphQL_KEYS.NO_OF_SAMPLES, new Request("GET", FILES_COUNT_END_POINT),
+                Bento_GraphQL_KEYS.NO_OF_FILES, new Request("GET", SUBJECTS_COUNT_END_POINT)
         );
 
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
@@ -295,10 +295,10 @@ public class BentoEsFilter implements DataFetcher {
         final List<Map<String, String>> TERM_AGGS = GetTermsAggregations();
         Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, getTermAggNames(TERM_AGGS));
 
-        result.put(Const.ES_KEYS.NO_OF_PROGRAMS, aggs.get("programs").size());
-        result.put(Const.ES_KEYS.NO_OF_STUDIES, aggs.get("studies").size());
-        result.put(Const.ES_KEYS.NO_OF_PROCEDURES, aggs.get("lab_procedures").size());
-        result.put(Const.ES_KEYS.NO_OF_ARMS_PROGRAM, armsByPrograms(params));
+        result.put(Bento_GraphQL_KEYS.NO_OF_PROGRAMS, aggs.get("programs").size());
+        result.put(Bento_GraphQL_KEYS.NO_OF_STUDIES, aggs.get("studies").size());
+        result.put(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES, aggs.get("lab_procedures").size());
+        result.put(Bento_GraphQL_KEYS.NO_OF_ARMS_PROGRAM, armsByPrograms(params));
         // widgets data and facet filter counts
         addWidgetData(result, TERM_AGGS, params, aggs);
 
@@ -784,6 +784,75 @@ public class BentoEsFilter implements DataFetcher {
         return searchCategories;
     }
 
+
+    private Map<String, Object> globalSearch_Test(QueryParam param) throws IOException {
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.size(0);
+        Map<String, Object> args = param.getArgs();
+        // Set Global Filter
+        QueryBuilder query = esService.createBentoBoolFromParams(args);
+        List<MultipleRequests> requests = List.of(
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.CASES)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build(),
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.SAMPLES)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build(),
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.FILES)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build(),
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.PROGRAMS)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build(),
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.STUDIES)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build(),
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.MODEL_NODES)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.ABOUT_COUNT)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.ABOUT)
+                                .source(builder))
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.ABOUT_PAGE)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.ABOUT)
+                                .source(builder))
+                        .typeMapper(typeMapper.getAboutPage()).build()
+//                MultipleRequests.builder()
+//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+//                        .request(new SearchRequest()
+//                                .indices(BENTO_INDEX.MODEL_PROPERTIES)
+//                                .source(builder))
+//                        .typeMapper(typeMapper.getIntTotal()).build()
+        );
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        return result;
+
+    }
+
     private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
         Map<String, Object> result = new HashMap<>();
         String input = (String) params.get("input");
@@ -900,7 +969,8 @@ public class BentoEsFilter implements DataFetcher {
         List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
         List<Object> searchClauses = new ArrayList<>();
         for (String searchFieldName: searchFields) {
-            searchClauses.add(Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
+//            searchClauses.add(Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
+            searchClauses.add(Map.of("match", Map.of(searchFieldName, input)));
         }
         Map<String, Object> query = new HashMap<>();
         query.put("query", Map.of("bool", Map.of("should", searchClauses)));
@@ -1372,6 +1442,21 @@ public class BentoEsFilter implements DataFetcher {
         // TODO THIS QUERY NEEDED???
         static final String SUBJECT_COUNT_LAB_PROCEDURES = "subjectCountByLabProcedures";
         static final String FILTER_SUBJECT_CNT_LAB_PROCEDURES = "filterSubjectCountByLabProcedures";
+
+        static final String PROGRAM_COUNT = "program_count";
+        static final String PROGRAMS = "programs";
+        static final String STUDY_COUNT = "study_count";
+        static final String STUDIES = "studies";
+        static final String SUBJECT_COUNT = "subject_count";
+        static final String SUBJECTS = "subjects";
+        static final String SAMPLE_COUNT = "sample_count";
+        static final String SAMPLES = "samples";
+        static final String FILE_COUNT = "file_count";
+        static final String FILES = "files";
+        static final String ABOUT_COUNT = "about_count";
+        static final String ABOUT_PAGE = "about_page";
+        static final String MODEL_COUNT = "model_count";
+        static final String MODEL = "model";
 
     }
 }

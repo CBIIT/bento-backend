@@ -121,6 +121,10 @@ public class Const {
         public static final String PROPERTY_TYPE = "property_type";
         public static final String PROPERTY_REQUIRED = "property_required";
         public static final String PROPERTY_DESCRIPTION = "property_description";
+        public static final String FILE_FORMAT = "file_format";
+        public static final String FILE_ID_GS = "file_id_gs";
+        public static final String FILE_NAME_GS = "file_name_gs";
+        public static final String FILE_FORMAT_GS = "file_format_gs";
     }
 
     public static class BENTO_INDEX {

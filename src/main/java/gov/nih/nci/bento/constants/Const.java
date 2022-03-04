@@ -19,6 +19,7 @@ public class Const {
         public static final int DEFAULT_SIZE = 10;
         public static final int MAX_SIZE = 10000;
         public static final String GS_HIGHLIGHT_DELIMITER = "$";
+        public static final String KEYWORD = ".keyword";
     }
 
     public static class ES_PARAMS {
@@ -125,6 +126,10 @@ public class Const {
         public static final String FILE_ID_GS = "file_id_gs";
         public static final String FILE_NAME_GS = "file_name_gs";
         public static final String FILE_FORMAT_GS = "file_format_gs";
+        public static final String SUBJECT_ID_GS = "subject_id_gs";
+        public static final String DIGNOSIS_GS = "diagnosis_gs";
+        public static final String VALUE = "value";
+        public static final String HIGHLIGHT = "highlight";
     }
 
     public static class BENTO_INDEX {
@@ -141,6 +146,7 @@ public class Const {
         public static final String MODEL_NODES = "model_nodes";
         public static final String MODEL_PROPERTIES = "model_properties";
         public static final String ABOUT = "about_page";
+        public static final String MODEL_VALUES = "model_values";
     }
 
 

@@ -640,7 +640,7 @@ public class BentoEsFilter implements DataFetcher {
 
 
     private List<Map<String, Object>> GetSearchCategories() {
-
+        // DONE
         List<Map<String, Object>> searchCategories = new ArrayList<>();
         searchCategories.add(Map.of(
                 GS_END_POINT, PROGRAMS_END_POINT,
@@ -656,6 +656,7 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "program"
         ));
+        // Done
         searchCategories.add(Map.of(
                 GS_END_POINT, STUDIES_END_POINT,
                 GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
@@ -673,23 +674,27 @@ public class BentoEsFilter implements DataFetcher {
                 GS_CATEGORY_TYPE, "study"
 
         ));
+        // Done TODO
         searchCategories.add(Map.of(
                 GS_END_POINT, SUBJECTS_END_POINT,
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
-                GS_SEARCH_FIELD, List.of("subject_id_gs", "diagnosis_gs", "age_at_index_gs"),
+//                GS_SEARCH_FIELD, List.of("subject_id_gs", "diagnosis_gs"),
+                // TODO
+                GS_SEARCH_FIELD, List.of("subject_id_gs", "diagnosis_gs", "age_at_index_gs.keyword"),
                 GS_SORT_FIELD, "subject_id_num",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_id", "program_id"},
                         new String[]{"subject_id", "subject_id_gs"},
-                        new String[]{"program_code", "programs"},
+                        new String[]{"program_code", "program"},
                         new String[]{"study", "study_acronym"},
-                        new String[]{"diagnosis", "diagnoses"},
+                        new String[]{"diagnosis", "diagnosis"},
                         new String[]{"age", "age_at_index"}
                 },
                 GS_CATEGORY_TYPE, "subject"
         ));
+        // DONE
         searchCategories.add(Map.of(
                 GS_END_POINT, SAMPLES_END_POINT,
                 GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
@@ -707,6 +712,7 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "sample"
         ));
+        // DONE TODO ADD SORT
         searchCategories.add(Map.of(
                 GS_END_POINT, FILES_END_POINT,
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
@@ -739,12 +745,15 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "node"
         ));
+        // DONE TODO ADD SORT and highlight
         searchCategories.add(Map.of(
                 GS_END_POINT, PROPERTIES_END_POINT,
                 GS_COUNT_ENDPOINT, PROPERTIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "model_count",
                 GS_RESULT_FIELD, "model",
-                GS_SEARCH_FIELD, List.of("property", "property_description", "property_type", "property_required"),
+//                GS_SEARCH_FIELD, List.of("property", "property_description", "property_type"),
+                // TODO KEYWORKD SEARCH LIKE BOOLEAN FIELD
+                GS_SEARCH_FIELD, List.of("property", "property_description", "property_type", "property_required.keyword"),
                 GS_SORT_FIELD, "property_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"},
@@ -761,6 +770,7 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "property"
         ));
+        // WORKING ON
         searchCategories.add(Map.of(
                 GS_END_POINT, VALUES_END_POINT,
                 GS_COUNT_ENDPOINT, VALUES_COUNT_END_POINT,
@@ -877,8 +887,9 @@ public class BentoEsFilter implements DataFetcher {
 
             // Get results
             Request request = new Request("GET", (String)category.get(GS_END_POINT));
-            String sortFieldName = (String)category.get(GS_SORT_FIELD);
-            query.put("sort", Map.of(sortFieldName, "asc"));
+//          TODO ADD SORT TYPE
+            //            String sortFieldName = (String)category.get(GS_SORT_FIELD);
+//            query.put("sort", Map.of(sortFieldName, "asc"));
             query = addHighlight(query, category);
 
             if (combinedCategories.contains(resultFieldName)) {

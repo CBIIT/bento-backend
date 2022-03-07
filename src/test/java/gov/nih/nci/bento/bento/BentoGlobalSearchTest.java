@@ -154,15 +154,16 @@ public class BentoGlobalSearchTest {
     public void searchGlobalSubject_Test() throws IOException {
         // Set Builder(Mis-Field Name Match)
         // TODO AGE NEEDED TO SEARCH
-        String SUBJECT_ID = "BENTO-CASE-7356713";
+        String SUBJECT_ID = "bento";
         String DIGNOSIS_GS = "Infiltrating Ductal";
         // TODO ADD Conditional Statement
         String AGE_AT_INDEX_GS = "tumor 49";
 
         Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put(Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE);
         returnTypes.put(Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID);
         returnTypes.put(Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID); // TODO subject_id_gs
-        returnTypes.put(Const.BENTO_FIELDS.PROGRAM_CODE, Const.BENTO_FIELDS.PROGRAM_CODE); // TODO programs
+        returnTypes.put(Const.BENTO_FIELDS.PROGRAM, Const.BENTO_FIELDS.PROGRAM); // TODO programs
         returnTypes.put(Const.BENTO_FIELDS.STUDY_ACRONYM, Const.BENTO_FIELDS.STUDY_ACRONYM); // TODO study_acronym
         returnTypes.put(Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES);
         returnTypes.put(Const.BENTO_FIELDS.AGE_AT_INDEX, Const.BENTO_FIELDS.AGE_AT_INDEX);
@@ -172,7 +173,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS + Const.ES_UNITS.KEYWORD, List.of(SUBJECT_ID)))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, SUBJECT_ID))
                 );
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
@@ -216,7 +217,7 @@ public class BentoGlobalSearchTest {
         List<Map<String, Object>> test01 =  (List<Map<String, Object>>) result.get("TEST01");
         assertThat(test01.size(), greaterThan(0));
         assertThat(test01.get(0), hasKey(Const.BENTO_FIELDS.SUBJECT_ID));
-        assertThat((String) test01.get(0).get(Const.BENTO_FIELDS.SUBJECT_ID), is(SUBJECT_ID));
+        assertThat(((String) test01.get(0).get(Const.BENTO_FIELDS.SUBJECT_ID)).toLowerCase(), containsString(SUBJECT_ID));
 
         List<Map<String, Object>> test02 =  (List<Map<String, Object>>) result.get("TEST02");
         assertThat(test02.size(), greaterThan(0));
@@ -225,14 +226,14 @@ public class BentoGlobalSearchTest {
 
         List<Map<String, Object>> test03 =  (List<Map<String, Object>>) result.get("TEST03");
         assertThat(test03.size(), greaterThan(0));
-        assertThat(test03.get(0), hasKey(Const.BENTO_FIELDS.AGE_AT_INDEX));
-        assertThat(test03.get(0).get(Const.BENTO_FIELDS.AGE_AT_INDEX), is(49));
+        assertThat(test03.get(0), hasKey(Const.BENTO_FIELDS.AGE));
+        assertThat(test03.get(0).get(Const.BENTO_FIELDS.AGE), is(49));
     }
 
     @Test
     public void searchGlobalSample_Test() throws IOException {
         // Set Builder(Mis-Field Name Match)
-        String SAMPLE_ID = "BENTO-BIOS-5707938";
+        String SAMPLE_ID = "bento";
         String TISSUE_TYPE_GS = "Tumor";
         String ANATOMIC_SITES_GS = "Breast";
 
@@ -248,20 +249,20 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, List.of(SAMPLE_ID)))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, SAMPLE_ID))
                 );
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS, List.of(ANATOMIC_SITES_GS)))
+                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, List.of(ANATOMIC_SITES_GS)))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS, List.of(TISSUE_TYPE_GS)))
+                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, List.of(TISSUE_TYPE_GS)))
                 );
 
         List<MultipleRequests> requests = List.of(
@@ -291,7 +292,7 @@ public class BentoGlobalSearchTest {
         List<Map<String, Object>> test01 =  (List<Map<String, Object>>) result.get("TEST01");
         assertThat(test01.size(), greaterThan(0));
         assertThat(test01.get(0), hasKey(Const.BENTO_FIELDS.SAMPLE_ID));
-        assertThat((String) test01.get(0).get(Const.BENTO_FIELDS.SAMPLE_ID), is(SAMPLE_ID));
+        assertThat(((String) test01.get(0).get(Const.BENTO_FIELDS.SAMPLE_ID)).toLowerCase(), containsString(SAMPLE_ID));
 
         assertThat(result, hasKey("TEST02"));
         List<Map<String, Object>> test02 =  (List<Map<String, Object>>) result.get("TEST02");

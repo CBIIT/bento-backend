@@ -13,9 +13,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.Request;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -874,6 +877,10 @@ public class BentoEsFilter implements DataFetcher {
         for (Map<String, Object> category: searchCategories) {
             String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
             String resultFieldName = (String) category.get(GS_RESULT_FIELD);
+            // Subjects Done
+            if (resultFieldName.equals("subjects")) continue;
+            if (resultFieldName.equals("samples")) continue;
+
             String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
             String[][] highlights = (String[][]) category.get(GS_HIGHLIGHT_FIELDS);
             Map<String, Object> query = getGlobalSearchQuery(input, category);
@@ -917,11 +924,76 @@ public class BentoEsFilter implements DataFetcher {
 
         }
 
-        List<Map<String, String>> about_results = searchAboutPage(input);
+        Map<String, String> returnTypes01 = Map.of(
+                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
+                BENTO_FIELDS.PROGRAM, Const.BENTO_FIELDS.PROGRAM,
+                Const.BENTO_FIELDS.STUDY_ACRONYM, Const.BENTO_FIELDS.STUDY_ACRONYM,
+                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
+                Const.BENTO_FIELDS.AGE_AT_INDEX, Const.BENTO_FIELDS.AGE_AT_INDEX
+        );
+
+        // Set Bool Filter
+        // TODO If Model, set different offset
+        SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
+                .size(size)
+                .from(offset)
+                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input))
+                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input)))
+                        // TODO Age Index
+//                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX, StrUtil.getIntText(AGE_AT_INDEX_GS)))
+                );
+
+        Map<String, String> returnTypes02 = Map.of(
+                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
+                BENTO_FIELDS.SAMPLE_ID, Const.BENTO_FIELDS.SAMPLE_ID,
+                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
+                Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE, Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
+                Const.BENTO_FIELDS.TISSUE_TYPE, Const.BENTO_FIELDS.TISSUE_TYPE
+        );
+
+
+        SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
+                .size(size)
+                .from(offset)
+                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+                .query(new BoolQueryBuilder()
+                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, input))
+                                .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, List.of(input)))
+                                .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, List.of(input)))
+                );
+
+
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(testBuilder01))
+                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes01)).build(),
+                MultipleRequests.builder()
+                        .name("TEST02")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SAMPLES)
+                                .source(testBuilder02))
+                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes02)).build()
+        );
+        Map<String, Object> multiResult = esService.elasticMultiSend(requests);
+        result.put("subjects", multiResult.get("TEST01"));
+        result.put("subject_count", 1234);
+        result.put("samples", multiResult.get("TEST02"));
+        result.put("sample_count", 2345);
+
+        List<Map<String, Object>> about_results = searchAboutPageTest(input);
         int about_count = about_results.size();
         result.put("about_count", about_count);
         result.put("about_page", paginate(about_results, size, offset));
-
+        // TODO
         for (String category: combinedCategories) {
             List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
             result.put(category, pagedCategory);
@@ -942,6 +1014,42 @@ public class BentoEsFilter implements DataFetcher {
         }
         return result;
     }
+
+    private List<Map<String, Object>> searchAboutPageTest(String input) throws IOException {
+
+        // Set Filter
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        bool.should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.CONTENT_PARAGRAPH, List.of(input)));
+        builder.query(bool);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.BENTO_INDEX.ABOUT);
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field(Const.BENTO_FIELDS.CONTENT_PARAGRAPH);
+        highlightBuilder.preTags(Const.ES_UNITS.GS_HIGHLIGHT_DELIMITER);
+        highlightBuilder.postTags(Const.ES_UNITS.GS_HIGHLIGHT_DELIMITER);
+        builder.highlighter(highlightBuilder);
+        request.source(builder);
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put(Const.BENTO_FIELDS.PAGE, Const.BENTO_FIELDS.PAGE);
+        returnTypes.put(Const.BENTO_FIELDS.TITLE, Const.BENTO_FIELDS.TITLE);
+        returnTypes.put(Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE);
+        returnTypes.put(Const.BENTO_FIELDS.TEXT, Const.BENTO_FIELDS.TEXT);
+
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request,
+                typeMapper.getHighLightFragments(Const.BENTO_FIELDS.CONTENT_PARAGRAPH,
+                        (source, text) -> Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.ABOUT,
+                                Const.BENTO_FIELDS.PAGE, source.get(Const.BENTO_FIELDS.PAGE),
+                                Const.BENTO_FIELDS.TITLE,source.get(Const.BENTO_FIELDS.TITLE),
+                                Const.BENTO_FIELDS.TEXT, text)));
+
+        return result;
+    }
+
 
     private List<Map<String, String>> searchAboutPage(String input) throws IOException {
         final String ABOUT_CONTENT = "content.paragraph";

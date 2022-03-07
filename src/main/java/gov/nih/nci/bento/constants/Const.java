@@ -133,6 +133,7 @@ public class Const {
         public static final String FILE_ID_NUM = "file_id_num";
         public static final String STUDY_ID_KW = "study_id_kw";
         public static final String PROGRAM_ID_KW = "program_id_kw";
+        public static final String AGE = "age";
     }
 
     public static class BENTO_INDEX {

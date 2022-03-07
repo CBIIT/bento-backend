@@ -181,7 +181,17 @@ public class TypeMapper {
     private Map<String, Object> parseReturnMap(Map<String, String> returnTypes, Map<String, Object> source) {
         return returnTypes.entrySet().stream()
                 .filter(p->source.containsKey(p.getKey()))
-                .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
+                .collect(HashMap::new, (k,v)->k.put(getCustomizedKeys(v.getKey()), source.get(v.getKey())), HashMap::putAll);
+    }
+
+    // TODO TO BE DELETED
+    private String getCustomizedKeys(String text) {
+        Map<String, String > keys = Map.of(
+                "age_at_index", "age",
+                "study_acronym", "study",
+                "program", "program_code"
+        );
+        return keys.containsKey(text) ? keys.get(text) : text;
     }
 
 

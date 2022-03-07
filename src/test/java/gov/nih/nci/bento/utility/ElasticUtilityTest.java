@@ -1,12 +1,11 @@
-package gov.nih.nci.bento;
+package gov.nih.nci.bento.utility;
 
-import gov.nih.nci.bento.utility.ElasticUtil;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class UtilityTest {
+public class ElasticUtilityTest {
 
     @Test
     public void elasticUtilityTest() {

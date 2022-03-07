@@ -130,6 +130,9 @@ public class Const {
         public static final String DIGNOSIS_GS = "diagnosis_gs";
         public static final String VALUE = "value";
         public static final String HIGHLIGHT = "highlight";
+        public static final String FILE_ID_NUM = "file_id_num";
+        public static final String STUDY_ID_KW = "study_id_kw";
+        public static final String PROGRAM_ID_KW = "program_id_kw";
     }
 
     public static class BENTO_INDEX {

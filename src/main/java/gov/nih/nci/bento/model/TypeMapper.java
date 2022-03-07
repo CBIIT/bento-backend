@@ -36,9 +36,7 @@ public class TypeMapper {
         SearchHit[] hits = response.getHits().getHits();
         Arrays.asList(hits).forEach(hit-> {
             Map<String, Object> source = hit.getSourceAsMap();
-            Map<String, Object> returnMap = returnTypes.entrySet().stream()
-                    .filter(p->source.containsKey(p.getKey()))
-                    .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
+            Map<String, Object> returnMap = parseReturnMap(returnTypes,source);
             if (returnMap.size() > 0) result.add(returnMap);
         });
         return result;
@@ -159,6 +157,33 @@ public class TypeMapper {
             return result;
         };
     }
+
+    public ITypeMapper getMapWithHighlightedFields(Map<String, String> returnTypes) {
+        return (response, t) -> {
+            List<Map<String, Object>> result = new ArrayList<>();
+            SearchHit[] hits = response.getHits().getHits();
+            Arrays.asList(hits).forEach(hit-> {
+                Map<String, HighlightField> highlightFieldMap = hit.getHighlightFields();
+                Map<String, Object> source = hit.getSourceAsMap();
+
+                Map<String, Object> returnMap = parseReturnMap(returnTypes, source);
+                highlightFieldMap.forEach((k,highlightField)->{
+                    Text[] texts = highlightField.getFragments();
+                    Optional<String> text = Arrays.stream(texts).findFirst().map(v->v.toString()).stream().findFirst();
+                    text.ifPresent(v->returnMap.put(BENTO_FIELDS.HIGHLIGHT, v));
+                });
+                if (returnMap.size() > 0) result.add(returnMap);
+            });
+            return result;
+        };
+    }
+
+    private Map<String, Object> parseReturnMap(Map<String, String> returnTypes, Map<String, Object> source) {
+        return returnTypes.entrySet().stream()
+                .filter(p->source.containsKey(p.getKey()))
+                .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
+    }
+
 
     public ITypeMapper getArmProgram() {
 

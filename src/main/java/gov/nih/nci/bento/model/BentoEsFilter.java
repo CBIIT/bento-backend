@@ -674,7 +674,7 @@ public class BentoEsFilter implements DataFetcher {
                 GS_CATEGORY_TYPE, "study"
 
         ));
-        // Done TODO
+        // Done
         searchCategories.add(Map.of(
                 GS_END_POINT, SUBJECTS_END_POINT,
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
@@ -712,7 +712,7 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "sample"
         ));
-        // DONE TODO ADD SORT
+        // DONE
         searchCategories.add(Map.of(
                 GS_END_POINT, FILES_END_POINT,
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
@@ -730,6 +730,7 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "file"
         ));
+        // Done
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,
                 GS_COUNT_ENDPOINT, NODES_COUNT_END_POINT,
@@ -745,14 +746,13 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "node"
         ));
-        // DONE TODO ADD SORT and highlight
+        // DONE
         searchCategories.add(Map.of(
                 GS_END_POINT, PROPERTIES_END_POINT,
                 GS_COUNT_ENDPOINT, PROPERTIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "model_count",
                 GS_RESULT_FIELD, "model",
 //                GS_SEARCH_FIELD, List.of("property", "property_description", "property_type"),
-                // TODO KEYWORKD SEARCH LIKE BOOLEAN FIELD
                 GS_SEARCH_FIELD, List.of("property", "property_description", "property_type", "property_required.keyword"),
                 GS_SORT_FIELD, "property_kw",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -770,7 +770,7 @@ public class BentoEsFilter implements DataFetcher {
                 },
                 GS_CATEGORY_TYPE, "property"
         ));
-        // WORKING ON
+        // Done
         searchCategories.add(Map.of(
                 GS_END_POINT, VALUES_END_POINT,
                 GS_COUNT_ENDPOINT, VALUES_COUNT_END_POINT,

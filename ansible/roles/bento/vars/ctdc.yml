@@ -1,0 +1,8 @@
+---
+# vars file for gmb
+redis_host: 
+  dev: "ctdc-dev-redis-cluster.l5vrvc.clustercfg.use1.cache.amazonaws.com"
+
+schema_file: "ctdc.graphql"
+
+about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version }}/src/content/{{tier}}/aboutPagesContent.yaml"

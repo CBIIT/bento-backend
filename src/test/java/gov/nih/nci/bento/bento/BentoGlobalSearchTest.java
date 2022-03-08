@@ -9,6 +9,7 @@ import gov.nih.nci.bento.service.ESService;
 import gov.nih.nci.bento.utility.StrUtil;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -175,20 +176,20 @@ public class BentoGlobalSearchTest {
         // Set Bool Filter
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+//                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, SUBJECT_ID))
                 );
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+//                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, DIGNOSIS_GS))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+//                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX, StrUtil.getIntText(AGE_AT_INDEX_GS)))
                 );
@@ -390,6 +391,108 @@ public class BentoGlobalSearchTest {
         assertThat(test03.getTotalHits(), greaterThan(0));
         assertThat((String) test03.getSearchHits().get(0).get(Const.BENTO_FIELDS.FILE_FORMAT), containsString(FILE_FORMAT));
     }
+
+    @Test
+    public void globalSearchMultipleModelValues_Test() throws IOException {
+        // Set Builder(Mis-Field Name Match)
+        String PROPERTY_NAME = "institution_id";
+        String PROPERTY_TYPE = "String";
+        String PROPERTY_REQUIRED_TEXT = StrUtil.getBoolText("TESTETESTTEST false");
+        String PROPERTY_DESCRIPTION = "Full length";
+        String VALUE = "initial";
+
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put(Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE);// TODO node_name
+        returnTypes.put(Const.BENTO_FIELDS.NODE_NAME, Const.BENTO_FIELDS.NODE_NAME);// TODO node_name
+        returnTypes.put(Const.BENTO_FIELDS.PROPERTY_NAME, Const.BENTO_FIELDS.PROPERTY_NAME); // TODO property_name
+        returnTypes.put(Const.BENTO_FIELDS.PROPERTY_TYPE, Const.BENTO_FIELDS.PROPERTY_TYPE);
+        returnTypes.put(Const.BENTO_FIELDS.PROPERTY_REQUIRED, Const.BENTO_FIELDS.PROPERTY_REQUIRED);
+        returnTypes.put(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, Const.BENTO_FIELDS.PROPERTY_DESCRIPTION);
+        returnTypes.put(Const.BENTO_FIELDS.VALUE, Const.BENTO_FIELDS.VALUE);
+        // Set Bool Filter
+
+
+        String[] indices = {Const.BENTO_INDEX.MODEL_PROPERTIES, Const.BENTO_INDEX.MODEL_VALUES, Const.BENTO_INDEX.MODEL_NODES};
+
+        SearchSourceBuilder test01 = createMultipleModelGlobalSearch_Test(PROPERTY_NAME);
+        Map<String, Object> test01Result = esService.elasticMultiSend(createMultipleRequests(indices, test01, returnTypes));
+        QueryResult queryResult01 =  (QueryResult) test01Result.get("TEST");
+        assertThat(queryResult01.getSearchHits().size(), greaterThan(0));
+        assertThat(((String) queryResult01.getSearchHits().get(0).get(Const.BENTO_FIELDS.PROPERTY_NAME)).toLowerCase(),
+                containsString(PROPERTY_NAME.toLowerCase()));
+
+        SearchSourceBuilder test02 = createMultipleModelGlobalSearch_Test(PROPERTY_TYPE);
+        Map<String, Object> test02Result = esService.elasticMultiSend(createMultipleRequests(indices, test02, returnTypes));
+        QueryResult queryResult02 =  (QueryResult) test02Result.get("TEST");
+        assertThat(queryResult02.getSearchHits().size(), greaterThan(0));
+        assertThat(((String) queryResult02.getSearchHits().get(0).get(Const.BENTO_FIELDS.PROPERTY_TYPE)).toLowerCase(),
+                containsString(PROPERTY_TYPE.toLowerCase()));
+
+        SearchSourceBuilder test03 = createMultipleModelGlobalSearch_Test(VALUE);
+        Map<String, Object> test03Result = esService.elasticMultiSend(createMultipleRequests(indices, test03, returnTypes));
+        QueryResult queryResult03 =  (QueryResult) test03Result.get("TEST");
+        assertThat(queryResult03.getSearchHits().size(), greaterThan(0));
+        assertThat(((String) queryResult03.getSearchHits().get(0).get(Const.BENTO_FIELDS.VALUE)).toLowerCase(),
+                is(notNullValue()));
+
+
+        SearchSourceBuilder test04 = createMultipleModelGlobalSearch_Test(PROPERTY_REQUIRED_TEXT);
+        Map<String, Object> test04Result = esService.elasticMultiSend(createMultipleRequests(indices, test04, returnTypes));
+        QueryResult queryResult04 =  (QueryResult) test04Result.get("TEST");
+        assertThat(queryResult04.getSearchHits().size(), greaterThan(0));
+        assertThat(((boolean) queryResult04.getSearchHits().get(0).get(Const.BENTO_FIELDS.PROPERTY_REQUIRED)),
+                is(notNullValue()));
+
+    }
+
+    private List<MultipleRequests> createMultipleRequests(String[] indices, SearchSourceBuilder builder, Map<String, String> returnTypes) {
+        return List.of(
+                MultipleRequests.builder()
+                        .name("TEST")
+                        .request(new SearchRequest()
+                                .indices(indices)
+                                .source(builder))
+                        .typeMapper(typeMapper.getMapWithHighlightedFields(returnTypes)).build()
+        );
+    }
+
+    private SearchSourceBuilder createMultipleModelGlobalSearch_Test(String text) {
+        BoolQueryBuilder builder = addConditionalQuery(
+                new BoolQueryBuilder()
+                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.VALUE, text))
+                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, text))
+                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, text))
+                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, text))
+                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, text)),
+                // Add Conditional Query
+                StrUtil.getBoolText(text),QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED, text)
+                );
+        return new SearchSourceBuilder()
+                // CAN'T SET SORT
+                .size(1)
+                .query(builder)
+                .highlighter(
+                        new HighlightBuilder()
+                                // Index model_properties
+                                .field(Const.BENTO_FIELDS.PROPERTY_NAME)
+                                .field(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION)
+                                .field(Const.BENTO_FIELDS.PROPERTY_TYPE)
+                                .field(Const.BENTO_FIELDS.PROPERTY_REQUIRED)
+                                // Index model_values
+                                .field(Const.BENTO_FIELDS.VALUE)
+                                // Index model_nodes
+                                .field(Const.BENTO_FIELDS.NODE_NAME)
+                                .preTags("")
+                                .postTags("")
+                                .fragmentSize(1)
+                );
+    }
+    // TODO Check Conditional Query
+    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, String text, QueryBuilder condition) {
+        if (!text.isEmpty()) builder.should(condition);
+        return builder;
+    }
+
 
     @Test
     public void globalSearchModelValues_Test() throws IOException {

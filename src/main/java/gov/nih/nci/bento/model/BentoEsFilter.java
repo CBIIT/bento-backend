@@ -20,7 +20,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -934,18 +933,20 @@ public class BentoEsFilter implements DataFetcher {
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
-                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
-                .query(new BoolQueryBuilder()
+//                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+                .query(
+//                        addConditionalQuery(
+                        new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input))
                         .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input)))
-                        // TODO Age Index
-//                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX, StrUtil.getIntText(AGE_AT_INDEX_GS)))
+                        // Set Conditional Integer Query
+//                        StrUtil.getIntText(input), QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
-                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+//                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
                                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, input))
                                 .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, List.of(input)))
@@ -955,7 +956,7 @@ public class BentoEsFilter implements DataFetcher {
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
-                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
+//                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, "*" + input + "*" ))
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_CODE, input))
@@ -965,7 +966,7 @@ public class BentoEsFilter implements DataFetcher {
         SearchSourceBuilder testBuilder04 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
-                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+//                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_ID, input))
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_NAME, input))
@@ -976,7 +977,7 @@ public class BentoEsFilter implements DataFetcher {
         SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
-                .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
+//                .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.FILE_ID_GS, input))
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + input + "*" ))
@@ -986,19 +987,28 @@ public class BentoEsFilter implements DataFetcher {
         SearchSourceBuilder testBuilder06 = new SearchSourceBuilder()
                 .size(Const.ES_UNITS.MAX_SIZE)
                 .from(0)
-                .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
-                .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termsQuery(BENTO_FIELDS.PROPERTY_NAME, List.of(input)))
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, List.of(input)))
-                        // TODO Set Conditional Statement
-//                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,input))
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
+//                .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .query(
+//                        addConditionalQuery(
+                                new BoolQueryBuilder()
+                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.VALUE, input))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, input))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, input))
+                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, input))
+                                // Set Conditional Bool Query
+//                                StrUtil.getBoolText(input), QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getIntText(input)))
                 ).highlighter(
                         new HighlightBuilder()
+                                // Index model_properties
                                 .field(Const.BENTO_FIELDS.PROPERTY_NAME)
                                 .field(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION)
                                 .field(Const.BENTO_FIELDS.PROPERTY_TYPE)
                                 .field(Const.BENTO_FIELDS.PROPERTY_REQUIRED)
+                                // Index model_values
+                                .field(Const.BENTO_FIELDS.VALUE)
+                                // Index model_nodes
+                                .field(Const.BENTO_FIELDS.NODE_NAME)
                                 .preTags("")
                                 .postTags("")
                                 .fragmentSize(1)
@@ -1075,7 +1085,7 @@ public class BentoEsFilter implements DataFetcher {
                 MultipleRequests.builder()
                         .name("TEST06")
                         .request(new SearchRequest()
-                                .indices(BENTO_INDEX.MODEL_PROPERTIES)
+                                .indices(new String[]{BENTO_INDEX.MODEL_PROPERTIES, BENTO_INDEX.MODEL_VALUES, BENTO_INDEX.MODEL_NODES})
                                 .source(testBuilder06))
                         .typeMapper(typeMapper.getMapWithHighlightedFields(Map.of(
                                 Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
@@ -1083,7 +1093,8 @@ public class BentoEsFilter implements DataFetcher {
                                 BENTO_FIELDS.PROPERTY_NAME, Const.BENTO_FIELDS.PROPERTY_NAME,
                                 BENTO_FIELDS.PROPERTY_DESCRIPTION, Const.BENTO_FIELDS.PROPERTY_DESCRIPTION,
                                 BENTO_FIELDS.PROPERTY_TYPE, Const.BENTO_FIELDS.PROPERTY_TYPE,
-                                BENTO_FIELDS.PROPERTY_REQUIRED, Const.BENTO_FIELDS.PROPERTY_REQUIRED
+                                BENTO_FIELDS.PROPERTY_REQUIRED, Const.BENTO_FIELDS.PROPERTY_REQUIRED,
+                                BENTO_FIELDS.VALUE, Const.BENTO_FIELDS.VALUE
                         ))).build()
         );
 
@@ -1124,6 +1135,12 @@ public class BentoEsFilter implements DataFetcher {
 
         return result;
     }
+// TODO Conditional Query
+//    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, String text, QueryBuilder condition) {
+//        if (!text.isEmpty())
+//            builder.should(condition);
+//        return builder;
+//    }
 
     private List paginate(List org, int pageSize, int offset) {
         List<Object> result = new ArrayList<>();

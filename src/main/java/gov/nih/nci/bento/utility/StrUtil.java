@@ -7,12 +7,12 @@ import java.util.regex.Pattern;
 public class StrUtil {
 
     public static String getBoolText(String text) {
-        String strPattern = "(?i)([ ]?\\bfalse\\b|\\btrue\\b[ ]?){1}";
+        String strPattern = "(?i)(\\bfalse\\b|\\btrue\\b)";
         return getStr(strPattern, text).toLowerCase();
     }
 
     public static String getIntText(String text) {
-        String strPattern = "([ ]?\\b[0-9]+\\b[ ]?)";
+        String strPattern = "(\\b[0-9]+\\b)";
         return getStr(strPattern, text);
     }
 
@@ -22,6 +22,6 @@ public class StrUtil {
         Matcher matcher = pattern.matcher(str);
         String result = "";
         if (matcher.find()) result = matcher.group(1);
-        return result.replaceAll(" ", "");
+        return result;
     }
 }

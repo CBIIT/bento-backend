@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.model;
 
+import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
@@ -26,10 +27,28 @@ public class TypeMapper {
     }
 
     public ITypeMapper getDefaultReturnTypes(Map<String, String> returnTypes) {
-        return (response, r) -> getMaps(response, returnTypes);
+        return (response, r) -> getMaps_Test(response, returnTypes);
     }
 
     // ElasticSearch Aggregate Mapping Value Resolver
+    @NotNull
+    // TODO
+    private QueryResult getMaps_Test(SearchResponse response, Map<String, String> returnTypes) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        SearchHit[] hits = response.getHits().getHits();
+        Arrays.asList(hits).forEach(hit-> {
+            Map<String, Object> source = hit.getSourceAsMap();
+            Map<String, Object> returnMap = parseReturnMap(returnTypes,source);
+            if (returnMap.size() > 0) result.add(returnMap);
+        });
+        return QueryResult.builder()
+                .searchHits(result)
+                .totalHits(response.getHits().getTotalHits().value)
+                .build();
+    }
+
+    // ElasticSearch Aggregate Mapping Value Resolver
+    // TODO TOBE REMOVED
     @NotNull
     private List<Map<String, Object>> getMaps(SearchResponse response, Map<String, String> returnTypes) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -170,11 +189,15 @@ public class TypeMapper {
                 highlightFieldMap.forEach((k,highlightField)->{
                     Text[] texts = highlightField.getFragments();
                     Optional<String> text = Arrays.stream(texts).findFirst().map(v->v.toString()).stream().findFirst();
+                    // Set Highlight Field & Get First Found Match Keyword
                     text.ifPresent(v->returnMap.put(BENTO_FIELDS.HIGHLIGHT, v));
                 });
                 if (returnMap.size() > 0) result.add(returnMap);
             });
-            return result;
+        return QueryResult.builder()
+                .searchHits(result)
+                .totalHits(response.getHits().getTotalHits().value)
+                .build();
         };
     }
 

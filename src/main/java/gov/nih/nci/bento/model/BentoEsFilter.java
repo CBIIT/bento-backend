@@ -3,6 +3,7 @@ package gov.nih.nci.bento.model;
 import com.google.gson.*;
 import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
+import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
@@ -19,6 +20,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -880,6 +882,10 @@ public class BentoEsFilter implements DataFetcher {
             // Subjects Done
             if (resultFieldName.equals("subjects")) continue;
             if (resultFieldName.equals("samples")) continue;
+            if (resultFieldName.equals("programs")) continue;
+            if (resultFieldName.equals("studies")) continue;
+            if (resultFieldName.equals("files")) continue;
+            if (resultFieldName.equals("model")) continue;
 
             String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
             String[][] highlights = (String[][]) category.get(GS_HIGHLIGHT_FIELDS);
@@ -924,18 +930,7 @@ public class BentoEsFilter implements DataFetcher {
 
         }
 
-        Map<String, String> returnTypes01 = Map.of(
-                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
-                BENTO_FIELDS.PROGRAM, Const.BENTO_FIELDS.PROGRAM,
-                Const.BENTO_FIELDS.STUDY_ACRONYM, Const.BENTO_FIELDS.STUDY_ACRONYM,
-                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
-                Const.BENTO_FIELDS.AGE_AT_INDEX, Const.BENTO_FIELDS.AGE_AT_INDEX
-        );
-
         // Set Bool Filter
-        // TODO If Model, set different offset
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
@@ -947,17 +942,6 @@ public class BentoEsFilter implements DataFetcher {
 //                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX, StrUtil.getIntText(AGE_AT_INDEX_GS)))
                 );
 
-        Map<String, String> returnTypes02 = Map.of(
-                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
-                BENTO_FIELDS.SAMPLE_ID, Const.BENTO_FIELDS.SAMPLE_ID,
-                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
-                Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE, Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
-                Const.BENTO_FIELDS.TISSUE_TYPE, Const.BENTO_FIELDS.TISSUE_TYPE
-        );
-
-
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
@@ -968,6 +952,58 @@ public class BentoEsFilter implements DataFetcher {
                                 .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, List.of(input)))
                 );
 
+        SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
+                .size(size)
+                .from(offset)
+                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, "*" + input + "*" ))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_CODE, input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_NAME, input))
+                );
+
+        SearchSourceBuilder testBuilder04 = new SearchSourceBuilder()
+                .size(size)
+                .from(offset)
+                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_ID, input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_NAME, input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_TYPE, input))
+                );
+
+
+        SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
+                .size(size)
+                .from(offset)
+                .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.FILE_ID_GS, input))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + input + "*" ))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, input))
+                );
+
+        SearchSourceBuilder testBuilder06 = new SearchSourceBuilder()
+                .size(Const.ES_UNITS.MAX_SIZE)
+                .from(0)
+                .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.termsQuery(BENTO_FIELDS.PROPERTY_NAME, List.of(input)))
+                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, List.of(input)))
+                        // TODO Set Conditional Statement
+//                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
+                ).highlighter(
+                        new HighlightBuilder()
+                                .field(Const.BENTO_FIELDS.PROPERTY_NAME)
+                                .field(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION)
+                                .field(Const.BENTO_FIELDS.PROPERTY_TYPE)
+                                .field(Const.BENTO_FIELDS.PROPERTY_REQUIRED)
+                                .preTags("")
+                                .postTags("")
+                                .fragmentSize(1)
+                );
+
 
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
@@ -975,19 +1011,106 @@ public class BentoEsFilter implements DataFetcher {
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes01)).build(),
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
+                                BENTO_FIELDS.PROGRAM, Const.BENTO_FIELDS.PROGRAM,
+                                Const.BENTO_FIELDS.STUDY_ACRONYM, Const.BENTO_FIELDS.STUDY_ACRONYM,
+                                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
+                                Const.BENTO_FIELDS.AGE_AT_INDEX, Const.BENTO_FIELDS.AGE_AT_INDEX
+                        ))).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SAMPLES)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes02)).build()
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
+                                BENTO_FIELDS.SAMPLE_ID, Const.BENTO_FIELDS.SAMPLE_ID,
+                                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
+                                Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE, Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
+                                Const.BENTO_FIELDS.TISSUE_TYPE, Const.BENTO_FIELDS.TISSUE_TYPE
+                        ))).build(),
+                MultipleRequests.builder()
+                        .name("TEST03")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.PROGRAMS)
+                                .source(testBuilder03))
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.PROGRAM_CODE, Const.BENTO_FIELDS.PROGRAM_CODE,
+                                BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                                BENTO_FIELDS.PROGRAM_NAME, Const.BENTO_FIELDS.PROGRAM_NAME
+                        ))).build(),
+                MultipleRequests.builder()
+                        .name("TEST04")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.STUDIES)
+                                .source(testBuilder04))
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                                BENTO_FIELDS.STUDY_ID, Const.BENTO_FIELDS.STUDY_ID,
+                                BENTO_FIELDS.STUDY_TYPE, Const.BENTO_FIELDS.STUDY_TYPE,
+                                BENTO_FIELDS.STUDY_CODE, Const.BENTO_FIELDS.STUDY_CODE,
+                                BENTO_FIELDS.STUDY_NAME, Const.BENTO_FIELDS.STUDY_NAME
+                        ))).build(),
+                MultipleRequests.builder()
+                        .name("TEST05")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.FILES_TEST)
+                                .source(testBuilder05))
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
+                                BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
+                                BENTO_FIELDS.SAMPLE_ID, Const.BENTO_FIELDS.SAMPLE_ID,
+                                BENTO_FIELDS.FILE_NAME, Const.BENTO_FIELDS.FILE_NAME,
+                                BENTO_FIELDS.FILE_FORMAT, Const.BENTO_FIELDS.FILE_FORMAT,
+                                BENTO_FIELDS.FILE_ID, Const.BENTO_FIELDS.FILE_ID
+                        ))).build(),
+                MultipleRequests.builder()
+                        .name("TEST06")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.MODEL_PROPERTIES)
+                                .source(testBuilder06))
+                        .typeMapper(typeMapper.getMapWithHighlightedFields(Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.NODE_NAME, BENTO_FIELDS.NODE_NAME,
+                                BENTO_FIELDS.PROPERTY_NAME, Const.BENTO_FIELDS.PROPERTY_NAME,
+                                BENTO_FIELDS.PROPERTY_DESCRIPTION, Const.BENTO_FIELDS.PROPERTY_DESCRIPTION,
+                                BENTO_FIELDS.PROPERTY_TYPE, Const.BENTO_FIELDS.PROPERTY_TYPE,
+                                BENTO_FIELDS.PROPERTY_REQUIRED, Const.BENTO_FIELDS.PROPERTY_REQUIRED
+                        ))).build()
         );
+
         Map<String, Object> multiResult = esService.elasticMultiSend(requests);
-        result.put("subjects", multiResult.get("TEST01"));
-        result.put("subject_count", 1234);
-        result.put("samples", multiResult.get("TEST02"));
-        result.put("sample_count", 2345);
+        QueryResult test01Result = (QueryResult) multiResult.get("TEST01");
+        result.put("subjects", test01Result.getSearchHits());
+        result.put("subject_count", test01Result.getTotalHits());
+
+        QueryResult test02Result = (QueryResult) multiResult.get("TEST02");
+        result.put("samples", test02Result.getSearchHits());
+        result.put("sample_count", test02Result.getTotalHits());
+
+        QueryResult test03Result = (QueryResult) multiResult.get("TEST03");
+        result.put("programs", test03Result.getSearchHits());
+        result.put("program_count", test03Result.getTotalHits());
+
+        QueryResult test04Result = (QueryResult) multiResult.get("TEST04");
+        result.put("studies", test04Result.getSearchHits());
+        result.put("study_count", test04Result.getTotalHits());
+
+        QueryResult test05Result = (QueryResult) multiResult.get("TEST05");
+        result.put("files", test05Result.getSearchHits());
+        result.put("file_count", test05Result.getTotalHits());
+
+        QueryResult test06Result = (QueryResult) multiResult.get("TEST06");
+        result.put("model", test06Result.getSearchHits());
+        result.put("model_count", test06Result.getTotalHits());
 
         List<Map<String, Object>> about_results = searchAboutPageTest(input);
         int about_count = about_results.size();
@@ -1020,7 +1143,7 @@ public class BentoEsFilter implements DataFetcher {
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
         SearchSourceBuilder builder = new SearchSourceBuilder();
-        bool.should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.CONTENT_PARAGRAPH, List.of(input)));
+        bool.should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.CONTENT_PARAGRAPH, input));
         builder.query(bool);
 
         SearchRequest request = new SearchRequest();
@@ -1495,9 +1618,9 @@ public class BentoEsFilter implements DataFetcher {
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(esService.createRangeQuery()))
                         .typeMapper(typeMapper.getRange()).build()
-
-
         );
+
+
         Map<String, Object> result = esService.elasticMultiSend(requests);
         return result;
     }

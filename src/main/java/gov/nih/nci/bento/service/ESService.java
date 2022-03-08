@@ -301,8 +301,11 @@ public class ESService {
 
     public List<Map<String, Object>> collectPage(Request request, Map<String, Object> query, String[][] properties, int pageSize, int offset) throws IOException {
         // data over limit of Elasticsearch, have to use roll API
+        if (pageSize > MAX_ES_SIZE) {
+            throw new IOException("Parameter 'first' must not exceeded " + MAX_ES_SIZE);
+        }
         if (pageSize + offset > MAX_ES_SIZE) {
-            return collectPageWithRoll(request, query, properties, pageSize, offset);
+            return collectPageWithScroll(request, query, properties, pageSize, offset);
         }
 
         // data within limit can use just from/size
@@ -315,7 +318,8 @@ public class ESService {
     }
 
     // offset MUST be multiple of pageSize, otherwise the page won't be complete
-    private List<Map<String, Object>> collectPageWithRoll(Request request, Map<String, Object> query, String[][] properties, int pageSize, int offset) throws IOException {
+    private List<Map<String, Object>> collectPageWithScroll(
+            Request request, Map<String, Object> query, String[][] properties, int pageSize, int offset) throws IOException {
         final int optimumSize = ( MAX_ES_SIZE / pageSize ) * pageSize;
         if (offset % pageSize != 0) {
             throw new IOException("'offset' must be multiple of 'first'!");

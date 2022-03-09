@@ -135,6 +135,7 @@ public class Const {
         public static final String PROGRAM_ID_KW = "program_id_kw";
         public static final String AGE = "age";
         public static final String PROGRAM_KW = "property_kw";
+        public static final String SURVIVAL_TIME = "survival_time";
     }
 
     public static class BENTO_INDEX {

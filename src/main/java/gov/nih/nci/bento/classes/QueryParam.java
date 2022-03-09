@@ -10,6 +10,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Getter
 public class QueryParam {
@@ -30,7 +31,23 @@ public class QueryParam {
         this.pageSize = args.containsKey(Const.ES_PARAMS.PAGE_SIZE) ?  (int) args.get(Const.ES_PARAMS.PAGE_SIZE) : -1;
         this.offSet = args.containsKey(Const.ES_PARAMS.OFFSET) ?  (int) args.get(Const.ES_PARAMS.OFFSET) : -1;
         this.sortDirection = getSortType();
-        this.orderBy = args.containsKey(Const.ES_PARAMS.ORDER_BY) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
+        this.orderBy = getOrderByText(args);
+    }
+
+    private static String getOrderByText(Map<String, Object> args) {
+        String orderBy = args.containsKey(Const.ES_PARAMS.ORDER_BY) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
+        return orderBy + addKeywordType(orderBy);
+    }
+
+    // TODO Check Better Way
+    private static String addKeywordType(String param) {
+        Set<String> nonKeyword = Set.of(
+                Const.BENTO_FIELDS.FILE_ID_NUM,
+                Const.BENTO_FIELDS.SUBJECT_ID_NUM,
+                Const.BENTO_FIELDS.SURVIVAL_TIME,
+                Const.BENTO_FIELDS.AGE_AT_INDEX,
+                Const.BENTO_FIELDS.AGE);
+        return nonKeyword.contains(param) ? "" : Const.ES_UNITS.KEYWORD;
     }
 
     private SortOrder getSortType() {

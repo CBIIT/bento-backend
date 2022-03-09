@@ -8,6 +8,7 @@ import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.utility.StrUtil;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -935,12 +936,12 @@ public class BentoEsFilter implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(
-//                        addConditionalQuery(
+                        addConditionalQuery(
                         new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input))
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input)))
+                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input))),
                         // Set Conditional Integer Query
-//                        StrUtil.getIntText(input), QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
+                        !StrUtil.getIntText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,input))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
@@ -989,15 +990,15 @@ public class BentoEsFilter implements DataFetcher {
                 .from(0)
 //                .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(
-//                        addConditionalQuery(
+                        addConditionalQuery(
                                 new BoolQueryBuilder()
                                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.VALUE, input))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, input))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, input))
                                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
-                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, input))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, input)),
                                 // Set Conditional Bool Query
-//                                StrUtil.getBoolText(input), QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getIntText(input)))
+                                !StrUtil.getBoolText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,input))
                 ).highlighter(
                         new HighlightBuilder()
                                 // Index model_properties
@@ -1135,12 +1136,12 @@ public class BentoEsFilter implements DataFetcher {
 
         return result;
     }
-// TODO Conditional Query
-//    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, String text, QueryBuilder condition) {
-//        if (!text.isEmpty())
-//            builder.should(condition);
-//        return builder;
-//    }
+    // Add Conditional Query
+    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, boolean condition, QueryBuilder query) {
+        if (condition)
+            builder.should(query);
+        return builder;
+    }
 
     private List paginate(List org, int pageSize, int offset) {
         List<Object> result = new ArrayList<>();

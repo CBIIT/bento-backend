@@ -465,7 +465,7 @@ public class BentoGlobalSearchTest {
                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, text))
                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, text)),
                 // Add Conditional Query
-                StrUtil.getBoolText(text),QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED, text)
+                !StrUtil.getBoolText(text).isEmpty(),QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED, text)
                 );
         return new SearchSourceBuilder()
                 // CAN'T SET SORT
@@ -487,9 +487,9 @@ public class BentoGlobalSearchTest {
                                 .fragmentSize(1)
                 );
     }
-    // TODO Check Conditional Query
-    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, String text, QueryBuilder condition) {
-        if (!text.isEmpty()) builder.should(condition);
+    // Add Conditional Query
+    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, boolean condition, QueryBuilder query) {
+        if (condition) builder.should(query);
         return builder;
     }
 
@@ -552,7 +552,7 @@ public class BentoGlobalSearchTest {
         // Set Builder(Mis-Field Name Match)
         String PROPERTY = "institution_id";
         String PROPERTY_TYPE = "String";
-        String PROPERTY_REQUIRED_TEXT = StrUtil.getBoolText("TESTETESTTEST false");
+        String PROPERTY_REQUIRED_TEXT = StrUtil.getBoolText("false");
         String PROPERTY_DESCRIPTION = "Full length";
 
         Map<String, String> returnTypes = new HashMap<>();

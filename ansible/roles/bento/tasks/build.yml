@@ -149,32 +149,15 @@
     dest: "{{workspace}}/{{ project }}-frontend/nginx-entrypoint.sh"
     mode: 0755
 
-- name: set CI variable to false for dev and perf tiers
-  set_fact:
-    build_cmd: "CI=false npm run build --silent"
-  when: tier == "dev" or tier == "perf"
-
-- name: set build command for qa and prod tiers
-  set_fact:
-    build_cmd: "npm run build --silent"
-  when: tier == "qa" or tier == "prod"
-
-- name: echo build command
-  debug:
-    msg: "{{ build_cmd }}"
-
 - name: run npm install in {{workspace}}/{{ project }}-frontend/
-#  command: "{{item}}"
-  shell: "{{item}}"
+  command: "{{item}}"
   args:
     chdir: "{{workspace}}/{{ project }}-frontend"
     warn: false
   loop:
     - npm set progress=false
-#    - npm install npm@7.7.6 -g
     - npm install --silent
-    - "{{ build_cmd }}"
-#    - npm run build --silent
+    - npm run build --silent
 
 - name: copy env to dist
   copy:

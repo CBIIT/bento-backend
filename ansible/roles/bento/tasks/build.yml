@@ -153,6 +153,7 @@
   command: "{{item}}"
   args:
     chdir: "{{workspace}}/{{ project }}-frontend"
+    warn: false
   loop:
     - npm set progress=false
     - npm install --silent

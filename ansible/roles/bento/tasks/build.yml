@@ -151,12 +151,12 @@
 
 - name: set CI variable to false for dev and perf tiers
   set_fact:
-    build_cmd: CI=false npm run build --silent
+    build_cmd: "CI=false npm run build --silent"
   when: when: tier == "dev" or tier == "perf"
 
 - name: set build command for qa and prod tiers
   set_fact:
-    build_cmd: npm run build --silent
+    build_cmd: "npm run build --silent"
   when: when: tier == "qa" or tier == "prod"
 
 - name: run npm install in {{workspace}}/{{ project }}-frontend/

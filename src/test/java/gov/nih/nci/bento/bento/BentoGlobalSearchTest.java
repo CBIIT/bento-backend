@@ -465,7 +465,7 @@ public class BentoGlobalSearchTest {
                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, text))
                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, text)),
                 // Add Conditional Query
-                !StrUtil.getBoolText(text).isEmpty(),QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED, text)
+                !StrUtil.getBoolText(text).isEmpty(),QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED, StrUtil.getBoolText(text))
                 );
         return new SearchSourceBuilder()
                 // CAN'T SET SORT
@@ -492,7 +492,6 @@ public class BentoGlobalSearchTest {
         if (condition) builder.should(query);
         return builder;
     }
-
 
     @Test
     public void globalSearchModelValues_Test() throws IOException {

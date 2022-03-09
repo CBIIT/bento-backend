@@ -938,10 +938,10 @@ public class BentoEsFilter implements DataFetcher {
                 .query(
                         addConditionalQuery(
                         new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input).boost((float) 1.50))
                         .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input))),
                         // Set Conditional Integer Query
-                        !StrUtil.getIntText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,input))
+                        !StrUtil.getIntText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
@@ -949,7 +949,7 @@ public class BentoEsFilter implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
-                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, input))
+                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, input).boost((float) 1.50))
                                 .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, List.of(input)))
                                 .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, List.of(input)))
                 );
@@ -959,7 +959,7 @@ public class BentoEsFilter implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, "*" + input + "*" ))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, "*" + input + "*" ).boost((float) 1.50))
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_CODE, input))
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_NAME, input))
                 );
@@ -969,7 +969,7 @@ public class BentoEsFilter implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_ID, input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_ID, input).boost((float) 1.50))
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_NAME, input))
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_TYPE, input))
                 );
@@ -980,7 +980,7 @@ public class BentoEsFilter implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.FILE_ID_GS, input))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.FILE_ID_GS, input).boost((float) 1.50))
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + input + "*" ))
                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, input))
                 );
@@ -998,7 +998,7 @@ public class BentoEsFilter implements DataFetcher {
                                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, input)),
                                 // Set Conditional Bool Query
-                                !StrUtil.getBoolText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,input))
+                                !StrUtil.getBoolText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(input)))
                 ).highlighter(
                         new HighlightBuilder()
                                 // Index model_properties

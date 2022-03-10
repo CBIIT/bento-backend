@@ -11,6 +11,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.metrics.ParsedMax;
+import org.elasticsearch.search.aggregations.metrics.ParsedMin;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -126,8 +128,12 @@ public class TypeMapper {
             Aggregations aggregate = response.getAggregations();
             Map<String, Aggregation> responseMap = aggregate.getAsMap();
             Map<String, Object> result = new HashMap<>();
-            result.put(BENTO_FIELDS.LOWER_BOUND, responseMap.containsKey("max") ? 100 : null);
-            result.put(BENTO_FIELDS.UPPER_BOUND, responseMap.containsKey("min") ? 200 : null);
+
+            ParsedMax max = (ParsedMax) responseMap.get("max");
+            ParsedMin min = (ParsedMin) responseMap.get("min");
+
+            result.put(BENTO_FIELDS.LOWER_BOUND, min.getValue());
+            result.put(BENTO_FIELDS.UPPER_BOUND, max.getValue());
             // TODO
             result.put(BENTO_FIELDS.SUBJECTS, 100);
             return result;

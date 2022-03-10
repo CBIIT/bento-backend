@@ -165,51 +165,6 @@ public class BentoFilterTest {
     }
 
     @Test
-    public void chemoChartAndFilter_Test() throws IOException {
-
-        // TODO
-//        Map<String, Object>
-
-
-//        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-//        searchSourceBuilder.size(0);
-//
-//        BoolQueryBuilder bool = new BoolQueryBuilder();
-//        bool.should(
-//                QueryBuilders.termsQuery("diagnoses", (List<String>) args.get(k)));
-//
-//
-//        List<MultipleRequests> requests = List.of(
-//                        MultipleRequests.builder()
-//                .name("subjectCountByChemotherapyRegimen")
-//                .request(new SearchRequest()
-//                        .indices(BENTO_INDEX.SUBJECTS)
-//                        .source(new BentoEsFilter(typeMapper).createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN)))
-//                .typeMapper(typeMapper.getAggregate()).build());
-//
-//        Map<String, Object> result = esService.elasticMultiSend(requests);
-//        assertThat(result.size(), greaterThan(0));
-
-
-//        MultipleRequests.builder()
-//                .name("subjectCountByChemotherapyRegimen")
-//                .request(new SearchRequest()
-//                        .indices(BENTO_INDEX.SUBJECTS)
-//                        .source(createTermsAggSource(BENTO_FIELDS.CHEMO_REGIMEN)))
-//                .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name("filterSubjectCountByChemotherapyRegimen")
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-
-
-
-    }
-
-
-    @Test
     public void multiSearchTest() throws IOException {
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
@@ -261,7 +216,7 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PROGRAM)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.PROGRAM+ Const.ES_UNITS.KEYWORD))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.PROGRAM+ Const.ES_UNITS.KEYWORD, query))
                         )
                         .typeMapper(typeMapper.getAggregate()).build(),
                 // TODO
@@ -269,32 +224,32 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.PROGRAMS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 // TODO
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_DIAGNOSIS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_RECURRENCE)
@@ -327,13 +282,13 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TUMOR_GRADE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TUMOR_GRADE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -341,13 +296,13 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_ER_STATUS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -382,26 +337,26 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_ENDO_THERAPY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_ENDO_THERAPY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_MENO_THERAPY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_MENO_STATUS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -409,13 +364,13 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TISSUE_TYPE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TISSUE_TYPE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -424,13 +379,13 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TISSUE_COMPOSITION)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TISSUE_COMPOSITION)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -438,13 +393,13 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_FILE_ASSOCI)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.FILES)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_FILE_ASSOCIATION)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.FILES)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -453,13 +408,13 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_FILE_TYPE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.FILES)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_FILE_TYPE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.FILES)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
 
@@ -470,21 +425,20 @@ public class BentoFilterTest {
                                 .source(createArmProgramQuery()))
                         .typeMapper(typeMapper.getArmProgram()).build(),
 
-                // TODO DELETE
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_LAB_PROCEDURES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
-                // TODO Add Filter Query
+
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_LAB_PROCEDURES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSource(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
-                // RANGE QUERY
+                // TODO ADD FILTER RANGE QUERY
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
                         .request(new SearchRequest()
@@ -499,17 +453,6 @@ public class BentoFilterTest {
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
 
-//        MultiSearchResponse response = client.msearch(multiRequests, RequestOptions.DEFAULT);
-//        MultiSearchResponse.Item[] responseResponses = response.getResponses();
-//
-//        final int[] c = {0};
-//        Map<String, Object> result = new HashMap<>();
-//
-//        List.of(responseResponses).forEach(item->{
-//            MultipleRequests multir= requests.get(c[0]);
-//            result.put(multir.getName(), multir.getTypeMapper().getResolver(item.getResponse(),null));
-//            c[0] += 1;
-//        });
         long test01 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_PROGRAMS);
         assertThat((int) test01, greaterThan(0));
 
@@ -649,6 +592,51 @@ public class BentoFilterTest {
                         ));
     }
 
+    @Test
+    public void testFilter() throws IOException {
+
+        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, "A: RS 0-10, assigned endocrine therapy alone");
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .size(0)
+                .query(query)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+
+
+        SearchSourceBuilder builder2 = new SearchSourceBuilder()
+                .size(0)
+                .query(QueryBuilders.matchAllQuery())
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+
+        builder.size(0);
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder2))
+                        .typeMapper(typeMapper.getAggregate()).build());
+
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        Object obj = result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
+        System.out.println(obj);
+
+
+    }
+
+
 
     public SearchSourceBuilder createTermsAggSource(String field) {
         return new SearchSourceBuilder()
@@ -699,7 +687,7 @@ public class BentoFilterTest {
         static final String FILTER_SUBJECT_CNT_FILE_ASSOCIATION = "filterSubjectCountByFileAssociation";
         static final String FILTER_SUBJECT_CNT_FILE_TYPE = "filterSubjectCountByFileType";
         static final String FILTER_SUBJECT_CNT_BY_AGE = "filterSubjectCountByAge";
-        // TODO THIS QUERY NEEDED???
+
         static final String SUBJECT_COUNT_LAB_PROCEDURES = "subjectCountByLabProcedures";
         static final String FILTER_SUBJECT_CNT_LAB_PROCEDURES = "filterSubjectCountByLabProcedures";
 

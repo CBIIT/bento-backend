@@ -503,7 +503,15 @@ public class ESService {
         keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
         keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
         keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("er_status", "er_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("pr_status", "pr_status" + Const.ES_UNITS.KEYWORD);
         keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tissue_type", "tissue_type" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("composition", "composition" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("association", "association" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_type", "file_type" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("age_at_index", "age_at_index" + Const.ES_UNITS.KEYWORD);
+
         // Files Index
         keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
         keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);

@@ -758,6 +758,37 @@ public class BentoFilterTest {
     }
 
 
+    @Test
+    public void fileFileType_Test() throws IOException {
+
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        bool.filter(
+                QueryBuilders.termsQuery(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD, List.of("bam", "bai")));
+//        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, "A: RS 0-10, assigned endocrine therapy alone");
+
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+
+        builder.size(0);
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_FILES)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.FILES)
+                                .source(builder))
+                        .typeMapper(typeMapper.getIntTotal()).build()
+        );
+
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        long test01Result = (long) result.get(Bento_GraphQL_KEYS.NO_OF_FILES);
+        assertThat((int) test01Result, is(greaterThan(0)));
+    }
 
 
     public QueryBuilder createBentoBoolFromParams(Map<String, Object> args) {

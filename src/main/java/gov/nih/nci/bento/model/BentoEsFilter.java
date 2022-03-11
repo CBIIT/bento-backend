@@ -1384,8 +1384,8 @@ public class BentoEsFilter implements DataFetcher {
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.NO_OF_FILES)
-                        .request(new SearchRequest() // GET REQEUST
-                                .indices(BENTO_INDEX.SUBJECTS)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.FILES)
                                 .source(esService.createTermsAggSourceTestTest("", args)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()

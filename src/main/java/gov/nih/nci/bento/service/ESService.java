@@ -457,7 +457,8 @@ public class ESService {
     }
 
     public SearchSourceBuilder createTermsAggSourceFilter(String field, Map<String, Object> args) {
-        QueryBuilder queryBuilder = createFilterQuery(field, args);
+        GetFilterType<QueryBuilder> queryType = (key, list, keyMap)-> QueryBuilders.termsQuery(keyMap.getOrDefault(key, key), (List<String>) args.get(key));
+        QueryBuilder queryBuilder = createFilterQuery_Test(field, args,queryType);
         return new SearchSourceBuilder()
                 .size(0)
                 .query(queryBuilder)
@@ -467,8 +468,12 @@ public class ESService {
                         .field(field));
 
     }
+
+    private interface GetFilterType<T> {
+        T getType(String key, List<Object> list, Map<String, String> keyMap);
+    }
     // TODO
-    private QueryBuilder createFilterQuery(String field, Map<String, Object> args) {
+    private QueryBuilder createFilterQuery_Test(String field, Map<String, Object> args, GetFilterType<QueryBuilder> filterType) {
 
         Map<String, Object> cloneMap = new HashMap<>(args);
         Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
@@ -479,20 +484,10 @@ public class ESService {
 
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
-
             String key = keyMap.getOrDefault(k, k);
             if (list.size() > 0 && !key.replace(Const.ES_UNITS.KEYWORD, "").equals(field.replace(Const.ES_UNITS.KEYWORD, ""))) {
                 // TODO
-                if (key.equals(Const.BENTO_FIELDS.AGE_AT_INDEX)) {
-
-                    bool.filter(QueryBuilders.rangeQuery(Const.BENTO_FIELDS.AGE_AT_INDEX)
-                            .gte(list.get(0))
-                            .lte(list.get(1)));
-                } else {
-                    // TODO consider remove empty string
-                    bool.filter(
-                            QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
-                }
+                bool.filter(filterType.getType(k, Collections.singletonList(list), keyMap));
             }
         });
         return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
@@ -557,7 +552,6 @@ public class ESService {
         return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
     }
 
-
     public SearchSourceBuilder createTermsAggSourceTestTest(String field, Map<String, Object> args) {
         // TODO
         return new SearchSourceBuilder()
@@ -581,7 +575,17 @@ public class ESService {
 
 
     public SearchSourceBuilder createRangeQuery_Test(Map<String, Object> args) {
-        QueryBuilder query = createFilterQuery(Const.BENTO_FIELDS.AGE_AT_INDEX, args);
+
+        GetFilterType<QueryBuilder> queryType = (key, list, keyMap)->{
+            if (key.equals(Const.BENTO_FIELDS.AGE_AT_INDEX.equals(key))) {
+                return QueryBuilders.rangeQuery(Const.BENTO_FIELDS.AGE_AT_INDEX)
+                        .gte(list.get(0))
+                        .lte(list.get(1));
+            }
+            return QueryBuilders.termsQuery(keyMap.getOrDefault(key, key), (List<String>) args.get(key));
+        };
+
+        QueryBuilder query = createFilterQuery_Test(Const.BENTO_FIELDS.AGE_AT_INDEX, args, queryType);
         return new SearchSourceBuilder()
                 .size(0)
                 .query(query)
@@ -594,11 +598,6 @@ public class ESService {
     // TODO Filter Param
     // TODO To Be DELETED
     public SearchSourceBuilder createRangeQuery() {
-        SearchSourceBuilder builder = new SearchSourceBuilder();
-//        Map<String, Object> params = Map.of(
-//
-//                "age_at_index", Set.of(0,100)
-//        );
         return new SearchSourceBuilder()
                 .size(0)
                 .aggregation(AggregationBuilders

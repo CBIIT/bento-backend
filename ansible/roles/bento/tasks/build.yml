@@ -107,6 +107,8 @@
 
 - name: build {{ project }}-backend image
   docker_image:
+    buildargs:
+      ECR_REPO: "{{ecr_repo}}"
     build:
       path: "{{workspace}}"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"

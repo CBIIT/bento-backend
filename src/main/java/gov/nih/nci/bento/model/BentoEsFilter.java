@@ -456,7 +456,7 @@ public class BentoEsFilter implements DataFetcher {
         // Set Rest API Request
         // TODO add test case
         SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.FILES_TEST);
+        request.indices(BENTO_INDEX.FILES);
         request.source(
                 esService.createPageSourceBuilder(param,BENTO_FIELDS.FILE_NAME+ Const.ES_UNITS.KEYWORD)
         );
@@ -1614,12 +1614,12 @@ public class BentoEsFilter implements DataFetcher {
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(esService.createTermsAggSourceFilter(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD, args)))
                         .typeMapper(typeMapper.getAggregate()).build(),
-                // TODO ADD FILTER RANGE QUERY
+                // Range Query
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createRangeQuery()))
+                                .source(esService.createRangeQuery_Test(args)))
                         .typeMapper(typeMapper.getRange()).build()
         );
 

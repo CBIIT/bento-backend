@@ -790,6 +790,35 @@ public class BentoFilterTest {
         assertThat((int) test01Result, is(greaterThan(0)));
     }
 
+    @Test
+    public void rangeQuery_Test() throws IOException {
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        bool.filter(QueryBuilders.rangeQuery(BENTO_FIELDS.AGE_AT_INDEX).gte(0).lte(100));
+
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+
+        builder.size(0);
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder))
+                        .typeMapper(typeMapper.getAggregate()).build()
+        );
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        List<Map<String, Object>>  test01Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE);
+        assertThat(test01Result.size(), is(greaterThan(0)));
+    }
+
+
 
     public QueryBuilder createBentoBoolFromParams(Map<String, Object> args) {
         Map<String, Object> cloneMap = new HashMap<>(args);

@@ -482,9 +482,17 @@ public class ESService {
 
             String key = keyMap.getOrDefault(k, k);
             if (list.size() > 0 && !key.replace(Const.ES_UNITS.KEYWORD, "").equals(field.replace(Const.ES_UNITS.KEYWORD, ""))) {
-                // TODO consider remove empty string
-                bool.filter(
-                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
+                // TODO
+                if (key.equals(Const.BENTO_FIELDS.AGE_AT_INDEX)) {
+
+                    bool.filter(QueryBuilders.rangeQuery(Const.BENTO_FIELDS.AGE_AT_INDEX)
+                            .gte(list.get(0))
+                            .lte(list.get(1)));
+                } else {
+                    // TODO consider remove empty string
+                    bool.filter(
+                            QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
+                }
             }
         });
         return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
@@ -510,7 +518,7 @@ public class ESService {
         keyMap.put("composition", "composition" + Const.ES_UNITS.KEYWORD);
         keyMap.put("association", "association" + Const.ES_UNITS.KEYWORD);
         keyMap.put("file_type", "file_type" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("age_at_index", "age_at_index" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("age_at_index", "age_at_index");
 
         // Files Index
         keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
@@ -530,10 +538,21 @@ public class ESService {
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
             if (list.size() > 0) {
-                // TODO consider remove empty string
-                bool.filter(
-                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k + Const.ES_UNITS.KEYWORD), (List<String>) args.get(k)));
+
+                // TODO
+                if (k.equals(Const.BENTO_FIELDS.AGE_AT_INDEX)) {
+
+                    bool.filter(QueryBuilders.rangeQuery(Const.BENTO_FIELDS.AGE_AT_INDEX)
+                            .gte(list.get(0))
+                            .lte(list.get(1)));
+                } else {
+                    // TODO consider remove empty string
+                    bool.filter(
+                            QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
+
+                }
             }
+
         });
         return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
     }
@@ -560,7 +579,20 @@ public class ESService {
                         .field(field));
     }
 
+
+    public SearchSourceBuilder createRangeQuery_Test(Map<String, Object> args) {
+        QueryBuilder query = createFilterQuery(Const.BENTO_FIELDS.AGE_AT_INDEX, args);
+        return new SearchSourceBuilder()
+                .size(0)
+                .query(query)
+                .aggregation(AggregationBuilders
+                        .max("max").field(Const.BENTO_FIELDS.AGE_AT_INDEX))
+                .aggregation(AggregationBuilders
+                        .min("min").field(Const.BENTO_FIELDS.AGE_AT_INDEX));
+    }
+
     // TODO Filter Param
+    // TODO To Be DELETED
     public SearchSourceBuilder createRangeQuery() {
         SearchSourceBuilder builder = new SearchSourceBuilder();
 //        Map<String, Object> params = Map.of(

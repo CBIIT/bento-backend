@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -275,7 +276,7 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TUMOR_SIZE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD, query)))
+                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD, query)))
                         .typeMapper(typeMapper.getAggregate()).build(),
 
                 MultipleRequests.builder()
@@ -595,23 +596,89 @@ public class BentoFilterTest {
     @Test
     public void testFilter() throws IOException {
 
-        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, "A: RS 0-10, assigned endocrine therapy alone");
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        bool.filter(
+                QueryBuilders.termsQuery(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD, List.of("Positive")));
+//        bool.filter(
+//                QueryBuilders.termsQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, List.of("A: RS 0-10, assigned endocrine therapy alone", "C: RS 11-25, randomized to chemo + endocrine therapy")));
+//        bool.filter(
+//                QueryBuilders.termsQuery(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD, List.of("Medullary Carcinoma")));
+
+
+//        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, "A: RS 0-10, assigned endocrine therapy alone");
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(0)
-                .query(query)
+                .query(bool)
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
                         .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
 
-
         SearchSourceBuilder builder2 = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD));
+
+        SearchSourceBuilder builder3 = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD));
+
+
+        SearchSourceBuilder builder3_Compare = new SearchSourceBuilder()
                 .size(0)
                 .query(QueryBuilders.matchAllQuery())
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD));
+
+        SearchSourceBuilder builder4 = new SearchSourceBuilder()
+                .query(bool)
+                .size(0)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                        .subAggregation(
+                                AggregationBuilders
+                                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                                        .field(BENTO_FIELDS.STUDY_ACRONYM + Const.ES_UNITS.KEYWORD)
+                        ));
+
+
+        SearchSourceBuilder builder05 = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD));
+
+        SearchSourceBuilder builder06 = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD));
+
+
+        SearchSourceBuilder builder07 = new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD));
+
 
         builder.size(0);
         List<MultipleRequests> requests = List.of(
@@ -625,15 +692,106 @@ public class BentoFilterTest {
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder2))
-                        .typeMapper(typeMapper.getAggregate()).build());
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES + "COMPARE")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder3_Compare))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_ARMS_PROGRAM)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder4))
+                        .typeMapper(typeMapper.getArmProgram()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder05))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PR_STATUS)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder06))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(builder07))
+                        .typeMapper(typeMapper.getAggregate()).build()
+        );
 
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
-        Object obj = result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
-        System.out.println(obj);
+        List<Map<String, Object>>  test01Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
+        assertThat(test01Result.size(), is(greaterThan(0)));
+
+        List<Map<String, Object>>  test02Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY);
+        assertThat(test02Result.size(), is(greaterThan(0)));
+
+        List<Map<String, Object>>  test03Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES);
+        assertThat(test03Result.size(), is(greaterThan(0)));
+
+        List<Map<String, Object>>  test04Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
+        assertThat(test04Result.size(), is(greaterThan(0)));
+
+        List<Map<String, Object>>  test05Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS);
+        assertThat(test05Result.size(), is(greaterThan(0)));
+
+        List<Map<String, Object>>  test06Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_PR_STATUS);
+        assertThat(test06Result.size(), is(greaterThan(0)));
+
+        List<Map<String, Object>>  test07Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM);
+        assertThat(test07Result.size(), is(greaterThan(0)));
+
+    }
 
 
+
+
+    public QueryBuilder createBentoBoolFromParams(Map<String, Object> args) {
+        Map<String, Object> cloneMap = new HashMap<>(args);
+        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+        cloneMap.keySet().removeAll(sets);
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        // TODO TOBE DELETED
+        Map<String, String> keyMap= new HashMap<>();
+        // Subject Index
+        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("rc_scores", "recurrence_score");
+        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
+        // Files Index
+        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
+
+        cloneMap.forEach((k,v)->{
+            List<String> list = (List<String>) args.get(k);
+            if (list.size() > 0) {
+                // TODO consider remove empty string
+                bool.filter(
+                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
+            }
+        });
+        return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
     }
 
 

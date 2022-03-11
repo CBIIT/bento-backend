@@ -1368,25 +1368,25 @@ public class BentoEsFilter implements DataFetcher {
                         .name(Bento_GraphQL_KEYS.NO_OF_SUBJECTS)
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SUBJECTS)
-                                .source(builder))
+                                .source(esService.createTermsAggSourceTestTest("", args)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.NO_OF_SAMPLES)
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SAMPLES)
-                                .source(builder))
+                                .source(esService.createTermsAggSourceTestTest("", args)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(builder))
+                                .source(esService.createTermsAggSourceTestTest("", args)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.NO_OF_FILES)
                         .request(new SearchRequest() // GET REQEUST
                                 .indices(BENTO_INDEX.SUBJECTS)
-                                .source(builder))
+                                .source(esService.createTermsAggSourceTestTest("", args)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PROGRAM)
@@ -1395,12 +1395,12 @@ public class BentoEsFilter implements DataFetcher {
                                 .source(esService.createTermsAggSourceTestTest(BENTO_FIELDS.PROGRAM+ Const.ES_UNITS.KEYWORD, args))
                         )
                         .typeMapper(typeMapper.getAggregate()).build(),
-                // TODO
+
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM)
                         .request(new SearchRequest()
-                                .indices(BENTO_INDEX.PROGRAMS)
-                                .source(esService.createTermsAggSourceFilter(BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, args)))
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(esService.createTermsAggSourceFilter(BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD, args)))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
                         .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY)

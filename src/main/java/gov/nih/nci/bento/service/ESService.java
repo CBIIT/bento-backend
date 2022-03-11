@@ -467,30 +467,15 @@ public class ESService {
                         .field(field));
 
     }
-
+    // TODO
     private QueryBuilder createFilterQuery(String field, Map<String, Object> args) {
-        // TODO
+
         Map<String, Object> cloneMap = new HashMap<>(args);
         Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
         cloneMap.keySet().removeAll(sets);
         BoolQueryBuilder bool = new BoolQueryBuilder();
         // TODO TOBE DELETED
-        Map<String, String> keyMap= new HashMap<>();
-        // Subject Index
-        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("rc_scores", "recurrence_score" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
-        // Files Index
-        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
+        Map<String, String> keyMap= getQueryParamMap();
 
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
@@ -505,12 +490,8 @@ public class ESService {
         return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
     }
 
-    public QueryBuilder createQuery(Map<String, Object> args) {
-        Map<String, Object> cloneMap = new HashMap<>(args);
-        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
-        cloneMap.keySet().removeAll(sets);
-        BoolQueryBuilder bool = new BoolQueryBuilder();
-        // TODO TOBE DELETED
+    // TODO temporary use
+    private Map<String, String> getQueryParamMap() {
         Map<String, String> keyMap= new HashMap<>();
         // Subject Index
         keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
@@ -527,6 +508,16 @@ public class ESService {
         keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
         keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
         keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
+        return keyMap;
+    }
+
+    public QueryBuilder createQuery(Map<String, Object> args) {
+        Map<String, Object> cloneMap = new HashMap<>(args);
+        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+        cloneMap.keySet().removeAll(sets);
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        // TODO TOBE DELETED
+        Map<String, String> keyMap= getQueryParamMap();
 
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
@@ -597,23 +588,7 @@ public class ESService {
         cloneMap.keySet().removeAll(sets);
         BoolQueryBuilder bool = new BoolQueryBuilder();
         // TODO TOBE DELETED
-        Map<String, String> keyMap= new HashMap<>();
-        // Subject Index
-        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("rc_scores", "recurrence_score" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
-        // Files Index
-        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
-
+        Map<String, String> keyMap= getQueryParamMap();
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
             if (list.size() > 0) {

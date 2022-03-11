@@ -1,4 +1,6 @@
-FROM $ECR_REPO/bento-backend:release
+ARG ECR_REPO
+
+FROM ${ECR_REPO}/bento-backend:release
 MAINTAINER icdc devops team
 
 RUN rm -rf /usr/local/tomcat/webapps/ROOT

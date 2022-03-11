@@ -71,26 +71,36 @@ public class ESService {
     public Map<String, Object> elasticMultiSend(List<MultipleRequests> requests) throws IOException {
         MultiSearchRequest multiRequests = new MultiSearchRequest();
         requests.forEach(r->multiRequests.add(r.getRequest()));
-        MultiSearchResponse response = elasticClient.msearch(multiRequests, RequestOptions.DEFAULT);
-        MultiSearchResponse.Item[] responseResponses = response.getResponses();
-
-        final int[] index = {0};
         Map<String, Object> result = new HashMap<>();
-        List.of(responseResponses).forEach(item->{
-            MultipleRequests data = requests.get(index[0]);
-            result.put(data.getName(),data.getTypeMapper().getResolver(item.getResponse(),null));
-            index[0] += 1;
-        });
+        try {
+            MultiSearchResponse response = elasticClient.msearch(multiRequests, RequestOptions.DEFAULT);
+            MultiSearchResponse.Item[] responseResponses = response.getResponses();
+            final int[] index = {0};
+
+            List.of(responseResponses).forEach(item->{
+                MultipleRequests data = requests.get(index[0]);
+                result.put(data.getName(),data.getTypeMapper().getResolver(item.getResponse(),null));
+                index[0] += 1;
+            });
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
+
         return result;
     }
 
     public JsonObject send(Request request) throws IOException {
-        Response response = client.performRequest(request);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200) {
-            String msg = "Elasticsearch returned code: " + statusCode;
-            logger.error(msg);
-            throw new IOException(msg);
+        Response response = null;
+        try {
+            response = client.performRequest(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200) {
+                String msg = "Elasticsearch returned code: " + statusCode;
+                logger.error(msg);
+                throw new IOException(msg);
+            }
+        } catch (Exception e) {
+            logger.error(e.toString());
         }
         return getJSonFromResponse(response);
     }
@@ -391,6 +401,7 @@ public class ESService {
                 JsonElement element = searchHits.get(i).getAsJsonObject().get("_source").getAsJsonObject().get(dataField);
                 row.put(propName, getValue(element));
             }
+            // TODO Get Only One Highlight Element
             if (highlights != null) {
                 for (String[] highlight: highlights) {
                     String hlName = highlight[0];
@@ -445,9 +456,95 @@ public class ESService {
                 .build();
     }
 
-    public SearchSourceBuilder createTermsAggSource(String field) {
+    public SearchSourceBuilder createTermsAggSourceFilter(String field, Map<String, Object> args) {
+        QueryBuilder queryBuilder = createFilterQuery(field, args);
         return new SearchSourceBuilder()
                 .size(0)
+                .query(queryBuilder)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(field));
+
+    }
+
+    private QueryBuilder createFilterQuery(String field, Map<String, Object> args) {
+        // TODO
+        Map<String, Object> cloneMap = new HashMap<>(args);
+        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+        cloneMap.keySet().removeAll(sets);
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        // TODO TOBE DELETED
+        Map<String, String> keyMap= new HashMap<>();
+        // Subject Index
+        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("rc_scores", "recurrence_score" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
+        // Files Index
+        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
+
+        cloneMap.forEach((k,v)->{
+            List<String> list = (List<String>) args.get(k);
+
+            String key = keyMap.getOrDefault(k, k);
+            if (list.size() > 0 && !key.replace(Const.ES_UNITS.KEYWORD, "").equals(field.replace(Const.ES_UNITS.KEYWORD, ""))) {
+                // TODO consider remove empty string
+                bool.filter(
+                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
+            }
+        });
+        return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
+    }
+
+    public QueryBuilder createQuery(Map<String, Object> args) {
+        Map<String, Object> cloneMap = new HashMap<>(args);
+        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+        cloneMap.keySet().removeAll(sets);
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        // TODO TOBE DELETED
+        Map<String, String> keyMap= new HashMap<>();
+        // Subject Index
+        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("rc_scores", Const.BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
+        // Files Index
+        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
+
+        cloneMap.forEach((k,v)->{
+            List<String> list = (List<String>) args.get(k);
+            if (list.size() > 0) {
+                // TODO consider remove empty string
+                bool.filter(
+                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k + Const.ES_UNITS.KEYWORD), (List<String>) args.get(k)));
+            }
+        });
+        return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
+    }
+
+
+    public SearchSourceBuilder createTermsAggSourceTestTest(String field, Map<String, Object> args) {
+        // TODO
+        return new SearchSourceBuilder()
+                .size(0)
+                .query(createQuery(args))
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
@@ -457,7 +554,7 @@ public class ESService {
     public SearchSourceBuilder createTermsAggSourceTest(String field, QueryBuilder query) {
         return new SearchSourceBuilder()
                 .size(0)
-                .query(query)
+                .query(QueryBuilders.matchAllQuery())
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
@@ -487,6 +584,7 @@ public class ESService {
                 )
                 .from(param.getOffSet())
                 .sort(
+                        // TODO Keyword OrderBY
                         param.getOrderBy().equals("") ? defaultField : param.getOrderBy(),
                         param.getSortDirection())
                 .size(param.getPageSize());
@@ -501,29 +599,29 @@ public class ESService {
         // TODO TOBE DELETED
         Map<String, String> keyMap= new HashMap<>();
         // Subject Index
-        keyMap.put("diagnoses", "diagnosis");
-        keyMap.put("rc_scores", "recurrence_score");
-        keyMap.put("tumor_sizes", "tumor_size");
-        keyMap.put("chemo_regimen", "chemotherapy");
-        keyMap.put("tumor_grades", "tumor_grade");
-        keyMap.put("subject_ids", "subject_id");
-        keyMap.put("studies", "study_info");
-        keyMap.put("meno_status", "menopause_status");
-        keyMap.put("programs", "program");
-        keyMap.put("endo_therapies", "endocrine_therapy");
+        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("rc_scores", "recurrence_score" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
         // Files Index
-        keyMap.put("file_ids", "file_id");
-        keyMap.put("file_names", "file_name");
-        keyMap.put("sample_ids", "sample_id");
+        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
 
         cloneMap.forEach((k,v)->{
             List<String> list = (List<String>) args.get(k);
             if (list.size() > 0) {
                 // TODO consider remove empty string
-                bool.should(
-                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
+                bool.filter(
+                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k + Const.ES_UNITS.KEYWORD), (List<String>) args.get(k)));
             }
         });
-        return bool.should().size() > 0 ? bool : QueryBuilders.matchAllQuery();
+        return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
     }
 }

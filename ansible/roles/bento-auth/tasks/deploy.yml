@@ -14,6 +14,8 @@
           value: "{{auth_version}}"
         - name: COOKIE_SECRET
           value: "{{cookie_secret}}"
+        - name: SESSION_TIMEOUT
+          value: 60
         - name: IDP 
           value: "{{idp_provider}}"
         - name: CLIENT_ID

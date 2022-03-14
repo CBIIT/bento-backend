@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.model.search.query;
 
+import gov.nih.nci.bento.classes.FilterParam;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -14,26 +15,22 @@ import static gov.nih.nci.bento.constants.Const.getTempQueryParamMap;
 public class RangeFilter extends AbstractFilter {
 
 
-    public RangeFilter(Map<String, Object> params, String selectedField, boolean... isFilter) {
-        super(params, selectedField, isFilter);
+    public RangeFilter(FilterParam param) {
+        super(param);
     }
 
     @Override
-    SearchSourceBuilder getFilter(Map<String, Object> args, String selectedField) {
-        QueryBuilder query = createQuery(selectedField, args);
+    SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args) {
+        QueryBuilder query = createQuery(param.getSelectedField(), args);
         return new SearchSourceBuilder()
                 .size(0)
                 .query(query)
                 .aggregation(AggregationBuilders
-                        .max("max").field(selectedField))
+                        .max("max").field(param.getSelectedField()))
                 .aggregation(AggregationBuilders
-                        .min("min").field(selectedField));
+                        .min("min").field(param.getSelectedField()));
     }
 
-    @Override
-    SearchSourceBuilder getSubAggFilter(Map<String, Object> args, String selectedField, String subAggField) {
-        throw new IllegalArgumentException();
-    }
     // TODO
     private QueryBuilder getRangeType(String field, List<String> strList) {
         return QueryBuilders.rangeQuery(field)

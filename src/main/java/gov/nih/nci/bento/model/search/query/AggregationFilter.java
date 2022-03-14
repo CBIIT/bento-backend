@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.model.search.query;
 
+import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.constants.Const;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -14,25 +15,8 @@ import static gov.nih.nci.bento.constants.Const.getTempQueryParamMap;
 
 public class AggregationFilter extends AbstractFilter {
 
-    public AggregationFilter(Map<String, Object> params, String selectedField, boolean... isExcludeField) {
-        super(params, selectedField, isExcludeField);
-    }
-
-    @Override
-    SearchSourceBuilder getFilter(Map<String, Object> args, String selectedField) {
-        // TODO
-        return new SearchSourceBuilder()
-                .size(0)
-                .query(createQuery(args))
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(selectedField));
-    }
-
-    @Override
-    SearchSourceBuilder getSubAggFilter(Map<String, Object> args, String selectedField, String subAggField) {
-        throw new IllegalArgumentException();
+    public AggregationFilter(FilterParam param) {
+        super(param);
     }
 
     // TODO DELETED Custom Map
@@ -48,5 +32,17 @@ public class AggregationFilter extends AbstractFilter {
             }
         });
         return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
+    }
+
+    @Override
+    SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args) {
+        // TODO
+        return new SearchSourceBuilder()
+                .size(0)
+                .query(createQuery(args))
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(param.getSelectedField()));
     }
 }

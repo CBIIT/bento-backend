@@ -525,11 +525,7 @@ public class ESServiceImpl implements EsSearch {
         // TODO
         return new SearchSourceBuilder()
                 .size(0)
-                .query(createQuery(args))
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(field));
+                .query(createQuery(args));
     }
 
     public SearchSourceBuilder createPageSourceBuilder(QueryParam param, String defaultField) {

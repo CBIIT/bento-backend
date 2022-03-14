@@ -461,26 +461,6 @@ public class ESServiceImpl implements EsSearch {
     private interface GetFilterType<T> {
         T getType(String key, List<Object> list, Map<String, String> keyMap);
     }
-    // TODO
-    private QueryBuilder createFilterQuery_Test(String field, Map<String, Object> args, GetFilterType<QueryBuilder> filterType) {
-
-        Map<String, Object> cloneMap = new HashMap<>(args);
-        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
-        cloneMap.keySet().removeAll(sets);
-        BoolQueryBuilder bool = new BoolQueryBuilder();
-        // TODO TOBE DELETED
-        Map<String, String> keyMap= getQueryParamMap();
-
-        cloneMap.forEach((k,v)->{
-            List<String> list = (List<String>) args.get(k);
-            String key = keyMap.getOrDefault(k, k);
-            if (list.size() > 0 && !key.replace(Const.ES_UNITS.KEYWORD, "").equals(field.replace(Const.ES_UNITS.KEYWORD, ""))) {
-                // TODO
-                bool.filter(filterType.getType(k, Collections.singletonList(list), keyMap));
-            }
-        });
-        return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
-    }
 
     // TODO temporary use
     private Map<String, String> getQueryParamMap() {
@@ -550,51 +530,6 @@ public class ESServiceImpl implements EsSearch {
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
                         .field(field));
-    }
-
-    public SearchSourceBuilder createTermsAggSourceFilter(String field, Map<String, Object> args) {
-        GetFilterType<QueryBuilder> queryType = (key, list, keyMap)-> QueryBuilders.termsQuery(keyMap.getOrDefault(key, key), (List<String>) args.get(key));
-        QueryBuilder queryBuilder = createFilterQuery_Test(field, args,queryType);
-        return new SearchSourceBuilder()
-                .size(0)
-                .query(queryBuilder)
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(field));
-    }
-
-
-    public SearchSourceBuilder createRangeQuery_Test(Map<String, Object> args) {
-
-        GetFilterType<QueryBuilder> queryType = (key, list, keyMap)->{
-            if (key.equals(Const.BENTO_FIELDS.AGE_AT_INDEX.equals(key))) {
-                return QueryBuilders.rangeQuery(Const.BENTO_FIELDS.AGE_AT_INDEX)
-                        .gte(list.get(0))
-                        .lte(list.get(1));
-            }
-            return QueryBuilders.termsQuery(keyMap.getOrDefault(key, key), (List<String>) args.get(key));
-        };
-
-        QueryBuilder query = createFilterQuery_Test(Const.BENTO_FIELDS.AGE_AT_INDEX, args, queryType);
-        return new SearchSourceBuilder()
-                .size(0)
-                .query(query)
-                .aggregation(AggregationBuilders
-                        .max("max").field(Const.BENTO_FIELDS.AGE_AT_INDEX))
-                .aggregation(AggregationBuilders
-                        .min("min").field(Const.BENTO_FIELDS.AGE_AT_INDEX));
-    }
-
-    // TODO Filter Param
-    // TODO To Be DELETED
-    public SearchSourceBuilder createRangeQuery() {
-        return new SearchSourceBuilder()
-                .size(0)
-                .aggregation(AggregationBuilders
-                        .max("max").field(Const.BENTO_FIELDS.AGE_AT_INDEX))
-                .aggregation(AggregationBuilders
-                        .min("min").field(Const.BENTO_FIELDS.AGE_AT_INDEX));
     }
 
     public SearchSourceBuilder createPageSourceBuilder(QueryParam param, String defaultField) {

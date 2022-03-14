@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.model.search.query;
 
+import gov.nih.nci.bento.constants.Const;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -11,30 +12,34 @@ import java.util.Map;
 
 import static gov.nih.nci.bento.constants.Const.getTempQueryParamMap;
 
-public class RangeFilter extends AbstractFilter {
+public class SubAggregationFilter extends AbstractFilter {
 
-
-    public RangeFilter(Map<String, Object> params, String selectedField, boolean... isFilter) {
-        super(params, selectedField, isFilter);
+    public SubAggregationFilter(Map<String, Object> params, String selectedField, String subField) {
+        super(params, selectedField, subField);
     }
 
     @Override
     SearchSourceBuilder getFilter(Map<String, Object> args, String selectedField) {
-        QueryBuilder query = createQuery(selectedField, args);
-        return new SearchSourceBuilder()
-                .size(0)
-                .query(query)
-                .aggregation(AggregationBuilders
-                        .max("max").field(selectedField))
-                .aggregation(AggregationBuilders
-                        .min("min").field(selectedField));
+        throw new IllegalArgumentException();
     }
 
     @Override
     SearchSourceBuilder getSubAggFilter(Map<String, Object> args, String selectedField, String subAggField) {
-        throw new IllegalArgumentException();
+        return new SearchSourceBuilder()
+                .query(createQuery(args))
+                .size(0)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(selectedField)
+                        .subAggregation(
+                                AggregationBuilders
+                                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                                        .field(subAggField)
+                        ));
     }
-    // TODO
+
     private QueryBuilder getRangeType(String field, List<String> strList) {
         return QueryBuilders.rangeQuery(field)
                 .gte(strList.get(0))
@@ -42,7 +47,7 @@ public class RangeFilter extends AbstractFilter {
     }
 
     // TODO DELETED Custom Map
-    private QueryBuilder createQuery(String field, Map<String, Object> args) {
+    private QueryBuilder createQuery(Map<String, Object> args) {
         BoolQueryBuilder bool = new BoolQueryBuilder();
         Map<String, String> keyMap= getTempQueryParamMap();
         args.forEach((k,v)->{
@@ -50,7 +55,8 @@ public class RangeFilter extends AbstractFilter {
             if (list.size() > 0) {
                 QueryBuilder builder =QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k));
                 // Set Range Query Or Default Term Query
-                if (field.equals(k)) builder = getRangeType(keyMap.getOrDefault(k, k), list);
+                // TODO
+                if (k.equals(Const.BENTO_FIELDS.AGE_AT_INDEX)) getRangeType(keyMap.getOrDefault(k, k), list);
                 bool.filter(builder);
             }
         });

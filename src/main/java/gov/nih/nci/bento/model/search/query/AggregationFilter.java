@@ -14,8 +14,8 @@ import static gov.nih.nci.bento.constants.Const.getTempQueryParamMap;
 
 public class AggregationFilter extends AbstractFilter {
 
-    public AggregationFilter(Map<String, Object> params, String selectedField, boolean... isFilter) {
-        super(params, selectedField, isFilter);
+    public AggregationFilter(Map<String, Object> params, String selectedField, boolean... isExcludeField) {
+        super(params, selectedField, isExcludeField);
     }
 
     @Override
@@ -28,6 +28,11 @@ public class AggregationFilter extends AbstractFilter {
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
                         .field(selectedField));
+    }
+
+    @Override
+    SearchSourceBuilder getSubAggFilter(Map<String, Object> args, String selectedField, String subAggField) {
+        throw new IllegalArgumentException();
     }
 
     // TODO DELETED Custom Map

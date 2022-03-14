@@ -48,6 +48,12 @@ pipeline {
         description: 'Choose project to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'bento,gmb,icdc,ctdc,c3dc' )
+    extendedChoice( 
+        name: 'EnableAuthService', 
+        defaultValue: 'false', 
+        description: 'Choose enable auth services', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'true,false' )
    	gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Downloader_Tag', 
@@ -144,7 +150,8 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                      tier: "${params.Environment}",
-                     project: "${params.Project}"
+                     project: "${params.Project}",
+                     auth_enabled: "${params.EnableAuthService}"
                     ],
 					colorized: true)
   			}

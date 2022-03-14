@@ -42,7 +42,12 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,perf,icdc,prod')
-
+    extendedChoice( 
+        name: 'EnableAuthService', 
+        defaultValue: 'false', 
+        description: 'Choose enable auth services', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'true,false' )
 
   }
   options {
@@ -79,7 +84,8 @@ pipeline {
                 playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
-                     placeholder: 'yes',
+                    auth_enabled: "${params.EnableAuthService}",
+
                     ],
           colorized: true)
         }

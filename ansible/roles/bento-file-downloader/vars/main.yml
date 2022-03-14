@@ -19,3 +19,4 @@ downloader_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
 cloudfront_origin_id: "{{project}}_files_origin_id"
 cloudfront_key_group_name: "{{project}}-{{tier}}-pub-key"
 cloudfront_private_key: "{{ lookup('aws_ssm', 'bento_files_cloudfront_private_key', region='us-east-1' ) }}"
+auth_enabled: false

@@ -43,6 +43,12 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,perf,icdc,prod')
     extendedChoice( 
+        name: 'Project', 
+        defaultValue: 'bento', 
+        description: 'Choose project to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'bento,gmb,icdc,ctdc,c3dc' )
+    extendedChoice( 
         name: 'EnableAuthService', 
         defaultValue: 'false', 
         description: 'Choose enable auth services', 
@@ -85,7 +91,8 @@ pipeline {
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
                     auth_enabled: "${params.EnableAuthService}",
-
+                    project: "${params.Project}",
+                    tier: "${params.Environment}",
                     ],
           colorized: true)
         }

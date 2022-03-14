@@ -20,7 +20,7 @@ public class RangeFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args) {
+    SearchSourceBuilder getFilter(FilterParam param, Map<String, Object> args) {
         QueryBuilder query = createQuery(param.getSelectedField(), args);
         return new SearchSourceBuilder()
                 .size(0)

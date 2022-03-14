@@ -35,7 +35,7 @@ public class AggregationFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args) {
+    SearchSourceBuilder getFilter(FilterParam param, Map<String, Object> args) {
         // TODO
         return new SearchSourceBuilder()
                 .size(0)

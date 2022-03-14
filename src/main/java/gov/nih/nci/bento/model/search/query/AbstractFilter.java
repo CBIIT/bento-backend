@@ -19,20 +19,13 @@ public abstract class AbstractFilter {
 
     public AbstractFilter(FilterParam param) {
         this.param = param;
-        init(param.getArgs(), param.getSelectedField(), param.isExcludeFilter());
         Map<String, Object> map = new HashMap<>(param.getArgs());
-        removeSortParams(map);
-        args = map;
-    }
-
-    private void init(Map<String, Object> params, String selectedField, boolean... isFilter) {
-        Map<String, Object> map = new HashMap<>(params);
         removeSortParams(map);
         // Filter; excludes its field
         // TODO
         Map<String, String> keyMap= getOppositeTempQueryParamMap();
-        if (isFilter.length > 0) {
-            String excludedKey = keyMap.getOrDefault(selectedField, selectedField);
+        if (param.isExcludeFilter()) {
+            String excludedKey = keyMap.getOrDefault(param.getSelectedField(), param.getSelectedField());
             if (map.containsKey(excludedKey)) map.remove(excludedKey);
         }
         args = map;
@@ -45,8 +38,8 @@ public abstract class AbstractFilter {
     }
 
     public SearchSourceBuilder getSourceFilter() {
-        return getFilterTest(param, args);
+        return getFilter(param, args);
     }
 
-    abstract SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args);
+    abstract SearchSourceBuilder getFilter(FilterParam param, Map<String, Object> args);
 }

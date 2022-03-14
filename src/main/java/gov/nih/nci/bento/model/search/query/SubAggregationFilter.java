@@ -20,7 +20,7 @@ public class SubAggregationFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args) {
+    SearchSourceBuilder getFilter(FilterParam param, Map<String, Object> args) {
         return new SearchSourceBuilder()
                 .query(createQuery(args))
                 .size(0)

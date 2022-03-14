@@ -20,7 +20,7 @@ public class SearchCountFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilterTest(FilterParam param, Map<String, Object> args) {
+    SearchSourceBuilder getFilter(FilterParam param, Map<String, Object> args) {
         return new SearchSourceBuilder()
                 .size(0)
                 .query(createQuery(args));

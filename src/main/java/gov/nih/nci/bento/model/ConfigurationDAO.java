@@ -28,12 +28,12 @@ public class ConfigurationDAO {
 	    String project = env.getProperty("project", "bento").toLowerCase();
 	    switch (project) {
 			case "icdc":
-				return new IcdcEsFilter(typeMapper);
+				return new IcdcEsSearch(typeMapper);
 			case "bento":
-				return new BentoEsFilter(typeMapper);
+				return new BentoEsSearch(typeMapper);
 			default:
 				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
-				return new BentoEsFilter(typeMapper);
+				return new BentoEsSearch(typeMapper);
 		}
 	}
 

@@ -27,8 +27,8 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 
 @RequiredArgsConstructor
-public class IcdcEsFilter implements DataFetcher {
-    private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
+public class IcdcEsSearch implements DataFetcher {
+    private static final Logger logger = LogManager.getLogger(IcdcEsSearch.class);
     @Autowired
     ESService esService;
 

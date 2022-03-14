@@ -15,9 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -29,8 +27,8 @@ import java.util.*;
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 @RequiredArgsConstructor
-public class BentoEsFilter implements DataFetcher {
-    private static final Logger logger = LogManager.getLogger(BentoEsFilter.class);
+public class BentoEsSearch implements DataFetcher {
+    private static final Logger logger = LogManager.getLogger(BentoEsSearch.class);
 
     // parameters used in queries
     final String PAGE_SIZE = "first";
@@ -931,7 +929,7 @@ public class BentoEsFilter implements DataFetcher {
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input).boost((float) 1.50))
                         .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input))),
                         // Set Conditional Integer Query
-                        !StrUtil.getIntText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
+                        QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
@@ -988,7 +986,7 @@ public class BentoEsFilter implements DataFetcher {
                                 .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, input)),
                                 // Set Conditional Bool Query
-                                !StrUtil.getBoolText(input).isEmpty(), QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(input)))
+                                QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(input)))
                 ).highlighter(
                         new HighlightBuilder()
                                 // Index model_properties
@@ -1126,11 +1124,26 @@ public class BentoEsFilter implements DataFetcher {
 
         return result;
     }
+
     // Add Conditional Query
-    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, boolean condition, QueryBuilder query) {
-        if (condition)
-            builder.should(query);
+    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, QueryBuilder... query) {
+        List<QueryBuilder> builders = Arrays.asList(query);
+        builders.forEach(q->{
+            if (q.getName().equals("match")) {
+                MatchQueryBuilder matchQuery = getQuery(q);
+                if (!matchQuery.value().equals("")) builder.should(q);
+            } else if (q.getName().equals("term")) {
+                TermQueryBuilder termQuery = getQuery(q);
+                if (!termQuery.value().equals("")) builder.should(q);
+            }
+        });
         return builder;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getQuery(QueryBuilder q) {
+        String queryType = q.getName();
+        return (T) q.queryName(queryType);
     }
 
     private List paginate(List org, int pageSize, int offset) {

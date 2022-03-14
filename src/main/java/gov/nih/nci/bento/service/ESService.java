@@ -32,7 +32,7 @@ import java.util.*;
 
 @Service("ESService")
 @RequiredArgsConstructor
-public class ESService {
+public class ESService implements IEsSearch {
     public static final String SCROLL_ENDPOINT = "/_search/scroll";
     public static final String JSON_OBJECT = "jsonObject";
     public static final String AGGS = "aggs";
@@ -62,12 +62,14 @@ public class ESService {
         elasticClient=null;
     }
 
+    @Override
     public <T> T elasticSend(Map<String, String> resultType, SearchRequest request, ITypeMapper mapper) throws IOException {
 
         SearchResponse searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);
         return (T) mapper.getResolver(searchResponse, resultType);
     }
 
+    @Override
     public Map<String, Object> elasticMultiSend(List<MultipleRequests> requests) throws IOException {
         MultiSearchRequest multiRequests = new MultiSearchRequest();
         requests.forEach(r->multiRequests.add(r.getRequest()));
@@ -82,7 +84,7 @@ public class ESService {
                 result.put(data.getName(),data.getTypeMapper().getResolver(item.getResponse(),null));
                 index[0] += 1;
             });
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error(e.toString());
         }
 
@@ -99,7 +101,7 @@ public class ESService {
                 logger.error(msg);
                 throw new IOException(msg);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error(e.toString());
         }
         return getJSonFromResponse(response);

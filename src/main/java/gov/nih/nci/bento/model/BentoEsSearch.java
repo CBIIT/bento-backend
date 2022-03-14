@@ -7,7 +7,7 @@ import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
-import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.utility.StrUtil;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
@@ -72,9 +72,9 @@ public class BentoEsSearch implements DataFetcher {
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
     @Autowired
-    ESService esService;
+    ESServiceImpl esService;
 
-    public final TypeMapper typeMapper;
+    public final TypeMapperImpl typeMapper;
 
     private final Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -894,7 +894,7 @@ public class BentoEsSearch implements DataFetcher {
             query = addHighlight(query, category);
 
             if (combinedCategories.contains(resultFieldName)) {
-                query.put("size", ESService.MAX_ES_SIZE);
+                query.put("size", ESServiceImpl.MAX_ES_SIZE);
                 query.put("from", 0);
             } else {
                 query.put("size", size);
@@ -1204,7 +1204,7 @@ public class BentoEsSearch implements DataFetcher {
                         "pre_tags", GS_HIGHLIGHT_DELIMITER,
                         "post_tags", GS_HIGHLIGHT_DELIMITER
                     ),
-                "size", ESService.MAX_ES_SIZE
+                "size", ESServiceImpl.MAX_ES_SIZE
         );
         Request request = new Request("GET", GS_ABOUT_END_POINT);
         request.setJsonEntity(gson.toJson(query));
@@ -1279,7 +1279,7 @@ public class BentoEsSearch implements DataFetcher {
         Map<String, Object> query = esService.buildListQuery(params, Set.of(), true);
         Request request = new Request("GET", SUBJECT_IDS_END_POINT);
 
-        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+        return esService.collectPage(request, query, properties, ESServiceImpl.MAX_ES_SIZE, 0);
     }
 
     private List<Map<String, Object>> filesInListTest(QueryParam param) throws IOException {

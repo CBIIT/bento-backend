@@ -21,7 +21,7 @@ public class ConfigurationDAO {
 
 	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 	private final Environment env;
-	private final TypeMapper typeMapper;
+	private final TypeMapperImpl typeMapper;
 
 	@Bean
 	public DataFetcher dataFetcher() {

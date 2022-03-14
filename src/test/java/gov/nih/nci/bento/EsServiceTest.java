@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.TypeMapper;
-import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.model.TypeMapperImpl;
+import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import org.elasticsearch.action.search.SearchRequest;
@@ -37,10 +37,10 @@ import static org.junit.Assert.assertNotNull;
 public class EsServiceTest {
 
     @Autowired
-    ESService esService;
+    ESServiceImpl esService;
 
     @Autowired
-    TypeMapper typeMapper;
+    TypeMapperImpl typeMapper;
 
     @Autowired
     private ConfigurationDAO config;

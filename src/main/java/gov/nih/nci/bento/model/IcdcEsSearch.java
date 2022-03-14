@@ -4,7 +4,7 @@ import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
-import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
@@ -30,9 +30,9 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 public class IcdcEsSearch implements DataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsSearch.class);
     @Autowired
-    ESService esService;
+    ESServiceImpl esService;
 
-    public final TypeMapper typeMapper;
+    public final TypeMapperImpl typeMapper;
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

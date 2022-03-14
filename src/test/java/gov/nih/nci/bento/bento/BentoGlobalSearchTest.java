@@ -4,8 +4,8 @@ import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.TypeMapper;
-import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.model.TypeMapperImpl;
+import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.utility.StrUtil;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -33,10 +33,10 @@ import static org.hamcrest.Matchers.*;
 public class BentoGlobalSearchTest {
 
     @Autowired
-    ESService esService;
+    ESServiceImpl esService;
 
     @Autowired
-    TypeMapper typeMapper;
+    TypeMapperImpl typeMapper;
 
     @Autowired
     ConfigurationDAO config;

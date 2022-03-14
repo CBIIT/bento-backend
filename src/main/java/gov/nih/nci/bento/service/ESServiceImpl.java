@@ -5,7 +5,7 @@ import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.ITypeMapper;
+import gov.nih.nci.bento.model.TypeMapper;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import graphql.schema.DataFetchingEnvironment;
@@ -32,7 +32,7 @@ import java.util.*;
 
 @Service("ESService")
 @RequiredArgsConstructor
-public class ESService implements IEsSearch {
+public class ESServiceImpl implements EsSearch {
     public static final String SCROLL_ENDPOINT = "/_search/scroll";
     public static final String JSON_OBJECT = "jsonObject";
     public static final String AGGS = "aggs";
@@ -63,10 +63,10 @@ public class ESService implements IEsSearch {
     }
 
     @Override
-    public <T> T elasticSend(Map<String, String> resultType, SearchRequest request, ITypeMapper mapper) throws IOException {
+    public <T> T elasticSend(Map<String, String> resultType, SearchRequest request, TypeMapper mapper) throws IOException {
 
         SearchResponse searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);
-        return (T) mapper.getResolver(searchResponse, resultType);
+        return (T) mapper.get(searchResponse, resultType);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ESService implements IEsSearch {
 
             List.of(responseResponses).forEach(item->{
                 MultipleRequests data = requests.get(index[0]);
-                result.put(data.getName(),data.getTypeMapper().getResolver(item.getResponse(),null));
+                result.put(data.getName(),data.getTypeMapper().get(item.getResponse(),null));
                 index[0] += 1;
             });
         } catch (RuntimeException e) {

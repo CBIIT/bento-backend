@@ -1,5 +1,8 @@
 package gov.nih.nci.bento.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Const {
 
     public static class GRAPHQL {
@@ -153,6 +156,63 @@ public class Const {
         public static final String MODEL_PROPERTIES = "model_properties";
         public static final String ABOUT = "about_page";
         public static final String MODEL_VALUES = "model_values";
+    }
+
+    // TODO temporary use
+    public static Map<String, String> getTempQueryParamMap() {
+        Map<String, String> keyMap= new HashMap<>();
+        // Subject Index
+        keyMap.put("diagnoses", "diagnosis" + ES_UNITS.KEYWORD);
+        keyMap.put("rc_scores", Const.BENTO_FIELDS.RC_SCORES + ES_UNITS.KEYWORD);
+        keyMap.put("tumor_sizes", "tumor_size" + ES_UNITS.KEYWORD);
+        keyMap.put("chemo_regimen", "chemotherapy" + ES_UNITS.KEYWORD);
+        keyMap.put("tumor_grades", "tumor_grade" + ES_UNITS.KEYWORD);
+        keyMap.put("subject_ids", "subject_id" + ES_UNITS.KEYWORD);
+        keyMap.put("studies", "study_info" + ES_UNITS.KEYWORD);
+        keyMap.put("meno_status", "menopause_status" + ES_UNITS.KEYWORD);
+        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("er_status", "er_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("pr_status", "pr_status" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("tissue_type", "tissue_type" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("composition", "composition" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("association", "association" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_type", "file_type" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("age_at_index", "age_at_index");
+
+        // Files Index
+        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
+        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
+        return keyMap;
+    }
+
+    public static Map<String, String> getOppositeTempQueryParamMap() {
+        Map<String, String> keyMap= new HashMap<>();
+        // Subject Index
+        keyMap.put("diagnosis" + Const.ES_UNITS.KEYWORD, "diagnoses");
+        keyMap.put(Const.BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD, "rc_scores");
+        keyMap.put("tumor_size" + Const.ES_UNITS.KEYWORD, "tumor_sizes");
+        keyMap.put("chemotherapy" + Const.ES_UNITS.KEYWORD, "chemo_regimen");
+        keyMap.put("tumor_grade" + Const.ES_UNITS.KEYWORD, "tumor_grades");
+        keyMap.put("subject_id" + Const.ES_UNITS.KEYWORD, "subject_ids");
+        keyMap.put("study_info" + Const.ES_UNITS.KEYWORD, "studies");
+        keyMap.put("menopause_status" + Const.ES_UNITS.KEYWORD, "meno_status");
+        keyMap.put("program" + Const.ES_UNITS.KEYWORD, "programs");
+        keyMap.put("er_status" + Const.ES_UNITS.KEYWORD, "er_status");
+        keyMap.put("pr_status" + Const.ES_UNITS.KEYWORD, "pr_status");
+        keyMap.put("endocrine_therapy" + Const.ES_UNITS.KEYWORD ,"endo_therapies");
+        keyMap.put("tissue_type" + Const.ES_UNITS.KEYWORD, "tissue_type");
+        keyMap.put("composition" + Const.ES_UNITS.KEYWORD, "composition");
+        keyMap.put("association" + Const.ES_UNITS.KEYWORD,"association");
+        keyMap.put("file_type" + Const.ES_UNITS.KEYWORD,"file_type");
+        keyMap.put("age_at_index", "age_at_index");
+
+        // Files Index
+        keyMap.put("file_id" + Const.ES_UNITS.KEYWORD,"file_ids");
+        keyMap.put("file_name" + Const.ES_UNITS.KEYWORD,"file_names");
+        keyMap.put("sample_id" + Const.ES_UNITS.KEYWORD,"sample_ids");
+        return keyMap;
     }
 
 

@@ -458,19 +458,6 @@ public class ESServiceImpl implements EsSearch {
                 .build();
     }
 
-    public SearchSourceBuilder createTermsAggSourceFilter(String field, Map<String, Object> args) {
-        GetFilterType<QueryBuilder> queryType = (key, list, keyMap)-> QueryBuilders.termsQuery(keyMap.getOrDefault(key, key), (List<String>) args.get(key));
-        QueryBuilder queryBuilder = createFilterQuery_Test(field, args,queryType);
-        return new SearchSourceBuilder()
-                .size(0)
-                .query(queryBuilder)
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(field));
-
-    }
-
     private interface GetFilterType<T> {
         T getType(String key, List<Object> list, Map<String, String> keyMap);
     }
@@ -565,10 +552,12 @@ public class ESServiceImpl implements EsSearch {
                         .field(field));
     }
 
-    public SearchSourceBuilder createTermsAggSourceTest(String field, QueryBuilder query) {
+    public SearchSourceBuilder createTermsAggSourceFilter(String field, Map<String, Object> args) {
+        GetFilterType<QueryBuilder> queryType = (key, list, keyMap)-> QueryBuilders.termsQuery(keyMap.getOrDefault(key, key), (List<String>) args.get(key));
+        QueryBuilder queryBuilder = createFilterQuery_Test(field, args,queryType);
         return new SearchSourceBuilder()
                 .size(0)
-                .query(QueryBuilders.matchAllQuery())
+                .query(queryBuilder)
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)

@@ -15,6 +15,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class ESServiceImpl implements EsSearch {
     }
 
     @Override
-    public Map<String, Object> elasticMultiSend(List<MultipleRequests> requests) throws IOException {
+    public Map<String, Object> elasticMultiSend(@NotNull List<MultipleRequests> requests) throws IOException {
         MultiSearchRequest multiRequests = new MultiSearchRequest();
         requests.forEach(r->multiRequests.add(r.getRequest()));
         Map<String, Object> result = new HashMap<>();

@@ -1,12 +1,15 @@
 package gov.nih.nci.bento.bento;
 
+import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.config.ConfigurationDAO;
+import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
+import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -22,10 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -126,10 +126,8 @@ public class BentoFilterTest {
 
 
     @Test
+    // TODO
     public void fileIDsFromListTest() throws  IOException {
-
-
-
         SearchSourceBuilder builder = new SearchSourceBuilder();
 //        builder.query(QueryBuilders.matchAllQuery());
         // Set Filter
@@ -145,7 +143,6 @@ public class BentoFilterTest {
         returnTypes.put("file_id", "file_id");
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getStrList("file_id"));
-        System.out.println("");
     }
 
     @Test
@@ -153,49 +150,44 @@ public class BentoFilterTest {
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
 
-//
-//        QueryBuilder query = esService.createBentoBoolFromParams(args);
-//
-//        QueryBuilder query = QueryBuilders.matchAllQuery();
-//
-//        builder.size(0);
-//        List<MultipleRequests> requests = List.of(
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.PROGRAMS)
-//                                .source(builder))
-//                        .typeMapper(typeMapper.getIntTotal()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_STUDIES)
-//                        .request(new SearchRequest()
-//                                .indices(Const.BENTO_INDEX.STUDIES)
-//                                .source(builder))
-//                        .typeMapper(typeMapper.getIntTotal()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_SUBJECTS)
-//                        .request(new SearchRequest()
-//                                .indices(Const.BENTO_INDEX.SUBJECTS)
-//                                .source(builder))
-//                        .typeMapper(typeMapper.getIntTotal()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_SAMPLES)
-//                        .request(new SearchRequest()
-//                                .indices(Const.BENTO_INDEX.SAMPLES)
-//                                .source(builder))
-//                        .typeMapper(typeMapper.getIntTotal()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(builder))
-//                        .typeMapper(typeMapper.getIntTotal()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_FILES)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(builder))
-//                        .typeMapper(typeMapper.getIntTotal()).build(),
+        builder.size(0);
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.PROGRAMS)
+                                .source(new SearchSourceBuilder().size(0)))
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_STUDIES)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.STUDIES)
+                                .source(new SearchSourceBuilder().size(0)))
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_SUBJECTS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new SearchSourceBuilder().size(0)))
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_SAMPLES)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SAMPLES)
+                                .source(new SearchSourceBuilder().size(0)))
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(new SearchSourceBuilder().size(0)))
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(Bento_GraphQL_KEYS.NO_OF_FILES)
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(new SearchSourceBuilder().size(0)))
+                        .typeMapper(typeMapper.getIntTotal()).build()
 //                MultipleRequests.builder()
 //                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PROGRAM)
 //                        .request(new SearchRequest()
@@ -429,31 +421,31 @@ public class BentoFilterTest {
 //                                .indices(BENTO_INDEX.SUBJECTS)
 //                                .source(esService.createRangeQuery()))
 //                        .typeMapper(typeMapper.getRange()).build()
-//
-//
-//        );
-//        MultiSearchRequest multiRequests = new MultiSearchRequest();
-//        requests.forEach(r->multiRequests.add(r.getRequest()));
-//
-//        Map<String, Object> result = esService.elasticMultiSend(requests);
-//
-//        long test01 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_PROGRAMS);
-//        assertThat((int) test01, greaterThan(0));
-//
-//        long test02 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_STUDIES);
-//        assertThat((int) test02, greaterThan(0));
-//
-//        long test03 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_SUBJECTS);
-//        assertThat((int) test03, greaterThan(0));
-//
-//        long test04 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_SAMPLES);
-//        assertThat((int) test04, greaterThan(0));
-//
-//        long test05 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES);
-//        assertThat((int) test05, greaterThan(0));
-//
-//        long test06 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_FILES);
-//        assertThat((int) test06, greaterThan(0));
+
+
+        );
+        MultiSearchRequest multiRequests = new MultiSearchRequest();
+        requests.forEach(r->multiRequests.add(r.getRequest()));
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+
+        long test01 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_PROGRAMS);
+        assertThat((int) test01, greaterThan(0));
+
+        long test02 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_STUDIES);
+        assertThat((int) test02, greaterThan(0));
+
+        long test03 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_SUBJECTS);
+        assertThat((int) test03, greaterThan(0));
+
+        long test04 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_SAMPLES);
+        assertThat((int) test04, greaterThan(0));
+
+        long test05 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES);
+        assertThat((int) test05, greaterThan(0));
+
+        long test06 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_FILES);
+        assertThat((int) test06, greaterThan(0));
 //
 //        List<Map<String,Object>> test07 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_PROGRAM);
 //        assertThat(test07.size(), greaterThan(0));
@@ -560,6 +552,29 @@ public class BentoFilterTest {
 //        Map<String, Object> test41 = (Map<String, Object>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE);
 //        assertThat(test41.size(), greaterThan(0));
     }
+
+    @Test
+    public void getRangeTest() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.AGE_AT_INDEX, List.of());
+       SearchRequest request =  new SearchRequest()
+                .indices(BENTO_INDEX.SUBJECTS)
+                .source(new RangeFilter(
+                        FilterParam.builder()
+                                .args(args)
+                                .selectedField(BENTO_FIELDS.AGE_AT_INDEX)
+                                .isExcludeFilter(true)
+                                .build())
+                        .getSourceFilter()
+                );
+        Map<String, String> returnTypes = new HashMap<>();
+        returnTypes.put("age_at_index", "age_at_index");
+
+        Map<String, Object> result = esService.elasticSend(returnTypes, request, typeMapper.getRange());
+        assertThat(result.size(), greaterThan(0));
+    }
+
+
     public SearchSourceBuilder createArmProgramQuery() {
         // TODO Add Filter Query
         return new SearchSourceBuilder()

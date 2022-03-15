@@ -935,7 +935,7 @@ public class BentoEsSearch implements DataFetcher {
                         .typeMapper(typeMapper.getAggregate()).build(),
                 // Range Query
                 MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
+                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(new RangeFilter(

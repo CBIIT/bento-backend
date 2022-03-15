@@ -1,11 +1,11 @@
-package gov.nih.nci.bento.model;
+package gov.nih.nci.bento.search;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.model.search.datafetcher.DataFetcher;
-import gov.nih.nci.bento.model.search.datafetcher.Neo4jDataFetcher;
+import gov.nih.nci.bento.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.search.datafetcher.Neo4jDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;

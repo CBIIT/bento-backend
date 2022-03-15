@@ -1,9 +1,9 @@
 package gov.nih.nci.bento.config;
 
 import gov.nih.nci.bento.model.BentoEsSearch;
-import gov.nih.nci.bento.model.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.model.ICDCEsSearch;
-import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.service.EsSearch;
 import lombok.Getter;

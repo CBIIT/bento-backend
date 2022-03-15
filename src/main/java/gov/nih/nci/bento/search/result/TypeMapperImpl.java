@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.model.search.result;
+package gov.nih.nci.bento.search.result;
 
 import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;

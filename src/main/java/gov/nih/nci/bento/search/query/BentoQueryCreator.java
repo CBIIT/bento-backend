@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.model.search.query;
+package gov.nih.nci.bento.search.query;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;

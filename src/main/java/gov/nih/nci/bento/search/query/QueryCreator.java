@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.model.search.query;
+package gov.nih.nci.bento.search.query;
 
 import gov.nih.nci.bento.constants.Const;
 import org.elasticsearch.index.query.BoolQueryBuilder;

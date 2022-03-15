@@ -1,8 +1,8 @@
-package gov.nih.nci.bento.model.search.query.filter;
+package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.TableParam;
-import gov.nih.nci.bento.model.search.query.QueryCreator;
+import gov.nih.nci.bento.search.query.QueryCreator;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 public class TableFilter extends AbstractFilter {

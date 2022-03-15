@@ -3,7 +3,7 @@ package gov.nih.nci.bento.service;
 import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.config.ConfigurationDAO;
-import gov.nih.nci.bento.model.search.result.TypeMapper;
+import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;

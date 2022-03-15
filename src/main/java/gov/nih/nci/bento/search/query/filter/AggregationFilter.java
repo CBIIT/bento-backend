@@ -1,13 +1,14 @@
-package gov.nih.nci.bento.model.search.query.filter;
+package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
-import gov.nih.nci.bento.model.search.query.QueryCreator;
+import gov.nih.nci.bento.constants.Const;
+import gov.nih.nci.bento.search.query.QueryCreator;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-public class RangeFilter extends AbstractFilter {
+public class AggregationFilter extends AbstractFilter {
 
-    public RangeFilter(FilterParam param) {
+    public AggregationFilter(FilterParam param) {
         super(param);
     }
 
@@ -17,8 +18,8 @@ public class RangeFilter extends AbstractFilter {
                 .size(0)
                 .query(bentoParam.getQuery())
                 .aggregation(AggregationBuilders
-                        .max("max").field(param.getSelectedField()))
-                .aggregation(AggregationBuilders
-                        .min("min").field(param.getSelectedField()));
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(param.getSelectedField()));
     }
 }

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.config.ConfigurationDAO;
-import gov.nih.nci.bento.model.GraphQLBuilder;
+import gov.nih.nci.bento.search.GraphQLBuilder;
 import graphql.language.Document;
 import graphql.language.OperationDefinition;
 import graphql.parser.Parser;

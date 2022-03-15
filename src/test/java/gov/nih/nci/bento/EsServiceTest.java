@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;

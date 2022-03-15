@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.model.search.result;
+package gov.nih.nci.bento.search.result;
 
 import org.elasticsearch.action.search.SearchResponse;
 

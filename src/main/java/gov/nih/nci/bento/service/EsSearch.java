@@ -2,7 +2,7 @@ package gov.nih.nci.bento.service;
 
 import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
-import gov.nih.nci.bento.model.search.result.TypeMapper;
+import gov.nih.nci.bento.search.result.TypeMapper;
 import graphql.schema.DataFetchingEnvironment;
 import org.elasticsearch.action.search.SearchRequest;
 

@@ -5,7 +5,7 @@ import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.config.ConfigurationDAO;
-import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;

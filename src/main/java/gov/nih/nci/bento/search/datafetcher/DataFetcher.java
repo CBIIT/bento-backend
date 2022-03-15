@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.model.search.datafetcher;
+package gov.nih.nci.bento.search.datafetcher;
 
 import graphql.schema.idl.RuntimeWiring;
 

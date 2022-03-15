@@ -24,11 +24,11 @@ public class TypeMapperImpl {
 
 
     // ElasticSearch Default Mapping Value Resolver
-    public TypeMapper getDefault() {
+    public TypeMapper<List<Map<String, Object>>> getDefault() {
         return (response, returnTypes) -> getMaps(response, returnTypes);
     }
 
-    public TypeMapper getDefaultReturnTypes(Map<String, String> returnTypes) {
+    public TypeMapper<QueryResult> getDefaultReturnTypes(Map<String, String> returnTypes) {
         return (response, r) -> getMaps_Test(response, returnTypes);
     }
 
@@ -82,7 +82,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper getAggregate() {
+    public TypeMapper<List<Map<String, Object>>> getAggregate() {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
             Aggregations aggregate = response.getAggregations();
@@ -100,7 +100,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper getStrList(String field) {
+    public TypeMapper<List<String>> getStrList(String field) {
         return (response, returnTypes) -> createStrList(response, field);
     }
     // Required Only One Argument
@@ -116,14 +116,14 @@ public class TypeMapperImpl {
         return result;
     }
 
-    public TypeMapper getIntTotal() {
+    public TypeMapper<Long> getIntTotal() {
         return (response, t) -> {
             TotalHits hits = response.getHits().getTotalHits();
             return hits.value;
         };
     }
 
-    public TypeMapper getRange() {
+    public TypeMapper<Map<String, Object>> getRange() {
         return (response, t) -> {
             Aggregations aggregate = response.getAggregations();
             Map<String, Aggregation> responseMap = aggregate.getAsMap();
@@ -140,7 +140,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper getAboutPage() {
+    public TypeMapper<List<Map<String, Object>>> getAboutPage() {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
             SearchHit[] hits = response.getHits().getHits();
@@ -164,7 +164,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper getHighLightFragments(String field, IBentoHighLightMapper mapper) {
+    public TypeMapper<List<Map<String, Object>>> getHighLightFragments(String field, IBentoHighLightMapper mapper) {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
             SearchHit[] hits = response.getHits().getHits();
@@ -183,7 +183,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper getMapWithHighlightedFields(Map<String, String> returnTypes) {
+    public TypeMapper<QueryResult> getMapWithHighlightedFields(Map<String, String> returnTypes) {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
             SearchHit[] hits = response.getHits().getHits();
@@ -210,21 +210,10 @@ public class TypeMapperImpl {
     private Map<String, Object> parseReturnMap(Map<String, String> returnTypes, Map<String, Object> source) {
         return returnTypes.entrySet().stream()
                 .filter(p->source.containsKey(p.getKey()))
-                .collect(HashMap::new, (k,v)->k.put(getCustomizedKeys(v.getKey()), source.get(v.getKey())), HashMap::putAll);
+                .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
     }
 
-    // TODO TO BE DELETED
-    private String getCustomizedKeys(String text) {
-        Map<String, String > keys = Map.of(
-                "age_at_index", "age",
-                "study_acronym", "study",
-                "program", "program_code"
-        );
-        return keys.containsKey(text) ? keys.get(text) : text;
-    }
-
-
-    public TypeMapper getArmProgram() {
+    public TypeMapper<List<Map<String, Object>>> getArmProgram() {
 
         return (response, t) -> {
             Aggregations aggregate = response.getAggregations();

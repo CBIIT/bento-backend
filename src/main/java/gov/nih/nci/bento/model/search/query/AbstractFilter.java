@@ -11,11 +11,10 @@ import java.util.Set;
 import static gov.nih.nci.bento.constants.Const.getOppositeTempQueryParamMap;
 
 public abstract class AbstractFilter {
-    // Not Filter Parameters
-    private Set<String> sortParams = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
-    private Map<String, Object> args;
-
-    private FilterParam param;
+    // Parameters Exceptions
+    private final Set<String> sortParams = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
+    private final QueryCreator bentoParam;
+    private final FilterParam param;
 
     public AbstractFilter(FilterParam param) {
         this.param = param;
@@ -28,7 +27,7 @@ public abstract class AbstractFilter {
             String excludedKey = keyMap.getOrDefault(param.getSelectedField(), param.getSelectedField());
             if (map.containsKey(excludedKey)) map.remove(excludedKey);
         }
-        args = map;
+        bentoParam = new BentoQueryCreator(map);
     }
 
     private void removeSortParams(Map<String, Object> map) {
@@ -38,8 +37,8 @@ public abstract class AbstractFilter {
     }
 
     public SearchSourceBuilder getSourceFilter() {
-        return getFilter(param, args);
+        return getFilter(param, bentoParam);
     }
 
-    abstract SearchSourceBuilder getFilter(FilterParam param, Map<String, Object> args);
+    abstract SearchSourceBuilder getFilter(FilterParam param, QueryCreator bentoParam);
 }

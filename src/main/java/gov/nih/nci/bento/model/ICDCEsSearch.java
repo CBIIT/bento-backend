@@ -4,7 +4,9 @@ import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
-import gov.nih.nci.bento.service.ESServiceImpl;
+import gov.nih.nci.bento.model.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
@@ -17,7 +19,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,10 +28,9 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 
 @RequiredArgsConstructor
-public class IcdcEsSearch implements DataFetcher {
-    private static final Logger logger = LogManager.getLogger(IcdcEsSearch.class);
-    @Autowired
-    ESServiceImpl esService;
+public class ICDCEsSearch implements DataFetcher {
+    private static final Logger logger = LogManager.getLogger(ICDCEsSearch.class);
+    private final EsSearch esService;
 
     public final TypeMapperImpl typeMapper;
 

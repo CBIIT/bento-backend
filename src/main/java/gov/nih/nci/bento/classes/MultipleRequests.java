@@ -1,6 +1,6 @@
 package gov.nih.nci.bento.classes;
 
-import gov.nih.nci.bento.model.TypeMapper;
+import gov.nih.nci.bento.model.search.result.TypeMapper;
 import lombok.Builder;
 import lombok.Getter;
 import org.elasticsearch.action.search.SearchRequest;

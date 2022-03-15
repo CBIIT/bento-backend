@@ -1,6 +1,7 @@
-package gov.nih.nci.bento.model.search.query;
+package gov.nih.nci.bento.model.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.model.search.query.QueryCreator;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 public class SearchCountFilter extends AbstractFilter {

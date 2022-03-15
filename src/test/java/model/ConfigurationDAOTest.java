@@ -1,7 +1,7 @@
 package model;
 
-import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.DataFetcher;
+import gov.nih.nci.bento.config.ConfigurationDAO;
+import gov.nih.nci.bento.model.search.datafetcher.DataFetcher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

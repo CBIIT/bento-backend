@@ -4,10 +4,9 @@ import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
-import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.TypeMapperImpl;
+import gov.nih.nci.bento.config.ConfigurationDAO;
+import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
-import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -52,26 +51,10 @@ public class BentoFilterTest {
     final String _tissueType = "Tumor";
     final String _sampleAnatomicSite = "Breast";
 
-
-//    private RestHighLevelClient client;
-
     @Before
     public void init() {
 //        AbstractClient restClient = new DefaultClient(config);
 //        client = restClient.getElasticRestClient();
-    }
-
-    @Test
-    public void subjectSearchTest() throws IOException {
-
-//        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-//        searchSourceBuilder.size(0);
-//        // Set Rest API Request
-//        SearchRequest request = new SearchRequest();
-//        request.indices(BENTO_INDEX.SUBJECTS);
-//        request.source(searchSourceBuilder);
-//        int result = esService.elasticSend(null, request, typeMapper.getIntTotal());
-//        assertThat(result, greaterThan(0));
     }
 
     @Test

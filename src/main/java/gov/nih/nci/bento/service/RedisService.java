@@ -1,6 +1,6 @@
 package gov.nih.nci.bento.service;
 
-import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.config.ConfigurationDAO;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

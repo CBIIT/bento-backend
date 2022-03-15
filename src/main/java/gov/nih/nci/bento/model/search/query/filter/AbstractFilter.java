@@ -1,7 +1,9 @@
-package gov.nih.nci.bento.model.search.query;
+package gov.nih.nci.bento.model.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.constants.Const;
+import gov.nih.nci.bento.model.search.query.BentoQueryCreator;
+import gov.nih.nci.bento.model.search.query.QueryCreator;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.HashMap;

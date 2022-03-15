@@ -1,7 +1,7 @@
 package gov.nih.nci.bento;
 
 import gov.nih.nci.bento.controller.GraphQLController;
-import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.config.ConfigurationDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;

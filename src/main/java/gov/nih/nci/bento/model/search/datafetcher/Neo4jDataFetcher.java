@@ -1,5 +1,6 @@
-package gov.nih.nci.bento.model;
+package gov.nih.nci.bento.model.search.datafetcher;
 
+import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.service.RedisService;
 import graphql.language.VariableReference;
 import graphql.schema.DataFetcher;

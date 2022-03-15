@@ -1,5 +1,11 @@
-package gov.nih.nci.bento.model;
+package gov.nih.nci.bento.config;
 
+import gov.nih.nci.bento.model.BentoEsSearch;
+import gov.nih.nci.bento.model.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.model.ICDCEsSearch;
+import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.service.ESServiceImpl;
+import gov.nih.nci.bento.service.EsSearch;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -22,21 +28,21 @@ public class ConfigurationDAO {
 	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 	private final Environment env;
 	private final TypeMapperImpl typeMapper;
+	private final EsSearch esSearch = new ESServiceImpl(this);
 
 	@Bean
 	public DataFetcher dataFetcher() {
 	    String project = env.getProperty("project", "bento").toLowerCase();
 	    switch (project) {
 			case "icdc":
-				return new IcdcEsSearch(typeMapper);
+				return new ICDCEsSearch(esSearch, typeMapper);
 			case "bento":
-				return new BentoEsSearch(typeMapper);
+				return new BentoEsSearch(esSearch, typeMapper);
 			default:
 				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
-				return new BentoEsSearch(typeMapper);
+				return new BentoEsSearch(esSearch, typeMapper);
 		}
 	}
-
 
 	//API Version
 	@Value("${bento.api.version}")

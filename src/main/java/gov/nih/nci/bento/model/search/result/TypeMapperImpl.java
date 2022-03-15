@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.model;
+package gov.nih.nci.bento.model.search.result;
 
 import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
@@ -21,7 +21,6 @@ import java.util.*;
 
 @Service
 public class TypeMapperImpl {
-
 
     // ElasticSearch Default Mapping Value Resolver
     public TypeMapper<List<Map<String, Object>>> getDefault() {
@@ -64,7 +63,8 @@ public class TypeMapperImpl {
     }
 
 
-    public TypeMapper getICDCAggregate() {
+    @SuppressWarnings("unchecked")
+    public TypeMapper<List<Map<String, Object>>> getICDCAggregate() {
         return (response, t) -> {
             Aggregations aggregate = response.getAggregations();
             Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
@@ -164,7 +164,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper<List<Map<String, Object>>> getHighLightFragments(String field, IBentoHighLightMapper mapper) {
+    public TypeMapper<List<Map<String, Object>>> getHighLightFragments(String field, HighLightMapper mapper) {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
             SearchHit[] hits = response.getHits().getHits();
@@ -213,6 +213,7 @@ public class TypeMapperImpl {
                 .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
     }
 
+    @SuppressWarnings("unchecked")
     public TypeMapper<List<Map<String, Object>>> getArmProgram() {
 
         return (response, t) -> {

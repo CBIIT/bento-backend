@@ -1,7 +1,5 @@
 package gov.nih.nci.bento.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
@@ -10,11 +8,10 @@ import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.constants.Const.ES_UNITS;
-import gov.nih.nci.bento.model.search.query.AggregationFilter;
-import gov.nih.nci.bento.model.search.query.RangeFilter;
-import gov.nih.nci.bento.model.search.query.SearchCountFilter;
-import gov.nih.nci.bento.model.search.query.SubAggregationFilter;
-import gov.nih.nci.bento.service.ESServiceImpl;
+import gov.nih.nci.bento.model.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.model.search.query.filter.*;
+import gov.nih.nci.bento.model.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.StrUtil;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +21,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
@@ -33,14 +29,10 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 @RequiredArgsConstructor
 public class BentoEsSearch implements DataFetcher {
+
     private static final Logger logger = LogManager.getLogger(BentoEsSearch.class);
-
-    @Autowired
-    ESServiceImpl esService;
-
+    private final EsSearch esService;
     public final TypeMapperImpl typeMapper;
-
-    private final Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {
@@ -80,7 +72,11 @@ public class BentoEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SUBJECTS);
         request.source(
-                esService.createPageSourceBuilder(param, BENTO_FIELDS.SUBJECT_ID_NUM)
+                new TableFilter(FilterParam.builder()
+                        .args(param.getArgs())
+                        .queryParam(param)
+                        .defaultSortField(BENTO_FIELDS.SUBJECT_ID_NUM)
+                        .build()).getSourceFilter()
         );
         List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
         return result;
@@ -91,8 +87,11 @@ public class BentoEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SAMPLES);
         request.source(
-                // TODO Add Test Case
-                esService.createPageSourceBuilder(param, BENTO_FIELDS.SAMPLE_ID_NUM+ ES_UNITS.KEYWORD)
+                new TableFilter(FilterParam.builder()
+                        .args(param.getArgs())
+                        .queryParam(param)
+                        .defaultSortField(BENTO_FIELDS.SAMPLE_ID_NUM)
+                        .build()).getSourceFilter()
         );
         List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
         return result;
@@ -100,11 +99,14 @@ public class BentoEsSearch implements DataFetcher {
 
     private List<Map<String, Object>> fileOverviewTest(QueryParam param) throws IOException {
         // Set Rest API Request
-        // TODO add test case
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.FILES);
         request.source(
-                esService.createPageSourceBuilder(param,BENTO_FIELDS.FILE_NAME+ ES_UNITS.KEYWORD)
+                new TableFilter(FilterParam.builder()
+                        .args(param.getArgs())
+                        .queryParam(param)
+                        .defaultSortField(BENTO_FIELDS.FILE_NAME+ ES_UNITS.KEYWORD)
+                        .build()).getSourceFilter()
         );
         List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
         return result;
@@ -395,7 +397,8 @@ public class BentoEsSearch implements DataFetcher {
 
     private List<Map<String, Object>> findSubjectIdsInListTest(QueryParam param) throws IOException {
         // Set Filter
-        SearchSourceBuilder builder = esService.createSourceBuilder(param);
+        SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
+                        .args(param.getArgs()).build()).getSourceFilter();
         builder.size(ES_UNITS.MAX_SIZE);
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
@@ -406,17 +409,21 @@ public class BentoEsSearch implements DataFetcher {
     }
 
     private List<Map<String, Object>> filesInListTest(QueryParam param) throws IOException {
-        SearchSourceBuilder searchSourceBuilder = esService.createPageSourceBuilder(param, BENTO_FIELDS.FILE_NAME);
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.FILES_TEST);
-        request.source(searchSourceBuilder);
+        request.indices(BENTO_INDEX.FILES);
+        request.source(new TableFilter(FilterParam.builder()
+                .args(param.getArgs())
+                .queryParam(param)
+                .defaultSortField(BENTO_FIELDS.FILE_NAME+ ES_UNITS.KEYWORD)
+                .build()).getSourceFilter());
         List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
         return result;
     }
 
     private List<String> fileIDsFromListTest(QueryParam param) throws IOException {
-        SearchSourceBuilder builder = esService.createSourceBuilder(param);
+        SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
+                .args(param.getArgs()).build()).getSourceFilter();
         builder.size(ES_UNITS.MAX_SIZE);
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
@@ -928,7 +935,7 @@ public class BentoEsSearch implements DataFetcher {
                         .typeMapper(typeMapper.getAggregate()).build(),
                 // Range Query
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
+//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(new RangeFilter(

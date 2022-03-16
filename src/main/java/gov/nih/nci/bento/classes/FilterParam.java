@@ -25,12 +25,6 @@ public class FilterParam {
         this.isExcludeFilter = isExcludeFilter;
         this.queryParam = queryParam;
         this.defaultSortField = defaultSortField;
-        if (queryParam != null)
-            this.tableParam = TableParam.builder()
-                    .offSet(queryParam.getOffSet())
-                    .pageSize(queryParam.getPageSize())
-                    .orderBy(queryParam.getOrderBy())
-                    .sortDirection(queryParam.getSortDirection())
-                    .build();
+        if (queryParam != null) this.tableParam = queryParam.getTableParam();
     }
 }

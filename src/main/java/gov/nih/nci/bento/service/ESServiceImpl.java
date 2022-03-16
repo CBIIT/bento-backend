@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service("ESService")
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class ESServiceImpl implements EsSearch {
     private final ConfigurationDAO config;
 
     @Override
-    public <T> T elasticSend(Map<String, String> resultType, SearchRequest request, TypeMapper mapper) throws IOException {
+    public <T> T elasticSend(Set<String> resultType, SearchRequest request, TypeMapper mapper) throws IOException {
         SearchResponse searchResponse = null;
         try (RestHighLevelClient elasticClient = new DefaultClient(config).getElasticClient()) {
             searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);

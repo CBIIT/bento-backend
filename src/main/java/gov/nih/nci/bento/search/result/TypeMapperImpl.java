@@ -22,36 +22,40 @@ import java.util.*;
 @Service
 public class TypeMapperImpl {
 
-    // ElasticSearch Default Mapping Value Resolver
+    // ElasticSearch Default Mapping Value Mapper
     public TypeMapper<List<Map<String, Object>>> getDefault() {
         return (response, returnTypes) -> getMaps(response, returnTypes);
     }
 
-    public TypeMapper<QueryResult> getDefaultReturnTypes(Map<String, String> returnTypes) {
-        return (response, r) -> getMaps_Test(response, returnTypes);
+
+    public TypeMapper<QueryResult> getDefaultReturnTypes(Set<String> returnTypes) {
+        return (response, r) -> getDefaultMaps(response, returnTypes);
     }
 
-    // ElasticSearch Aggregate Mapping Value Resolver
     @NotNull
-    // TODO
-    private QueryResult getMaps_Test(SearchResponse response, Map<String, String> returnTypes) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        SearchHit[] hits = response.getHits().getHits();
-        Arrays.asList(hits).forEach(hit-> {
-            Map<String, Object> source = hit.getSourceAsMap();
-            Map<String, Object> returnMap = parseReturnMap(returnTypes,source);
-            if (returnMap.size() > 0) result.add(returnMap);
-        });
+    private QueryResult getDefaultMaps(SearchResponse response, Set<String> returnTypes) {
+        getListHits(response, returnTypes);
+        List<Map<String, Object>> result = getListHits(response, returnTypes);
         return QueryResult.builder()
                 .searchHits(result)
                 .totalHits(response.getHits().getTotalHits().value)
                 .build();
     }
 
-    // ElasticSearch Aggregate Mapping Value Resolver
-    // TODO TOBE REMOVED
-    @NotNull
-    private List<Map<String, Object>> getMaps(SearchResponse response, Map<String, String> returnTypes) {
+    private List<Map<String, Object>> getListHits_Test(SearchResponse response, Set<String> returnTypes) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        SearchHit[] hits = response.getHits().getHits();
+        Arrays.asList(hits).forEach(hit-> {
+            Map<String, Object> source = hit.getSourceAsMap();
+            Map<String, Object> returnMap = parseReturnMap_Test(returnTypes,source);
+            if (returnMap.size() > 0) result.add(returnMap);
+        });
+        return result;
+    }
+
+
+
+    private List<Map<String, Object>> getListHits(SearchResponse response, Set<String> returnTypes) {
         List<Map<String, Object>> result = new ArrayList<>();
         SearchHit[] hits = response.getHits().getHits();
         Arrays.asList(hits).forEach(hit-> {
@@ -60,6 +64,13 @@ public class TypeMapperImpl {
             if (returnMap.size() > 0) result.add(returnMap);
         });
         return result;
+    }
+
+    // ElasticSearch Aggregate Mapping Value Resolver
+    // TODO TOBE REMOVED
+    @NotNull
+    private List<Map<String, Object>> getMaps(SearchResponse response, Set<String> returnTypes) {
+        return getListHits(response, returnTypes);
     }
 
 
@@ -140,6 +151,7 @@ public class TypeMapperImpl {
         };
     }
 
+    // TODO consider use this mapper
     public TypeMapper<List<Map<String, Object>>> getAboutPage() {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
@@ -183,7 +195,7 @@ public class TypeMapperImpl {
         };
     }
 
-    public TypeMapper<QueryResult> getMapWithHighlightedFields(Map<String, String> returnTypes) {
+    public TypeMapper<QueryResult> getMapWithHighlightedFields(Set<String> returnTypes) {
         return (response, t) -> {
             List<Map<String, Object>> result = new ArrayList<>();
             SearchHit[] hits = response.getHits().getHits();
@@ -207,10 +219,16 @@ public class TypeMapperImpl {
         };
     }
 
-    private Map<String, Object> parseReturnMap(Map<String, String> returnTypes, Map<String, Object> source) {
-        return returnTypes.entrySet().stream()
-                .filter(p->source.containsKey(p.getKey()))
-                .collect(HashMap::new, (k,v)->k.put(v.getKey(), source.get(v.getKey())), HashMap::putAll);
+    private Map<String, Object> parseReturnMap_Test(Set<String> returnTypes, Map<String, Object> source) {
+        return returnTypes.stream()
+                .filter(p->source.containsKey(p))
+                .collect(HashMap::new, (k,v)->k.put(v, source.get(v)), HashMap::putAll);
+    }
+
+    private Map<String, Object> parseReturnMap(Set<String> returnTypes, Map<String, Object> source) {
+        return returnTypes.stream()
+                .filter(p->source.containsKey(p))
+                .collect(HashMap::new, (k,v)->k.put(v, source.get(v)), HashMap::putAll);
     }
 
     @SuppressWarnings("unchecked")

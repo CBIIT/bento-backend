@@ -9,9 +9,10 @@ import org.elasticsearch.action.search.SearchRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface EsSearch {
     Map<String, Object> elasticMultiSend(List<MultipleRequests> requests) throws IOException;
-    <T> T elasticSend(Map<String, String> resultType, SearchRequest request, TypeMapper mapper) throws IOException;
+    <T> T elasticSend(Set<String> resultType, SearchRequest request, TypeMapper mapper) throws IOException;
     QueryParam CreateQueryParam(DataFetchingEnvironment env);
 }

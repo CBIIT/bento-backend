@@ -12,6 +12,7 @@ public class ElasticUtil {
         return sort.equalsIgnoreCase("asc") ? SortOrder.ASC : SortOrder.DESC;
     }
 
+    // TODO Remove For ICDC
     public static TermsAggregationBuilder getTermsAggregation(String field) {
         return AggregationBuilders
                 .terms(Const.ES_PARAMS.TERMS_AGGS)

@@ -68,9 +68,9 @@ public class BentoFilterTest {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SUBJECTS);
         request.source(searchSourceBuilder);
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("subject_id_gs", "subject_id");
-        returnTypes.put("age_at_index_gs", "program");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add("subject_id_gs");
+        returnTypes.add("age_at_index_gs");
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
         assertThat(result.size(), greaterThan(0));
@@ -94,9 +94,9 @@ public class BentoFilterTest {
         request.indices(BENTO_INDEX.SUBJECTS);
         request.source(builder);
 
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("subject_id", "subject_id");
-        returnTypes.put("program_id", "program_id");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add("subject_id");
+        returnTypes.add("program_id");
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
         assertThat(result.size(), greaterThan(0));
@@ -139,8 +139,8 @@ public class BentoFilterTest {
         request.indices(BENTO_INDEX.FILES_TEST);
         request.source(builder);
 
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("file_id", "file_id");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add("file_id");
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getStrList("file_id"));
     }
@@ -567,8 +567,8 @@ public class BentoFilterTest {
                                 .build())
                         .getSourceFilter()
                 );
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("age_at_index", "age_at_index");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add("age_at_index");
 
         Map<String, Object> result = esService.elasticSend(returnTypes, request, typeMapper.getRange());
         assertThat(result.size(), greaterThan(0));

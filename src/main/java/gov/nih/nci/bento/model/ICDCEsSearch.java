@@ -193,12 +193,12 @@ public class ICDCEsSearch implements DataFetcher {
         searchSourceBuilder.query(
                 ids.size() > 0 ? filter : QueryBuilders.matchAllQuery()
         );
-        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.from(param.getTableParam().getOffSet());
         searchSourceBuilder.sort(
                 // Get Default Sort Type or Pre-defined Sort Field
                 args.get(ES_PARAMS.ORDER_BY).equals("") ? ICDC_FIELDS.CASE_ID : (String) args.get(ES_PARAMS.ORDER_BY),
                 ElasticUtil.getSortType(sortDirection));
-        searchSourceBuilder.size(param.getPageSize());
+        searchSourceBuilder.size(param.getTableParam().getPageSize());
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.CASES);
@@ -216,12 +216,12 @@ public class ICDCEsSearch implements DataFetcher {
         searchSourceBuilder.query(
                 ids.size() > 0 ? filter : QueryBuilders.matchAllQuery()
         );
-        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.from(param.getTableParam().getOffSet());
         searchSourceBuilder.sort(
                 // Get Default Sort Type or Pre-defined Sort Field
                 args.get(ES_PARAMS.ORDER_BY).equals("") ? ICDC_FIELDS.SAMPLE_ID : (String) args.get(ES_PARAMS.ORDER_BY),
                 ElasticUtil.getSortType(sortDirection));
-        searchSourceBuilder.size(param.getPageSize());
+        searchSourceBuilder.size(param.getTableParam().getPageSize());
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.SAMPLES);
@@ -265,12 +265,12 @@ public class ICDCEsSearch implements DataFetcher {
         searchSourceBuilder.query(
                 ids.size() > 0 ? filter : QueryBuilders.matchAllQuery()
         );
-        searchSourceBuilder.from(param.getOffSet());
+        searchSourceBuilder.from(param.getTableParam().getOffSet());
         searchSourceBuilder.sort(
                 // Get Default Sort Type or Pre-defined Sort Field
                 args.get(ES_PARAMS.ORDER_BY).equals("") ? ICDC_FIELDS.FILE_NAME : (String) args.get(ES_PARAMS.ORDER_BY),
                 ElasticUtil.getSortType(sortDirection));
-        searchSourceBuilder.size(param.getPageSize());
+        searchSourceBuilder.size(param.getTableParam().getPageSize());
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.FILES);

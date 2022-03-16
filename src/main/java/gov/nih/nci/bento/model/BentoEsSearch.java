@@ -115,19 +115,19 @@ public class BentoEsSearch implements DataFetcher {
     private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
         Map<String, Object> result = new HashMap<>();
         String input = (String) params.get("input");
-        int size = (int) params.get("first");
-        int offset = (int) params.get("offset");
+        int size = (int) params.get(Const.ES_PARAMS.PAGE_SIZE);
+        int offset = (int) params.get(Const.ES_PARAMS.OFFSET);
         Set<String> combinedCategories = Set.of("model") ;
 
         // Set Bool Filter
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(size)
                 .from(offset)
-//                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(
                         addConditionalQuery(
                         new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input).boost((float) 1.50))
+                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input))
                         .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input))),
                         // Set Conditional Integer Query
                         QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
@@ -211,80 +211,80 @@ public class BentoEsSearch implements DataFetcher {
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
-                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
-                                BENTO_FIELDS.PROGRAM, Const.BENTO_FIELDS.PROGRAM,
-                                Const.BENTO_FIELDS.STUDY_ACRONYM, Const.BENTO_FIELDS.STUDY_ACRONYM,
-                                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
-                                Const.BENTO_FIELDS.AGE_AT_INDEX, Const.BENTO_FIELDS.AGE_AT_INDEX
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                                Const.BENTO_FIELDS.TYPE,
+                                Const.BENTO_FIELDS.PROGRAM_ID,
+                                Const.BENTO_FIELDS.SUBJECT_ID,
+                                BENTO_FIELDS.PROGRAM,
+                                Const.BENTO_FIELDS.STUDY_ACRONYM,
+                                Const.BENTO_FIELDS.DIAGNOSES,
+                                Const.BENTO_FIELDS.AGE_AT_INDEX
                         ))).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SAMPLES)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
-                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                                Const.BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                                Const.BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
-                                BENTO_FIELDS.SAMPLE_ID, Const.BENTO_FIELDS.SAMPLE_ID,
-                                Const.BENTO_FIELDS.DIAGNOSES, Const.BENTO_FIELDS.DIAGNOSES,
-                                Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE, Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
-                                Const.BENTO_FIELDS.TISSUE_TYPE, Const.BENTO_FIELDS.TISSUE_TYPE
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                                Const.BENTO_FIELDS.TYPE,
+                                Const.BENTO_FIELDS.PROGRAM_ID,
+                                Const.BENTO_FIELDS.SUBJECT_ID,
+                                BENTO_FIELDS.SAMPLE_ID,
+                                Const.BENTO_FIELDS.DIAGNOSES,
+                                Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
+                                Const.BENTO_FIELDS.TISSUE_TYPE
                         ))).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.PROGRAMS)
                                 .source(testBuilder03))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
-                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                                BENTO_FIELDS.PROGRAM_CODE, Const.BENTO_FIELDS.PROGRAM_CODE,
-                                BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                                BENTO_FIELDS.PROGRAM_NAME, Const.BENTO_FIELDS.PROGRAM_NAME
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                                Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.PROGRAM_CODE,
+                                BENTO_FIELDS.PROGRAM_ID,
+                                BENTO_FIELDS.PROGRAM_NAME
                         ))).build(),
                 MultipleRequests.builder()
                         .name("TEST04")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.STUDIES)
                                 .source(testBuilder04))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
-                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                                BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                                BENTO_FIELDS.STUDY_ID, Const.BENTO_FIELDS.STUDY_ID,
-                                BENTO_FIELDS.STUDY_TYPE, Const.BENTO_FIELDS.STUDY_TYPE,
-                                BENTO_FIELDS.STUDY_CODE, Const.BENTO_FIELDS.STUDY_CODE,
-                                BENTO_FIELDS.STUDY_NAME, Const.BENTO_FIELDS.STUDY_NAME
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                                Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.PROGRAM_ID,
+                                BENTO_FIELDS.STUDY_ID,
+                                BENTO_FIELDS.STUDY_TYPE,
+                                BENTO_FIELDS.STUDY_CODE,
+                                BENTO_FIELDS.STUDY_NAME
                         ))).build(),
                 MultipleRequests.builder()
                         .name("TEST05")
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.FILES_TEST)
                                 .source(testBuilder05))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(Map.of(
-                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                                BENTO_FIELDS.PROGRAM_ID, Const.BENTO_FIELDS.PROGRAM_ID,
-                                BENTO_FIELDS.SUBJECT_ID, Const.BENTO_FIELDS.SUBJECT_ID,
-                                BENTO_FIELDS.SAMPLE_ID, Const.BENTO_FIELDS.SAMPLE_ID,
-                                BENTO_FIELDS.FILE_NAME, Const.BENTO_FIELDS.FILE_NAME,
-                                BENTO_FIELDS.FILE_FORMAT, Const.BENTO_FIELDS.FILE_FORMAT,
-                                BENTO_FIELDS.FILE_ID, Const.BENTO_FIELDS.FILE_ID
+                        .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                                Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.PROGRAM_ID,
+                                BENTO_FIELDS.SUBJECT_ID,
+                                BENTO_FIELDS.SAMPLE_ID,
+                                BENTO_FIELDS.FILE_NAME,
+                                BENTO_FIELDS.FILE_FORMAT,
+                                BENTO_FIELDS.FILE_ID
                         ))).build(),
                 MultipleRequests.builder()
                         .name("TEST06")
                         .request(new SearchRequest()
                                 .indices(new String[]{BENTO_INDEX.MODEL_PROPERTIES, BENTO_INDEX.MODEL_VALUES, BENTO_INDEX.MODEL_NODES})
                                 .source(testBuilder06))
-                        .typeMapper(typeMapper.getMapWithHighlightedFields(Map.of(
-                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE,
-                                BENTO_FIELDS.NODE_NAME, BENTO_FIELDS.NODE_NAME,
-                                BENTO_FIELDS.PROPERTY_NAME, Const.BENTO_FIELDS.PROPERTY_NAME,
-                                BENTO_FIELDS.PROPERTY_DESCRIPTION, Const.BENTO_FIELDS.PROPERTY_DESCRIPTION,
-                                BENTO_FIELDS.PROPERTY_TYPE, Const.BENTO_FIELDS.PROPERTY_TYPE,
-                                BENTO_FIELDS.PROPERTY_REQUIRED, Const.BENTO_FIELDS.PROPERTY_REQUIRED,
-                                BENTO_FIELDS.VALUE, Const.BENTO_FIELDS.VALUE
+                        .typeMapper(typeMapper.getMapWithHighlightedFields(Set.of(
+                                Const.BENTO_FIELDS.TYPE,
+                                BENTO_FIELDS.NODE_NAME,
+                                BENTO_FIELDS.PROPERTY_NAME,
+                                BENTO_FIELDS.PROPERTY_DESCRIPTION,
+                                BENTO_FIELDS.PROPERTY_TYPE,
+                                BENTO_FIELDS.PROPERTY_REQUIRED,
+                                BENTO_FIELDS.VALUE
                         ))).build()
         );
 
@@ -378,11 +378,11 @@ public class BentoEsSearch implements DataFetcher {
         builder.highlighter(highlightBuilder);
         request.source(builder);
 
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put(Const.BENTO_FIELDS.PAGE, Const.BENTO_FIELDS.PAGE);
-        returnTypes.put(Const.BENTO_FIELDS.TITLE, Const.BENTO_FIELDS.TITLE);
-        returnTypes.put(Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.TYPE);
-        returnTypes.put(Const.BENTO_FIELDS.TEXT, Const.BENTO_FIELDS.TEXT);
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add(Const.BENTO_FIELDS.PAGE);
+        returnTypes.add(Const.BENTO_FIELDS.TITLE);
+        returnTypes.add(Const.BENTO_FIELDS.TYPE);
+        returnTypes.add(Const.BENTO_FIELDS.TEXT);
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request,
                 typeMapper.getHighLightFragments(Const.BENTO_FIELDS.CONTENT_PARAGRAPH,

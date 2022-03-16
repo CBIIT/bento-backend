@@ -144,7 +144,6 @@ public class Const {
     public static class BENTO_INDEX {
         public static final String SUBJECTS = "subjects";
         public static final String FILES = "files";
-        // TODO TOBE DELETED
         public static final String FILES_TEST = "files_test";
         public static final String STUDIES = "studies";
         public static final String SAMPLES = "samples";

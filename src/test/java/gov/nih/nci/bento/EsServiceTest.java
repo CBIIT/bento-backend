@@ -1,21 +1,15 @@
 package gov.nih.nci.bento;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
-import gov.nih.nci.bento.service.connector.AbstractClient;
-import gov.nih.nci.bento.service.connector.DefaultClient;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.junit.Before;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +21,7 @@ import java.util.*;
 
 import static gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 
 @RunWith( SpringRunner.class )
 @SpringBootTest
@@ -38,25 +33,22 @@ public class EsServiceTest {
     @Autowired
     TypeMapperImpl typeMapper;
 
-    @Autowired
-    private ConfigurationDAO config;
+    @Test
+    public void subject_Test() throws IOException {
 
-    private Gson gson = new GsonBuilder().serializeNulls().create();
-    private RestHighLevelClient client;
-    private Map<String, Object> query;
-    private List<String> _caseIds;
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        searchSourceBuilder.size(10);
 
-    @Before
-    public void init() throws IOException {
-        AbstractClient restClient = new DefaultClient(config);
-        client = restClient.getElasticRestClient();
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.ICDC_INDEX.CASES);
+        request.source(searchSourceBuilder);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("subject_ids", new ArrayList<>());
-        // TODO
-//        query = esService.buildFacetFilterQuery(params);
-        // Set Example Case Ids
-        _caseIds = Arrays.asList("NCATS-COP01-CCB010015", "GLIOMA01-i_64C0");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add(Const.BENTO_FIELDS.SUBJECT_ID);
+
+        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        MatcherAssert.assertThat(result.size(), greaterThan(0));
     }
 
     @Test
@@ -70,9 +62,9 @@ public class EsServiceTest {
         SearchRequest request = new SearchRequest();
         request.indices(Const.ICDC_INDEX.CASES);
         request.source(searchSourceBuilder);
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("case_id", "case_id");
-        returnTypes.put("cohort", "cohort");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add("case_id");
+        returnTypes.add("cohort");
 
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
@@ -90,8 +82,8 @@ public class EsServiceTest {
         SearchRequest request = new SearchRequest();
         request.indices(Const.ICDC_INDEX.STUDIES);
         request.source(searchSourceBuilder);
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put("clinical_study_designation", "clinical_study_designation");
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add("clinical_study_designation");
 
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
         assertThat(result.size()).isGreaterThan(0);
@@ -126,7 +118,7 @@ public class EsServiceTest {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Set Filter
-        searchSourceBuilder.query(QueryBuilders.termsQuery(ICDC_FIELDS.CASE_ID, _caseIds));
+        searchSourceBuilder.query(QueryBuilders.termsQuery(ICDC_FIELDS.CASE_ID, Arrays.asList("NCATS-COP01-CCB010015", "GLIOMA01-i_64C0")));
         // Set Aggregate
         TermsAggregationBuilder aggregation = AggregationBuilders
                 .terms(Const.ES_PARAMS.TERMS_AGGS)
@@ -149,7 +141,7 @@ public class EsServiceTest {
     public void fileOverViewTest() throws IOException {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Set Filter
-        searchSourceBuilder.query(QueryBuilders.termsQuery(ICDC_FIELDS.CASE_ID, _caseIds));
+        searchSourceBuilder.query(QueryBuilders.termsQuery(ICDC_FIELDS.CASE_ID, Arrays.asList("NCATS-COP01-CCB010015", "GLIOMA01-i_64C0")));
         searchSourceBuilder.from(0);
         searchSourceBuilder.size(10);
         // Set Rest API Request
@@ -157,8 +149,8 @@ public class EsServiceTest {
         request.indices(Const.ICDC_INDEX.FILES);
         request.source(searchSourceBuilder);
 
-        Map<String, String> returnTypes = new HashMap<>();
-        returnTypes.put(ICDC_FIELDS.FILE_NAME, ICDC_FIELDS.FILE_NAME);
+        Set<String> returnTypes = new HashSet<>();
+        returnTypes.add(ICDC_FIELDS.FILE_NAME);
         List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.get(0).get(ICDC_FIELDS.FILE_NAME)).isNotNull();

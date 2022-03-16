@@ -8,7 +8,7 @@ from monitors.alerts.conditions import set_synthetics_condition
 def seturlalertpolicy(project, tier, email_id, slack_id, synthetics_id, key):
    API_ENDPOINT = 'https://api.newrelic.com/v2/alerts_policies.json'
 
-   policy_name = '{}-{} Url Policy'.format(project.title(), tier.title())
+   policy_name = '{}-{} Synthetics Policy'.format(project.title(), tier.title())
    policy_found = False
    headers = {'Api-Key': key}
    

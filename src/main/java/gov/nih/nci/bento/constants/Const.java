@@ -33,6 +33,7 @@ public class Const {
         public static final String SORT_DIRECTION = "sort_direction";
         public static final String CASE_IDS = "case_ids";
         public static final int AGGS_SIZE = 1000;
+        public static final String INPUT = "input";
     }
 
     public static class ICDC_FIELDS {
@@ -139,6 +140,12 @@ public class Const {
         public static final String AGE = "age";
         public static final String PROGRAM_KW = "property_kw";
         public static final String SURVIVAL_TIME = "survival_time";
+        public static final String GLOBAL_SEARCH_SUBJECTS = "global_search_subjects";
+        public static final String GLOBAL_SEARCH_PROGRAM = "global_search_program";
+        public static final String GLOBAL_SEARCH_STUDIES = "global_search_studies";
+        public static final String GLOBAL_SEARCH_SAMPLE = "global_search_sample";
+        public static final String GLOBAL_SEARCH_FILE = "global_search_file";
+        public static final String GLOBAL_SEARCH_MODEL = "global_search_model";
     }
 
     public static class BENTO_INDEX {

@@ -16,6 +16,7 @@ public class QueryParam {
     private final Set<String> returnTypes;
     // Store PageSize, Offset, Sort
     private final TableParam tableParam;
+    private final String searchText;
 
     @Builder
     @SuppressWarnings("unchecked")
@@ -23,6 +24,7 @@ public class QueryParam {
         this.args = args;
         this.returnTypes = getReturnType(outputType);
         this.tableParam = setTableParam(args);
+        this.searchText = args.containsKey(Const.ES_PARAMS.INPUT) ?  (String) args.get(Const.ES_PARAMS.INPUT) : "";
     }
 
     private TableParam setTableParam(Map<String, Object> args) {

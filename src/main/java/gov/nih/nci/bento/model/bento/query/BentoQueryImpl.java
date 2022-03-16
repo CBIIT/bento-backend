@@ -2,17 +2,26 @@ package gov.nih.nci.bento.model.bento.query;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryParam;
+import gov.nih.nci.bento.classes.TableParam;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import gov.nih.nci.bento.search.query.filter.SearchCountFilter;
 import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.utility.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class BentoQueryImpl implements BentoQuery {
@@ -662,6 +671,215 @@ public class BentoQueryImpl implements BentoQuery {
                 .typeMapper(typeMapper.getRange()).build();
     }
 
+    @Override
+    public MultipleRequests findGlobalSearchSubject(QueryParam param) {
+        TableParam tableParam = param.getTableParam();
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .size(tableParam.getPageSize())
+                .from(tableParam.getOffSet())
+                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+                .query(
+                        addConditionalQuery(
+                                new BoolQueryBuilder()
+                                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText()+ "*")),
+                                // Set Conditional Integer Query
+                                QueryBuilders.termQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(param.getSearchText())))
+                );
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_SUBJECTS)
+                .request(new SearchRequest()
+                        .indices(Const.BENTO_INDEX.SUBJECTS)
+                        .source(builder))
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.SUBJECT_ID,
+                        Const.BENTO_FIELDS.PROGRAM,
+                        Const.BENTO_FIELDS.STUDY_ACRONYM,
+                        Const.BENTO_FIELDS.DIAGNOSES,
+                        Const.BENTO_FIELDS.AGE_AT_INDEX
+                ))).build();
+    }
+
+    @Override
+    public MultipleRequests findGlobalSearchSample(QueryParam param) {
+        TableParam tableParam = param.getTableParam();
+
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .size(tableParam.getPageSize())
+                .from(tableParam.getOffSet())
+                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                );
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_SAMPLE)
+                .request(new SearchRequest()
+                        .indices(Const.BENTO_INDEX.SAMPLES)
+                        .source(builder))
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.SUBJECT_ID,
+                        Const.BENTO_FIELDS.SAMPLE_ID,
+                        Const.BENTO_FIELDS.DIAGNOSES,
+                        Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
+                        Const.BENTO_FIELDS.TISSUE_TYPE
+                ))).build();
+    }
+
+    @Override
+    public MultipleRequests findGlobalSearchProgram(QueryParam param) {
+        TableParam tableParam = param.getTableParam();
+        SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
+                .size(tableParam.getPageSize())
+                .from(tableParam.getOffSet())
+                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_NAME, "*" + param.getSearchText() + "*"))
+                );
+
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_PROGRAM)
+                .request(new SearchRequest()
+                        .indices(Const.BENTO_INDEX.PROGRAMS)
+                        .source(testBuilder03))
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_CODE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.PROGRAM_NAME
+                ))).build();
+    }
+
+    @Override
+    public MultipleRequests findGlobalSearchStudy(QueryParam param) {
+        TableParam tableParam = param.getTableParam();
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .size(tableParam.getPageSize())
+                .from(tableParam.getOffSet())
+                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_ID + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_NAME  + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_TYPE  + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                );
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_STUDIES)
+                .request(new SearchRequest()
+                        .indices(Const.BENTO_INDEX.STUDIES)
+                        .source(builder))
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.STUDY_ID,
+                        Const.BENTO_FIELDS.STUDY_TYPE,
+                        Const.BENTO_FIELDS.STUDY_CODE,
+                        Const.BENTO_FIELDS.STUDY_NAME
+                ))).build();
+    }
+
+    @Override
+    public MultipleRequests findGlobalSearchFile(QueryParam param) {
+        TableParam tableParam = param.getTableParam();
+        SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
+                .size(tableParam.getPageSize())
+                .from(tableParam.getOffSet())
+                .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
+                .query(new BoolQueryBuilder()
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_ID_GS + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + param.getSearchText() + "*" ))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, param.getSearchText()))
+                );
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_FILE)
+                .request(new SearchRequest()
+                        .indices(Const.BENTO_INDEX.FILES)
+                        .source(testBuilder05))
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.SUBJECT_ID,
+                        Const.BENTO_FIELDS.SAMPLE_ID,
+                        Const.BENTO_FIELDS.FILE_NAME,
+                        Const.BENTO_FIELDS.FILE_FORMAT,
+                        Const.BENTO_FIELDS.FILE_ID
+                ))).build();
+    }
+
+    @Override
+    public MultipleRequests findGlobalSearchModel(QueryParam param) {
+        TableParam tableParam = param.getTableParam();
+        SearchSourceBuilder testBuilder06 = new SearchSourceBuilder()
+                .size(Const.ES_UNITS.MAX_SIZE)
+                .from(0)
+                .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .query(
+                        addConditionalQuery(
+                                new BoolQueryBuilder()
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*"))
+                                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*"))
+                                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, param.getSearchText())),
+                                // Set Conditional Bool Query
+                                QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(param.getSearchText())))
+                ).highlighter(
+                        new HighlightBuilder()
+                                // Index model_properties
+                                .field(Const.BENTO_FIELDS.PROPERTY_NAME)
+                                .field(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION)
+                                .field(Const.BENTO_FIELDS.PROPERTY_TYPE)
+                                .field(Const.BENTO_FIELDS.PROPERTY_REQUIRED)
+                                // Index model_values
+                                .field(Const.BENTO_FIELDS.VALUE)
+                                // Index model_nodes
+                                .field(Const.BENTO_FIELDS.NODE_NAME)
+                                .preTags("")
+                                .postTags("")
+                                .fragmentSize(1)
+                );
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_MODEL)
+                .request(new SearchRequest()
+                        .indices(new String[]{Const.BENTO_INDEX.MODEL_PROPERTIES, Const.BENTO_INDEX.MODEL_VALUES, Const.BENTO_INDEX.MODEL_NODES})
+                        .source(testBuilder06))
+                .typeMapper(typeMapper.getMapWithHighlightedFields(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.NODE_NAME,
+                        Const.BENTO_FIELDS.PROPERTY_NAME,
+                        Const.BENTO_FIELDS.PROPERTY_DESCRIPTION,
+                        Const.BENTO_FIELDS.PROPERTY_TYPE,
+                        Const.BENTO_FIELDS.PROPERTY_REQUIRED,
+                        Const.BENTO_FIELDS.VALUE
+                ))).build();
+    }
+
+    // Add Conditional Query
+    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, QueryBuilder... query) {
+        List<QueryBuilder> builders = Arrays.asList(query);
+        builders.forEach(q->{
+            if (q.getName().equals("match")) {
+                MatchQueryBuilder matchQuery = getQuery(q);
+                if (!matchQuery.value().equals("")) builder.should(q);
+            } else if (q.getName().equals("term")) {
+                TermQueryBuilder termQuery = getQuery(q);
+                if (!termQuery.value().equals("")) builder.should(q);
+            }
+        });
+        return builder;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getQuery(QueryBuilder q) {
+        String queryType = q.getName();
+        return (T) q.queryName(queryType);
+    }
 
     static class BentoGraphQLKEYS {
         static final String NO_OF_PROGRAMS = "numberOfPrograms";

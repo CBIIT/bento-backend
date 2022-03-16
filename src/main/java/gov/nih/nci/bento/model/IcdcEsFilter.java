@@ -33,6 +33,8 @@ public class IcdcEsFilter implements DataFetcher {
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
     final String FILES_COUNT_END_POINT = "/files/_count";
+    final String STUDY_FILES_END_POINT = "/study_files/_search";
+    final String STUDY_FILES_COUNT_END_POINT = "/study_files/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
     final String NODES_COUNT_END_POINT = "/model_nodes/_count";
     final String PROPERTIES_END_POINT = "/model_properties/_search";
@@ -66,6 +68,10 @@ public class IcdcEsFilter implements DataFetcher {
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                        .dataFetcher("searchCases", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return searchCases(args);
+                        })
                         .dataFetcher("caseOverviewPaged", env -> {
                             Map<String, Object> args = env.getArguments();
                             return caseOverview(args, "asc");
@@ -93,6 +99,58 @@ public class IcdcEsFilter implements DataFetcher {
                 )
                 .build();
     }
+
+    private Map<String, Object> searchCases(Map<String, Object> params) throws IOException {
+        final String AGG_NAME = "agg_name";
+        final String AGG_ENDPOINT = "agg_endpoint";
+        final String WIDGET_QUERY = "widgetQueryName";
+        final String FILTER_COUNT_QUERY = "filterCountQueryName";
+
+        final String[] TERM_AGG_NAMES = new String[] {"programs", "studies", "lab_procedures"};
+
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of("first"));
+        Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
+        sampleCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject sampleCountResult = esService.send(sampleCountRequest);
+        int numberOfSamples = sampleCountResult.get("count").getAsInt();
+
+        Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
+        fileCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject fileCountResult = esService.send(fileCountRequest);
+        int numberOfFiles = fileCountResult.get("count").getAsInt();
+
+        Request studyFileCountRequest = new Request("GET", STUDY_FILES_COUNT_END_POINT);
+        studyFileCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
+        int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
+
+        Request caseCountRequest = new Request("GET", CASES_COUNT_END_POINT);
+        caseCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject caseCountResult = esService.send(caseCountRequest);
+        int numberOfCases = caseCountResult.get("count").getAsInt();
+
+
+        // Get aggregations
+        Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
+        Request caseRequest = new Request("GET", CASES_END_POINT);
+        caseRequest.setJsonEntity(gson.toJson(aggQuery));
+        JsonObject caseResult = esService.send(caseRequest);
+        Map<String, JsonArray> aggs = esService.collectTermAggs(caseResult, TERM_AGG_NAMES);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("numberOfPrograms", aggs.get("programs").size());
+        data.put("numberOfStudies", aggs.get("studies").size());
+        data.put("numberOfLabProcedures", aggs.get("lab_procedures").size());
+        data.put("numberOfCases", numberOfCases);
+        data.put("numberOfSamples", numberOfSamples);
+        data.put("numberOfFiles", numberOfFiles);
+        data.put("numberOfStudyFiles", numberOfStudyFiles);
+        data.put("numberOfAliquots", 0);
+
+        return data;
+    }
+
+
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params, String sortDirection) throws IOException {
         final String[][] PROPERTIES = new String[][]{

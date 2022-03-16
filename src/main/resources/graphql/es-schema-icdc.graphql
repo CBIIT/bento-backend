@@ -113,11 +113,79 @@ type FileOverviewES {
     other_cases: [String]
 }
 
+type CaseOverview2 {
+    case_id: String
+    study_code: String
+    study_type: String
+    cohort: String
+    breed: String
+    diagnosis: String
+    stage_of_disease: String
+    age: Float
+    sex: String
+    neutered_status: String
+    weight: Float
+    response_to_treatment: String
+    disease_site: String
+    files: [String]
+    other_cases: [String]
+    individual_id: String
+    primary_disease_site: String
+    date_of_diagnosis: String
+    histology_cytopathology: String
+    histological_grade: String
+    pathology_report: String
+    treatment_data: String
+    follow_up_data: String
+    concurrent_disease: String
+    concurrent_disease_type: String
+    arm: String
+}
+
+type SearchResult {
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfCases: Int
+    numberOfSamples: Int
+    numberOfFiles: Int
+    numberOfStudyFiles: Int
+    numberOfAliquots: Int
+    volumeOfData: Float
+    caseIds: [String]
+    studyFileIds: [String]
+    sampleIds: [String]
+    fileIds: [String]
+    firstPage: [CaseOverview2]
+}
+
+
 schema {
     query: QueryType
 }
 
 type QueryType {
+    searchCases (
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+        sample_site: [String] = [],
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        first: Int = 100
+    ): SearchResult
+
     caseOverviewPaged (case_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
     caseOverviewPagedDesc (case_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
     sampleOverview(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]

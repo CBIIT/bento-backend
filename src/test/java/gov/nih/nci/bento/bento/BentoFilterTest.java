@@ -136,7 +136,7 @@ public class BentoFilterTest {
         builder.query(bool);
 
         SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.FILES_TEST);
+        request.indices(BENTO_INDEX.FILES);
         request.source(builder);
 
         Set<String> returnTypes = new HashSet<>();

@@ -77,7 +77,7 @@ public class BentoGlobalSearchTest {
     @Test
     // TODO Change to Multiple Search
     public void searchGlobalCase_Test() throws IOException {
-        String PROGRAM_ID = "nct";
+        String PROGRAM_ID = "NCT00310180";
         String PROGRAM_CODE = "TAILORx";
         String PROGRAM_NAME = "Assessment";
 
@@ -91,14 +91,14 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, "*" + PROGRAM_ID + "*" ))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID + Const.ES_UNITS.KEYWORD, PROGRAM_ID))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE, PROGRAM_CODE))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, PROGRAM_CODE))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -136,7 +136,7 @@ public class BentoGlobalSearchTest {
         assertThat(test01.getSearchHits().size(), greaterThan(0));
         assertThat(test01.getTotalHits(), greaterThan(0));
         assertThat(test01.getSearchHits().get(0), hasKey(Const.BENTO_FIELDS.PROGRAM_ID));
-        assertThat(((String) test01.getSearchHits().get(0).get(Const.BENTO_FIELDS.PROGRAM_ID)).toLowerCase(), containsString(PROGRAM_ID));
+        assertThat(((String) test01.getSearchHits().get(0).get(Const.BENTO_FIELDS.PROGRAM_ID)), containsString(PROGRAM_ID));
 
         QueryResult test02 = (QueryResult) result.get("TEST02");
         assertThat(test02.getSearchHits().size(), greaterThan(0));
@@ -256,14 +256,14 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, List.of(ANATOMIC_SITES_GS)))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, ANATOMIC_SITES_GS))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, List.of(TISSUE_TYPE_GS)))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, TISSUE_TYPE_GS))
                 );
 
         List<MultipleRequests> requests = List.of(

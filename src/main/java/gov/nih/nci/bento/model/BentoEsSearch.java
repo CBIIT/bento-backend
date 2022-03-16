@@ -127,10 +127,10 @@ public class BentoEsSearch implements DataFetcher {
                 .query(
                         addConditionalQuery(
                         new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, input))
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, List.of(input))),
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS + ES_UNITS.KEYWORD, input))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS + Const.ES_UNITS.KEYWORD, "*" + input+ "*")),
                         // Set Conditional Integer Query
-                        QueryBuilders.matchQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
+                        QueryBuilders.termQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(input)))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
@@ -138,9 +138,9 @@ public class BentoEsSearch implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
-                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, input).boost((float) 1.50))
-                                .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + ES_UNITS.KEYWORD, List.of(input)))
-                                .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + ES_UNITS.KEYWORD, List.of(input)))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS + ES_UNITS.KEYWORD, input))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + ES_UNITS.KEYWORD, input))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + ES_UNITS.KEYWORD, input))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -148,9 +148,9 @@ public class BentoEsSearch implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + ES_UNITS.KEYWORD)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, "*" + input + "*" ).boost((float) 1.50))
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_CODE, input))
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROGRAM_NAME, input))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID + ES_UNITS.KEYWORD, input))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, input))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_NAME, "*" + input + "*"))
                 );
 
         SearchSourceBuilder testBuilder04 = new SearchSourceBuilder()
@@ -158,9 +158,9 @@ public class BentoEsSearch implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_ID, input).boost((float) 1.50))
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_NAME, input))
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.STUDY_TYPE, input))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_ID + Const.ES_UNITS.KEYWORD, input))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_NAME  + Const.ES_UNITS.KEYWORD, input))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_TYPE  + Const.ES_UNITS.KEYWORD, input))
                 );
 
 
@@ -169,7 +169,7 @@ public class BentoEsSearch implements DataFetcher {
                 .from(offset)
 //                .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.FILE_ID_GS, input).boost((float) 1.50))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_ID_GS + Const.ES_UNITS.KEYWORD, input))
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + input + "*" ))
                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, input))
                 );
@@ -181,10 +181,10 @@ public class BentoEsSearch implements DataFetcher {
                 .query(
                         addConditionalQuery(
                                 new BoolQueryBuilder()
-                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.VALUE, input))
+                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, "*" + input + "*"))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + ES_UNITS.KEYWORD, input))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + ES_UNITS.KEYWORD, input))
-                                .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, input))
+                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + Const.ES_UNITS.KEYWORD, "*" + input + "*"))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + ES_UNITS.KEYWORD, input)),
                                 // Set Conditional Bool Query
                                 QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(input)))
@@ -261,7 +261,7 @@ public class BentoEsSearch implements DataFetcher {
                 MultipleRequests.builder()
                         .name("TEST05")
                         .request(new SearchRequest()
-                                .indices(BENTO_INDEX.FILES_TEST)
+                                .indices(BENTO_INDEX.FILES)
                                 .source(testBuilder05))
                         .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
                                 Const.BENTO_FIELDS.TYPE,
@@ -427,7 +427,7 @@ public class BentoEsSearch implements DataFetcher {
         builder.size(ES_UNITS.MAX_SIZE);
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.FILES_TEST);
+        request.indices(BENTO_INDEX.FILES);
         request.source(builder);
         List<String>  result = esService.elasticSend(null, request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
         return result;

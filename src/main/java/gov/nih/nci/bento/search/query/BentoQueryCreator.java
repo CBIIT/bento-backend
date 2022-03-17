@@ -1,13 +1,12 @@
 package gov.nih.nci.bento.search.query;
 
+import gov.nih.nci.bento.constants.Const;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
 import java.util.List;
 import java.util.Map;
-
-import static gov.nih.nci.bento.constants.Const.getTempQueryParamMap;
 
 public class BentoQueryCreator extends QueryCreator {
 
@@ -18,11 +17,10 @@ public class BentoQueryCreator extends QueryCreator {
     @Override
     @SuppressWarnings("unchecked")
     public QueryBuilder createQuery(Map<String, Object> args, BoolQueryBuilder boolBuilder) {
-        Map<String, String> keyMap= getTempQueryParamMap();
-        args.forEach((k,v)->{
-            List<String> list = (List<String>) args.get(k);
+        args.forEach((key,v)->{
+            List<String> list = (List<String>) args.get(key);
             if (list.size() > 0) {
-                QueryBuilder builder = QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k));
+                QueryBuilder builder = QueryBuilders.termsQuery(key + Const.ES_UNITS.KEYWORD, (List<String>) args.get(key));
                 boolBuilder.filter(builder);
             }
         });

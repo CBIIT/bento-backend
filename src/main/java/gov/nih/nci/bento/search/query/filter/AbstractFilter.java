@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static gov.nih.nci.bento.constants.Const.getOppositeTempQueryParamMap;
-
 public abstract class AbstractFilter {
     // Parameters Exceptions
     private final Set<String> sortParams = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
@@ -23,11 +21,10 @@ public abstract class AbstractFilter {
         Map<String, Object> map = new HashMap<>(param.getArgs());
         removeSortParams(map);
         // Filter; excludes its field
-        // TODO
-        Map<String, String> keyMap= getOppositeTempQueryParamMap();
         if (param.isExcludeFilter()) {
-            String excludedKey = keyMap.getOrDefault(param.getSelectedField(), param.getSelectedField());
-            if (map.containsKey(excludedKey)) map.remove(excludedKey);
+            // Consider Remove Keyword
+            String key = param.getSelectedField().replace(Const.ES_UNITS.KEYWORD, "");
+            if (map.containsKey(key)) map.remove(key);
         }
         bentoParam = new BentoQueryCreator(map);
     }

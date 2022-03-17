@@ -135,14 +135,11 @@ public class BentoFilterTest {
     public void multiSearchTest() throws IOException {
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
-        // TODO Mismatch field names
         Map<String, Object> args = new HashMap<>();
         args.put(BENTO_FIELDS.AGE_AT_INDEX, List.of());
         args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
-
-
-
         builder.size(0);
+
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
                         .name(BentoGraphQLKEYS.NO_OF_PROGRAMS)

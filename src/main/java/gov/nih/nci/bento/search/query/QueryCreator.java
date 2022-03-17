@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class QueryCreator {
-
+    // Range Query Has Different Query Option
     private final Set<String> rangeParams = Set.of(Const.BENTO_FIELDS.AGE_AT_INDEX);
     private Map<String, Object> args;
 

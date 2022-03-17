@@ -20,7 +20,6 @@ public class TableFilter extends AbstractFilter {
                 )
                 .from(tableParam.getOffSet())
                 .sort(
-                        // TODO Consider Keyword OrderBY
                         tableParam.getOrderBy().equals("") ? param.getDefaultSortField() : tableParam.getOrderBy(),
                         tableParam.getSortDirection())
                 .size(tableParam.getPageSize());

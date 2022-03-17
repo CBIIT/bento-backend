@@ -242,18 +242,18 @@ schema {
 
 type QueryType {
     searchSubjects (
-        subject_ids: [String] = [],
-        programs: [String] = [],
-        studies: [String] = [],
-        diagnoses: [String] = [],
-        rc_scores: [String] = [],
-        tumor_sizes: [String] = [],
-        chemo_regimen: [String] = [],
-        tumor_grades: [String] = [],
+        subject_id: [String] = [],
+        program: [String] = [],
+        study_info: [String] = [],
+        diagnosis: [String] = [],
+        recurrence_score: [String] = [],
+        tumor_size: [String] = [],
+        chemotherapy: [String] = [],
+        tumor_grade: [String] = [],
         er_status: [String] = [],
         pr_status: [String] = [],
-        endo_therapies: [String] = [],
-        meno_status: [String] = [],
+        endocrine_therapy: [String] = [],
+        menopause_status: [String] = [],
         tissue_type: [String] = [],
         composition: [String] = [],
         association: [String] = [],
@@ -262,18 +262,18 @@ type QueryType {
     ): SearchResult
 
     subjectOverview (
-        subject_ids: [String] = [],
-        programs: [String] = [],
-        studies: [String] = [],
-        diagnoses: [String] = [],
-        rc_scores: [String] = [],
-        tumor_sizes: [String] = [],
-        chemo_regimen: [String] = [],
-        tumor_grades: [String] = [],
+        subject_id: [String] = [],
+        program: [String] = [],
+        study_info: [String] = [],
+        diagnosis: [String] = [],
+        recurrence_score: [String] = [],
+        tumor_size: [String] = [],
+        chemotherapy: [String] = [],
+        tumor_grade: [String] = [],
         er_status: [String] = [],
         pr_status: [String] = [],
-        endo_therapies: [String] = [],
-        meno_status: [String] = [],
+        endocrine_therapy: [String] = [],
+        menopause_status: [String] = [],
         tissue_type: [String] = [],
         composition: [String] = [],
         association: [String] = [],
@@ -286,19 +286,19 @@ type QueryType {
     ): [ESSubjectOverview]
 
     sampleOverview (
-        subject_ids: [String] = [],
-        sample_ids: [String] = [],
-        programs: [String] = [],
-        studies: [String] = [],
-        diagnoses: [String] = [],
-        rc_scores: [String] = [],
-        tumor_sizes: [String] = [],
-        chemo_regimen: [String] = [],
-        tumor_grades: [String] = [],
+        subject_id: [String] = [],
+        sample_id: [String] = [],
+        program: [String] = [],
+        study_info: [String] = [],
+        diagnosis: [String] = [],
+        recurrence_score: [String] = [],
+        tumor_size: [String] = [],
+        chemotherapy: [String] = [],
+        tumor_grade: [String] = [],
         er_status: [String] = [],
         pr_status: [String] = [],
-        endo_therapies: [String] = [],
-        meno_status: [String] = [],
+        endocrine_therapy: [String] = [],
+        menopause_status: [String] = [],
         tissue_type: [String] = [],
         composition: [String] = [],
         association: [String] = [],
@@ -311,19 +311,19 @@ type QueryType {
     ): [SampleOverview]
 
     fileOverview (
-        subject_ids: [String] = [],
-        file_ids: [String] = [],
-        programs: [String] = [],
-        studies: [String] = [],
-        diagnoses: [String] = [],
-        rc_scores: [String] = [],
-        tumor_sizes: [String] = [],
-        chemo_regimen: [String] = [],
-        tumor_grades: [String] = [],
+        subject_id: [String] = [],
+        file_id: [String] = [],
+        program: [String] = [],
+        study_info: [String] = [],
+        diagnosis: [String] = [],
+        recurrence_score: [String] = [],
+        tumor_size: [String] = [],
+        chemotherapy: [String] = [],
+        tumor_grade: [String] = [],
         er_status: [String] = [],
         pr_status: [String] = [],
-        endo_therapies: [String] = [],
-        meno_status: [String] = [],
+        endocrine_therapy: [String] = [],
+        menopause_status: [String] = [],
         tissue_type: [String] = [],
         composition: [String] = [],
         association: [String] = [],
@@ -336,20 +336,20 @@ type QueryType {
     ): [FileOverview2]
 
     fileIDsFromList(
-        subject_ids: [String] = [],
-        sample_ids: [String] = [],
-        file_names: [String] = []
+        subject_id: [String] = [],
+        sample_id: [String] = [],
+        file_name: [String] = []
     ): [String]
 
     filesInList(
-        file_ids: [String],
+        file_id: [String],
         order_by: String = "",
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
     ): [FileDetail]
 
-    findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
+    findSubjectIdsInList(subject_id: [String] = []): [SubjectResult]
 
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
 

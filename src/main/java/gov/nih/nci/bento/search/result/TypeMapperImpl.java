@@ -120,6 +120,7 @@ public class TypeMapperImpl {
         };
     }
 
+    @SuppressWarnings("unchecked")
     public TypeMapper<Map<String, Object>> getRange() {
         return (response) -> {
             Aggregations aggregate = response.getAggregations();
@@ -129,8 +130,8 @@ public class TypeMapperImpl {
             ParsedMax max = (ParsedMax) responseMap.get("max");
             ParsedMin min = (ParsedMin) responseMap.get("min");
 
-            result.put(BENTO_FIELDS.LOWER_BOUND, min.getValue());
-            result.put(BENTO_FIELDS.UPPER_BOUND, max.getValue());
+            result.put(BENTO_FIELDS.LOWER_BOUND, (float) min.getValue());
+            result.put(BENTO_FIELDS.UPPER_BOUND, (float) max.getValue());
             result.put(BENTO_FIELDS.SUBJECTS, response.getHits().getTotalHits().value);
             return result;
         };

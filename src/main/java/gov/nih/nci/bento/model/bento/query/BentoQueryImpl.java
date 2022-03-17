@@ -734,7 +734,7 @@ public class BentoQueryImpl implements BentoQuery {
     @Override
     public MultipleRequests findGlobalSearchProgram(QueryParam param) {
         TableParam tableParam = param.getTableParam();
-        SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
+        SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
                 .from(tableParam.getOffSet())
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
@@ -748,7 +748,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_PROGRAM)
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.PROGRAMS)
-                        .source(testBuilder03))
+                        .source(builder))
                 .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_CODE,
@@ -787,7 +787,7 @@ public class BentoQueryImpl implements BentoQuery {
     @Override
     public MultipleRequests findGlobalSearchFile(QueryParam param) {
         TableParam tableParam = param.getTableParam();
-        SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
+        SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
                 .from(tableParam.getOffSet())
                 .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
@@ -800,7 +800,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_FILE)
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.FILES)
-                        .source(testBuilder05))
+                        .source(builder))
                 .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_ID,

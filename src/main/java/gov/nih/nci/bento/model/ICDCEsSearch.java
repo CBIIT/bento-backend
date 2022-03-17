@@ -1,10 +1,12 @@
 package gov.nih.nci.bento.model;
 
+import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.ElasticUtil;
@@ -69,22 +71,20 @@ public class ICDCEsSearch implements DataFetcher {
     }
 
     private List<Map<String, Object>> caseCountByDiseaseSite(QueryParam params) throws IOException {
-
         Map<String, Object> args = params.getArgs();
-        SearchSourceBuilder builder = new SearchSourceBuilder();
         // Get Params
         List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
         // Set Filter
+        // TODO Match CASE_IDS and ICDC_FIELDS.DIAG_CASE_OF_CASE
         QueryBuilder filter = QueryBuilders.termsQuery(ICDC_FIELDS.DIAG_CASE_OF_CASE, ids);
-
-        if (ids.size() > 0) builder.query(filter);
-        // Set Aggregate
-        builder.aggregation(ElasticUtil.getTermsAggregation(ICDC_FIELDS.PRIMARY_DISEASE_SITE));
-        builder.size(0);
-
+        // TODO ICDC Param
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DIAGNOSIS);
-        request.source(builder);
+        request.source(new AggregationFilter(FilterParam.builder()
+                .args(args)
+                .selectedField(ICDC_FIELDS.PRIMARY_DISEASE_SITE)
+                .build())
+                .getSourceFilter());
         List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
@@ -95,15 +95,20 @@ public class ICDCEsSearch implements DataFetcher {
         // Get Params
         List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
         // Set Filter
+        // TODO Match CASE_IDS and ICDC_FIELDS.DIAG_CASE_OF_CASE
         QueryBuilder filter = QueryBuilders.termsQuery(ICDC_FIELDS.DIAG_CASE_OF_CASE, ids);
         if (ids.size() > 0) builder.query(filter);
         // Set Aggregate
-        builder.aggregation(ElasticUtil.getTermsAggregation(ICDC_FIELDS.STAGE_OF_DISEASE));
+//        builder.aggregation(ElasticUtil.getTermsAggregation(ICDC_FIELDS.STAGE_OF_DISEASE));
         builder.size(0);
 
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DIAGNOSIS);
-        request.source(builder);
+        request.source(new AggregationFilter(FilterParam.builder()
+                .args(args)
+                .selectedField(ICDC_FIELDS.STAGE_OF_DISEASE)
+                .build())
+                .getSourceFilter());
         List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
@@ -115,15 +120,21 @@ public class ICDCEsSearch implements DataFetcher {
         // Get Params
         List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
         // Set Filter
+        // TODO Match CASE_IDS and ICDC_FIELDS.DIAG_CASE_OF_CASE
         QueryBuilder filter = QueryBuilders.termsQuery(ICDC_FIELDS.NEUTERED_INDICATOR, ids);
         if (ids.size() > 0) builder.query(filter);
         // Set Aggregate
-        TermsAggregationBuilder aggregation = ElasticUtil.getTermsAggregation(ICDC_FIELDS.DEMOG_OF_CASE_CASE);
-        builder.aggregation(aggregation);
+//        TermsAggregationBuilder aggregation = ElasticUtil.getTermsAggregation(ICDC_FIELDS.DEMOG_OF_CASE_CASE);
+//        builder.aggregation(aggregation);
         builder.size(0);
 
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
+        request.source(new AggregationFilter(FilterParam.builder()
+                .args(args)
+                .selectedField(ICDC_FIELDS.DEMOG_OF_CASE_CASE)
+                .build())
+                .getSourceFilter());
         request.source(builder);
         List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
@@ -133,17 +144,22 @@ public class ICDCEsSearch implements DataFetcher {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Get Params
+        // TODO Match CASE_IDS and ICDC_FIELDS.DEMOG_OF_CASE_CASE
         List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
         // Set Filter
         QueryBuilder filter = QueryBuilders.termsQuery(ICDC_FIELDS.DEMOG_OF_CASE_CASE, ids);
         if (ids.size() > 0) builder.query(filter);
         // Set Aggregate
-        builder.aggregation(ElasticUtil.getTermsAggregation(ICDC_FIELDS.BREED));
+//        builder.aggregation(ElasticUtil.getTermsAggregation(ICDC_FIELDS.BREED));
         builder.size(0);
 
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
-        request.source(builder);
+        request.source(new AggregationFilter(FilterParam.builder()
+                .args(args)
+                .selectedField(ICDC_FIELDS.BREED)
+                .build())
+                .getSourceFilter());
 
         List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;

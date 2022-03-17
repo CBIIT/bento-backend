@@ -80,7 +80,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .defaultSortField(BENTO_FIELDS.SUBJECT_ID_NUM)
                         .build()).getSourceFilter()
         );
-        return esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> sampleOverview(QueryParam param) throws IOException {
@@ -94,7 +94,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .defaultSortField(BENTO_FIELDS.SAMPLE_ID_NUM)
                         .build()).getSourceFilter()
         );
-        return esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> fileOverview(QueryParam param) throws IOException {
@@ -112,7 +112,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .defaultSortField(BENTO_FIELDS.FILE_NAME+ ES_UNITS.KEYWORD)
                         .build()).getSourceFilter()
         );
-        return esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
     private Map<String, Object> globalSearch(QueryParam param) throws IOException {
@@ -187,7 +187,7 @@ public final class BentoEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SUBJECTS);
         request.source(builder);
-        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
+        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
         return result;
     }
 
@@ -204,7 +204,7 @@ public final class BentoEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.FILES);
         request.source(builder);
-        return esService.elasticSend_Test(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
+        return esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
     }
 
     private Map<String, Object> multiSearchTest(QueryParam param) throws IOException {

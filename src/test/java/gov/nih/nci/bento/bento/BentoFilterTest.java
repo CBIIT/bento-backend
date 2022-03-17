@@ -6,18 +6,18 @@ import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
+import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
+import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,20 +43,6 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
-    List<String> _subjectIds = List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713");
-    List<String> _fileNames = List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt");
-    final String _programNameText = "TAILORx";
-    final String _programId = "NCT00310180";
-    final String _sampleId = "BENTO-BIOS-5707938";
-    final String _tissueType = "Tumor";
-    final String _sampleAnatomicSite = "Breast";
-
-    @Before
-    public void init() {
-//        AbstractClient restClient = new DefaultClient(config);
-//        client = restClient.getElasticRestClient();
-    }
-
     @Test
     public void subjectOverview_Test() throws IOException {
 
@@ -72,7 +58,7 @@ public class BentoFilterTest {
         returnTypes.add("subject_id_gs");
         returnTypes.add("age_at_index_gs");
 
-        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
+        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size(), greaterThan(0));
         assertThat(result.get(0), hasKey("subject_id_gs"));
         // Check Size
@@ -87,7 +73,9 @@ public class BentoFilterTest {
         builder.sort(BENTO_FIELDS.SUBJECT_ID_NUM, SortOrder.DESC);
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
-        bool.should(QueryBuilders.termsQuery("subject_id.keyword", _subjectIds));
+        bool.should(
+                QueryBuilders.termsQuery(BENTO_FIELDS.SUBJECT_ID + Const.ES_UNITS.KEYWORD, List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713"))
+        );
         builder.query(bool);
 
         SearchRequest request = new SearchRequest();
@@ -95,17 +83,15 @@ public class BentoFilterTest {
         request.source(builder);
 
         Set<String> returnTypes = new HashSet<>();
-        returnTypes.add("subject_id");
-        returnTypes.add("program_id");
+        returnTypes.add(BENTO_FIELDS.SUBJECT_ID);
+        returnTypes.add(BENTO_FIELDS.PROGRAM_ID);
 
-        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
+        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size(), greaterThan(0));
-        assertThat(result.get(0), hasKey("subject_id"));
+        assertThat(result.get(0), hasKey(BENTO_FIELDS.SUBJECT_ID));
         // Check Result as expected size
         assertThat(result.size(), equalTo(2));
     }
-
-
 
     @Test
     public void totalHits_Test() throws IOException {
@@ -127,12 +113,11 @@ public class BentoFilterTest {
 
     @Test
     // TODO
-    public void fileIDsFromListTest() throws  IOException {
+    public void fileIDsFromList_Test() throws  IOException {
         SearchSourceBuilder builder = new SearchSourceBuilder();
-//        builder.query(QueryBuilders.matchAllQuery());
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
-        bool.should(QueryBuilders.termsQuery("file_name", _fileNames));
+        bool.should(QueryBuilders.termsQuery(BENTO_FIELDS.FILE_NAME + Const.ES_UNITS.KEYWORD, List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt")));
         builder.query(bool);
 
         SearchRequest request = new SearchRequest();
@@ -140,287 +125,509 @@ public class BentoFilterTest {
         request.source(builder);
 
         Set<String> returnTypes = new HashSet<>();
-        returnTypes.add("file_id");
-        // TODO
-        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getStrList("file_id"));
+        returnTypes.add(BENTO_FIELDS.FILE_ID);
+        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
+        assertThat(result.size(), greaterThan(0));
+
     }
 
     @Test
     public void multiSearchTest() throws IOException {
 
         SearchSourceBuilder builder = new SearchSourceBuilder();
+        // TODO Mismatch field names
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.AGE_AT_INDEX, List.of());
+        args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
+
+
 
         builder.size(0);
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_PROGRAMS)
+                        .name(BentoGraphQLKEYS.NO_OF_PROGRAMS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.PROGRAMS)
                                 .source(new SearchSourceBuilder().size(0)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_STUDIES)
+                        .name(BentoGraphQLKEYS.NO_OF_STUDIES)
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.STUDIES)
                                 .source(new SearchSourceBuilder().size(0)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_SUBJECTS)
+                        .name(BentoGraphQLKEYS.NO_OF_SUBJECTS)
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SUBJECTS)
                                 .source(new SearchSourceBuilder().size(0)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_SAMPLES)
+                        .name(BentoGraphQLKEYS.NO_OF_SAMPLES)
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SAMPLES)
                                 .source(new SearchSourceBuilder().size(0)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES)
+                        .name(BentoGraphQLKEYS.NO_OF_LAB_PROCEDURES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(new SearchSourceBuilder().size(0)))
                         .typeMapper(typeMapper.getIntTotal()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_FILES)
+                        .name(BentoGraphQLKEYS.NO_OF_FILES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(new SearchSourceBuilder().size(0)))
-                        .typeMapper(typeMapper.getIntTotal()).build()
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PROGRAM)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.PROGRAM+ Const.ES_UNITS.KEYWORD, query))
-//                        )
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                // TODO
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.PROGRAMS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                // TODO
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_DIAGNOSIS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_RECURRENCE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD,query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_RECURRENCE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TUMOR_SIZE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TUMOR_SIZE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TUMOR_GRADE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TUMOR_GRADE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_ER_STATUS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PR_STATUS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PR_STATUS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_CHEMO)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PR_CHEMMO)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.CHEMO_REGIMEN + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_ENDO_THERAPY)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_ENDO_THERAPY)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_MENO_THERAPY)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_MENO_STATUS)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TISSUE_TYPE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TISSUE_TYPE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_TISSUE_COMPOSITION)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TISSUE_COMPOSITION)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_FILE_ASSOCI)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.FILES)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_FILE_ASSOCIATION)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.FILES)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_FILE_TYPE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.FILES)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_FILE_TYPE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.FILES)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.NO_OF_ARMS_PROGRAM)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(createArmProgramQuery()))
-//                        .typeMapper(typeMapper.getArmProgram()).build(),
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_LAB_PROCEDURES)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_LAB_PROCEDURES)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createTermsAggSourceTest(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD, query)))
-//                        .typeMapper(typeMapper.getAggregate()).build(),
-//                // TODO ADD FILTER RANGE QUERY
-//                MultipleRequests.builder()
-//                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
-//                        .request(new SearchRequest()
-//                                .indices(BENTO_INDEX.SUBJECTS)
-//                                .source(esService.createRangeQuery()))
-//                        .typeMapper(typeMapper.getRange()).build()
+                        .typeMapper(typeMapper.getIntTotal()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_PROGRAM)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PROGRAM)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_STUDY)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_STUDY)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_DIAGNOSES)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_DIAGNOSIS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_RECURRENCE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_RECURRENCE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_TUMOR_SIZE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TUMOR_SIZE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_TUMOR_GRADE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TUMOR_GRADE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_ER_STATUS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_ER_STATUS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_PR_STATUS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PR_STATUS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_CHEMO)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.CHEMO_REGIMEN + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PR_CHEMMO)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.CHEMO_REGIMEN + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_ENDO_THERAPY)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_ENDO_THERAPY)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_MENO_THERAPY)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_MENO_STATUS)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_TISSUE_TYPE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TISSUE_TYPE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_TISSUE_COMPOSITION)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TISSUE_COMPOSITION)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_FILE_ASSOCI)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.FILES)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_FILE_ASSOCIATION)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.FILES)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_FILE_TYPE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.FILES)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_FILE_TYPE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.FILES)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.NO_OF_ARMS_PROGRAM)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new SubAggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                                                .subAggSelectedField(Const.BENTO_FIELDS.STUDY_ACRONYM + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getArmProgram()).build(),
+
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_LAB_PROCEDURES)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                // Arm Program
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_LAB_PROCEDURES)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregate()).build(),
+                // Range Query
+                MultipleRequests.builder()
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_BY_AGE)
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new RangeFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(Const.BENTO_FIELDS.AGE_AT_INDEX)
+                                                .isExcludeFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getRange()).build()
 
 
         );
@@ -429,128 +636,128 @@ public class BentoFilterTest {
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
 
-        long test01 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_PROGRAMS);
+        long test01 = (long) result.get(BentoGraphQLKEYS.NO_OF_PROGRAMS);
         assertThat((int) test01, greaterThan(0));
 
-        long test02 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_STUDIES);
+        long test02 = (long) result.get(BentoGraphQLKEYS.NO_OF_STUDIES);
         assertThat((int) test02, greaterThan(0));
 
-        long test03 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_SUBJECTS);
+        long test03 = (long) result.get(BentoGraphQLKEYS.NO_OF_SUBJECTS);
         assertThat((int) test03, greaterThan(0));
 
-        long test04 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_SAMPLES);
+        long test04 = (long) result.get(BentoGraphQLKEYS.NO_OF_SAMPLES);
         assertThat((int) test04, greaterThan(0));
 
-        long test05 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_LAB_PROCEDURES);
+        long test05 = (long) result.get(BentoGraphQLKEYS.NO_OF_LAB_PROCEDURES);
         assertThat((int) test05, greaterThan(0));
 
-        long test06 = (long) result.get(Bento_GraphQL_KEYS.NO_OF_FILES);
+        long test06 = (long) result.get(BentoGraphQLKEYS.NO_OF_FILES);
         assertThat((int) test06, greaterThan(0));
-//
-//        List<Map<String,Object>> test07 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_PROGRAM);
-//        assertThat(test07.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test08 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM);
-//        assertThat(test08.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test09 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
-//        assertThat(test09.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test10 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY);
-//        assertThat(test10.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test11 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES);
-//        assertThat(test11.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test12 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_DIAGNOSIS);
-//        assertThat(test12.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test13 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_DIAGNOSIS);
-//        assertThat(test13.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test14 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_RECURRENCE);
-//        assertThat(test14.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test15 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_RECURRENCE);
-//        assertThat(test15.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test16 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_TUMOR_SIZE);
-//        assertThat(test16.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test17 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TUMOR_SIZE);
-//        assertThat(test17.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test18 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_TUMOR_GRADE);
-//        assertThat(test18.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test19 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TUMOR_GRADE);
-//        assertThat(test19.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test20 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS);
-//        assertThat(test20.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test21 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_ER_STATUS);
-//        assertThat(test21.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test22 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_PR_STATUS);
-//        assertThat(test22.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test23 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PR_STATUS);
-//        assertThat(test23.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test24 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_CHEMO);
-//        assertThat(test24.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test25 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PR_STATUS);
-//        assertThat(test25.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test26 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_ENDO_THERAPY);
-//        assertThat(test26.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test27 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_ENDO_THERAPY);
-//        assertThat(test27.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test28 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_MENO_THERAPY);
-//        assertThat(test28.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test29 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_MENO_STATUS);
-//        assertThat(test29.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test30 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_TISSUE_TYPE);
-//        assertThat(test30.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test31 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TISSUE_TYPE);
-//        assertThat(test31.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test32 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_TISSUE_COMPOSITION);
-//        assertThat(test32.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test33 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_TISSUE_COMPOSITION);
-//        assertThat(test33.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test34 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_FILE_ASSOCI);
-//        assertThat(test34.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test35 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_FILE_ASSOCIATION);
-//        assertThat(test35.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test36 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_FILE_TYPE);
-//        assertThat(test36.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test37 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_FILE_TYPE);
-//        assertThat(test37.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test38 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.NO_OF_ARMS_PROGRAM);
-//        assertThat(test38.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test39 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_LAB_PROCEDURES);
-//        assertThat(test39.size(), greaterThan(0));
-//
-//        List<Map<String,Object>> test40 = (List<Map<String,Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_LAB_PROCEDURES);
-//        assertThat(test40.size(), greaterThan(0));
-//
-//        Map<String, Object> test41 = (Map<String, Object>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE);
-//        assertThat(test41.size(), greaterThan(0));
+
+        List<Map<String,Object>> test07 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_PROGRAM);
+        assertThat(test07.size(), greaterThan(0));
+
+        List<Map<String,Object>> test08 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PROGRAM);
+        assertThat(test08.size(), greaterThan(0));
+
+        List<Map<String,Object>> test09 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_STUDY);
+        assertThat(test09.size(), greaterThan(0));
+
+        List<Map<String,Object>> test10 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_STUDY);
+        assertThat(test10.size(), greaterThan(0));
+
+        List<Map<String,Object>> test11 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_DIAGNOSES);
+        assertThat(test11.size(), greaterThan(0));
+
+        List<Map<String,Object>> test12 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_DIAGNOSIS);
+        assertThat(test12.size(), greaterThan(0));
+
+        List<Map<String,Object>> test13 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_DIAGNOSIS);
+        assertThat(test13.size(), greaterThan(0));
+
+        List<Map<String,Object>> test14 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_RECURRENCE);
+        assertThat(test14.size(), greaterThan(0));
+
+        List<Map<String,Object>> test15 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_RECURRENCE);
+        assertThat(test15.size(), greaterThan(0));
+
+        List<Map<String,Object>> test16 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_TUMOR_SIZE);
+        assertThat(test16.size(), greaterThan(0));
+
+        List<Map<String,Object>> test17 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TUMOR_SIZE);
+        assertThat(test17.size(), greaterThan(0));
+
+        List<Map<String,Object>> test18 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_TUMOR_GRADE);
+        assertThat(test18.size(), greaterThan(0));
+
+        List<Map<String,Object>> test19 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TUMOR_GRADE);
+        assertThat(test19.size(), greaterThan(0));
+
+        List<Map<String,Object>> test20 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_ER_STATUS);
+        assertThat(test20.size(), greaterThan(0));
+
+        List<Map<String,Object>> test21 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_ER_STATUS);
+        assertThat(test21.size(), greaterThan(0));
+
+        List<Map<String,Object>> test22 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_PR_STATUS);
+        assertThat(test22.size(), greaterThan(0));
+
+        List<Map<String,Object>> test23 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PR_STATUS);
+        assertThat(test23.size(), greaterThan(0));
+
+        List<Map<String,Object>> test24 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_CHEMO);
+        assertThat(test24.size(), greaterThan(0));
+
+        List<Map<String,Object>> test25 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PR_STATUS);
+        assertThat(test25.size(), greaterThan(0));
+
+        List<Map<String,Object>> test26 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_ENDO_THERAPY);
+        assertThat(test26.size(), greaterThan(0));
+
+        List<Map<String,Object>> test27 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_ENDO_THERAPY);
+        assertThat(test27.size(), greaterThan(0));
+
+        List<Map<String,Object>> test28 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_MENO_THERAPY);
+        assertThat(test28.size(), greaterThan(0));
+
+        List<Map<String,Object>> test29 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_MENO_STATUS);
+        assertThat(test29.size(), greaterThan(0));
+
+        List<Map<String,Object>> test30 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_TISSUE_TYPE);
+        assertThat(test30.size(), greaterThan(0));
+
+        List<Map<String,Object>> test31 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TISSUE_TYPE);
+        assertThat(test31.size(), greaterThan(0));
+
+        List<Map<String,Object>> test32 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_TISSUE_COMPOSITION);
+        assertThat(test32.size(), greaterThan(0));
+
+        List<Map<String,Object>> test33 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_TISSUE_COMPOSITION);
+        assertThat(test33.size(), greaterThan(0));
+
+        List<Map<String,Object>> test34 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_FILE_ASSOCI);
+        assertThat(test34.size(), greaterThan(0));
+
+        List<Map<String,Object>> test35 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_FILE_ASSOCIATION);
+        assertThat(test35.size(), greaterThan(0));
+
+        List<Map<String,Object>> test36 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_FILE_TYPE);
+        assertThat(test36.size(), greaterThan(0));
+
+        List<Map<String,Object>> test37 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_FILE_TYPE);
+        assertThat(test37.size(), greaterThan(0));
+
+        List<Map<String,Object>> test38 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.NO_OF_ARMS_PROGRAM);
+        assertThat(test38.size(), greaterThan(0));
+
+        List<Map<String,Object>> test39 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_LAB_PROCEDURES);
+        assertThat(test39.size(), greaterThan(0));
+
+        List<Map<String,Object>> test40 = (List<Map<String,Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_LAB_PROCEDURES);
+        assertThat(test40.size(), greaterThan(0));
+
+        Map<String, Object> test41 = (Map<String, Object>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_BY_AGE);
+        assertThat(test41.size(), greaterThan(0));
     }
 
     @Test
@@ -570,25 +777,8 @@ public class BentoFilterTest {
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add("age_at_index");
 
-        Map<String, Object> result = esService.elasticSend_Test(request, typeMapper.getRange());
+        Map<String, Object> result = esService.elasticSend(request, typeMapper.getRange());
         assertThat(result.size(), greaterThan(0));
-    }
-
-
-    public SearchSourceBuilder createArmProgramQuery() {
-        // TODO Add Filter Query
-        return new SearchSourceBuilder()
-                .size(0)
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
-                        .subAggregation(
-                                AggregationBuilders
-                                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                                        .field(BENTO_FIELDS.STUDY_ACRONYM + Const.ES_UNITS.KEYWORD)
-                        ));
     }
 
     @Test
@@ -619,23 +809,6 @@ public class BentoFilterTest {
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
                         .field(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD));
-
-        SearchSourceBuilder builder3 = new SearchSourceBuilder()
-                .size(0)
-                .query(bool)
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD));
-
-
-        SearchSourceBuilder builder3_Compare = new SearchSourceBuilder()
-                .size(0)
-                .query(QueryBuilders.matchAllQuery())
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD));
 
         SearchSourceBuilder builder4 = new SearchSourceBuilder()
                 .query(bool)
@@ -681,49 +854,43 @@ public class BentoFilterTest {
         builder.size(0);
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY)
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_STUDY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY)
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_STUDY)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES)
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_DIAGNOSES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder2))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES + "COMPARE")
-                        .request(new SearchRequest()
-                                .indices(BENTO_INDEX.SUBJECTS)
-                                .source(builder3_Compare))
-                        .typeMapper(typeMapper.getAggregate()).build(),
-                MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_ARMS_PROGRAM)
+                        .name(BentoGraphQLKEYS.NO_OF_ARMS_PROGRAM)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder4))
                         .typeMapper(typeMapper.getArmProgram()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS)
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_ER_STATUS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder05))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.SUBJECT_COUNT_PR_STATUS)
+                        .name(BentoGraphQLKEYS.SUBJECT_COUNT_PR_STATUS)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder06))
                         .typeMapper(typeMapper.getAggregate()).build(),
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM)
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PROGRAM)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder07))
@@ -732,25 +899,25 @@ public class BentoFilterTest {
 
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
-        List<Map<String, Object>>  test01Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
+        List<Map<String, Object>>  test01Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_STUDY);
         assertThat(test01Result.size(), is(greaterThan(0)));
 
-        List<Map<String, Object>>  test02Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_STUDY);
+        List<Map<String, Object>>  test02Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_STUDY);
         assertThat(test02Result.size(), is(greaterThan(0)));
 
-        List<Map<String, Object>>  test03Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_DIAGNOSES);
+        List<Map<String, Object>>  test03Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_DIAGNOSES);
         assertThat(test03Result.size(), is(greaterThan(0)));
 
-        List<Map<String, Object>>  test04Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_STUDY);
+        List<Map<String, Object>>  test04Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_STUDY);
         assertThat(test04Result.size(), is(greaterThan(0)));
 
-        List<Map<String, Object>>  test05Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_ER_STATUS);
+        List<Map<String, Object>>  test05Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_ER_STATUS);
         assertThat(test05Result.size(), is(greaterThan(0)));
 
-        List<Map<String, Object>>  test06Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.SUBJECT_COUNT_PR_STATUS);
+        List<Map<String, Object>>  test06Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.SUBJECT_COUNT_PR_STATUS);
         assertThat(test06Result.size(), is(greaterThan(0)));
 
-        List<Map<String, Object>>  test07Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_PROGRAM);
+        List<Map<String, Object>>  test07Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_PROGRAM);
         assertThat(test07Result.size(), is(greaterThan(0)));
 
     }
@@ -775,7 +942,7 @@ public class BentoFilterTest {
         builder.size(0);
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.NO_OF_FILES)
+                        .name(BentoGraphQLKEYS.NO_OF_FILES)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.FILES)
                                 .source(builder))
@@ -784,7 +951,7 @@ public class BentoFilterTest {
 
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
-        long test01Result = (long) result.get(Bento_GraphQL_KEYS.NO_OF_FILES);
+        long test01Result = (long) result.get(BentoGraphQLKEYS.NO_OF_FILES);
         assertThat((int) test01Result, is(greaterThan(0)));
     }
 
@@ -804,7 +971,7 @@ public class BentoFilterTest {
         builder.size(0);
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
-                        .name(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE)
+                        .name(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_BY_AGE)
                         .request(new SearchRequest()
                                 .indices(BENTO_INDEX.SUBJECTS)
                                 .source(builder))
@@ -812,58 +979,11 @@ public class BentoFilterTest {
         );
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
-        List<Map<String, Object>>  test01Result = (List<Map<String, Object>>) result.get(Bento_GraphQL_KEYS.FILTER_SUBJECT_CNT_BY_AGE);
+        List<Map<String, Object>>  test01Result = (List<Map<String, Object>>) result.get(BentoGraphQLKEYS.FILTER_SUBJECT_CNT_BY_AGE);
         assertThat(test01Result.size(), is(greaterThan(0)));
     }
 
-
-
-    public QueryBuilder createBentoBoolFromParams(Map<String, Object> args) {
-        Map<String, Object> cloneMap = new HashMap<>(args);
-        Set<String> sets = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
-        cloneMap.keySet().removeAll(sets);
-        BoolQueryBuilder bool = new BoolQueryBuilder();
-        // TODO TOBE DELETED
-        Map<String, String> keyMap= new HashMap<>();
-        // Subject Index
-        keyMap.put("diagnoses", "diagnosis" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("rc_scores", "recurrence_score");
-        keyMap.put("tumor_sizes", "tumor_size" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("chemo_regimen", "chemotherapy" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("tumor_grades", "tumor_grade" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("subject_ids", "subject_id" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("studies", "study_info" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("meno_status", "menopause_status" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("programs", "program" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("endo_therapies", "endocrine_therapy" + Const.ES_UNITS.KEYWORD);
-        // Files Index
-        keyMap.put("file_ids", "file_id" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("file_names", "file_name" + Const.ES_UNITS.KEYWORD);
-        keyMap.put("sample_ids", "sample_id" + Const.ES_UNITS.KEYWORD);
-
-        cloneMap.forEach((k,v)->{
-            List<String> list = (List<String>) args.get(k);
-            if (list.size() > 0) {
-                // TODO consider remove empty string
-                bool.filter(
-                        QueryBuilders.termsQuery(keyMap.getOrDefault(k, k), (List<String>) args.get(k)));
-            }
-        });
-        return bool.filter().size() > 0 ? bool : QueryBuilders.matchAllQuery();
-    }
-
-
-
-    public SearchSourceBuilder createTermsAggSource(String field) {
-        return new SearchSourceBuilder()
-                .size(0)
-                .aggregation(AggregationBuilders
-                        .terms(Const.ES_PARAMS.TERMS_AGGS)
-                        .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(field));
-    }
-
-    static class Bento_GraphQL_KEYS {
+    static class BentoGraphQLKEYS {
         static final String NO_OF_PROGRAMS = "numberOfPrograms";
         static final String NO_OF_STUDIES = "numberOfStudies";
         static final String NO_OF_LAB_PROCEDURES = "numberOfLabProcedures";

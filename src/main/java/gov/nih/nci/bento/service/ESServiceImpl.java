@@ -30,7 +30,7 @@ public class ESServiceImpl implements EsSearch {
     private final ConfigurationDAO config;
 
     @Override
-    public <T> T elasticSend_Test(SearchRequest request, TypeMapper mapper) throws IOException {
+    public <T> T elasticSend(SearchRequest request, TypeMapper mapper) throws IOException {
         SearchResponse searchResponse = null;
         try (RestHighLevelClient elasticClient = new DefaultClient(config).getElasticClient()) {
             searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);

@@ -27,7 +27,7 @@ public class ConfigurationDAO {
 
 	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 	private final Environment env;
-	private final TypeMapperImpl typeMapperTest;
+	private final TypeMapperImpl typeMapper;
 	private final EsSearch esSearch = new ESServiceImpl(this);
 
 	@Bean
@@ -35,12 +35,12 @@ public class ConfigurationDAO {
 	    String project = env.getProperty("project", "bento").toLowerCase();
 	    switch (project) {
 			case "icdc":
-				return new ICDCEsSearch(esSearch, typeMapperTest);
+				return new ICDCEsSearch(esSearch, typeMapper);
 			case "bento":
-				return new BentoEsSearch(esSearch, typeMapperTest);
+				return new BentoEsSearch(esSearch, typeMapper);
 			default:
 				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
-				return new BentoEsSearch(esSearch, typeMapperTest);
+				return new BentoEsSearch(esSearch, typeMapper);
 		}
 	}
 

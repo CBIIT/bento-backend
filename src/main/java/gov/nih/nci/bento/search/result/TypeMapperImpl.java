@@ -131,8 +131,7 @@ public class TypeMapperImpl {
 
             result.put(BENTO_FIELDS.LOWER_BOUND, min.getValue());
             result.put(BENTO_FIELDS.UPPER_BOUND, max.getValue());
-            // TODO
-            result.put(BENTO_FIELDS.SUBJECTS, 100);
+            result.put(BENTO_FIELDS.SUBJECTS, response.getHits().getTotalHits().value);
             return result;
         };
     }

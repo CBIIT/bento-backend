@@ -98,4 +98,6 @@ public interface BentoQuery {
     MultipleRequests findGlobalSearchFile(QueryParam param);
 
     MultipleRequests findGlobalSearchModel(QueryParam param);
+
+    MultipleRequests findGlobalSearchAboutPage(QueryParam param);
 }

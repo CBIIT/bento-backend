@@ -5,7 +5,7 @@ import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImplTest;
 import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.DataFetchingEnvironment;
@@ -32,7 +32,7 @@ public class ICDCEsSearch implements DataFetcher {
     private static final Logger logger = LogManager.getLogger(ICDCEsSearch.class);
     private final EsSearch esService;
 
-    public final TypeMapperImpl typeMapper;
+    public final TypeMapperImplTest typeMapper;
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {
@@ -85,7 +85,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DIAGNOSIS);
         request.source(builder);
-        List<Map<String, Object>> result = esService.elasticSend(params.getReturnTypes(), request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
 
@@ -104,7 +104,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DIAGNOSIS);
         request.source(builder);
-        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
 //
@@ -125,7 +125,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
         request.source(builder);
-        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
 
@@ -145,7 +145,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
         request.source(builder);
 
-        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
 
@@ -171,7 +171,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
         request.source(builder);
 
-        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
 //
@@ -203,7 +203,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.CASES);
         request.source(searchSourceBuilder);
-        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
         return result;
     }
 
@@ -226,7 +226,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.SAMPLES);
         request.source(searchSourceBuilder);
-        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
         return result;
     }
 
@@ -252,7 +252,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DIAGNOSIS);
         request.source(searchSourceBuilder);
 
-        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         return result;
     }
 
@@ -275,7 +275,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.FILES);
         request.source(searchSourceBuilder);
-        List<Map<String, Object>> result = esService.elasticSend(param.getReturnTypes(), request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(param.getReturnTypes()));
         return result;
     }
 

@@ -9,7 +9,7 @@ import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import gov.nih.nci.bento.search.query.filter.SearchCountFilter;
 import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImplTest;
 import gov.nih.nci.bento.utility.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
@@ -26,7 +26,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BentoQueryImpl implements BentoQuery {
 
-    public final TypeMapperImpl typeMapper;
+    public final TypeMapperImplTest typeMapper;
 
     @Override
     public MultipleRequests findNumberOfPrograms() {
@@ -814,8 +814,7 @@ public class BentoQueryImpl implements BentoQuery {
 
     @Override
     public MultipleRequests findGlobalSearchModel(QueryParam param) {
-        TableParam tableParam = param.getTableParam();
-        SearchSourceBuilder testBuilder06 = new SearchSourceBuilder()
+        SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(Const.ES_UNITS.MAX_SIZE)
                 .from(0)
                 .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
@@ -848,7 +847,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_MODEL)
                 .request(new SearchRequest()
                         .indices(new String[]{Const.BENTO_INDEX.MODEL_PROPERTIES, Const.BENTO_INDEX.MODEL_VALUES, Const.BENTO_INDEX.MODEL_NODES})
-                        .source(testBuilder06))
+                        .source(builder))
                 .typeMapper(typeMapper.getMapWithHighlightedFields(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.NODE_NAME,
@@ -858,6 +857,37 @@ public class BentoQueryImpl implements BentoQuery {
                         Const.BENTO_FIELDS.PROPERTY_REQUIRED,
                         Const.BENTO_FIELDS.VALUE
                 ))).build();
+    }
+
+    @Override
+    public MultipleRequests findGlobalSearchAboutPage(QueryParam param) {
+        // Set Filter
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        bool.should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.CONTENT_PARAGRAPH, param.getSearchText()));
+        builder.query(bool);
+
+        SearchRequest request = new SearchRequest();
+        request.indices(Const.BENTO_INDEX.ABOUT);
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field(Const.BENTO_FIELDS.CONTENT_PARAGRAPH);
+        highlightBuilder.preTags(Const.ES_UNITS.GS_HIGHLIGHT_DELIMITER);
+        highlightBuilder.postTags(Const.ES_UNITS.GS_HIGHLIGHT_DELIMITER);
+        builder.highlighter(highlightBuilder);
+        request.source(builder);
+
+        return MultipleRequests.builder()
+                .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_ABOUT)
+                .request(new SearchRequest()
+                        .indices(Const.BENTO_INDEX.ABOUT)
+                        .source(builder))
+                .typeMapper(typeMapper.getHighLightFragments(Const.BENTO_FIELDS.CONTENT_PARAGRAPH,
+                        (source, text) -> Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.ABOUT,
+                                Const.BENTO_FIELDS.PAGE, source.get(Const.BENTO_FIELDS.PAGE),
+                                Const.BENTO_FIELDS.TITLE,source.get(Const.BENTO_FIELDS.TITLE),
+                                Const.BENTO_FIELDS.TEXT, text))).build();
     }
 
     // Add Conditional Query

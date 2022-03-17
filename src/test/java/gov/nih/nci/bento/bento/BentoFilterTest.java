@@ -2,12 +2,12 @@ package gov.nih.nci.bento.bento;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
-import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImplTest;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -38,7 +38,7 @@ public class BentoFilterTest {
     ESServiceImpl esService;
 
     @Autowired
-    TypeMapperImpl typeMapper;
+    TypeMapperImplTest typeMapper;
 
     @Autowired
     ConfigurationDAO config;
@@ -72,7 +72,7 @@ public class BentoFilterTest {
         returnTypes.add("subject_id_gs");
         returnTypes.add("age_at_index_gs");
 
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size(), greaterThan(0));
         assertThat(result.get(0), hasKey("subject_id_gs"));
         // Check Size
@@ -98,7 +98,7 @@ public class BentoFilterTest {
         returnTypes.add("subject_id");
         returnTypes.add("program_id");
 
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size(), greaterThan(0));
         assertThat(result.get(0), hasKey("subject_id"));
         // Check Result as expected size
@@ -141,8 +141,8 @@ public class BentoFilterTest {
 
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add("file_id");
-
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getStrList("file_id"));
+        // TODO
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getStrList("file_id"));
     }
 
     @Test
@@ -570,7 +570,7 @@ public class BentoFilterTest {
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add("age_at_index");
 
-        Map<String, Object> result = esService.elasticSend(returnTypes, request, typeMapper.getRange());
+        Map<String, Object> result = esService.elasticSend_Test(request, typeMapper.getRange());
         assertThat(result.size(), greaterThan(0));
     }
 

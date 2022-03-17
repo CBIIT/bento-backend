@@ -146,6 +146,7 @@ public class Const {
         public static final String GLOBAL_SEARCH_SAMPLE = "global_search_sample";
         public static final String GLOBAL_SEARCH_FILE = "global_search_file";
         public static final String GLOBAL_SEARCH_MODEL = "global_search_model";
+        public static final String GLOBAL_SEARCH_ABOUT = "global_search_about";
     }
 
     public static class BENTO_INDEX {

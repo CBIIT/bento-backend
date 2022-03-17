@@ -1,7 +1,7 @@
 package gov.nih.nci.bento;
 
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperImplTest;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -31,7 +31,7 @@ public class EsServiceTest {
     ESServiceImpl esService;
 
     @Autowired
-    TypeMapperImpl typeMapper;
+    TypeMapperImplTest typeMapper;
 
     @Test
     public void subject_Test() throws IOException {
@@ -47,7 +47,7 @@ public class EsServiceTest {
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add(Const.BENTO_FIELDS.SUBJECT_ID);
 
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
         MatcherAssert.assertThat(result.size(), greaterThan(0));
     }
 
@@ -67,7 +67,7 @@ public class EsServiceTest {
         returnTypes.add("cohort");
 
 
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.size()).isEqualTo(10);
     }
@@ -85,7 +85,7 @@ public class EsServiceTest {
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add("clinical_study_designation");
 
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).get("clinical_study_designation")).isNotNull();
@@ -106,7 +106,7 @@ public class EsServiceTest {
         request.indices(Const.ICDC_INDEX.CASES);
         request.source(searchSourceBuilder);
 
-        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.get(0).get(ICDC_FIELDS.GROUP)).isNotNull();
         assertThat(result.get(0).get(ICDC_FIELDS.COUNT)).isNotNull();
@@ -131,7 +131,7 @@ public class EsServiceTest {
         request.indices(Const.ICDC_INDEX.CASES);
         request.source(searchSourceBuilder);
 
-        List<Map<String, Object>> result = esService.elasticSend(null, request, typeMapper.getAggregate());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getAggregate());
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.get(0).get(ICDC_FIELDS.GROUP)).isNotNull();
         assertThat(result.get(0).get(ICDC_FIELDS.COUNT)).isNotNull();
@@ -151,7 +151,7 @@ public class EsServiceTest {
 
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add(ICDC_FIELDS.FILE_NAME);
-        List<Map<String, Object>> result = esService.elasticSend(returnTypes, request, typeMapper.getDefault());
+        List<Map<String, Object>> result = esService.elasticSend_Test(request, typeMapper.getDefault(returnTypes));
         assertThat(result.size()).isGreaterThan(0);
         assertThat(result.get(0).get(ICDC_FIELDS.FILE_NAME)).isNotNull();
     }

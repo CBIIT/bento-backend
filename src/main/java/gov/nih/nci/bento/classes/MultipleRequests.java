@@ -1,6 +1,6 @@
 package gov.nih.nci.bento.classes;
 
-import gov.nih.nci.bento.search.result.TypeMapper;
+import gov.nih.nci.bento.search.result.TypeMapperTest;
 import lombok.Builder;
 import lombok.Getter;
 import org.elasticsearch.action.search.SearchRequest;
@@ -9,10 +9,10 @@ public class MultipleRequests {
 
     private final String name;
     private final SearchRequest request;
-    private TypeMapper typeMapper;
+    private TypeMapperTest typeMapper;
 
     @Builder
-    public MultipleRequests(SearchRequest request, TypeMapper typeMapper, String name) {
+    public MultipleRequests(SearchRequest request, TypeMapperTest typeMapper, String name) {
         this.name = name;
         this.request = request;
         this.typeMapper = typeMapper;

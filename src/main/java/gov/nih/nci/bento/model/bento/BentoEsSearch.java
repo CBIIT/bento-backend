@@ -9,7 +9,7 @@ import gov.nih.nci.bento.model.bento.query.BentoQueryImpl;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.query.filter.DefaultFilter;
 import gov.nih.nci.bento.search.query.filter.TableFilter;
-import gov.nih.nci.bento.search.result.TypeMapperImplTest;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class BentoEsSearch implements DataFetcher {
 
     private static final Logger logger = LogManager.getLogger(BentoEsSearch.class);
     private final EsSearch esService;
-    public final TypeMapperImplTest typeMapperTest;
+    public final TypeMapperImpl typeMapperTest;
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

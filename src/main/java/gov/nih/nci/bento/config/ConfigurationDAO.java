@@ -3,7 +3,7 @@ package gov.nih.nci.bento.config;
 import gov.nih.nci.bento.model.ICDCEsSearch;
 import gov.nih.nci.bento.model.bento.BentoEsSearch;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
-import gov.nih.nci.bento.search.result.TypeMapperImplTest;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.service.EsSearch;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class ConfigurationDAO {
 
 	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 	private final Environment env;
-	private final TypeMapperImplTest typeMapperTest;
+	private final TypeMapperImpl typeMapperTest;
 	private final EsSearch esSearch = new ESServiceImpl(this);
 
 	@Bean

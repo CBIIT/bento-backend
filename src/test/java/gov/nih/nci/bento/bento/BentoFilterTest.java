@@ -7,7 +7,7 @@ import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
-import gov.nih.nci.bento.search.result.TypeMapperImplTest;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -38,7 +38,7 @@ public class BentoFilterTest {
     ESServiceImpl esService;
 
     @Autowired
-    TypeMapperImplTest typeMapper;
+    TypeMapperImpl typeMapper;
 
     @Autowired
     ConfigurationDAO config;

@@ -9,7 +9,7 @@ import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import gov.nih.nci.bento.search.query.filter.SearchCountFilter;
 import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
-import gov.nih.nci.bento.search.result.TypeMapperImplTest;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.utility.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
@@ -26,7 +26,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BentoQueryImpl implements BentoQuery {
 
-    public final TypeMapperImplTest typeMapper;
+    public final TypeMapperImpl typeMapper;
 
     @Override
     public MultipleRequests findNumberOfPrograms() {

@@ -1,7 +1,7 @@
 package gov.nih.nci.bento;
 
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.search.result.TypeMapperImplTest;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -31,7 +31,7 @@ public class EsServiceTest {
     ESServiceImpl esService;
 
     @Autowired
-    TypeMapperImplTest typeMapper;
+    TypeMapperImpl typeMapper;
 
     @Test
     public void subject_Test() throws IOException {

@@ -3,7 +3,7 @@ package gov.nih.nci.bento.service;
 import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.config.ConfigurationDAO;
-import gov.nih.nci.bento.search.result.TypeMapperTest;
+import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class ESServiceImpl implements EsSearch {
     private final ConfigurationDAO config;
 
     @Override
-    public <T> T elasticSend_Test(SearchRequest request, TypeMapperTest mapper) throws IOException {
+    public <T> T elasticSend_Test(SearchRequest request, TypeMapper mapper) throws IOException {
         SearchResponse searchResponse = null;
         try (RestHighLevelClient elasticClient = new DefaultClient(config).getElasticClient()) {
             searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);

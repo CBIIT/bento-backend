@@ -4,7 +4,7 @@ import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.search.result.TypeMapperImplTest;
+import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import gov.nih.nci.bento.utility.StrUtil;
 import org.elasticsearch.action.search.SearchRequest;
@@ -32,7 +32,7 @@ public class BentoGlobalSearchTest {
     ESServiceImpl esService;
 
     @Autowired
-    TypeMapperImplTest typeMapper;
+    TypeMapperImpl typeMapper;
 
     @Autowired
     ConfigurationDAO config;

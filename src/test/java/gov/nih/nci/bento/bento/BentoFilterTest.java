@@ -165,7 +165,6 @@ public class BentoFilterTest {
 
 
     @Test
-    // TODO
     public void fileIDsFromList_Test() throws  IOException {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Set Filter

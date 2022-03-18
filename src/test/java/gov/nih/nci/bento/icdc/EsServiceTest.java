@@ -1,4 +1,4 @@
-package gov.nih.nci.bento;
+package gov.nih.nci.bento.icdc;
 
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;

@@ -1,9 +1,6 @@
 package gov.nih.nci.bento.model.bento.query;
 
-import gov.nih.nci.bento.classes.FilterParam;
-import gov.nih.nci.bento.classes.MultipleRequests;
-import gov.nih.nci.bento.classes.QueryParam;
-import gov.nih.nci.bento.classes.TableParam;
+import gov.nih.nci.bento.classes.*;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
@@ -682,7 +679,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchSubject(QueryParam param) {
+    public MultipleRequests findGlobalSearchSubject(AbstractQueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -713,7 +710,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchSample(QueryParam param) {
+    public MultipleRequests findGlobalSearchSample(AbstractQueryParam param) {
         TableParam tableParam = param.getTableParam();
 
         SearchSourceBuilder builder = new SearchSourceBuilder()
@@ -742,7 +739,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchProgram(QueryParam param) {
+    public MultipleRequests findGlobalSearchProgram(AbstractQueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -768,7 +765,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchStudy(QueryParam param) {
+    public MultipleRequests findGlobalSearchStudy(AbstractQueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -795,7 +792,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchFile(QueryParam param) {
+    public MultipleRequests findGlobalSearchFile(AbstractQueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -823,7 +820,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchModel(QueryParam param) {
+    public MultipleRequests findGlobalSearchModel(AbstractQueryParam param) {
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(Const.ES_UNITS.MAX_SIZE)
                 .from(0)
@@ -870,7 +867,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchAboutPage(QueryParam param) {
+    public MultipleRequests findGlobalSearchAboutPage(AbstractQueryParam param) {
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
         SearchSourceBuilder builder = new SearchSourceBuilder();

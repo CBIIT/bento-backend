@@ -1,10 +1,11 @@
-package gov.nih.nci.bento.model;
+package gov.nih.nci.bento.model.icdc;
 
+import gov.nih.nci.bento.classes.AbstractQueryParam;
 import gov.nih.nci.bento.classes.FilterParam;
-import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
+import gov.nih.nci.bento.model.icdc.query.ICDCQueryParam;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
@@ -70,7 +71,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .build();
     }
 
-    private List<Map<String, Object>> caseCountByDiseaseSite(QueryParam params) throws IOException {
+    private List<Map<String, Object>> caseCountByDiseaseSite(AbstractQueryParam params) throws IOException {
         Map<String, Object> args = params.getArgs();
         // Get Params
         List<String> ids = (List<String>) args.get(ES_PARAMS.CASE_IDS);
@@ -88,7 +89,7 @@ public class ICDCEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
-    private List<Map<String, Object>> caseCountByStageOfDisease(QueryParam param) throws IOException {
+    private List<Map<String, Object>> caseCountByStageOfDisease(AbstractQueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Get Params
@@ -113,7 +114,7 @@ public class ICDCEsSearch implements DataFetcher {
     }
 //
 //
-    private List<Map<String, Object>> caseCountByNeuteredStatus(QueryParam param) throws IOException {
+    private List<Map<String, Object>> caseCountByNeuteredStatus(AbstractQueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Get Params
@@ -139,7 +140,7 @@ public class ICDCEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
-    private List<Map<String, Object>> caseCountByBreed(QueryParam param) throws IOException {
+    private List<Map<String, Object>> caseCountByBreed(AbstractQueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Get Params
@@ -165,7 +166,7 @@ public class ICDCEsSearch implements DataFetcher {
 
     // case ids exists -> show all types of aggregation
     // others -> aggregation filter by case_ids
-    private List<Map<String, Object>> caseCountByGender(QueryParam param) throws IOException {
+    private List<Map<String, Object>> caseCountByGender(AbstractQueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Get Params
@@ -188,8 +189,8 @@ public class ICDCEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getAggregate());
     }
 //
-    private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
-        return QueryParam.builder()
+    private AbstractQueryParam CreateQueryParam(DataFetchingEnvironment env) {
+        return ICDCQueryParam.builder()
                 .args(env.getArguments())
                 .outputType(env.getFieldType())
                 .build();
@@ -197,7 +198,7 @@ public class ICDCEsSearch implements DataFetcher {
 
     // TODO Create Param Parse as a Class, caseIDS, size
     // TODO ES Service Editing
-    private List<Map<String, Object>> caseOverview(QueryParam param, String sortDirection) throws IOException {
+    private List<Map<String, Object>> caseOverview(AbstractQueryParam param, String sortDirection) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Set Filter
@@ -220,7 +221,7 @@ public class ICDCEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
-    private List<Map<String, Object>> sampleOverview(QueryParam param, String sortDirection) throws IOException {
+    private List<Map<String, Object>> sampleOverview(AbstractQueryParam param, String sortDirection) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Set Filter
@@ -242,7 +243,7 @@ public class ICDCEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
-    private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
+    private List<Map<String, Object>> caseCountByDiagnosis(AbstractQueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Get Params
@@ -267,7 +268,7 @@ public class ICDCEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
-    private List<Map<String, Object>> fileOverview(QueryParam param, String sortDirection) throws IOException {
+    private List<Map<String, Object>> fileOverview(AbstractQueryParam param, String sortDirection) throws IOException {
         Map<String, Object> args = param.getArgs();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Set Filter

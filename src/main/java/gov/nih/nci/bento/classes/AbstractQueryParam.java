@@ -3,24 +3,23 @@ package gov.nih.nci.bento.classes;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.*;
-import lombok.Builder;
 import lombok.Getter;
 import org.elasticsearch.search.sort.SortOrder;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Getter
-public class QueryParam {
-
+public abstract class AbstractQueryParam {
     private final Map<String, Object> args;
     private final Set<String> returnTypes;
     // Store PageSize, Offset, Sort
     private final TableParam tableParam;
     private final String searchText;
 
-    @Builder
-    @SuppressWarnings("unchecked")
-    public QueryParam(Map<String, Object> args, GraphQLOutputType outputType) {
+    public AbstractQueryParam(Map<String, Object> args, GraphQLOutputType outputType) {
         this.args = args;
         this.returnTypes = getReturnType(outputType);
         this.tableParam = setTableParam(args);
@@ -36,20 +35,9 @@ public class QueryParam {
                 .build();
     }
 
-    private static String getOrderByText(Map<String, Object> args) {
+    private String getOrderByText(Map<String, Object> args) {
         String orderBy = args.containsKey(Const.ES_PARAMS.ORDER_BY) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
-        return orderBy + addKeywordType(orderBy);
-    }
-
-    // TODO Check Better Way
-    private static String addKeywordType(String param) {
-        Set<String> nonKeyword = Set.of(
-                Const.BENTO_FIELDS.FILE_ID_NUM,
-                Const.BENTO_FIELDS.SUBJECT_ID_NUM,
-                Const.BENTO_FIELDS.SURVIVAL_TIME,
-                Const.BENTO_FIELDS.AGE_AT_INDEX,
-                Const.BENTO_FIELDS.AGE);
-        return nonKeyword.contains(param) ? "" : Const.ES_UNITS.KEYWORD;
+        return orderBy + getKeywordType(orderBy);
     }
 
     private SortOrder getSortType() {
@@ -77,5 +65,7 @@ public class QueryParam {
         });
         return result;
     }
+
+    protected abstract String getKeywordType(String orderBy);
 
 }

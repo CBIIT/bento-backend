@@ -1,7 +1,8 @@
 package gov.nih.nci.bento.service;
 
+import gov.nih.nci.bento.classes.AbstractQueryParam;
+import gov.nih.nci.bento.model.bento.query.BentoQueryParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
-import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.service.connector.DefaultClient;
@@ -68,8 +69,8 @@ public class ESServiceImpl implements EsSearch {
     }
 
     @Override
-    public QueryParam CreateQueryParam(DataFetchingEnvironment env) {
-        return QueryParam.builder()
+    public AbstractQueryParam CreateQueryParam(DataFetchingEnvironment env) {
+        return BentoQueryParam.builder()
                 .args(env.getArguments())
                 .outputType(env.getFieldType())
                 .build();

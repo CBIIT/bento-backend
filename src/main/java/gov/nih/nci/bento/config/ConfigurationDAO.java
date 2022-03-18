@@ -1,6 +1,6 @@
 package gov.nih.nci.bento.config;
 
-import gov.nih.nci.bento.model.ICDCEsSearch;
+import gov.nih.nci.bento.model.icdc.ICDCEsSearch;
 import gov.nih.nci.bento.model.bento.BentoEsSearch;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;

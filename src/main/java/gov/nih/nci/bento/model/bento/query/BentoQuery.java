@@ -1,7 +1,7 @@
 package gov.nih.nci.bento.model.bento.query;
 
+import gov.nih.nci.bento.classes.AbstractQueryParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
-import gov.nih.nci.bento.classes.QueryParam;
 
 import java.util.Map;
 
@@ -87,17 +87,17 @@ public interface BentoQuery {
 
     MultipleRequests findFilterSubjectCntByAge(Map<String, Object> args);
     // Global Search Start
-    MultipleRequests findGlobalSearchSubject(QueryParam param);
+    MultipleRequests findGlobalSearchSubject(AbstractQueryParam param);
 
-    MultipleRequests findGlobalSearchSample(QueryParam param);
+    MultipleRequests findGlobalSearchSample(AbstractQueryParam param);
 
-    MultipleRequests findGlobalSearchProgram(QueryParam param);
+    MultipleRequests findGlobalSearchProgram(AbstractQueryParam param);
 
-    MultipleRequests findGlobalSearchStudy(QueryParam param);
+    MultipleRequests findGlobalSearchStudy(AbstractQueryParam param);
 
-    MultipleRequests findGlobalSearchFile(QueryParam param);
+    MultipleRequests findGlobalSearchFile(AbstractQueryParam param);
 
-    MultipleRequests findGlobalSearchModel(QueryParam param);
+    MultipleRequests findGlobalSearchModel(AbstractQueryParam param);
 
-    MultipleRequests findGlobalSearchAboutPage(QueryParam param);
+    MultipleRequests findGlobalSearchAboutPage(AbstractQueryParam param);
 }

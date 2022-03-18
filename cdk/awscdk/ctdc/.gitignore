@@ -1,0 +1,12 @@
+dist/
+*.pyo
+*.pyc
+creds/*
+imports/*
+*.egg-info/
+!imports/__init__.py
+.venv
+.env
+*/test.py
+cdk.out
+cdk.context.json

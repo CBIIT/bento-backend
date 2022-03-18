@@ -389,8 +389,8 @@ pipeline {
 
     }
 
-//	success {
-//
+	success {
+
 //		script {
 //			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 //				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
@@ -423,8 +423,15 @@ pipeline {
 //			
 //				}
 //			}
-//		
-//		}
+
+        script {
+			if (params.Reload_ES_Data) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Frontend_Branch', value: "${params.Frontend_Tag}"), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Tag}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+		
+		}
 
 	cleanup {
 	

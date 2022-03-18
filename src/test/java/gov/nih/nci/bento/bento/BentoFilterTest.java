@@ -126,7 +126,7 @@ public class BentoFilterTest {
 
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add(BENTO_FIELDS.FILE_ID);
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
+        List<String> result = esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
         assertThat(result.size(), greaterThan(0));
 
     }

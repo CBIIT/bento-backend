@@ -85,8 +85,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .selectedField(ICDC_FIELDS.PRIMARY_DISEASE_SITE)
                 .build())
                 .getSourceFilter());
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getAggregate());
-        return result;
+        return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
     private List<Map<String, Object>> caseCountByStageOfDisease(QueryParam param) throws IOException {
@@ -109,8 +108,8 @@ public class ICDCEsSearch implements DataFetcher {
                 .selectedField(ICDC_FIELDS.STAGE_OF_DISEASE)
                 .build())
                 .getSourceFilter());
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getAggregate());
-        return result;
+
+        return esService.elasticSend(request, typeMapper.getAggregate());
     }
 //
 //
@@ -136,8 +135,8 @@ public class ICDCEsSearch implements DataFetcher {
                 .build())
                 .getSourceFilter());
         request.source(builder);
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getAggregate());
-        return result;
+
+        return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
     private List<Map<String, Object>> caseCountByBreed(QueryParam param) throws IOException {
@@ -161,8 +160,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .build())
                 .getSourceFilter());
 
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getAggregate());
-        return result;
+        return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
     // case ids exists -> show all types of aggregation
@@ -187,8 +185,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
         request.source(builder);
 
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getAggregate());
-        return result;
+        return esService.elasticSend(request, typeMapper.getAggregate());
     }
 //
     private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
@@ -219,8 +216,8 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.CASES);
         request.source(searchSourceBuilder);
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
-        return result;
+
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> sampleOverview(QueryParam param, String sortDirection) throws IOException {
@@ -242,8 +239,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.SAMPLES);
         request.source(searchSourceBuilder);
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
-        return result;
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
@@ -268,8 +264,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DIAGNOSIS);
         request.source(searchSourceBuilder);
 
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getAggregate());
-        return result;
+        return esService.elasticSend(request, typeMapper.getAggregate());
     }
 
     private List<Map<String, Object>> fileOverview(QueryParam param, String sortDirection) throws IOException {
@@ -291,8 +286,8 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.FILES);
         request.source(searchSourceBuilder);
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
-        return result;
+
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
 }

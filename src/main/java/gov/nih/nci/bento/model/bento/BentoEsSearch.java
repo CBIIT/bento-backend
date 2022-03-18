@@ -13,8 +13,6 @@ import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -27,7 +25,6 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 @RequiredArgsConstructor
 public final class BentoEsSearch implements DataFetcher {
 
-    private static final Logger logger = LogManager.getLogger(BentoEsSearch.class);
     private final EsSearch esService;
     private final TypeMapperImpl typeMapper;
     private BentoQuery bentoQuery;
@@ -161,7 +158,7 @@ public final class BentoEsSearch implements DataFetcher {
 
         Set<String> combinedCategories = Set.of("model");
         for (String category: combinedCategories) {
-            List<Object> pagedCategory = paginate((List)result.get(category), tableParam.getPageSize(), tableParam.getOffSet());
+            List<Map<String, Object>> pagedCategory = paginate((List<Map<String, Object>>)result.get(category), tableParam.getPageSize(), tableParam.getOffSet());
             result.put(category, pagedCategory);
         }
         return result;
@@ -187,8 +184,7 @@ public final class BentoEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SUBJECTS);
         request.source(builder);
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
-        return result;
+        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> filesInList(QueryParam param) throws IOException {
@@ -251,7 +247,6 @@ public final class BentoEsSearch implements DataFetcher {
                 bentoQuery.findFilterSubjectCntLabProcedures(args),
                 bentoQuery.findFilterSubjectCntByAge(args)
         );
-        Map<String, Object> result = esService.elasticMultiSend(requests);
-        return result;
+        return esService.elasticMultiSend(requests);
     }
 }

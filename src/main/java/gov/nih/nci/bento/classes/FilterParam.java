@@ -11,9 +11,9 @@ public class FilterParam {
     private final Map<String, Object> args;
     private final String selectedField;
     private final String subAggSelectedField;
-    private boolean isExcludeFilter;
+    private final boolean isExcludeFilter;
     private final QueryParam queryParam;
-    private String defaultSortField;
+    private final String defaultSortField;
     private TableParam tableParam;
 
     @Builder

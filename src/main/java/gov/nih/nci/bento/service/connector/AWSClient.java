@@ -12,8 +12,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 public class AWSClient extends AbstractClient {
 
-    private final String serviceName ="es";
-    private final String region = "us-east-1";
     static final AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
 
     public AWSClient(ConfigurationDAO config) {
@@ -23,9 +21,9 @@ public class AWSClient extends AbstractClient {
     @Override
     public RestHighLevelClient getElasticClient() {
         AWS4Signer signer = new AWS4Signer();
-        signer.setServiceName(serviceName);
-        signer.setRegionName(region);
-        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(serviceName, signer, credentialsProvider);
+        signer.setServiceName(config.getServiceName());
+        signer.setRegionName(config.getRegion());
+        HttpRequestInterceptor interceptor = new AWSRequestSigningApacheInterceptor(config.getServiceName(), signer, credentialsProvider);
 
         return new RestHighLevelClient(
                 RestClient.builder(

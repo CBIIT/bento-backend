@@ -106,7 +106,7 @@ public final class BentoEsSearch implements DataFetcher {
         Map<String, String> customKeyMap = Map.of(
                 BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.SUBJECT_ID_NUM,
                 BENTO_FIELDS.SAMPLE_ID, BENTO_FIELDS.SAMPLE_ID_NUM);
-        return customKeyMap.containsKey(orderKey) ? customKeyMap.get(orderKey) : "";
+        return customKeyMap.getOrDefault(orderKey, "");
     }
 
     private List<Map<String, Object>> getFileSearch(QueryParam param) throws IOException {
@@ -121,6 +121,14 @@ public final class BentoEsSearch implements DataFetcher {
                         .build()).getSourceFilter()
         );
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
+    }
+
+    private List<?> checkEmptySearch(QueryParam param, List<Map<String, Object>> result) {
+        return param.getSearchText().equals("") ? new ArrayList<>() : result;
+    }
+
+    private int checkEmptySearch(QueryParam param, int result) {
+        return param.getSearchText().equals("") ? 0 :result;
     }
 
     private Map<String, Object> globalSearch(QueryParam param) throws IOException {
@@ -139,36 +147,37 @@ public final class BentoEsSearch implements DataFetcher {
 
         Map<String, Object> multiResult = esService.elasticMultiSend(requests);
         QueryResult subjects = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_SUBJECTS);
-        result.put("subjects", subjects.getSearchHits());
-        result.put("subject_count", subjects.getTotalHits());
+        result.put("subjects", checkEmptySearch(param, subjects.getSearchHits()));
+        result.put("subject_count", checkEmptySearch(param, subjects.getTotalHits()));
 
         QueryResult samples = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_SAMPLE);
-        result.put("samples", samples.getSearchHits());
-        result.put("sample_count", samples.getTotalHits());
+        result.put("samples", checkEmptySearch(param, samples.getSearchHits()));
+        result.put("sample_count", checkEmptySearch(param, samples.getTotalHits()));
 
         QueryResult programs = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_PROGRAM);
-        result.put("programs", programs.getSearchHits());
-        result.put("program_count", programs.getTotalHits());
+        result.put("programs", checkEmptySearch(param, programs.getSearchHits()));
+        result.put("program_count", checkEmptySearch(param, programs.getTotalHits()));
 
         QueryResult studies = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_STUDIES);
-        result.put("studies", studies.getSearchHits());
-        result.put("study_count", studies.getTotalHits());
+        result.put("studies", checkEmptySearch(param, studies.getSearchHits()));
+        result.put("study_count", checkEmptySearch(param, studies.getTotalHits()));
 
         QueryResult files = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_FILE);
-        result.put("files", files.getSearchHits());
-        result.put("file_count", files.getTotalHits());
+        result.put("files", checkEmptySearch(param, files.getSearchHits()));
+        result.put("file_count", checkEmptySearch(param, files.getTotalHits()));
 
         QueryResult model = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_MODEL);
-        result.put("model", model.getSearchHits());
-        result.put("model_count", model.getTotalHits());
+        result.put("model", checkEmptySearch(param, model.getSearchHits()));
+        result.put("model_count", checkEmptySearch(param, model.getTotalHits()));
 
         QueryResult aboutPage = (QueryResult) multiResult.get(BENTO_FIELDS.GLOBAL_SEARCH_ABOUT);
         TableParam tableParam = param.getTableParam();
-        result.put("about_count", aboutPage.getSearchHits().size());
+        result.put("about_count", checkEmptySearch(param, aboutPage.getSearchHits().size()));
         result.put("about_page", paginate(aboutPage.getSearchHits(), tableParam.getPageSize(), tableParam.getOffSet()));
 
         Set<String> combinedCategories = Set.of("model");
         for (String category: combinedCategories) {
+            @SuppressWarnings("unchecked")
             List<Map<String, Object>> pagedCategory = paginate((List<Map<String, Object>>)result.get(category), tableParam.getPageSize(), tableParam.getOffSet());
             result.put(category, pagedCategory);
         }

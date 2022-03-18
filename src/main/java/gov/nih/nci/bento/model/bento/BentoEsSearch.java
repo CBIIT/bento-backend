@@ -74,6 +74,7 @@ public final class BentoEsSearch implements DataFetcher {
                 new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
+                        .customOrderBy(getIntCustomOrderBy(param))
                         .defaultSortField(BENTO_FIELDS.SUBJECT_ID_NUM)
                         .build()).getSourceFilter()
         );
@@ -88,6 +89,7 @@ public final class BentoEsSearch implements DataFetcher {
                 new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
+                        .customOrderBy(getIntCustomOrderBy(param))
                         .defaultSortField(BENTO_FIELDS.SAMPLE_ID_NUM)
                         .build()).getSourceFilter()
         );
@@ -99,6 +101,14 @@ public final class BentoEsSearch implements DataFetcher {
         return getFileSearch(param);
     }
 
+    private String getIntCustomOrderBy(QueryParam param) {
+        String orderKey = param.getTableParam().getOrderBy().replace(ES_UNITS.KEYWORD, "");
+        Map<String, String> customKeyMap = Map.of(
+                BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.SUBJECT_ID_NUM,
+                BENTO_FIELDS.SAMPLE_ID, BENTO_FIELDS.SAMPLE_ID_NUM);
+        return customKeyMap.containsKey(orderKey) ? customKeyMap.get(orderKey) : "";
+    }
+
     private List<Map<String, Object>> getFileSearch(QueryParam param) throws IOException {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.FILES);
@@ -106,6 +116,7 @@ public final class BentoEsSearch implements DataFetcher {
                 new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
+                        .customOrderBy(getIntCustomOrderBy(param))
                         .defaultSortField(BENTO_FIELDS.FILE_NAME+ ES_UNITS.KEYWORD)
                         .build()).getSourceFilter()
         );

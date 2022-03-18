@@ -20,8 +20,14 @@ public class TableFilter extends AbstractFilter {
                 )
                 .from(tableParam.getOffSet())
                 .sort(
-                        tableParam.getOrderBy().equals("") ? param.getDefaultSortField() : tableParam.getOrderBy(),
+                        getSortType(param),
                         tableParam.getSortDirection())
                 .size(tableParam.getPageSize());
+    }
+
+    private String getSortType(FilterParam param) {
+        TableParam tableParam = param.getTableParam();
+        if (param.getCustomOrderBy() != null && !param.getCustomOrderBy().equals("")) return param.getCustomOrderBy();
+        return tableParam.getOrderBy().equals("") ? param.getDefaultSortField() : tableParam.getOrderBy();
     }
 }

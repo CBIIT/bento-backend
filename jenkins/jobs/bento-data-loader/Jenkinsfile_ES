@@ -144,7 +144,7 @@ pipeline {
 				     string(credentialsId: 'es_ctdc_host', variable: 'ES_HOST')]) {
                   env.ES_HOST        = "https://${ES_HOST}"
 				  env.PROJECT        = "ctdc"
-				  env.TIER           = "${params.Environment}"
+				  env.TIER           = "dev"
 				  env.NEO4J_PASSWORD = "${neo4j_password}"
 				  env.NEO4J_IP       = "${NEO4J_CTDC_IP}"
                 }

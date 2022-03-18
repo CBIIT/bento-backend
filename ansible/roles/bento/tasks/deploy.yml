@@ -95,9 +95,9 @@
       image: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}"
       environment:
         - name: REACT_APP_BACKEND_API
-          value: "{% if tier == 'prod' %}https://{{project}}.bento-tools.org/v1/graphql/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
+          value: "{% if tier == 'prod' %}https://bento-tools.org/v1/graphql/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}" 
         - name: REACT_APP_FILE_SERVICE_API
-          value: "{% if tier == 'prod' %}https://{{project}}.bento-tools.org/api/files/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
+          value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
         - name: REACT_APP_BE_VERSION
           value: "{{bento_api_version}}"
         - name: REACT_APP_FE_VERSION
@@ -119,7 +119,7 @@
         - name: REACT_APP_GOOGLE_CLIENT_ID
           value: "{{ app_google_client_id }}"
         - name: REACT_APP_AUTH_API
-          value: "{% if tier == 'prod' %}https://{{project}}.bento-tools.org{% else %}https://{{project}}-{{ tier }}.bento-tools.org{% endif %}" 
+          value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{project}}-{{ tier }}.bento-tools.org{% endif %}" 
       portMappings:
       - containerPort: "80"
         hostPort: "80"

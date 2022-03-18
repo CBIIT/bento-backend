@@ -15,7 +15,7 @@
         - name: COOKIE_SECRET
           value: "{{cookie_secret}}"
         - name: SESSION_TIMEOUT
-          value: 60
+          value: 1800
         - name: IDP 
           value: "{{idp_provider}}"
         - name: CLIENT_ID
@@ -27,7 +27,7 @@
         - name: PROJECT
           value: "{{project}}"
         - name: REDIRECT_URL
-          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
+          value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

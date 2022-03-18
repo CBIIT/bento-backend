@@ -97,6 +97,15 @@ public class TypeMapperImpl {
         };
     }
 
+    public TypeMapper<Integer> getAggregateTotalCnt() {
+        return (response) -> {
+            Aggregations aggregate = response.getAggregations();
+            Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
+            List<Terms.Bucket> buckets = (List<Terms.Bucket>) terms.getBuckets();
+            return buckets.size();
+        };
+    }
+
     public TypeMapper<List<String>> getStrList(String field) {
         return (response) -> createStrList(response, field);
     }

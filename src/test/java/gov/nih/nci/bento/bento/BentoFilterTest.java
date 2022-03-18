@@ -43,6 +43,59 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
+
+    @Test
+    public void searchAggregationStudiesCnt_Test() throws IOException {
+
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.AGE_AT_INDEX, List.of());
+        args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
+
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregateTotalCnt()).build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        Integer aggResultSize = (Integer) result.get("TEST01");
+        assertThat(aggResultSize, greaterThan(0));
+    }
+
+    @Test
+    public void searchAggregationLabCnt_Test() throws IOException {
+
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.AGE_AT_INDEX, List.of());
+        args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
+
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getAggregateTotalCnt()).build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        Integer aggResultSize = (Integer) result.get("TEST01");
+        assertThat(aggResultSize, greaterThan(0));
+    }
+
     @Test
     public void subjectOverview_Test() throws IOException {
 

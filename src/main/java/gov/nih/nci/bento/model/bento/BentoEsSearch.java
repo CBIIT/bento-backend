@@ -206,8 +206,8 @@ public final class BentoEsSearch implements DataFetcher {
     private Map<String, Object> multiSearchTest(QueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         List<MultipleRequests> requests = List.of(
-                bentoQuery.findNumberOfPrograms(),
-                bentoQuery.findNumberOfStudies(),
+                bentoQuery.findNumberOfPrograms(args),
+                bentoQuery.findNumberOfStudies(args),
                 bentoQuery.findNumberOfSubjects(args),
                 bentoQuery.findNumberOfSamples(args),
                 bentoQuery.findNumberOfLabProcedures(args),

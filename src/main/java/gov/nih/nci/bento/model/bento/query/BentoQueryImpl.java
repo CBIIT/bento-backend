@@ -5,10 +5,7 @@ import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.classes.TableParam;
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.search.query.filter.AggregationFilter;
-import gov.nih.nci.bento.search.query.filter.RangeFilter;
-import gov.nih.nci.bento.search.query.filter.SearchCountFilter;
-import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
+import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.utility.StrUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,23 +26,35 @@ public class BentoQueryImpl implements BentoQuery {
     public final TypeMapperImpl typeMapper;
 
     @Override
-    public MultipleRequests findNumberOfPrograms() {
+    public MultipleRequests findNumberOfPrograms(Map<String, Object> args) {
         return MultipleRequests.builder()
                 .name(BentoGraphQLKEYS.NO_OF_PROGRAMS)
                 .request(new SearchRequest()
-                        .indices(Const.BENTO_INDEX.PROGRAMS)
-                        .source(new SearchSourceBuilder().size(0)))
-                .typeMapper(typeMapper.getIntTotal()).build();
+                        .indices(Const.BENTO_INDEX.SUBJECTS)
+                        .source(new AggregationFilter(
+                                FilterParam.builder()
+                                        .args(args)
+                                        .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                                        .build())
+                                .getSourceFilter()
+                        ))
+                .typeMapper(typeMapper.getAggregateTotalCnt()).build();
     }
 
     @Override
-    public MultipleRequests findNumberOfStudies() {
+    public MultipleRequests findNumberOfStudies(Map<String, Object> args) {
         return MultipleRequests.builder()
                 .name(BentoGraphQLKEYS.NO_OF_STUDIES)
                 .request(new SearchRequest()
-                        .indices(Const.BENTO_INDEX.STUDIES)
-                        .source(new SearchSourceBuilder().size(0)))
-                .typeMapper(typeMapper.getIntTotal()).build();
+                        .indices(Const.BENTO_INDEX.SUBJECTS)
+                        .source(new AggregationFilter(
+                                FilterParam.builder()
+                                        .args(args)
+                                        .selectedField(Const.BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                        .build())
+                                .getSourceFilter()
+                        ))
+                .typeMapper(typeMapper.getAggregateTotalCnt()).build();
     }
 
     @Override
@@ -84,13 +93,14 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(BentoGraphQLKEYS.NO_OF_LAB_PROCEDURES)
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SUBJECTS)
-                        .source(new SearchCountFilter(
+                        .source(new AggregationFilter(
                                 FilterParam.builder()
                                         .args(args)
+                                        .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
                                         .build())
                                 .getSourceFilter()
                         ))
-                .typeMapper(typeMapper.getIntTotal()).build();
+                .typeMapper(typeMapper.getAggregateTotalCnt()).build();
     }
 
     @Override
@@ -698,7 +708,7 @@ public class BentoQueryImpl implements BentoQuery {
                         Const.BENTO_FIELDS.PROGRAM,
                         Const.BENTO_FIELDS.STUDY_ACRONYM,
                         Const.BENTO_FIELDS.DIAGNOSES,
-                        Const.BENTO_FIELDS.AGE_AT_INDEX
+                        Const.BENTO_FIELDS.AGE
                 ))).build();
     }
 

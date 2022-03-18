@@ -7,9 +7,9 @@ import java.util.Map;
 
 public interface BentoQuery {
 
-    MultipleRequests findNumberOfPrograms();
+    MultipleRequests findNumberOfPrograms(Map<String, Object> args);
 
-    MultipleRequests findNumberOfStudies();
+    MultipleRequests findNumberOfStudies(Map<String, Object> args);
 
     MultipleRequests findNumberOfSubjects(Map<String, Object> args);
 

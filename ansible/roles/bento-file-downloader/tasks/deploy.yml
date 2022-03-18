@@ -53,9 +53,9 @@
         - name: AUTH_ENABLED
           value: "{{auth_enabled}}"
         - name: AUTH_URL
-          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/auth/authenticated{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/auth/authenticated{% endif %}"
+          value: "{% if tier == 'prod' %}https://bento-tools.org/api/auth/authenticated{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/auth/authenticated{% endif %}"
         - name: BACKEND_URL
-          value: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/v1/graphql/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
+          value: "{% if tier == 'prod' %}https://bento-tools.org/v1/graphql/{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME

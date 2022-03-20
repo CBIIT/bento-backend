@@ -1,0 +1,73 @@
+---
+
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
+
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{workspace}}/ctos-cloud-devops/docker/dockerfiles/nginx.conf'
+    dest: '{{workspace}}/{{project}}/nginx.conf'
+
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{workspace}}/{{project}}/nginx-entrypoint.sh"
+    mode: 0755
+
+- name: testing contents {{workspace}}/{{project}}
+  command: "ls {{workspace}}/{{project}}"
+  register: dir_out
+
+- debug: var={{item}}
+  with_items: dir_out.stdout_lines
+
+- name: run npm install in {{workspace}}/{{project}}
+  shell: "{{item}}"
+  args:
+    chdir: "{{workspace}}/{{project}}"
+    executable: /bin/bash
+  loop:
+    - npm install
+    - npm run build
+
+- name: rename build to dist
+  command: mv {{workspace}}/{{project}}/build {{workspace}}/{{project}}/dist 
+
+- name: copy env to project
+  copy:
+    src: inject.template.js
+    dest: "{{workspace}}/{{project}}/dist/inject.template.js"
+    mode: 0755
+          
+- name: build cbiitssrepo/{{project | lower}} image
+  docker_image:
+    build:
+      path: "{{workspace}}/{{project}}"
+      dockerfile: "{{workspace}}/ctos-cloud-devops/docker/dockerfiles/ccdc-frontend-dockerfile"
+      pull: yes
+      nocache: yes
+    name: "{{ ecr_repo }}/{{project | lower}}"
+    tag: "{{frontend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to cbiitssrepo/{{ project | lower }} image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ project | lower }}:{{frontend_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project | lower }}:latest"
+    force_tag: yes
+    push: yes
+    source: local
+

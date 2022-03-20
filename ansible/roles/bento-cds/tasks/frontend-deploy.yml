@@ -1,0 +1,105 @@
+---
+
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
+
+
+- name: create task definition - {{project}}
+  ecs_taskdefinition:
+    containers:
+    - name: frontend
+      essential: true
+      image: "{{ ecr_repo }}/{{project | lower}}:{{frontend_version}}"
+      environment:
+        - name: REACT_APP_BACKEND_API
+          value: "{{ react_app_backend_api[tier] }}"
+          #value: "{% if tier == 'prod' %}https://{{stack_name}}.cancer.gov/service/{% else %}https://{{stack_name}}-{{ tier }}.cancer.gov/service/{% endif %}" 
+        - name: REACT_APP_ENVIRONMENT
+          value: "{{tier}}"
+      portMappings:
+      - containerPort: "80"
+        hostPort: "80"
+    launch_type: FARGATE
+    network_mode: awsvpc
+    execution_role_arn: "arn:aws:iam::268879522213:role/{{stack_name }}-{{ tier }}-task-exection-role"
+    task_role_arn: "arn:aws:iam::268879522213:role/{{stack_name }}-{{ tier }}-task-role"
+    family: "{{stack_name }}-{{tier}}-frontend"
+    state: present
+    memory: '512'
+    cpu: '256'
+    region: "{{region}}"
+  register: task_output
+
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
+- name: query task definition - {{project | lower}} 
+  ecs_taskdefinition_info:
+    task_definition: "{{stack_name }}-{{tier}}-frontend"
+    region: "{{region}}" 
+  register: task_frontend
+
+
+- debug: msg="{{ task_frontend }}"
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
+
+
+- name: query ecs service
+  ecs_service_info:
+    cluster: "{{stack_name }}-{{tier}}-ecs"
+    service: "{{stack_name }}-{{tier}}-frontend"
+    details: true
+    region: "{{region}}"
+  register: service_frontend
+
+
+############################################################################################################################
+
+- name: set facts
+  set_fact:
+    frontend_url: "{% if tier == 'prod' %}https://{{stack_name}}.cancer.gov/{% else %}https://{{stack_name}}-{{ tier }}.cancer.gov/{% endif %}"
+    frontend_revision: "{{task_frontend.revision}}"
+    task_frontend_name: "{{task_frontend.family}}"
+    lb_frontend: "{{service_frontend.services[0].loadBalancers}}"
+    role_arn: "{{service_frontend.services[0].roleArn}}"
+    
+
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
+
+- name: update frontend service
+  ecs_service:
+    state: present
+    name: "{{stack_name }}-{{tier}}-frontend"
+    cluster: "{{stack_name }}-{{tier}}-ecs"
+    task_definition: "{{task_frontend_name}}:{{frontend_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_frontend }}"
+    region: "{{region}}"
+  register: service_frontend_output

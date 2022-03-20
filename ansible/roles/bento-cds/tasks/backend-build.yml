@@ -1,0 +1,169 @@
+---
+
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
+
+############################################################################################################################
+#     Backend Build
+############################################################################################################################
+
+- name: copy env to project
+  copy:
+    src: inject.template.js
+    dest: "{{workspace}}/inject.template.js"
+    mode: 0755
+
+- name: build cbiitssrepo/{{ backend | lower}} image
+  docker_image:
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/ctos-cloud-devops/docker/dockerfiles/ccdc-backend-dockerfile"
+      pull: yes
+      nocache: yes
+    name: "{{ ecr_repo }}/{{ backend | lower}}"
+    tag: "{{backend_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to cbiitssrepo/{{ backend | lower}} image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ backend | lower}}:{{backend_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ backend | lower}}:latest"
+    force_tag: yes
+    push: yes
+    source: local
+
+
+- name: get db ip
+  include_tasks: neo4j-ip.yml
+
+- name: checkout specified commit - backend
+  shell: "git checkout {{ backend_commit_id }}"
+  args:
+    chdir: "{{ workspace }}"
+
+- name: checkout specified commit - frontend
+  shell: "git checkout {{ frontend_commit_id }}"
+  args:
+    chdir: "{{ workspace }}/{{ project }}-frontend"
+
+- name: get backend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{ workspace }}"
+  register: backend_id
+
+- name: get frontend commit ID
+  shell: git rev-parse HEAD
+  args:
+    chdir: "{{ workspace }}/{{ project }}-frontend"
+  register: frontend_id
+
+- name: echo backend id
+  debug:
+    msg: "{{ backend_id.stdout_lines }}"
+
+- name: echo frontend id
+  debug:
+    msg: "{{ frontend_id.stdout_lines }}"
+
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
+
+############################################################################################################################
+
+#     Backend Build
+
+############################################################################################################################
+
+- name: remove the application_example.properties file
+  file:
+    path: "{{workspace}}/src/main/resources/application_example.properties"
+    state: absent
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: "{{workspace}}/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: create graphql directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/graphql"
+
+- name: create yaml directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/yaml"
+
+- name: copy schema from frontend to resources
+  template:
+    src: "{{workspace}}/{{ project }}-frontend/graphql/{{ schema_file}}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file}}"
+
+- name: verify test queries file exists
+  stat:
+    path: "{{workspace}}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
+  register: test_queries
+
+- name: copy test queries from frontend to resources
+  template:
+    src: "{{workspace}}/{{ project }}-frontend/yaml/{{ test_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
+  when: test_queries.stat.exists
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+
+- name: copy Bento-0.0.1.war to ROOT.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+- name: build {{ project }}-backend image
+  docker_image:
+    buildargs:
+      ECR_REPO: "{{ecr_repo}}"
+    build:
+      path: "{{workspace}}"
+      dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+      pull: yes
+      nocache: yes
+    name: "{{ ecr_repo }}/{{ project }}-backend"
+    tag: "{{bento_api_version}}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to {{ project }}-backend image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project }}-backend:latest"
+    force_tag: yes
+    push: yes
+    source: local
+

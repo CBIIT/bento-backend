@@ -1,0 +1,19 @@
+---
+# vars file for cicd
+stack_name: cds
+platform: cloudone
+tier: "{{ lookup('env','TIER') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+build_number: "{{ lookup('env','BUILD_NUMBER')}}" 
+app_name: "{{stack_name}}-{{platform}}-{{tier}}"
+project: cds
+frontend_version: "{{ lookup('env','FE_VERSION') }}"
+region: us-east-1
+es_host: "https://vpc-ccdc-ccdc-dev-elasticsearch-hqieq63mur7umg4ji66l6zg6ra.us-east-1.es.amazonaws.com"
+digest_file_folder: "{{ lookup('env','S3_FOLDER') }}"
+aws_storage_bucket_name : ctos-ccdc-etl-digest
+react_app_backend_api: 
+  dev: "datacatalog-dev.ccdi.cancer.gov"
+  qa: "datacatalog-qa.ccdi.cancer.gov"
+
+

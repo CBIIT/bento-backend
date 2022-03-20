@@ -1,95 +1,15 @@
 ---
-
-- name: Get the current caller identity information
-  aws_caller_info:
-  register: caller_info
-
-- name: set ECR registry name
-  set_fact:
-    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
-
-- name: login into ecr
-  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
-  ignore_errors: True
-  register: ecr_login
-
-############################################################################################################################
-#     Backend Build
-############################################################################################################################
-
-- name: copy env to project
-  copy:
-    src: inject.template.js
-    dest: "{{workspace}}/inject.template.js"
-    mode: 0755
-
-- name: build cbiitssrepo/{{ backend | lower}} image
-  docker_image:
-    build:
-      path: "{{workspace}}"
-      dockerfile: "{{workspace}}/ctos-cloud-devops/docker/dockerfiles/ccdc-backend-dockerfile"
-      pull: yes
-      nocache: yes
-    name: "{{ ecr_repo }}/{{ backend | lower}}"
-    tag: "{{backend_version}}-{{build_number}}"
-    push: yes
-    force_source: yes
-    source: build
-
-- name: Add tag latest to cbiitssrepo/{{ backend | lower}} image
-  docker_image:
-    name: "{{ ecr_repo }}/{{ backend | lower}}:{{backend_version}}-{{build_number}}"
-    repository: "{{ ecr_repo }}/{{ backend | lower}}:latest"
-    force_tag: yes
-    push: yes
-    source: local
-
+#docker login
+- name: docker login
+  include_role:
+    namee: common
+    tasks_from: ecr-login
 
 - name: get db ip
-  include_tasks: neo4j-ip.yml
+  include_role:
+    namee: common
+    tasks_from: neo4j-ip
 
-- name: checkout specified commit - backend
-  shell: "git checkout {{ backend_commit_id }}"
-  args:
-    chdir: "{{ workspace }}"
-
-- name: checkout specified commit - frontend
-  shell: "git checkout {{ frontend_commit_id }}"
-  args:
-    chdir: "{{ workspace }}/{{ project }}-frontend"
-
-- name: get backend commit ID
-  shell: git rev-parse HEAD
-  args:
-    chdir: "{{ workspace }}"
-  register: backend_id
-
-- name: get frontend commit ID
-  shell: git rev-parse HEAD
-  args:
-    chdir: "{{ workspace }}/{{ project }}-frontend"
-  register: frontend_id
-
-- name: echo backend id
-  debug:
-    msg: "{{ backend_id.stdout_lines }}"
-
-- name: echo frontend id
-  debug:
-    msg: "{{ frontend_id.stdout_lines }}"
-
-- name: Get the current caller identity information
-  aws_caller_info:
-  register: caller_info
-
-- name: set ECR registry name
-  set_fact:
-    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
-
-- name: login into ecr
-  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
-  ignore_errors: True
-  register: ecr_login
 
 ############################################################################################################################
 

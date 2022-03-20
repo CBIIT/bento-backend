@@ -115,7 +115,6 @@ resource "aws_elasticsearch_domain" "es" {
   tags = var.tags
 }
 
-
 resource "aws_cloudwatch_log_group" "cloudwatch_log_group" {
   name = "${var.stack_name}-${terraform.workspace}-es-log-group"
 }

@@ -21,7 +21,6 @@ resource "aws_instance" "db" {
   )
 }
 
-
 #create database security group
 resource "aws_security_group" "database-sg" {
   name = "${var.stack_name}-${var.env}-database-sg"
@@ -149,67 +148,6 @@ DOC
   var.tags,
   )
 }
-
-
-//#load data
-//resource "aws_ssm_document" "load_data" {
-//  name          = "${var.stack_name}-load-data"
-//  document_type = "Command"
-//  document_format = "YAML"
-//  content = <<DOC
-//---
-//schemaVersion: '2.2'
-//description: State Manager Bootstrap Example
-//parameters: {}
-//mainSteps:
-//- action: aws:runShellScript
-//  name: LoadData
-//  inputs:
-//    runCommand:
-//    - set -ex
-//    - cd /tmp/bento-custodian/ansible
-//    - ansible-playbook data-loader.yml -e neo4j_ip="${aws_instance.db.private_ip}"  -e init_db="yes" -e neo4j_password="${var.database_password}"
-//  DOC
-//  tags = merge(
-//  {
-//    "Name" = format("%s-%s",var.stack_name,"load-bento-data")
-//  },
-//  var.tags,
-//  )
-//}
-
-//resource "aws_ssm_document" "bootstrap_database" {
-//  document_format = "YAML"
-//  document_type = "Command"
-//  name = "boostrap-${var.stack_name}-database"
-//  content = <<DOC
-//---
-//schemaVersion: '2.2'
-//description: Bootstrap database instances
-//parameters: {}
-//mainSteps:
-//- action: aws:runDocument
-//  name: configureDatabase
-//  inputs:
-//    documentType: SSMDocument
-//    documentPath: ${var.stack_name}-setup-database
-//    documentParameters: "{}"
-//- action: aws:runDocument
-//  name: LoadData
-//  inputs:
-//    documentType: SSMDocument
-//    documentPath: ${var.stack_name}-load-data
-//    documentParameters: "{}"
-//
-//DOC
-//  tags = merge(
-//  {
-//    "Name" = format("%s-%s",var.stack_name,"load-data")
-//  },
-//  var.tags,
-//  )
-//}
-
 
 resource "aws_ssm_association" "database" {
   name = aws_ssm_document.ssm_neo4j_boostrap.name

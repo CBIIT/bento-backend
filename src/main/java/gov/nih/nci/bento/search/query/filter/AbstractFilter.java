@@ -23,7 +23,7 @@ public abstract class AbstractFilter {
         // Filter; excludes its field
         if (param.isExcludeFilter()) {
             // Consider Remove Keyword
-            String key = param.getSelectedField().replace(Const.ES_UNITS.KEYWORD, "");
+            String key = param.getSelectedField();
             if (map.containsKey(key)) map.remove(key);
         }
         bentoParam = new BentoQueryCreator(map);

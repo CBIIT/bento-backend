@@ -102,7 +102,7 @@ public final class BentoEsSearch implements DataFetcher {
     }
 
     private String getIntCustomOrderBy(QueryParam param) {
-        String orderKey = param.getTableParam().getOrderBy().replace(ES_UNITS.KEYWORD, "");
+        String orderKey = param.getTableParam().getOrderBy();
         Map<String, String> customKeyMap = Map.of(
                 BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.SUBJECT_ID_NUM,
                 BENTO_FIELDS.SAMPLE_ID, BENTO_FIELDS.SAMPLE_ID_NUM);
@@ -117,7 +117,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .args(param.getArgs())
                         .queryParam(param)
                         .customOrderBy(getIntCustomOrderBy(param))
-                        .defaultSortField(BENTO_FIELDS.FILE_NAME+ ES_UNITS.KEYWORD)
+                        .defaultSortField(BENTO_FIELDS.FILE_NAME)
                         .build()).getSourceFilter()
         );
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));

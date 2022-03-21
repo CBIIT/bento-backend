@@ -20,7 +20,7 @@ public class BentoQueryCreator extends QueryCreator {
         args.forEach((key,v)->{
             List<String> list = (List<String>) args.get(key);
             if (list.size() > 0) {
-                QueryBuilder builder = QueryBuilders.termsQuery(key + Const.ES_UNITS.KEYWORD, (List<String>) args.get(key));
+                QueryBuilder builder = QueryBuilders.termsQuery(key, (List<String>) args.get(key));
                 boolBuilder.filter(builder);
             }
         });

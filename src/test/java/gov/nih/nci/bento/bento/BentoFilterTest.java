@@ -59,7 +59,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(BENTO_FIELDS.STUDIES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -85,7 +85,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(BENTO_FIELDS.LAB_PROCEDURES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -127,7 +127,7 @@ public class BentoFilterTest {
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
         bool.should(
-                QueryBuilders.termsQuery(BENTO_FIELDS.SUBJECT_ID + Const.ES_UNITS.KEYWORD, List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713"))
+                QueryBuilders.termsQuery(BENTO_FIELDS.SUBJECT_ID, List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713"))
         );
         builder.query(bool);
 
@@ -169,28 +169,24 @@ public class BentoFilterTest {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
-        bool.should(QueryBuilders.termsQuery(BENTO_FIELDS.FILE_NAME + Const.ES_UNITS.KEYWORD, List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt")));
+        bool.should(QueryBuilders.termsQuery(BENTO_FIELDS.FILE_NAME, List.of("10099_OncotypeDXqRTPCR.txt", "10097_OncotypeDXqRTPCR.txt")));
         builder.query(bool);
 
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.FILES);
         request.source(builder);
 
-        Set<String> returnTypes = new HashSet<>();
-        returnTypes.add(BENTO_FIELDS.FILE_ID);
         List<String> result = esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
         assertThat(result.size(), greaterThan(0));
 
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void multiSearchTest() throws IOException {
-
-        SearchSourceBuilder builder = new SearchSourceBuilder();
         Map<String, Object> args = new HashMap<>();
         args.put(BENTO_FIELDS.AGE_AT_INDEX, List.of());
         args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
-        builder.size(0);
 
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
@@ -236,7 +232,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.PROGRAM)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -248,7 +244,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.PROGRAM)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -261,7 +257,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.STUDIES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -273,7 +269,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.STUDIES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -286,7 +282,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.DIAGNOSES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -298,7 +294,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.DIAGNOSES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -311,7 +307,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.RC_SCORES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -323,7 +319,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.RC_SCORES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.RC_SCORES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -338,7 +334,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_SIZES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -350,7 +346,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.TUMOR_SIZES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_SIZES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -364,7 +360,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_GRADES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -376,7 +372,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.TUMOR_GRADES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.TUMOR_GRADES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -391,7 +387,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.ER_STATUS)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -403,7 +399,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.ER_STATUS)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -417,7 +413,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.PR_STATUS)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -429,7 +425,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.PR_STATUS)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -443,7 +439,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.CHEMO_REGIMEN + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.CHEMO_REGIMEN)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -455,7 +451,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.CHEMO_REGIMEN + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.CHEMO_REGIMEN)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -469,7 +465,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.ENDO_THERAPIES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -481,7 +477,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.ENDO_THERAPIES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.ENDO_THERAPIES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -495,7 +491,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.MENO_STATUS)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -507,7 +503,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.MENO_STATUS + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.MENO_STATUS)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -522,7 +518,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.TISSUE_TYPE)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -534,7 +530,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.TISSUE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.TISSUE_TYPE)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -548,7 +544,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.COMPOSITION)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -560,7 +556,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.COMPOSITION + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.COMPOSITION)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -575,7 +571,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.ASSOCIATION)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -587,7 +583,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.ASSOCIATION + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.ASSOCIATION)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -603,7 +599,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.FILE_TYPE)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -615,7 +611,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.FILE_TYPE)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -630,8 +626,8 @@ public class BentoFilterTest {
                                 .source(new SubAggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
-                                                .subAggSelectedField(Const.BENTO_FIELDS.STUDY_ACRONYM + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.PROGRAM)
+                                                .subAggSelectedField(Const.BENTO_FIELDS.STUDY_ACRONYM)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -644,7 +640,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -657,7 +653,7 @@ public class BentoFilterTest {
                                 .source(new AggregationFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES + Const.ES_UNITS.KEYWORD)
+                                                .selectedField(Const.BENTO_FIELDS.LAB_PROCEDURES)
                                                 .isExcludeFilter(true)
                                                 .build())
                                         .getSourceFilter()
@@ -823,33 +819,32 @@ public class BentoFilterTest {
                                 .build())
                         .getSourceFilter()
                 );
-        Set<String> returnTypes = new HashSet<>();
-        returnTypes.add("age_at_index");
 
         Map<String, Object> result = esService.elasticSend(request, typeMapper.getRange());
         assertThat(result.size(), greaterThan(0));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testFilter() throws IOException {
 
         BoolQueryBuilder bool = new BoolQueryBuilder();
         bool.filter(
-                QueryBuilders.termsQuery(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD, List.of("Positive")));
+                QueryBuilders.termsQuery(BENTO_FIELDS.ER_STATUS, List.of("Positive")));
 //        bool.filter(
-//                QueryBuilders.termsQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, List.of("A: RS 0-10, assigned endocrine therapy alone", "C: RS 11-25, randomized to chemo + endocrine therapy")));
+//                QueryBuilders.termsQuery(BENTO_FIELDS.STUDIES, List.of("A: RS 0-10, assigned endocrine therapy alone", "C: RS 11-25, randomized to chemo + endocrine therapy")));
 //        bool.filter(
-//                QueryBuilders.termsQuery(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD, List.of("Medullary Carcinoma")));
+//                QueryBuilders.termsQuery(BENTO_FIELDS.DIAGNOSES, List.of("Medullary Carcinoma")));
 
 
-//        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, "A: RS 0-10, assigned endocrine therapy alone");
+//        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES, "A: RS 0-10, assigned endocrine therapy alone");
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(0)
                 .query(bool)
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.STUDIES));
 
         SearchSourceBuilder builder2 = new SearchSourceBuilder()
                 .size(0)
@@ -857,7 +852,7 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.DIAGNOSES + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.DIAGNOSES));
 
         SearchSourceBuilder builder4 = new SearchSourceBuilder()
                 .query(bool)
@@ -865,12 +860,12 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD)
+                        .field(BENTO_FIELDS.PROGRAM)
                         .subAggregation(
                                 AggregationBuilders
                                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                                        .field(BENTO_FIELDS.STUDY_ACRONYM + Const.ES_UNITS.KEYWORD)
+                                        .field(BENTO_FIELDS.STUDY_ACRONYM)
                         ));
 
 
@@ -880,7 +875,7 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.ER_STATUS + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.ER_STATUS));
 
         SearchSourceBuilder builder06 = new SearchSourceBuilder()
                 .size(0)
@@ -888,7 +883,7 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.PR_STATUS + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.PR_STATUS));
 
 
         SearchSourceBuilder builder07 = new SearchSourceBuilder()
@@ -897,7 +892,7 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.PROGRAM + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.PROGRAM));
 
 
         builder.size(0);
@@ -977,8 +972,8 @@ public class BentoFilterTest {
 
         BoolQueryBuilder bool = new BoolQueryBuilder();
         bool.filter(
-                QueryBuilders.termsQuery(BENTO_FIELDS.FILE_TYPE + Const.ES_UNITS.KEYWORD, List.of("bam", "bai")));
-//        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD, "A: RS 0-10, assigned endocrine therapy alone");
+                QueryBuilders.termsQuery(BENTO_FIELDS.FILE_TYPE, List.of("bam", "bai")));
+//        QueryBuilder query = QueryBuilders.termQuery(BENTO_FIELDS.STUDIES, "A: RS 0-10, assigned endocrine therapy alone");
 
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(0)
@@ -986,7 +981,7 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.STUDIES));
 
         builder.size(0);
         List<MultipleRequests> requests = List.of(
@@ -1005,6 +1000,7 @@ public class BentoFilterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void rangeQuery_Test() throws IOException {
         BoolQueryBuilder bool = new BoolQueryBuilder();
         bool.filter(QueryBuilders.rangeQuery(BENTO_FIELDS.AGE_AT_INDEX).gte(0).lte(100));
@@ -1015,7 +1011,7 @@ public class BentoFilterTest {
                 .aggregation(AggregationBuilders
                         .terms(Const.ES_PARAMS.TERMS_AGGS)
                         .size(Const.ES_PARAMS.AGGS_SIZE)
-                        .field(BENTO_FIELDS.STUDIES + Const.ES_UNITS.KEYWORD));
+                        .field(BENTO_FIELDS.STUDIES));
 
         builder.size(0);
         List<MultipleRequests> requests = List.of(

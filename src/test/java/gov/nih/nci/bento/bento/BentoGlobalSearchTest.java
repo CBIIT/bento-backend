@@ -55,12 +55,6 @@ public class BentoGlobalSearchTest {
         builder.highlighter(highlightBuilder);
         request.source(builder);
 
-        Set<String> returnTypes = new HashSet<>();
-        returnTypes.add(Const.BENTO_FIELDS.PAGE);
-        returnTypes.add(Const.BENTO_FIELDS.TITLE);
-        returnTypes.add(Const.BENTO_FIELDS.TYPE);
-        returnTypes.add(Const.BENTO_FIELDS.TEXT);
-
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
                         .name("TEST01")
@@ -98,21 +92,21 @@ public class BentoGlobalSearchTest {
         // Set Bool Filter
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
+                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID + Const.ES_UNITS.KEYWORD, PROGRAM_ID))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID, PROGRAM_ID))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
+                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE + Const.ES_UNITS.KEYWORD, PROGRAM_CODE))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE, PROGRAM_CODE))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
+                .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW)
                 .query(new BoolQueryBuilder()
                         .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_NAME, "*" + PROGRAM_NAME + "*").caseInsensitive(true))
                 );
@@ -187,7 +181,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS + Const.ES_UNITS.KEYWORD, "*" + DIGNOSIS_GS + "*").caseInsensitive(true))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, "*" + DIGNOSIS_GS + "*").caseInsensitive(true))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -259,20 +253,20 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS + Const.ES_UNITS.KEYWORD, SAMPLE_ID))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, SAMPLE_ID))
                 );
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS + Const.ES_UNITS.KEYWORD, ANATOMIC_SITES_GS))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS, ANATOMIC_SITES_GS))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS + Const.ES_UNITS.KEYWORD, TISSUE_TYPE_GS))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS, TISSUE_TYPE_GS))
                 );
 
         List<MultipleRequests> requests = List.of(
@@ -337,7 +331,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_ID_GS + Const.ES_UNITS.KEYWORD, FILE_ID))
+                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_ID_GS, FILE_ID))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
@@ -470,10 +464,10 @@ public class BentoGlobalSearchTest {
         BoolQueryBuilder builder = addConditionalQuery(
                         new BoolQueryBuilder()
                                 .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + ".keyword", "*" + text + "*").caseInsensitive(true))
-                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, text))
-                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, text))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME, text))
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE, text))
                                 .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + text + "*").caseInsensitive(true))
-                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, text)),
+                                .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME, text)),
                                 // Set Conditional Bool Query
                                 QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(text)));
         return new SearchSourceBuilder()
@@ -586,7 +580,7 @@ public class BentoGlobalSearchTest {
         returnTypes.add(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION);
         // Set Bool Filter
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
-                .sort(Const.BENTO_FIELDS.PROGRAM_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.PROGRAM_KW, SortOrder.DESC)
                 .size(1)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.PROPERTY_NAME, List.of(PROPERTY)))
@@ -594,7 +588,7 @@ public class BentoGlobalSearchTest {
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, List.of(PROPERTY_TYPE)))
+                        .should(QueryBuilders.termsQuery(Const.BENTO_FIELDS.PROPERTY_TYPE, List.of(PROPERTY_TYPE)))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -610,9 +604,9 @@ public class BentoGlobalSearchTest {
                 );
 
         SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
-                .sort(Const.BENTO_FIELDS.PROGRAM_KW+ Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.PROGRAM_KW, SortOrder.DESC)
                 .size(1)
-                .sort(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.PROPERTY_NAME, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION, PROPERTY_DESCRIPTION))
                 ).highlighter(
@@ -701,7 +695,7 @@ public class BentoGlobalSearchTest {
         // Set Bool Filter
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.NODE_NAME, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME, NODE)
                                 )
@@ -749,20 +743,20 @@ public class BentoGlobalSearchTest {
 
         SearchSourceBuilder studyIdBuilder = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.STUDY_ID_KW, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_ID, STUDY_ID))
                 );
         SearchSourceBuilder studyNameBuilder = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.STUDY_ID_KW, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_NAME, STUDY_NAME))
                 );
 
         SearchSourceBuilder studyTypeBuilder = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.STUDY_ID_KW, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE + ".keyword", "*" + STUDY_TYPE + "*" ).caseInsensitive(true))
                 );
@@ -808,5 +802,4 @@ public class BentoGlobalSearchTest {
         assertThat(test03.getSearchHits().get(0), hasKey(Const.BENTO_FIELDS.STUDY_TYPE));
         assertThat(((String) test03.getSearchHits().get(0).get(Const.BENTO_FIELDS.STUDY_TYPE)), containsString(STUDY_TYPE));
     }
-
 }

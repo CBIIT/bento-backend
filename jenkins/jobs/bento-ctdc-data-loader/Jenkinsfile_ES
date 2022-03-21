@@ -24,7 +24,7 @@ pipeline {
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-backend')
     gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
+        defaultValue: 'main', 
         name: 'Frontend_Branch', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 

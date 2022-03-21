@@ -773,8 +773,8 @@ public class BentoQueryImpl implements BentoQuery {
                 .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_ID + Const.ES_UNITS.KEYWORD, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_NAME  + Const.ES_UNITS.KEYWORD, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_TYPE  + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_NAME + Const.ES_UNITS.KEYWORD, param.getSearchText()))
+                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_TYPE + Const.ES_UNITS.KEYWORD, param.getSearchText()))
                 );
         return MultipleRequests.builder()
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_STUDIES)
@@ -831,7 +831,7 @@ public class BentoQueryImpl implements BentoQuery {
                                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*"))
                                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, param.getSearchText()))
                                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, param.getSearchText()))
-                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*"))
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + param.getSearchText() + "*"))
                                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, param.getSearchText())),
                                 // Set Conditional Bool Query
                                 QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(param.getSearchText())))

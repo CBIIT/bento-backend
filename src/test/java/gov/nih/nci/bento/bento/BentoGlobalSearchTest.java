@@ -163,7 +163,7 @@ public class BentoGlobalSearchTest {
     @Test
     public void searchGlobalSubject_Test() throws IOException {
         // Set Builder(Mis-Field Name Match)
-        String SUBJECT_ID = "bento";
+        String SUBJECT_ID = "BENTO-CASE-7356713";
         String DIGNOSIS_GS = "Infiltrating Ductal";
         String AGE_AT_INDEX_GS = "tumor 49";
 
@@ -225,7 +225,7 @@ public class BentoGlobalSearchTest {
         assertThat(test01.getSearchHits().size(), greaterThan(0));
         assertThat(test01.getTotalHits(), greaterThan(0));
         assertThat(test01.getSearchHits().get(0), hasKey(Const.BENTO_FIELDS.SUBJECT_ID));
-        assertThat(((String) test01.getSearchHits().get(0).get(Const.BENTO_FIELDS.SUBJECT_ID)).toLowerCase(), containsString(SUBJECT_ID));
+        assertThat(((String) test01.getSearchHits().get(0).get(Const.BENTO_FIELDS.SUBJECT_ID)), containsString(SUBJECT_ID));
 
         QueryResult test02 = (QueryResult) result.get("TEST02");
         assertThat(test02.getSearchHits().size(), greaterThan(0));
@@ -472,7 +472,7 @@ public class BentoGlobalSearchTest {
                                 .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, "*" + text + "*"))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, text))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, text))
-                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + Const.ES_UNITS.KEYWORD, "*" + text + "*"))
+                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + text + "*"))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, text)),
                                 // Set Conditional Bool Query
                                 QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(text)));
@@ -531,7 +531,7 @@ public class BentoGlobalSearchTest {
         // Set Bool Filter
         SearchSourceBuilder testBuilder01 = new SearchSourceBuilder()
                 .size(1)
-                .sort(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
+                .sort(Const.BENTO_FIELDS.VALUE + ".keyword", SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.matchQuery(Const.BENTO_FIELDS.VALUE, VALUE)
                         )
@@ -605,7 +605,7 @@ public class BentoGlobalSearchTest {
         SearchSourceBuilder testBuilder04 = new SearchSourceBuilder()
                 .size(1)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + Const.ES_UNITS.KEYWORD, "*" + PROPERTY_DESCRIPTION + "*"))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + PROPERTY_DESCRIPTION + "*"))
                 );
 
         SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
@@ -736,7 +736,7 @@ public class BentoGlobalSearchTest {
     @Test
     public void globalStudiesSearch_Test() throws IOException {
         // Set Builder
-        final String STUDY_ID = "bento";
+        final String STUDY_ID = "BENTO-STUDY-001";
         final String STUDY_NAME = "endocrine";
         final String STUDY_TYPE = "Interventional Clinical";
         Set<String> returnTypes = new HashSet<>();
@@ -763,7 +763,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE + Const.ES_UNITS.KEYWORD, "*" + STUDY_TYPE + "*" ))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE + ".keyword", "*" + STUDY_TYPE + "*" ))
                 );
 
 
@@ -793,7 +793,7 @@ public class BentoGlobalSearchTest {
         QueryResult test01 =  (QueryResult) result.get("TEST01");
         assertThat(test01.getSearchHits().size(), greaterThan(0));
         assertThat(test01.getSearchHits().get(0), hasKey(Const.BENTO_FIELDS.STUDY_ID));
-        assertThat(((String) test01.getSearchHits().get(0).get(Const.BENTO_FIELDS.STUDY_ID)).toLowerCase(), containsString(STUDY_ID));
+        assertThat(((String) test01.getSearchHits().get(0).get(Const.BENTO_FIELDS.STUDY_ID)), containsString(STUDY_ID));
 
         QueryResult test02 =  (QueryResult) result.get("TEST02");
         assertThat(test02.getTotalHits(), greaterThan(0));

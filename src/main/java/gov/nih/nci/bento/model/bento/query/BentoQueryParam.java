@@ -17,7 +17,7 @@ public class BentoQueryParam extends AbstractQueryParam {
 
     @Override
     public String getKeywordType(String orderBy) {
-        return addKeywordType(orderBy);
+        return "";
     }
 
     // TODO Check Better Way

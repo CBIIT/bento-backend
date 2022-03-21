@@ -10,4 +10,4 @@
       include_role:
         name: data-processing
         tasks_from: bento-es-loader
-        vars_from: bento_es
+        vars_from: ctdc_es

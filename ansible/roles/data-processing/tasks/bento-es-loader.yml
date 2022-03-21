@@ -14,18 +14,18 @@
 
 - name: set model files location for bento
   set_fact:
-    model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
-    model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
-    property_file: "config/props-bento-ext.yml"
+    model_file1: "{{ model_file1 }}"
+    model_file2: "{{ model_file2 }}"
+    property_file: "{{ property_file }}"
 
 - name: set about_file location for bento
   set_fact:
-    about_file: "{{workspace}}/bento-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+    about_file: "{{ about_file }}"
 
 - name: update indices file
   template:
     dest: "{{workspace}}/config/es_indices_bento.yml"
-    src: "{{workspace}}/bento-backend/src/main/resources/yaml/es_indices_bento.yml"
+    src: "{{ indices_file }}"
 
 - name: update server config file
   template:

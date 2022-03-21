@@ -9,3 +9,4 @@ app_name: "{{stack_name}}-{{platform}}-{{tier}}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 region: us-east-1
 es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='{{region}}' ) }}"
+database_name: "{{project}}-{{tier}}-neo4j"

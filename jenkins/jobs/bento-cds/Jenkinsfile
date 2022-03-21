@@ -116,6 +116,7 @@ pipeline {
       environment {
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
+	   TIER = "${params.Environment}"
       }
       steps {
           wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -137,6 +138,7 @@ pipeline {
         BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
         SLACK_CHANNEL = "#system-alerts"
         URL_DOMAIN = "bento-tools.org"
+		TIER = "${params.Environment}"
       }
 	  steps{
 		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

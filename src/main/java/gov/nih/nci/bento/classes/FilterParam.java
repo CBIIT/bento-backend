@@ -12,7 +12,7 @@ public class FilterParam {
     private final String selectedField;
     private final String subAggSelectedField;
     private final boolean isExcludeFilter;
-    private final AbstractQueryParam queryParam;
+    private final QueryParam queryParam;
     private final String defaultSortField;
     private final String customOrderBy;
     private TableParam tableParam;
@@ -20,7 +20,7 @@ public class FilterParam {
     @Builder
     @SuppressWarnings("unchecked")
     public FilterParam(Map<String, Object> args, String selectedField, String subAggSelectedField,
-                       boolean isExcludeFilter, AbstractQueryParam queryParam, String defaultSortField, String customOrderBy) {
+                       boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy) {
         this.args = args;
         this.selectedField = selectedField;
         this.subAggSelectedField = subAggSelectedField;

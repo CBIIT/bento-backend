@@ -679,7 +679,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchSubject(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchSubject(QueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -710,7 +710,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchSample(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchSample(QueryParam param) {
         TableParam tableParam = param.getTableParam();
 
         SearchSourceBuilder builder = new SearchSourceBuilder()
@@ -739,7 +739,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchProgram(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchProgram(QueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -765,7 +765,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchStudy(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchStudy(QueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -792,7 +792,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchFile(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchFile(QueryParam param) {
         TableParam tableParam = param.getTableParam();
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
@@ -820,7 +820,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchModel(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchModel(QueryParam param) {
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(Const.ES_UNITS.MAX_SIZE)
                 .from(0)
@@ -867,7 +867,7 @@ public class BentoQueryImpl implements BentoQuery {
     }
 
     @Override
-    public MultipleRequests findGlobalSearchAboutPage(AbstractQueryParam param) {
+    public MultipleRequests findGlobalSearchAboutPage(QueryParam param) {
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
         SearchSourceBuilder builder = new SearchSourceBuilder();

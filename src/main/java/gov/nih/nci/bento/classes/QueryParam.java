@@ -3,6 +3,7 @@ package gov.nih.nci.bento.classes;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.*;
+import lombok.Builder;
 import lombok.Getter;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -12,14 +13,15 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
-public abstract class AbstractQueryParam {
+public class QueryParam {
     private final Map<String, Object> args;
     private final Set<String> returnTypes;
     // Store PageSize, Offset, Sort
     private final TableParam tableParam;
     private final String searchText;
 
-    public AbstractQueryParam(Map<String, Object> args, GraphQLOutputType outputType) {
+    @Builder
+    public QueryParam(Map<String, Object> args, GraphQLOutputType outputType) {
         this.args = args;
         this.returnTypes = getReturnType(outputType);
         this.tableParam = setTableParam(args);
@@ -36,8 +38,7 @@ public abstract class AbstractQueryParam {
     }
 
     private String getOrderByText(Map<String, Object> args) {
-        String orderBy = args.containsKey(Const.ES_PARAMS.ORDER_BY) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
-        return orderBy + getKeywordType(orderBy);
+        return args.containsKey(Const.ES_PARAMS.ORDER_BY) ? (String) args.get(Const.ES_PARAMS.ORDER_BY) : "";
     }
 
     private SortOrder getSortType() {
@@ -65,7 +66,4 @@ public abstract class AbstractQueryParam {
         });
         return result;
     }
-
-    protected abstract String getKeywordType(String orderBy);
-
 }

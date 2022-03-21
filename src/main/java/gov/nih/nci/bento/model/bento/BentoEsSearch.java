@@ -66,7 +66,7 @@ public final class BentoEsSearch implements DataFetcher {
                 .build();
     }
 
-    private List<Map<String, Object>> subjectOverview(AbstractQueryParam param) throws IOException {
+    private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SUBJECTS);
@@ -81,7 +81,7 @@ public final class BentoEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
-    private List<Map<String, Object>> sampleOverview(AbstractQueryParam param) throws IOException {
+    private List<Map<String, Object>> sampleOverview(QueryParam param) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.SAMPLES);
@@ -96,12 +96,12 @@ public final class BentoEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
-    private List<Map<String, Object>> fileOverview(AbstractQueryParam param) throws IOException {
+    private List<Map<String, Object>> fileOverview(QueryParam param) throws IOException {
         // Set Rest API Request
         return getFileSearch(param);
     }
 
-    private String getIntCustomOrderBy(AbstractQueryParam param) {
+    private String getIntCustomOrderBy(QueryParam param) {
         String orderKey = param.getTableParam().getOrderBy().replace(ES_UNITS.KEYWORD, "");
         Map<String, String> customKeyMap = Map.of(
                 BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.SUBJECT_ID_NUM,
@@ -109,7 +109,7 @@ public final class BentoEsSearch implements DataFetcher {
         return customKeyMap.getOrDefault(orderKey, "");
     }
 
-    private List<Map<String, Object>> getFileSearch(AbstractQueryParam param) throws IOException {
+    private List<Map<String, Object>> getFileSearch(QueryParam param) throws IOException {
         SearchRequest request = new SearchRequest();
         request.indices(BENTO_INDEX.FILES);
         request.source(
@@ -123,15 +123,15 @@ public final class BentoEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
-    private List<?> checkEmptySearch(AbstractQueryParam param, List<Map<String, Object>> result) {
+    private List<?> checkEmptySearch(QueryParam param, List<Map<String, Object>> result) {
         return param.getSearchText().equals("") ? new ArrayList<>() : result;
     }
 
-    private int checkEmptySearch(AbstractQueryParam param, int result) {
+    private int checkEmptySearch(QueryParam param, int result) {
         return param.getSearchText().equals("") ? 0 :result;
     }
 
-    private Map<String, Object> globalSearch(AbstractQueryParam param) throws IOException {
+    private Map<String, Object> globalSearch(QueryParam param) throws IOException {
         Map<String, Object> result = new HashMap<>();
         // Set Bool Filter
         List<MultipleRequests> requests = List.of(
@@ -195,7 +195,7 @@ public final class BentoEsSearch implements DataFetcher {
         return result;
     }
 
-    private List<Map<String, Object>> findSubjectIdsInList(AbstractQueryParam param) throws IOException {
+    private List<Map<String, Object>> findSubjectIdsInList(QueryParam param) throws IOException {
         // Set Filter
         SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
                         .args(param.getArgs()).build()).getSourceFilter();
@@ -207,12 +207,12 @@ public final class BentoEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
     }
 
-    private List<Map<String, Object>> filesInList(AbstractQueryParam param) throws IOException {
+    private List<Map<String, Object>> filesInList(QueryParam param) throws IOException {
         // Set Rest API Request
         return getFileSearch(param);
     }
 
-    private List<String> fileIDsFromList(AbstractQueryParam param) throws IOException {
+    private List<String> fileIDsFromList(QueryParam param) throws IOException {
         SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
                 .args(param.getArgs()).build()).getSourceFilter();
         builder.size(ES_UNITS.MAX_SIZE);
@@ -223,7 +223,7 @@ public final class BentoEsSearch implements DataFetcher {
         return esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
     }
 
-    private Map<String, Object> multiSearchTest(AbstractQueryParam param) throws IOException {
+    private Map<String, Object> multiSearchTest(QueryParam param) throws IOException {
         Map<String, Object> args = param.getArgs();
         List<MultipleRequests> requests = List.of(
                 bentoQuery.findNumberOfPrograms(args),

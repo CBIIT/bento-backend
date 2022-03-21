@@ -1,4 +1,5 @@
 ---
+#build
 stack_name: cds
 project: cds
 platform: aws
@@ -9,4 +10,30 @@ app_name: "{{stack_name}}-{{platform}}-{{tier}}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 region: us-east-1
 es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='{{region}}' ) }}"
-database_name: "{{project}}-{{tier}}-neo4j"
+
+# build
+docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region='{{region}}' ) }}"
+docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region='{{region}}' ) }}"
+frontend_version: "{{ lookup('env','FE_VERSION') }}"
+bento_api_version: "{{ lookup('env','BE_VERSION') }}"
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version }}/src/content/{{ tier }}/aboutPagesContent.yaml
+build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+
+# db
+neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_user', nested=true, region='{{region}}' ) }}"
+neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region='{{region}}' ) }}"
+
+# redis
+enable_redis: false
+redis_password: ""
+redis_port: 6379
+use_cluster: true
+
+# elasticsearch
+enable_es_filter: true
+
+# monitoring agents
+newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
+sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
+syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"

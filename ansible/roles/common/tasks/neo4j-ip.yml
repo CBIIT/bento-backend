@@ -1,6 +1,4 @@
-- name: show db
-  debug:
-    msg: "{{database_name}}"
+
 - name: gather instance facts
   ec2_instance_facts:
     region: us-east-1

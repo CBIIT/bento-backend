@@ -114,7 +114,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW + Const.ES_UNITS.KEYWORD)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_NAME, "*" + PROGRAM_NAME + "*"))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_NAME, "*" + PROGRAM_NAME + "*").caseInsensitive(true))
                 );
 
         List<MultipleRequests> requests = List.of(
@@ -164,7 +164,7 @@ public class BentoGlobalSearchTest {
     public void searchGlobalSubject_Test() throws IOException {
         // Set Builder(Mis-Field Name Match)
         String SUBJECT_ID = "BENTO-CASE-7356713";
-        String DIGNOSIS_GS = "Infiltrating Ductal";
+        String DIGNOSIS_GS = "infiltrating ductal";
         String AGE_AT_INDEX_GS = "tumor 49";
 
         Set<String> returnTypes = new HashSet<>();
@@ -187,7 +187,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS + Const.ES_UNITS.KEYWORD, "*" + DIGNOSIS_GS + "*"))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS + Const.ES_UNITS.KEYWORD, "*" + DIGNOSIS_GS + "*").caseInsensitive(true))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -231,7 +231,7 @@ public class BentoGlobalSearchTest {
         assertThat(test02.getSearchHits().size(), greaterThan(0));
         assertThat(test02.getTotalHits(), greaterThan(0));
         assertThat(test02.getSearchHits().get(0), hasKey(Const.BENTO_FIELDS.DIAGNOSES));
-        assertThat((String) test02.getSearchHits().get(0).get(Const.BENTO_FIELDS.DIAGNOSES), containsString(DIGNOSIS_GS));
+        assertThat(((String) test02.getSearchHits().get(0).get(Const.BENTO_FIELDS.DIAGNOSES)).toLowerCase(), containsString(DIGNOSIS_GS));
 
         QueryResult test03 = (QueryResult) result.get("TEST03");
         assertThat(test03.getSearchHits().size(), greaterThan(0));
@@ -344,7 +344,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + FILE_NAME + "*" ))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + FILE_NAME + "*" ).caseInsensitive(true))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -401,7 +401,7 @@ public class BentoGlobalSearchTest {
         String PROPERTY_TYPE = "String";
         String PROPERTY_REQUIRED_TEXT = StrUtil.getBoolText("TESTETESTTEST false");
         String PROPERTY_DESCRIPTION = "Full length";
-        String VALUE = "First";
+        String VALUE = "first patient";
 
         Set<String> returnTypes = new HashSet<>();
         returnTypes.add(Const.BENTO_FIELDS.TYPE);
@@ -469,10 +469,10 @@ public class BentoGlobalSearchTest {
     private SearchSourceBuilder createMultipleModelGlobalSearch_Test(String text) {
         BoolQueryBuilder builder = addConditionalQuery(
                         new BoolQueryBuilder()
-                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, "*" + text + "*"))
+                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + ".keyword", "*" + text + "*").caseInsensitive(true))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME + Const.ES_UNITS.KEYWORD, text))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE + Const.ES_UNITS.KEYWORD, text))
-                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + text + "*"))
+                                .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + text + "*").caseInsensitive(true))
                                 .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME + Const.ES_UNITS.KEYWORD, text)),
                                 // Set Conditional Bool Query
                                 QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(text)));
@@ -483,6 +483,7 @@ public class BentoGlobalSearchTest {
                 .highlighter(
                         new HighlightBuilder()
                                 // Index model_properties
+                                .field(Const.BENTO_FIELDS.TYPE)
                                 .field(Const.BENTO_FIELDS.PROPERTY_NAME)
                                 .field(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION)
                                 .field(Const.BENTO_FIELDS.PROPERTY_TYPE)
@@ -605,7 +606,7 @@ public class BentoGlobalSearchTest {
         SearchSourceBuilder testBuilder04 = new SearchSourceBuilder()
                 .size(1)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + PROPERTY_DESCRIPTION + "*"))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + PROPERTY_DESCRIPTION + "*").caseInsensitive(true))
                 );
 
         SearchSourceBuilder testBuilder05 = new SearchSourceBuilder()
@@ -763,7 +764,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.STUDY_ID_KW + Const.ES_UNITS.KEYWORD, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE + ".keyword", "*" + STUDY_TYPE + "*" ))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE + ".keyword", "*" + STUDY_TYPE + "*" ).caseInsensitive(true))
                 );
 
 

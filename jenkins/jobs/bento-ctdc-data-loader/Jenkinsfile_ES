@@ -88,7 +88,7 @@ pipeline {
 				[[url: 'https://github.com/CBIIT/icdc-devops']]])
 			
 			dir('bento-model'){
-                git branch: 'master',
+                git branch: 'main',
                 url: 'https://github.com/CBIIT/ctdc-model'}
 
   		}

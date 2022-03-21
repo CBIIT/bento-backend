@@ -2,7 +2,7 @@
   ec2_instance_facts:
     region: us-east-1
     filters:
-      "tag:Name": "{{project}}-{{tier}}-neo4j-4"
+      "tag:Name": "{{database_name}}"
       "instance-state-name": running
       "tag:Environment": "{{tier}}"
   register: neo4j

@@ -1,2 +1,46 @@
 ---
-# defaults file for data-processing
+# vars file for data loading
+neo4j_password: "{{ lookup('env','NEO4J_PASSWORD') }}"
+neo4j_user: neo4j
+tier: "{{ lookup('env','TIER') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+neo4j_ip: "{{ lookup('env','NEO4J_IP') }}"
+s3_folder: "{{ lookup('env','S3_FOLDER') }}"
+wipe_db:  "{{ lookup('env','WIPE_DB') }}"
+cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
+split_transactions:  "{{ lookup('env','SPLIT')}}"
+project:  "{{lookup('env','PROJECT')}}"
+region: us-east-1
+#vars for match files
+match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
+okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
+bucket_Name: "{{ lookup('env','S3_BUCKET') }}"
+arm_Id: "{{ lookup('env','ARM_ID') }}"
+phs_Id: "{{ lookup('env','PHS_ID') }}"
+okta_key: "{{ lookup('env','OKTA_KEY') }}"
+secret_name: "{{ lookup('env','SECRET_NAME') }}"
+meta_data_path: "{{ lookup('env','META_DATA_PATH') }}"
+#meta_data_bucket: "{{ lookup('env','META_DATA_BUCKET') }}"
+meta_data_bucket: sample-meta-data-bucket
+use_prod: "{{ lookup('env','USE_PROD') }}"
+cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
+
+#vars for data validation
+ctdc_base_url: "https://trialcommons-dev.cancer.gov"
+s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
+manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
+
+data_bucket: "{{bucket[project]}}"
+project: "{{ lookup('env','PROJECT') }}"
+bucket:
+  bento: bento-metadata-dev
+  ccdi: ccdi-metadata-dev
+  ins: ins-metadata-dev
+  gmb:  bento-gmb-metadata
+  ctdc: bento-ctdc-metadata
+  github-actions: bento-metadata-dev
+  c3dc: bento-c3dc-metadata
+
+# vars for elasticsearch loader
+es_host: "{{ lookup('env','ES_HOST') }}"
+frontend_branch: "{{ lookup('env','FRONTEND_BRANCH') }}"

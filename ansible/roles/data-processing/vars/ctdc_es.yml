@@ -1,7 +1,7 @@
 ---
 # vars file for neo4j-loader
 model_file1: "{{workspace}}/bento-model/model-desc/ctdc_model_file.yaml"
-model_file2: "{{workspace}}/bento-model/model-desc/ctdc_model_properties.yaml"
+model_file2: "{{workspace}}/bento-model/model-desc/ctdc_model_properties_file.yaml"
 property_file: "config/props-ctdc.yml"
 about_file: ""
 indices_file: "{{workspace}}/bento-backend/src/main/resources/yaml/es_indices_ctdc.yml"

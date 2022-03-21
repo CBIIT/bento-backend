@@ -15,7 +15,7 @@ pipeline {
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/icdc-dataloader')
     gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master', 
+        defaultValue: 'CTDC_Develop', 
         name: 'Backend_Branch', 
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false, 

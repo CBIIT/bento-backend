@@ -259,3 +259,6 @@ variable "etl_rule_priority" {
 variable "db_subnet_id_name" {
   default = ""
 }
+variable "elasticsearch_version" {
+  default = ""
+}

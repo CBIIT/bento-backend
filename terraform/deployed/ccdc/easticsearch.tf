@@ -8,4 +8,5 @@ module "ccdc_elasticsearch" {
   remote_state_bucket_name = var.remote_state_bucket_name
   stack_name = var.stack_name
   tags = var.tags
+  elasticsearch_version = var.elasticsearch_version
 }

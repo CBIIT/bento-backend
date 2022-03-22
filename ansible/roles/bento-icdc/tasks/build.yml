@@ -197,8 +197,11 @@
     chdir: "{{workspace}}/icdc-frontend"
   loop:
     - npm install npm@7.7.6 -g
-    - npm install
-    - npm run build
+    - npm set progress=false
+    - npm install --silent
+    #- npm install
+    - npm run build --silent
+    #- npm run build
 
 - name: copy env to dist
   copy:

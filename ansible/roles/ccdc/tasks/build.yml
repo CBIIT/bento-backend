@@ -13,11 +13,6 @@
   ignore_errors: True
   register: ecr_login
 
-# - name: log into DockerHub
-#   docker_login:
-#     username: "{{docker_user}}"
-#     password: "{{docker_password}}"
-
 - name: copy  nginx conf
   copy:
     remote_src: yes

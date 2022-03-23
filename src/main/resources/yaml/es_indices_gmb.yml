@@ -1,0 +1,265 @@
+Indices:
+  # Subjects Index
+  - index_name: subjects
+    type: neo4j
+    mapping:
+      subject_id: 
+        type: keyword
+      subject_id_gs: 
+        type: search_as_you_type
+      race: 
+        type: keyword
+      disease_term: 
+        type: keyword
+      registering_institution:
+        type: keyword
+      patient_subgroup:
+        type: keyword
+      stage_at_entry:
+        type: keyword
+      cause_of_death:
+        type: keyword
+      sites_of_disease_at_autopsy:
+        type: keyword
+      source_of_the_lab_data:
+        type: keyword
+      lab_test:
+        type: keyword
+      system_organ_class:
+        type: keyword
+      serious: 
+        type: keyword
+      outcome: 
+        type: keyword
+      somatic_pathogenicity:
+        type: keyword
+      germline_pathogenicity:
+        type: keyword
+      file_type:
+        type: keyword
+      clinical_trial_id:
+        type: keyword
+    cypher_query: "
+      MATCH (s:SUBJECT)-->(ct:CLINICALTRIAL)
+      OPTIONAL MATCH (e:ENROLLMENT)-->(s)
+      OPTIONAL MATCH (srv:SURVIVAL)-->(s)
+      OPTIONAL MATCH (l:LABORATORY)-->(s)
+      OPTIONAL MATCH (ae:ADVERSE_EVENTS)-->(s)
+      OPTIONAL MATCH (s)<--(sv:SOMATIC_VARIANT)
+      OPTIONAL MATCH (s)<--(gv:GERMLINE_VARIANT)
+      OPTIONAL MATCH (s)<--(f:FILE)
+      RETURN DISTINCT
+        s.PT_ID AS subject_id,
+        s.PT_ID AS subject_id_gs,
+        s.PT_RACE_CD_1 AS race,
+        s.DZ_DX_NM AS disease_term,
+        s.REG_INST_ID_CD AS registering_institution,
+        s.PT_SUBGRP_ASSIGN_TP AS patient_subgroup,
+        e.DISEAS_STG AS stage_at_entry,
+        srv.DEATH_CAUS_CD AS cause_of_death,
+        srv.ATPSY_DZ_SITE_NM AS sites_of_disease_at_autopsy,
+        l.LAB_DATA_SRCE_NM AS source_of_the_lab_data,
+        l.LAB_TEST_NM AS lab_test,
+        ae.MEDDRA_SOC_TRM_NM AS system_organ_class,
+        ae.SAE_RSN AS serious,
+        ae.AE_OUTCOME AS outcome,
+        ct.CLINICAL_TRIAL_ID AS clinical_trial_id,
+        gv.GRMLN_VAR_PTHGNC_CAT AS germline_pathogenicity,
+        sv.SOMATIC_VAR_PTHGNC_CAT AS somatic_pathogenicity,
+        f.FILE_TYPE AS file_type
+    "
+  # Files Index
+  - index_name: files
+    type: neo4j
+    mapping:
+      file_id:
+        type: keyword
+      file_id_gs:
+        type: search_as_you_type
+      file_name:
+        type: keyword
+      file_name_gs:
+        type: search_as_you_type
+      file_description:
+        type: keyword
+      file_description_gs:
+        type: search_as_you_type
+      file_format:
+        type: keyword
+      file_size:
+        type: keyword
+      trial_id:
+        type: keyword
+      trial_short_name:
+        type: keyword
+      arm:
+        type: keyword
+      subject_id:
+        type: keyword
+      race:
+        type: keyword
+      disease_term:
+        type: keyword
+      registering_institution:
+        type: keyword
+      patient_subgroup:
+        type: keyword
+      stage_at_entry:
+        type: keyword
+      cause_of_death:
+        type: keyword
+      sites_of_disease_at_autopsy:
+        type: keyword
+      source_of_the_lab_data:
+        type: keyword
+      lab_test:
+        type: keyword
+      system_organ_class:
+        type: keyword
+      serious:
+        type: keyword
+      outcome:
+        type: keyword
+      somatic_pathogenicity:
+        type: keyword
+      germline_pathogenicity:
+        type: keyword
+      file_type:
+        type: keyword
+    cypher_query: "
+      MATCH (f:FILE)
+      OPTIONAL MATCH (f)-->(s:SUBJECT)-->(ct:CLINICALTRIAL)
+      OPTIONAL MATCH (e:ENROLLMENT)-->(s)
+      OPTIONAL MATCH (srv:SURVIVAL)-->(s)
+      OPTIONAL MATCH (l:LABORATORY)-->(s)
+      OPTIONAL MATCH (ae:ADVERSE_EVENTS)-->(s)
+      OPTIONAL MATCH (s)<--(sv:SOMATIC_VARIANT)
+      OPTIONAL MATCH (s)<--(gv:GERMLINE_VARIANT)
+      RETURN DISTINCT
+        f.UUID AS file_id,
+        f.UUID AS file_id_gs,
+        f.FILE_NAME AS file_name,
+        f.FILE_NAME AS file_name_gs,
+        f.FILE_DESCRIPTION AS file_description,
+        f.FILE_DESCRIPTION AS file_description_gs,
+        f.FILE_FORMAT AS file_format,
+        f.FILE_SIZE AS file_size,
+        ct.CLINICAL_TRIAL_ID AS trial_id,
+        ct.CLINICAL_TRIAL_SHORT_NAME AS trial_short_name,
+        s.ARM AS arm,
+        s.PT_ID AS subject_id,
+        s.PT_RACE_CD_1 AS race,
+        s.DZ_DX_NM AS disease_term,
+        s.REG_INST_ID_CD AS registering_institution,
+        s.PT_SUBGRP_ASSIGN_TP AS patient_subgroup,
+        e.DISEAS_STG AS stage_at_entry,
+        srv.DEATH_CAUS_CD AS cause_of_death,
+        srv.ATPSY_DZ_SITE_NM AS sites_of_disease_at_autopsy,
+        l.LAB_DATA_SRCE_NM AS source_of_the_lab_data,
+        l.LAB_TEST_NM AS lab_test,
+        ae.MEDDRA_SOC_TRM_NM AS system_organ_class,
+        ae.SAE_RSN AS serious,
+        ae.AE_OUTCOME AS outcome,
+        gv.GRMLN_VAR_PTHGNC_CAT AS germline_pathogenicity,
+        sv.SOMATIC_VAR_PTHGNC_CAT AS somatic_pathogenicity,
+        f.FILE_TYPE AS file_type
+    "
+  # Trials Index
+  - index_name: trials
+    type: neo4j
+    mapping:
+      trial_name:
+        type: keyword
+      trial_name_gs:
+        type: search_as_you_type
+      trial_long_name:
+        type: keyword
+      trial_long_name_gs:
+        type: search_as_you_type
+      trial_id:
+        type: keyword
+      trial_id_gs:
+        type: search_as_you_type
+      trial_description:
+        type: keyword
+      trial_description_gs:
+        type: search_as_you_type
+      trial_type:
+        type: keyword
+      trial_type_gs:
+        type: search_as_you_type
+    cypher_query: "
+      MATCH(ct:CLINICALTRIAL)
+      RETURN DISTINCT
+        ct.CLINICAL_TRIAL_SHORT_NAME AS trial_name,
+        ct.CLINICAL_TRIAL_SHORT_NAME AS trial_name_gs,
+        ct.CLINICAL_TRIAL_LONG_NAME AS trial_long_name,
+        ct.CLINICAL_TRIAL_LONG_NAME AS trial_long_name_gs,
+        ct.CLINICAL_TRIAL_ID AS trial_id,
+        ct.CLINICAL_TRIAL_ID AS trial_id_gs,
+        ct.CLINICAL_TRIAL_DESCRIPTION AS trial_description,
+        ct.CLINICAL_TRIAL_DESCRIPTION AS trial_description_gs,
+        ct.CLINICAL_TRIAL_TYPE AS trial_type,
+        ct.CLINICAL_TRIAL_TYPE AS trial_type_gs
+    "
+  # About Page Index
+  - index_name: about_page
+    type: about_file
+    # type mapping for each property of the index
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+  # Model Nodes Index
+  - index_name: model_nodes
+    type: model
+    subtype: node
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      node_kw:
+        type: keyword
+  # Model Properties Index
+  - index_name: model_properties
+    type: model
+    subtype: property
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_kw:
+        type: keyword
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+  # Model Values Index
+  - index_name: model_values
+    type: model
+    subtype: value
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+      value:
+        type: search_as_you_type
+      value_kw:
+        type: keyword

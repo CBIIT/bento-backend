@@ -26,6 +26,8 @@ public class ConfigurationDAO {
 	    switch (project) {
 			case "icdc":
 				return new IcdcEsFilter();
+			case "gmb":
+				return new GmbEsFilter();
 			case "bento":
 				return new BentoEsFilter();
 			default:

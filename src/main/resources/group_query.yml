@@ -1,0 +1,14 @@
+name: searchSubjects
+query:
+  - name: filter
+    index: subjects
+    filterType: table
+    resultType:
+      type: hello
+      selectedField: file_id
+  - name: filter222
+    index: subjects
+    filterType: table
+    resultType:
+      type: hello
+      selectedField: file_id

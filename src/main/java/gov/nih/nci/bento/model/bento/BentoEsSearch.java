@@ -7,14 +7,19 @@ import gov.nih.nci.bento.constants.Const.ES_UNITS;
 import gov.nih.nci.bento.model.bento.query.BentoQuery;
 import gov.nih.nci.bento.model.bento.query.BentoQueryImpl;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
+import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.DefaultFilter;
 import gov.nih.nci.bento.search.query.filter.TableFilter;
+import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.core.io.ClassPathResource;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -35,21 +40,22 @@ public final class BentoEsSearch implements DataFetcher {
     }
 
     @Override
-    public RuntimeWiring buildRuntimeWiring() {
+    public RuntimeWiring buildRuntimeWiring() throws IOException {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                        .dataFetchers(singleQueryYaml_Test())
                         .dataFetcher("searchSubjects", env ->
                                 multiSearchTest(esService.CreateQueryParam(env))
                         )
-                        .dataFetcher("subjectOverview", env ->
-                                subjectOverview(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("sampleOverview", env ->
-                                sampleOverview(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("fileOverview", env ->
-                                fileOverview(esService.CreateQueryParam(env))
-                        )
+//                        .dataFetcher("subjectOverview", env ->
+//                                subjectOverview(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("sampleOverview", env ->
+//                                sampleOverview(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("fileOverview", env ->
+//                                fileOverview(esService.CreateQueryParam(env))
+//                        )
                         .dataFetcher("globalSearch", env ->
                                 globalSearch(esService.CreateQueryParam(env))
                         )
@@ -64,6 +70,66 @@ public final class BentoEsSearch implements DataFetcher {
                         )
                 )
                 .build();
+    }
+
+    public Map<String, graphql.schema.DataFetcher> singleQueryYaml_Test() throws IOException {
+        Yaml yaml = new Yaml(new Constructor(SingleQuery.class));
+        SingleQuery singleQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
+        Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
+        singleQuery.getQuery().forEach(q->{
+            map.put(q.getName(), env -> getXMLQuery(esService.CreateQueryParam(env), q));
+        });
+        return map;
+    }
+
+
+
+    private Object getXMLQuery(QueryParam param, SingleQuery.Query query) throws IOException {
+        // Set Rest API Request
+        SearchRequest request = new SearchRequest();
+        request.indices(query.getIndex());
+        request.source(getSourceBuilder(param, query));
+        return esService.elasticSend(request, getTypeMapper(param, query));
+    }
+
+
+
+    private SearchSourceBuilder getSourceBuilder(QueryParam param, SingleQuery.Query query) {
+        // Set Arguments
+        SingleQuery.FilterType filterType = query.getFilterType();
+        if (filterType.getType().equals("aggregation")) {
+            return new AggregationFilter(
+                    FilterParam.builder()
+                            .args(param.getArgs())
+                            .selectedField(filterType.getSelectedField())
+                            .build())
+                    .getSourceFilter();
+
+        } else if (filterType.getType().equals("table")) {
+            return new TableFilter(FilterParam.builder()
+                    .args(param.getArgs())
+                    .queryParam(param)
+                    // TODO Consider
+                    .customOrderBy(getIntCustomOrderBy(param))
+                    .defaultSortField(filterType.getSelectedField())
+                    .build()).getSourceFilter();
+        }
+        throw new IllegalArgumentException();
+    }
+
+
+    private TypeMapper getTypeMapper(QueryParam param, SingleQuery.Query query) {
+        // Set Result Type
+        if (query.getResultType().equals("default")) {
+            return typeMapper.getDefault(param.getReturnTypes());
+        } else if (query.getResultType().equals("agg")) {
+            return typeMapper.getAggregate();
+        } else if (query.getResultType().equals("count")) {
+            return typeMapper.getIntTotal();
+        } else if (query.getResultType().equals("agg_count")) {
+            return typeMapper.getAggregateTotalCnt();
+        }
+        return typeMapper.getDefault(param.getReturnTypes());
     }
 
     private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {

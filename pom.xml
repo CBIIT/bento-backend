@@ -244,6 +244,12 @@
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- SnakeYaml Import -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.30</version>
+		</dependency>
     </dependencies>
 
 	<build>

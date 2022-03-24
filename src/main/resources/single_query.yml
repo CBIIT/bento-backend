@@ -1,3 +1,10 @@
+# Filter Type
+# - default
+# - table
+
+# Return Type
+# - default
+
 query:
   - name: subjectOverview
     index: subjects
@@ -16,4 +23,23 @@ query:
     filterType:
       type: table
       selectedField: file_name
+    resultType: default
+  - name: fileIDsFromList
+    index: files
+    filterType:
+      type: default
+      selectedField: file_id
+    # List<String>
+    resultType: strList
+  - name: filesInList
+    index: files
+    filterType:
+      type: table
+      selectedField: file_name
+    resultType: default
+  - name: findSubjectIdsInList
+    index: subjects
+    filterType:
+      type: default
+#      size: 10000
     resultType: default

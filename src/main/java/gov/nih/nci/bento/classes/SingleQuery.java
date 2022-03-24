@@ -9,21 +9,13 @@ import java.util.List;
 @Getter
 public class SingleQuery {
 
-    private List<Query> query;
-
-    @Data
-    @Getter
-    public static class Query {
-        private String name;
-        private String index;
-        private String resultType;
-        private FilterType filterType;
-    }
+    private List<YamlQuery> query;
 
     @Data
     @Getter
     public static class FilterType {
         private String type;
         private String selectedField;
+        private int size;
     }
 }

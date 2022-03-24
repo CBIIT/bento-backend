@@ -1,14 +1,267 @@
-name: searchSubjects
-query:
-  - name: filter
-    index: subjects
-    filterType: table
-    resultType:
-      type: hello
-      selectedField: file_id
-  - name: filter222
-    index: subjects
-    filterType: table
-    resultType:
-      type: hello
-      selectedField: file_id
+groups:
+  - name: searchSubjects
+    query:
+    - name: numberOfPrograms
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: program
+      resultType: int_total_aggregation
+    - name: numberOfStudies
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: study_info
+      resultType: int_total_aggregation
+    - name: numberOfSubjects
+      index: subjects
+      filterType:
+        # Get total number of documents in ES index
+        type: number_of_docs
+      resultType: int_total_count
+    - name: numberOfSamples
+      index: samples
+      filterType:
+        # Get total number of documents in ES index
+        type: number_of_docs
+      resultType: int_total_count
+    - name: numberOfLabProcedures
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: lab_procedures
+      resultType: int_total_aggregation
+    - name: numberOfFiles
+      index: files
+      filterType:
+        type: number_of_docs
+      resultType: int_total_count
+    - name: subjectCountByProgram
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: program
+      resultType: aggregation
+    - name: filterSubjectCountByProgram
+      index: subjects
+      filterType:
+        type: aggregation
+        # Filter query without selected field
+        selectedField: program
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByStudy
+      index: subjects
+      filterType:
+        type: aggregation
+        # Filter query without selected field
+        selectedField: study_info
+      resultType: aggregation
+    - name: filterSubjectCountByStudy
+      index: subjects
+      filterType:
+        type: aggregation
+        # Filter query without selected field
+        selectedField: study_info
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByDiagnoses
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: diagnosis
+      resultType: aggregation
+    - name: filterSubjectCountByDiagnoses
+      index: subjects
+      filterType:
+        type: aggregation
+        # Filter query without selected field
+        selectedField: diagnosis
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByRecurrenceScore
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: recurrence_score
+      resultType: aggregation
+    - name: filterSubjectCountByRecurrenceScore
+      index: subjects
+      filterType:
+        type: aggregation
+        # Filter query without selected field
+        selectedField: recurrence_score
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByTumorSize
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: tumor_size
+      resultType: aggregation
+    - name: filterSubjectCountByTumorSize
+      index: subjects
+      filterType:
+        type: aggregation
+        # Filter query without selected field
+        selectedField: tumor_size
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByTumorGrade
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: tumor_grade
+      resultType: aggregation
+    - name: filterSubjectCountByTumorGrade
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: tumor_grade
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByErStatus
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: er_status
+      resultType: aggregation
+    - name: filterSubjectCountByErStatus
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: er_status
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByPrStatus
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: pr_status
+      resultType: aggregation
+    - name: filterSubjectCountByPrStatus
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: pr_status
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByChemotherapyRegimen
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: chemotherapy
+      resultType: aggregation
+    - name: filterSubjectCountByChemotherapyRegimen
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: chemotherapy
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByEndocrineTherapy
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: endocrine_therapy
+      resultType: aggregation
+    - name: filterSubjectCountByEndocrineTherapy
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: endocrine_therapy
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByMenopauseStatus
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: menopause_status
+      resultType: aggregation
+    - name: filterSubjectCountByMenopauseStatus
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: menopause_status
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByTissueType
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: tissue_type
+      resultType: aggregation
+    - name: filterSubjectCountByTissueType
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: tissue_type
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByTissueComposition
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: composition
+      resultType: aggregation
+    - name: filterSubjectCountByTissueComposition
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: composition
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByFileAssociation
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: association
+      resultType: aggregation
+    - name: filterSubjectCountByFileAssociation
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: association
+        filter: true
+      resultType: aggregation
+    - name: subjectCountByFileType
+      index: files
+      filterType:
+        type: aggregation
+        selectedField: file_type
+      resultType: aggregation
+    - name: filterSubjectCountByFileType
+      index: files
+      filterType:
+        type: aggregation
+        selectedField: file_type
+        filter: true
+      resultType: aggregation
+    - name: armsByPrograms
+      index: subjects
+      filterType:
+        type: sub_aggregation
+        selectedField: program
+        subAggSelectedField: study_acronym
+        filter: true
+      resultType: arm_program
+    - name: subjectCountByLabProcedures
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: lab_procedures
+      resultType: aggregation
+    - name: filterSubjectCountByLabProcedures
+      index: subjects
+      filterType:
+        type: aggregation
+        selectedField: lab_procedures
+        filter: true
+      resultType: aggregation
+    - name: filterSubjectCountByAge
+      index: subjects
+      filterType:
+        type: range
+        selectedField: age_at_index
+        filter: true
+      resultType: range

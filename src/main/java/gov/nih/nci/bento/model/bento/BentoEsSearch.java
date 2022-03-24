@@ -7,9 +7,7 @@ import gov.nih.nci.bento.constants.Const.ES_UNITS;
 import gov.nih.nci.bento.model.bento.query.BentoQuery;
 import gov.nih.nci.bento.model.bento.query.BentoQueryImpl;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
-import gov.nih.nci.bento.search.query.filter.AggregationFilter;
-import gov.nih.nci.bento.search.query.filter.DefaultFilter;
-import gov.nih.nci.bento.search.query.filter.TableFilter;
+import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
@@ -44,9 +42,9 @@ public final class BentoEsSearch implements DataFetcher {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
                         .dataFetchers(singleQueryYaml_Test())
-                        .dataFetcher("searchSubjects", env ->
-                                multiSearchTest(esService.CreateQueryParam(env))
-                        )
+//                        .dataFetcher("searchSubjects", env ->
+//                                multiSearchTest(esService.CreateQueryParam(env))
+//                        )
 //                        .dataFetcher("subjectOverview", env ->
 //                                subjectOverview(esService.CreateQueryParam(env))
 //                        )
@@ -59,15 +57,15 @@ public final class BentoEsSearch implements DataFetcher {
                         .dataFetcher("globalSearch", env ->
                                 globalSearch(esService.CreateQueryParam(env))
                         )
-                        .dataFetcher("fileIDsFromList", env ->
-                                fileIDsFromList(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("filesInList", env ->
-                                filesInList(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("findSubjectIdsInList", env ->
-                                findSubjectIdsInList(esService.CreateQueryParam(env))
-                        )
+//                        .dataFetcher("fileIDsFromList", env ->
+//                                fileIDsFromList(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("filesInList", env ->
+//                                filesInList(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("findSubjectIdsInList", env ->
+//                                findSubjectIdsInList(esService.CreateQueryParam(env))
+//                        )
                 )
                 .build();
     }
@@ -77,14 +75,35 @@ public final class BentoEsSearch implements DataFetcher {
         SingleQuery singleQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
         Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
         singleQuery.getQuery().forEach(q->{
-            map.put(q.getName(), env -> getXMLQuery(esService.CreateQueryParam(env), q));
+            map.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
         });
+
+        Yaml groupYaml = new Yaml(new Constructor(GroupQuery.class));
+        GroupQuery groupQuery = groupYaml.load(new ClassPathResource("group_query.yml").getInputStream());
+        groupQuery.getGroups().forEach(group->{
+            String queryName = group.getName();
+            map.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
+        });
+
         return map;
     }
 
+    private Object createGroupQuery(GroupQuery.Group group,QueryParam param) throws IOException {
+        List<MultipleRequests> requests = new ArrayList<>();
+        group.getQuery().forEach(q->{
+            MultipleRequests multipleRequest = MultipleRequests.builder()
+                    .name(q.getName())
+                    .request(new SearchRequest()
+                            .indices(q.getIndex())
+                            .source(getSourceBuilder(param, q)))
+                    .typeMapper(getTypeMapper(param, q)).build();
+            requests.add(multipleRequest);
 
+        });
+        return esService.elasticMultiSend(requests);
+    }
 
-    private Object getXMLQuery(QueryParam param, SingleQuery.Query query) throws IOException {
+    private Object getYamlQuery(QueryParam param, YamlQuery query) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(query.getIndex());
@@ -92,11 +111,9 @@ public final class BentoEsSearch implements DataFetcher {
         return esService.elasticSend(request, getTypeMapper(param, query));
     }
 
-
-
-    private SearchSourceBuilder getSourceBuilder(QueryParam param, SingleQuery.Query query) {
+    private SearchSourceBuilder getSourceBuilder(QueryParam param, YamlQuery query) {
         // Set Arguments
-        SingleQuery.FilterType filterType = query.getFilterType();
+        YamlFilterType filterType = query.getFilterType();
         if (filterType.getType().equals("aggregation")) {
             return new AggregationFilter(
                     FilterParam.builder()
@@ -109,29 +126,53 @@ public final class BentoEsSearch implements DataFetcher {
             return new TableFilter(FilterParam.builder()
                     .args(param.getArgs())
                     .queryParam(param)
-                    // TODO Consider
-                    .customOrderBy(getIntCustomOrderBy(param))
+//                    .customOrderBy(getIntCustomOrderBy(param))
                     .defaultSortField(filterType.getSelectedField())
                     .build()).getSourceFilter();
+        } else if (filterType.getType().equals("number_of_docs")) {
+            return new SearchCountFilter(
+                    FilterParam.builder()
+                            .args(param.getArgs())
+                            .build())
+                    .getSourceFilter();
+        } else if (filterType.getType().equals("range")) {
+            return new RangeFilter(
+                    FilterParam.builder()
+                            .args(param.getArgs())
+                            .selectedField(filterType.getSelectedField())
+                            .isExcludeFilter(true)
+                            .build())
+                    .getSourceFilter();
+        } else if (filterType.getType().equals("sub_aggregation")) {
+            return new SubAggregationFilter(
+                    FilterParam.builder()
+                            .args(param.getArgs())
+                            .selectedField(filterType.getSelectedField())
+                            .subAggSelectedField(filterType.getSubAggSelectedField())
+                            .build())
+                    .getSourceFilter();
         }
         throw new IllegalArgumentException();
     }
 
 
-    private TypeMapper getTypeMapper(QueryParam param, SingleQuery.Query query) {
+    private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
         // Set Result Type
         if (query.getResultType().equals("default")) {
             return typeMapper.getDefault(param.getReturnTypes());
-        } else if (query.getResultType().equals("agg")) {
+        } else if (query.getResultType().equals("aggregation")) {
             return typeMapper.getAggregate();
-        } else if (query.getResultType().equals("count")) {
-            return typeMapper.getIntTotal();
-        } else if (query.getResultType().equals("agg_count")) {
+        } else if (query.getResultType().equals("int_total_aggregation")) {
             return typeMapper.getAggregateTotalCnt();
+        }  else if (query.getResultType().equals("range")) {
+            return typeMapper.getRange();
+        }  else if (query.getResultType().equals("arm_program")) {
+            return typeMapper.getArmProgram();
+        }  else if (query.getResultType().equals("int_total_count")) {
+            return typeMapper.getIntTotal();
         }
-        return typeMapper.getDefault(param.getReturnTypes());
+        throw new IllegalArgumentException();
     }
-
     private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();

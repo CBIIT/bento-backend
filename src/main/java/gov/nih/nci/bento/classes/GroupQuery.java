@@ -1,25 +1,20 @@
 package gov.nih.nci.bento.classes;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
 @Data
+@Getter
 public class GroupQuery {
-    private String name;
-    private List<Query> query;
+
+    private List<Group> groups;
 
     @Data
-    public static class Query {
+    @Getter
+    public static class Group {
         private String name;
-        private String index;
-        private String filterType;
-        private ResultMapper resultType;
-    }
-
-    @Data
-    public static class ResultMapper {
-        private String type;
-        private String selectedField;
+        private List<YamlQuery> query;
     }
 }

@@ -30,7 +30,7 @@ query:
       type: default
       selectedField: file_id
     # List<String>
-    resultType: strList
+    resultType: str_list
   - name: filesInList
     index: files
     filterType:

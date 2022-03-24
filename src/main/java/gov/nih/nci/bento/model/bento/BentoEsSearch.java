@@ -41,6 +41,9 @@ public final class BentoEsSearch implements DataFetcher {
     public RuntimeWiring buildRuntimeWiring() throws IOException {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                        .dataFetcher("globalSearch", env ->
+                                globalSearch(esService.CreateQueryParam(env))
+                        )
                         .dataFetchers(singleQueryYaml_Test())
 //                        .dataFetcher("searchSubjects", env ->
 //                                multiSearchTest(esService.CreateQueryParam(env))
@@ -54,9 +57,7 @@ public final class BentoEsSearch implements DataFetcher {
 //                        .dataFetcher("fileOverview", env ->
 //                                fileOverview(esService.CreateQueryParam(env))
 //                        )
-                        .dataFetcher("globalSearch", env ->
-                                globalSearch(esService.CreateQueryParam(env))
-                        )
+//
 //                        .dataFetcher("fileIDsFromList", env ->
 //                                fileIDsFromList(esService.CreateQueryParam(env))
 //                        )
@@ -119,6 +120,7 @@ public final class BentoEsSearch implements DataFetcher {
                     FilterParam.builder()
                             .args(param.getArgs())
                             .selectedField(filterType.getSelectedField())
+                            .isExcludeFilter(filterType.isFilter())
                             .build())
                     .getSourceFilter();
 
@@ -126,7 +128,7 @@ public final class BentoEsSearch implements DataFetcher {
             return new TableFilter(FilterParam.builder()
                     .args(param.getArgs())
                     .queryParam(param)
-//                    .customOrderBy(getIntCustomOrderBy(param))
+                    .customOrderBy(getIntCustomOrderBy(param))
                     .defaultSortField(filterType.getSelectedField())
                     .build()).getSourceFilter();
         } else if (filterType.getType().equals("number_of_docs")) {
@@ -151,10 +153,12 @@ public final class BentoEsSearch implements DataFetcher {
                             .subAggSelectedField(filterType.getSubAggSelectedField())
                             .build())
                     .getSourceFilter();
+        } else if (filterType.getType().equals("default")) {
+            return new DefaultFilter(FilterParam.builder()
+                    .args(param.getArgs()).build()).getSourceFilter();
         }
         throw new IllegalArgumentException();
     }
-
 
     private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
         // Set Result Type
@@ -170,6 +174,8 @@ public final class BentoEsSearch implements DataFetcher {
             return typeMapper.getArmProgram();
         }  else if (query.getResultType().equals("int_total_count")) {
             return typeMapper.getIntTotal();
+        }  else if (query.getResultType().equals("str_list")) {
+            return typeMapper.getStrList(query.getFilterType().getSelectedField());
         }
         throw new IllegalArgumentException();
     }

@@ -111,6 +111,7 @@ public class BentoAutoConfiguration {
             return new AggregationFilter(
                     FilterParam.builder()
                             .args(param.getArgs())
+                            .isExcludeFilter(filterType.isFilter())
                             .selectedField(filterType.getSelectedField())
                             .build())
                     .getSourceFilter();
@@ -144,6 +145,9 @@ public class BentoAutoConfiguration {
                             .subAggSelectedField(filterType.getSubAggSelectedField())
                             .build())
                     .getSourceFilter();
+        } else if (filterType.getType().equals("default")) {
+            new DefaultFilter(FilterParam.builder()
+                    .args(param.getArgs()).build()).getSourceFilter();
         }
         throw new IllegalArgumentException();
     }
@@ -163,6 +167,8 @@ public class BentoAutoConfiguration {
             return typeMapper.getArmProgram();
         }  else if (query.getResultType().equals("int_total_count")) {
             return typeMapper.getIntTotal();
+        }  else if (query.getResultType().equals("str_list")) {
+            return typeMapper.getStrList(query.getFilterType().getSelectedField());
         }
         throw new IllegalArgumentException();
     }

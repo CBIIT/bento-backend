@@ -243,7 +243,6 @@ groups:
         type: sub_aggregation
         selectedField: program
         subAggSelectedField: study_acronym
-        filter: true
       resultType: arm_program
     - name: subjectCountByLabProcedures
       index: subjects

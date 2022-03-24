@@ -6,21 +6,15 @@ variable "stack_name" {
   description = "name of the project"
   type = string
 }
-variable "region" {
-  description = "aws region to deploy"
+variable "elasticsearch_instance_type" {
+  description = "type of instance to be used to create the elasticsearch cluster"
   type = string
-  default = "us-east-1"
+  default = "t3.medium.elasticsearch"
 }
-variable "profile" {
-  description = "iam user profile to use"
+variable "elasticsearch_version" {
   type = string
-  default = "default"
-}
-
-variable "remote_state_bucket_name" {
-  description = "name of the remote bucket to store or pull terraform state data"
-  type = string
-  default = null
+  description = "specify es version"
+  default = "7.10"
 }
 variable "create_es_service_role" {
   type = bool

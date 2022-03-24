@@ -11,8 +11,6 @@ region = "us-east-1"
 #specify the name you will like to call this project.
 stack_name = "ctdc"
 
-elasticsearch_instance_type = "t3.medium.elasticsearch"
-
 private_subnet_ids = ["subnet-09b0c7407416d4730"]
 
 vpc_id = "vpc-08f154f94dc8a0e34"

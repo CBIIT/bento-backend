@@ -16,16 +16,30 @@ import java.util.Set;
 public class QueryParam {
     private final Map<String, Object> args;
     private final Set<String> returnTypes;
+    private final Set<String> globalSearchResultTypes;
     // Store PageSize, Offset, Sort
     private final TableParam tableParam;
     private final String searchText;
 
     @Builder
     public QueryParam(Map<String, Object> args, GraphQLOutputType outputType) {
+        ReturnType returnType = getReturnType(outputType);
         this.args = args;
-        this.returnTypes = getReturnType(outputType);
+        this.returnTypes = returnType.defaultSet;
+        this.globalSearchResultTypes = returnType.globalSet;
         this.tableParam = setTableParam(args);
         this.searchText = args.containsKey(Const.ES_PARAMS.INPUT) ?  (String) args.get(Const.ES_PARAMS.INPUT) : "";
+    }
+
+    @Getter
+    private static class ReturnType {
+        private final Set<String> defaultSet;
+        private final Set<String> globalSet;
+        @Builder
+        protected ReturnType(Set<String> defaultSet, Set<String> globalSet) {
+            this.defaultSet = defaultSet;
+            this.globalSet = globalSet;
+        }
     }
 
     private TableParam setTableParam(Map<String, Object> args) {
@@ -47,8 +61,9 @@ public class QueryParam {
         return SortOrder.DESC;
     }
 
-    private Set<String> getReturnType(GraphQLOutputType outputType) {
-        Set<String> result = new HashSet<>();
+    private ReturnType getReturnType(GraphQLOutputType outputType) {
+        Set<String> defaultSet = new HashSet<>();
+        Set<String> globalSearchSet = new HashSet<>();
         SchemaElementChildrenContainer container = outputType.getChildrenWithTypeReferences();
         // TODO Only one
         List<GraphQLSchemaElement> elements = container.getChildrenAsList();
@@ -57,13 +72,29 @@ public class QueryParam {
             if (e instanceof GraphQLObjectType) {
                 GraphQLObjectType type = (GraphQLObjectType) e;
                 List<GraphQLFieldDefinition> lists = type.getFieldDefinitions();
-                lists.forEach(field -> result.add(field.getName()));
+                lists.forEach(field -> defaultSet.add(field.getName()));
                 // TODO
             } else if (e instanceof GraphQLFieldDefinition){
+                GraphQLObjectType graphQLObjectType = (GraphQLObjectType) outputType;
+                if (graphQLObjectType.getName().contains("GlobalSearch") && ((GraphQLFieldDefinition) e).getName().equals("result")) {
+                    e.getChildren().forEach(c->{
+                        SchemaElementChildrenContainer container1 = c.getChildrenWithTypeReferences();
+                        List<?> fieldTypes = container1.getChildren("wrappedType");
+                        fieldTypes.forEach(fileType->{
+                            GraphQLObjectType graphQLType = (GraphQLObjectType) fileType;
+                            List<GraphQLFieldDefinition> graphQLFieldDefinitionList = graphQLType.getFieldDefinitions();
+                            graphQLFieldDefinitionList.forEach(g->globalSearchSet.add(g.getName()));
+                        });
+                    });
+                }
                 GraphQLFieldDefinition field = (GraphQLFieldDefinition) e;
-                result.add(field.getName());
+                defaultSet.add(field.getName());
             }
         });
-        return result;
+
+        return ReturnType.builder()
+                .defaultSet(defaultSet)
+                .globalSet(globalSearchSet)
+                .build();
     }
 }

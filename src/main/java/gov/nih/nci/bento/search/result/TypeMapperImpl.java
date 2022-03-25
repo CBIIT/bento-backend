@@ -34,12 +34,17 @@ public class TypeMapperImpl {
 
     @NotNull
     private QueryResult getDefaultMaps(SearchResponse response, Set<String> returnTypes) {
-        getListHits(response, returnTypes);
         List<Map<String, Object>> result = getListHits(response, returnTypes);
         return QueryResult.builder()
                 .searchHits(result)
                 .totalHits(response.getHits().getTotalHits().value)
                 .build();
+    }
+
+    // ElasticSearch Aggregate Mapping Value Resolver
+    @NotNull
+    private List<Map<String, Object>> getMaps(SearchResponse response, Set<String> returnTypes) {
+        return getListHits(response, returnTypes);
     }
 
     private List<Map<String, Object>> getListHits(SearchResponse response, Set<String> returnTypes) {
@@ -51,12 +56,6 @@ public class TypeMapperImpl {
             if (returnMap.size() > 0) result.add(returnMap);
         });
         return result;
-    }
-
-    // ElasticSearch Aggregate Mapping Value Resolver
-    @NotNull
-    private List<Map<String, Object>> getMaps(SearchResponse response, Set<String> returnTypes) {
-        return getListHits(response, returnTypes);
     }
 
 
@@ -129,7 +128,6 @@ public class TypeMapperImpl {
         };
     }
 
-    @SuppressWarnings("unchecked")
     public TypeMapper<Map<String, Object>> getRange() {
         return (response) -> {
             Aggregations aggregate = response.getAggregations();

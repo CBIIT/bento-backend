@@ -164,8 +164,8 @@ type GS_Subject {
     type: String
     subject_id: String
     program_id: String
-    program_code: String
-    study: String
+    program: String
+    study_acronym: String
     diagnosis: String
     age: Int
 }
@@ -240,7 +240,50 @@ schema {
     query: QueryType
 }
 
+type GlobalSearchProgramResult {
+    count: Int
+    result: [GS_Program]
+}
+
+type GlobalSearchStudyResult {
+    count: Int
+    result: [GS_Study]
+}
+
+type GlobalSearchModelResult {
+    count: Int
+    result: [GS_Model]
+}
+
+type GlobalSearchSampleResult {
+    count: Int
+    result: [GS_Sample]
+}
+
+type GlobalSearchFileResult {
+    count: Int
+    result: [GS_File]
+}
+
+type GlobalSearchSubjectResult {
+    count: Int
+    result: [GS_Subject]
+}
+
+type GlobalSearchAboutResult {
+    count: Int
+    result: [GS_About]
+}
+
 type QueryType {
+    globalSearchProgram (input: String, first: Int = 10, offset: Int = 0): GlobalSearchProgramResult
+    globalSearchStudy (input: String, first: Int = 10, offset: Int = 0): GlobalSearchStudyResult
+    globalSearchModel (input: String, first: Int = 10, offset: Int = 0): GlobalSearchModelResult
+    globalSearchSample (input: String, first: Int = 10, offset: Int = 0): GlobalSearchSampleResult
+    globalSearchFile (input: String, first: Int = 10, offset: Int = 0): GlobalSearchFileResult
+    globalSearchSubject (input: String, first: Int = 10, offset: Int = 0): GlobalSearchSubjectResult
+    globalSearchAbout (input: String, first: Int = 10, offset: Int = 0): GlobalSearchAboutResult
+
     searchSubjects (
         subject_id: [String] = [],
         program: [String] = [],

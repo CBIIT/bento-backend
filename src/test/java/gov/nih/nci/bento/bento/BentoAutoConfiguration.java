@@ -1,6 +1,10 @@
 package gov.nih.nci.bento.bento;
 
 import gov.nih.nci.bento.classes.*;
+import gov.nih.nci.bento.classes.yamlquery.GroupQuery;
+import gov.nih.nci.bento.classes.yamlquery.SingleQuery;
+import gov.nih.nci.bento.classes.yamlquery.YamlFilterType;
+import gov.nih.nci.bento.classes.yamlquery.YamlQuery;
 import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
@@ -68,10 +72,6 @@ public class BentoAutoConfiguration {
 //                Object obj = esService.elasticSend(request, getTypeMapper(param, query));
 //
 //            });
-
-
-
-
         });
         assertThat(groupQueryMap.size(), greaterThan(0));
 
@@ -79,6 +79,18 @@ public class BentoAutoConfiguration {
 //                .mapToInt(i->i.getQuery().size())
 //                .sum();
     }
+
+    @Test
+    public void globalQueryYaml_Test() throws IOException {
+        Yaml yaml = new Yaml(new Constructor(SingleQuery.class));
+        SingleQuery singleQuery = yaml.load(new ClassPathResource("global_query.yml").getInputStream());
+        Map<String, DataFetcher> singleQueryMap = new HashMap<>();
+        singleQuery.getQuery().forEach(q->{
+            singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
+        });
+        assertThat(singleQueryMap.size(), equalTo(singleQuery.getQuery().size()));
+    }
+
 
     private Object createGroupQuery(GroupQuery.Group group,QueryParam param) throws IOException {
         List<MultipleRequests> requests = new ArrayList<>();

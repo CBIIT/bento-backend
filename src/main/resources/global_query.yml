@@ -1,0 +1,124 @@
+query:
+  - name: global_search_subjects
+    index: subjects
+    globalFilterType:
+      # Default Sort
+      selectedField: subject_id_num
+      query:
+        - field: subject_id_gs
+          type: term
+        - field: diagnosis_gs
+          type: wildcard
+          caseInSensitive: true
+      optionalQuery:
+        - field: age_at_index
+          type: term
+          option: integer
+    resultType: global
+  - name: global_search_sample
+    index: sample
+    globalFilterType:
+      # Default Sort
+      selectedField: subject_id_num
+      query:
+        - field: sample_id_gs
+          type: term
+        - field: sample_anatomic_site_gs
+          type: term
+        - field: tissue_type_gs
+          type: term
+    resultType: global
+  - name: global_search_program
+    index: programs
+    globalFilterType:
+      # Default Sort
+      selectedField: subject_id_num
+      query:
+        - field: program_id
+          type: term
+        - field: program_code
+          type: term
+        - field: program_name
+          type: wildcard
+          caseInSensitive: true
+    resultType: global
+  - name: global_search_studies
+    index: studies
+    globalFilterType:
+      # Default Sort
+      selectedField: study_id_kw
+      query:
+        - field: study_id
+          type: term
+        - field: study_name
+          type: term
+        - field: study_type
+          type: term
+    resultType: global
+  - name: global_search_file
+    index: files
+    globalFilterType:
+      # Default Sort
+      selectedField: file_id_num
+      query:
+        - field: file_id_gs
+          type: term
+        - field: file_name
+          type: wildcard
+          caseInSensitive: true
+        - field: file_format_gs
+          type: term
+    resultType: global
+  - name: global_search_studies
+    index: studies
+    globalFilterType:
+      # Default Sort
+      selectedField: study_id_kw
+      query:
+        - field: study_id
+          type: term
+        - field: study_name
+          type: term
+        - field: study_type
+          type: term
+    resultType: global
+  # About Page
+  - name: global_search_about
+    index: about_page
+    globalFilterType:
+      # Default Sort
+#      selectedField: file_id_num
+      query:
+        - field: content.paragraph
+          type: match
+    highlight:
+      field: content.paragraph
+      # fragmentSize: 1
+      preTag: $
+      postTag: $
+    resultType: global_about
+  # Multiple ES Index Search
+  - name: global_search_model
+    index: model_properties,model_values,model_nodes
+    globalFilterType:
+      # Default Sort
+#      selectedField: file_id_num
+      query:
+        - field: value.keyword
+          type: wildcard
+        - field: property_name
+          type: term
+        - field: property_type
+          type: term
+        - field: property_description.keyword
+          type: term
+        - field: node_name
+          type: term
+      optionalQuery:
+        - field: property_required
+          type: match
+          option: boolean
+    highlight:
+      field: property_name,property_description,property_type,property_required,value,node_name
+      fragmentSize: 1
+    resultType: global_highlights

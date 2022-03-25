@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.classes;
+package gov.nih.nci.bento.classes.yamlquery;
 
 import lombok.Data;
 import lombok.Getter;

@@ -17,8 +17,8 @@ build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 region: us-east-1
 
 #docker
-docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region={{region}} ) }}"
-docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region={{region}} ) }}"
+docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region='us-east-1' ) }}"
+docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region='us-east-1' ) }}"
 
 # monitoring agents
 newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"

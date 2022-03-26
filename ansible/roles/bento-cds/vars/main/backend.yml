@@ -9,19 +9,19 @@ build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 app_name: "{{stack_name}}-{{platform}}-{{tier}}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
 region: us-east-1
-es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region={{region}} ) }}"
+es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
 
 # build
-docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region={{region}} ) }}"
-docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region={{region}} ) }}"
+docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region='us-east-1' ) }}"
+docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region='us-east-1' ) }}"
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 bento_api_version: "{{ lookup('env','BE_VERSION') }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version }}/src/content/{{ tier }}/aboutPagesContent.yaml
 build_number: "{{ lookup('env','BUILD_NUMBER')}}"
 
 # db
-neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_user', nested=true, region={{region}} ) }}"
-neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region={{region}} ) }}"
+neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_user', nested=true, region='us-east-1' ) }}"
+neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
 
 # redis
 enable_redis: false

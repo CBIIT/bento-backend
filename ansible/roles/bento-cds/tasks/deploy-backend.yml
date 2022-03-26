@@ -4,6 +4,11 @@
     name: common
     tasks_from: ecr-login
 
+- name: get db ip
+  include_role:
+    name: common
+    tasks_from: neo4j-ip
+
 - name: Get the current caller identity information
   aws_caller_info:
   register: caller_info
@@ -120,7 +125,7 @@
     task_backend_name: "{{task_backend.family}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
-    
+
 
 ###########################################################################################################################
 #Update Services

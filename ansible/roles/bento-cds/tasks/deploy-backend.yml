@@ -1,4 +1,8 @@
 ---
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
 
 - name: Get the current caller identity information
   aws_caller_info:
@@ -6,44 +10,9 @@
 
 - name: set ECR registry name
   set_fact:
-    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+    account: "{{ caller_info.account }}"
 
-- name: login into ecr
-  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
-  ignore_errors: True
-  register: ecr_login
-
-
-# - name: create task definition - sumo firelens
-#   ecs_taskdefinition:
-#     containers:
-#     - name: sumologic-firelens
-#       essential: true
-#       image: "amazon/aws-for-fluent-bit:latest"
-#       memory: 100
-#       logConfiguration:
-#         logDriver: awslogs
-#         options:
-#           awslogs-group: ccdc-dev-es-log-group
-#           awslogs-region: us-east-1
-#           awslogs-stream-prefix: ecs
-#       firelensConfiguration:
-#         type: fluentbit
-#         options:
-#           enable-ecs-log-metadata: "true"
-#     launch_type: FARGATE
-#     network_mode: awsvpc
-#     execution_role_arn: "arn:aws:iam::268879522213:role/{{stack_name }}-{{ tier }}-task-exection-role"
-#     task_role_arn: "arn:aws:iam::268879522213:role/{{stack_name }}-{{ tier }}-task-role"
-#     family: "{{stack_name }}-{{tier}}-sumo_firelens"
-#     state: present
-#     memory: '512'
-#     cpu: '256'
-#     region: "{{region}}"
-#   register: task_output
-
-
-- name: create task definition - {{backend}}
+- name: create task definition - backend
   ecs_taskdefinition:
     containers:
     - name: sumologic-firelens
@@ -53,7 +22,7 @@
       logConfiguration:
         logDriver: awslogs
         options:
-          awslogs-group: ccdc-dev-es-log-group
+          awslogs-group: "{{stack_name}}-{{tier}}-es-log"
           awslogs-region: us-east-1
           awslogs-stream-prefix: ecs
       firelensConfiguration:
@@ -62,32 +31,43 @@
           enable-ecs-log-metadata: "true"
     - name: backend
       essential: true
-      image: "{{ ecr_repo }}/{{backend | lower}}:{{backend_version}}"
+      image: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}"
       environment:
-        - name: REACT_APP_BACKEND_API
-          value: "https://{{ react_app_backend_api[tier] }}/service/"
-          #value: "{% if tier == 'prod' %}https://{{stack_name}}.cancer.gov/service/{% else %}https://{{stack_name}}-{{ tier }}.cancer.gov/service/{% endif %}" 
-        - name: REACT_APP_ENVIRONMENT
-          value: "{{tier}}"
-        - name: ORIGIN_DOMAIN
-          value: "https://{{ react_app_backend_api[tier] }}" 
-        - name: SOFTWARE_VERSION
-          value: "{{ software_version }}"
-        - name: RDB_HOST
-          value: "{{ rds_host[tier] }}"
-        - name: RDB_PORT
-          value: "3306"
-        - name: RDB_USER
-          value: "{{ rds_user }}"
-        - name: RDB_PASSWORD
-          value: "{{ rds_password }}"
+        - name: NEO4J_URL
+          value: bolt://{{ neo4j_ip }}:7687
+        - name: NEO4J_USER
+          value: "{{ neo4j_user }}"
+        - name: NEO4J_PASSWORD
+          value: "{{ neo4j_password }}"
+        - name: NEO4J_GRAPHQL_ENDPOINT
+          value: http://{{ neo4j_ip }}:7474/graphql/
+        - name: BENTO_API_VERSION
+          value: "{{bento_api_version}}"
         - name: ES_HOST
-          value: "{{ es_host[tier] }}"
-        - name: ES_PORT
-          value: "9200"
+          value: "{{es_host}}"
+        - name: ES_FILTER_ENABLED
+          value: "{{ enable_es_filter }}"
+        - name: NEW_RELIC_LICENSE_KEY
+          value: "{{ newrelic_license_key }}"
+        - name: NEW_RELIC_APP_NAME
+          value: "{{ app_name }}-backend"
+        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+          value: true
+        - name: NEW_RELIC_HOST
+          value: "gov-collector.newrelic.com"
+        - name: NEW_RELIC_LOG_FILE_NAME
+          value: "STDOUT"
+        - name: NEW_RELIC_LABELS
+          value: "Project:{{ project }};Environment:{{ tier }}"
+        - name: JAVA_OPTS
+          value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+      entryPoint:
+        - "/bin/ash"
+        - "-c"
+        - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
       portMappings:
-      - containerPort: "8080"
-        hostPort: "8080"
+        - containerPort: "8080"
+          hostPort: "8080"
       logConfiguration:
         logDriver: awsfirelens
         options:
@@ -100,8 +80,8 @@
           Format: 'json_lines'
     launch_type: FARGATE
     network_mode: awsvpc
-    execution_role_arn: "arn:aws:iam::268879522213:role/{{stack_name }}-{{ tier }}-task-exection-role"
-    task_role_arn: "arn:aws:iam::268879522213:role/{{stack_name }}-{{ tier }}-task-role"
+    execution_role_arn: "arn:aws:iam::{{account}}:role/{{stack_name }}-{{ tier }}-task-execu\tion-role"
+    task_role_arn: "arn:aws:iam::{{account}}:role/{{stack_name }}-{{ tier }}-task-role"
     family: "{{stack_name }}-{{tier}}-backend"
     memory: '1024'
     cpu: '512'
@@ -109,68 +89,6 @@
     region: "{{region}}"
   register: task_output
 
-# - name: create task definition - sumo syslog
-#   ecs_taskdefinition:
-#     containers:
-#     - name: sumologic-syslog
-#       essential: true
-#       image: "sumologic/collector:latest-syslog"
-#       environment:
-#         - name: SUMO_COLLECTOR_NAME
-#           value: "{{ app_name }}-syslog"
-#         - name: SUMO_ACCESS_ID
-#           value: "{{ sumo_access_id }}"
-#         - name: SUMO_ACCESS_KEY
-#           value: "{{ sumo_access_key }}"
-#         - name: SUMO_COLLECTOR_NAME_PREFIX
-#           value: ""
-#         - name: SUMO_CLOBBER
-#           value: "true"
-#       portMappings:
-#       - containerPort: "514"
-#         hostPort: "514"
-#     launch_type: FARGATE
-#     network_mode: awsvpc
-#     family: "{{stack_name }}-{{tier}}-sumo_syslog"
-#     state: present
-#     memory: '512'
-#     cpu: '128'
-#     region: "{{region}}"
-#   register: task_output
-
-# - name: create task definition - sumo docker
-#   ecs_taskdefinition:
-#     containers:
-#     - name: sumologic-docker
-#       essential: true
-#       image: "sumologic/collector:latest"
-#       environment:
-#         - name: SUMO_COLLECTOR_NAME
-#           value: "{{ app_name }}-docker"
-#         - name: SUMO_ACCESS_ID
-#           value: "{{ sumo_access_id }}"
-#         - name: SUMO_ACCESS_KEY
-#           value: "{{ sumo_access_key }}"
-#         - name: SUMO_COLLECTOR_NAME_PREFIX
-#           value: ""
-#         - name: SUMO_CLOBBER
-#           value: "true"
-#       mountPoints:
-#         - containerPath: /var/run/docker.sock
-#           sourceVolume: docker-sock
-#           readOnly: true
-#     volumes:
-#     - name: docker-sock
-#       host:
-#         sourcePath: /var/run/docker.sock
-#     launch_type: FARGATE
-#     network_mode: awsvpc
-#     family: "{{stack_name }}-{{tier}}-sumo_docker"
-#     state: present
-#     memory: '512'
-#     cpu: '128'
-#     region: "{{region}}"
-#   register: task_output
 
 ############################################################################################################################
 
@@ -178,34 +96,14 @@
 
 ############################################################################################################################
 
-- name: query task definition - {{backend | lower}} 
+- name: query task definition - backend
   ecs_taskdefinition_info:
     task_definition: "{{stack_name }}-{{tier}}-backend"
     region: "{{region}}" 
   register: task_backend
 
-# - name: query task definition - sumologic firelens
-#   ecs_taskdefinition_info:
-#     task_definition: "{{stack_name }}-{{tier}}-sumo_firelens"
-#     region: "{{region}}" 
-#   register: task_sumo_firelens
-
-# - name: query task definition - sumologic syslog
-#   ecs_taskdefinition_info:
-#     task_definition: "{{stack_name }}-{{tier}}-sumo_syslog"
-#     region: "{{region}}" 
-#   register: task_sumo_syslog
-
-# - name: query task definition - sumologic docker
-#   ecs_taskdefinition_info:
-#     task_definition: "{{stack_name }}-{{tier}}-sumo_docker"
-#     region: "{{region}}" 
-#   register: task_sumo_docker
-
 ############################################################################################################################
-
 #     Service Queries
-
 ############################################################################################################################
 
 - name: query backend service
@@ -216,90 +114,17 @@
     region: "{{region}}"
   register: service_backend
 
-# - name: query sumologic syslog service
-#   ecs_service_info:
-#     cluster: "{{stack_name }}-{{tier}}-ecs"
-#     service: "{{stack_name }}-{{tier}}-sumo_firelens"
-#     details: true
-#     region: "{{region}}"
-#   register: service_sumo_syslog
-
-
-# - name: query sumologic syslog service
-#   ecs_service_info:
-#     cluster: "{{stack_name }}-{{tier}}-ecs"
-#     service: "{{stack_name }}-{{tier}}-sumo_syslog"
-#     details: true
-#     region: "{{region}}"
-#   register: service_sumo_syslog
-
-# - name: query sumologic docker service
-#   ecs_service_info:
-#     cluster: "{{stack_name }}-{{tier}}-ecs"
-#     service: "{{stack_name }}-{{tier}}-sumo_docker"
-#     details: true
-#     region: "{{region}}"
-#   register: service_sumo_docker
-
-
-############################################################################################################################
-
 - name: set facts
   set_fact:
     backend_revision: "{{task_backend.revision}}"
     task_backend_name: "{{task_backend.family}}"
     lb_backend: "{{service_backend.services[0].loadBalancers}}"
     role_arn: "{{service_backend.services[0].roleArn}}"
-    # task_sumo_firelens_name: "{{task_sumo_firelens.family}}"
+    
 
-
+###########################################################################################################################
+#Update Services
 ############################################################################################################################
-
-#     Update Services
-
-############################################################################################################################
-
-# - name: update sumologic syslog service
-#   ecs_service:
-#     state: present
-#     name: "{{stack_name }}-{{tier}}-sumo_syslog"
-#     cluster: "{{stack_name }}-{{tier}}-ecs"
-#     task_definition: "{{task_sumo_syslog_name}}"
-#     force_new_deployment: no
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     region: "{{region}}"
-#   register: service_sumo_syslog_output
-
-# - name: update sumologic docker service
-#   ecs_service:
-#     state: present
-#     name: "{{stack_name }}-{{tier}}-sumo_docker"
-#     cluster: "{{stack_name }}-{{tier}}-ecs"
-#     task_definition: "{{task_sumo_docker_name}}"
-#     force_new_deployment: no
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     region: "{{region}}"
-#   register: service_sumo_docker_output
-
-# - name: update sumologic syslog service
-#   ecs_service:
-#     state: present
-#     name: "{{stack_name }}-{{tier}}-sumo_firelens"
-#     cluster: "{{stack_name }}-{{tier}}-ecs"
-#     task_definition: "{{task_sumo_firelens_name}}"
-#     force_new_deployment: no
-#     deployment_configuration:
-#       minimum_healthy_percent: 0
-#       maximum_percent: 100
-#     desired_count: 1
-#     region: "{{region}}"
-#   register: service_sumo_firelens_output
 
 - name: update backend service
   ecs_service:
@@ -310,8 +135,8 @@
     role: "{{role_arn}}"
     force_new_deployment: yes
     deployment_configuration:
-      minimum_healthy_percent: 0
-      maximum_percent: 100
+      minimum_healthy_percent: 50
+      maximum_percent: 200
     desired_count: 1
     load_balancers: "{{ lb_backend }}"
     region: "{{region}}"

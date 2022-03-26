@@ -1,9 +1,6 @@
 #db
 database_name: "{{project}}-{{tier}}-neo4j"
 
-#graphql
-schema_file: "bento-extended.graphql"
-
 #auth
 app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
 
@@ -25,3 +22,4 @@ newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-e
 sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
 sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
+sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', '/monitoring/sumologic/.collector_token', nested=true, region='us-east-1' ) }}"

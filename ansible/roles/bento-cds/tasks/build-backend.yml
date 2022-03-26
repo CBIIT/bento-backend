@@ -1,6 +1,6 @@
 ---
 #install aws collection
-- name: docker login
+- name: install ansible collections
   include_role:
     name: common
     tasks_from: collections

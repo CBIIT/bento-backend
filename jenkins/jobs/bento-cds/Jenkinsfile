@@ -122,7 +122,7 @@ pipeline {
           wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
             ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/cds-build-backend.yml', 
-              //inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+              inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
               extraVars: [
                             redis_schema_file: "",
                             redis_init_queries_file: "",

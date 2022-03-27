@@ -6,7 +6,7 @@
 
   tasks:
     - name: query inventory
-      command: ansible-inventory -i ./inventory/aws_ec2.yaml --list
+      command: ansible-inventory -i inventory/bento_aws_ec2.yml --list
       register: output
     - name: show cmd output
       debug:

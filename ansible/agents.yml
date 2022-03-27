@@ -1,6 +1,6 @@
 ---
 - name: setup sumologic and newrelic agents
-  hosts: "{{agent_host}}"
+  hosts: "_{{agent_host}}"
   become: yes
 
   roles:

@@ -1,0 +1,9 @@
+---
+- name: setup sumologic and newrelic agents
+  hosts: "{{agent_host}}"
+  become: yes
+
+  roles:
+    - sumologic
+    - sumologic-journalctl
+    - newrelic

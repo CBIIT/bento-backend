@@ -8,5 +8,9 @@ keyed_groups:
   - key: tags.Environment
 filters:
   instance-state-name : running
-compose:
-  ansible_host: private_ip_address
+hostnames:
+  - name: 'private-ip-address'
+    separator: ' '
+    prefix: 'tag:Name'
+#compose:
+#  ansible_host: private_ip_address

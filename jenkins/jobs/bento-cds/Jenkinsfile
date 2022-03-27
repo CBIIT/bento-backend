@@ -38,28 +38,18 @@ pipeline {
 		}
 	}
 	parameters {
+	extendedChoice(
+            name: 'Project',
+            defaultValue: 'cds',
+            description: 'Choose the project to build',
+            type: 'PT_SINGLE_SELECT',
+            value: 'cds,bento,gmb,icdc')
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod')
-    booleanParam(
-		defaultValue: true,
-		description: 'Flush the Redis cache',
-		name: 'Flush_Redis')
-	booleanParam(
-		defaultValue: true,
-		description: 'Enable the Redis filter',
-		name: 'Enable_Redis_Filter')
-	string(
-	    defaultValue: 'redis-schema.graphql',
-		description: 'The file to use when loading redis schema',
-		name: 'Redis_Schema_File')
-	string(
-	    defaultValue: 'redis-filter-config.bento.yaml',
-		description: 'The file to use when loading redis queries',
-		name: 'Redis_Queries_File')
 	string(
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
@@ -119,14 +109,11 @@ pipeline {
 	   TIER = "${params.Environment}"
       }
       steps {
-            sh "ansible-galaxy  collection install amazon.aws"
           wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
             ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/cds-build-backend.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
               extraVars: [
-                            redis_schema_file: "",
-                            redis_init_queries_file: "",
                             test_queries_file: "${params.Test_Queries_File}",
                           ],
               colorized: true)
@@ -186,17 +173,21 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-			
-		    echo "Recreating inventory file"
-			sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
-            sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+
+			//install amazon.aws collection to use dynamic inventory
+            sh "ansible-galaxy  collection install amazon.aws"
+		    //echo "Recreating inventory file"
+			//sh "cp ${WORKSPACE}/icdc-devops/ansible/hosts ${WORKSPACE}/icdc-devops/ansible/hosts.bak"
+            //sh "echo [agent_setup] >> ${WORKSPACE}/icdc-devops/ansible/hosts"
             //sh "NEO4J_IP=${ aws ec2 describe-instances --filters 'Name=tag-value,Values=cds-dev-neo4j' --region=us-east-1 --query 'Reservations[*].Instances[*].[PrivateIpAddress]' --output text}"
-            sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
+            //sh "echo ${NEO4J_IP} ansible_ssh_private_key_file=/home/bento/.ssh/devops ansible_ssh_user=bento >> ${WORKSPACE}/icdc-devops/ansible/hosts"
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/agents.yml',
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/inventory/aws_ec2.yml',
+            		credentialsId: 'server_ssh_key',
 					extraVars: [
+					agent_host: "$_{params.Project}-${params.Environment}-neo4j-4"
                     env: "${params.Environment}",
 					app_type: 'database',
 					app_name: 'neo4j',

@@ -435,9 +435,7 @@
   register: service_frontend_output
 
 ############################################################################################################################
-
 # Add the "production" tag for backend and frontend images if deployed to Prod
-
 ############################################################################################################################
 
 - name: Add tag production to {{ project }}-frontend image

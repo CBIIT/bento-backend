@@ -187,7 +187,7 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/inventory/aws_ec2.yml',
             		credentialsId: 'server_ssh_key',
 					extraVars: [
-					agent_host: "$_{params.Project}-${params.Environment}-neo4j-4"
+					agent_host: "$_{params.Project}-${params.Environment}-neo4j-4",
                     env: "${params.Environment}",
 					app_type: 'database',
 					app_name: 'neo4j',

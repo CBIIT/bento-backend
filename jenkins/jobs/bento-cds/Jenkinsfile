@@ -119,6 +119,7 @@ pipeline {
 	   TIER = "${params.Environment}"
       }
       steps {
+            sh "ansible-galaxy  collection install amazon.aws"
           wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
             ansiblePlaybook(  			
               playbook: '${WORKSPACE}/icdc-devops/ansible/cds-build-backend.yml', 

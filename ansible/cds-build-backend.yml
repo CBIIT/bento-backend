@@ -1,5 +1,5 @@
 - name: cds backend pipeline
-  hosts: localhost
+  hosts: bento
   connection: local
   gather_facts: no
   become: yes

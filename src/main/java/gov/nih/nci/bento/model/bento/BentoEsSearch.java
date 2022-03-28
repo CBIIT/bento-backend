@@ -72,7 +72,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .dataFetcher("globalSearch", env ->
                                 globalSearch(esService.CreateQueryParam(env))
                         )
-                        .dataFetchers(singleQueryYaml_Test())
+                        .dataFetchers(createYamlQueries())
 //                        .dataFetcher("searchSubjects", env ->
 //                                multiSearchTest(esService.CreateQueryParam(env))
 //                        )
@@ -213,7 +213,7 @@ public final class BentoEsSearch implements DataFetcher {
         return result;
     }
 
-    public Map<String, graphql.schema.DataFetcher> singleQueryYaml_Test() throws IOException {
+    public Map<String, graphql.schema.DataFetcher> createYamlQueries() throws IOException {
         Yaml yaml = new Yaml(new Constructor(SingleQuery.class));
         SingleQuery singleQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
         Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
@@ -228,6 +228,11 @@ public final class BentoEsSearch implements DataFetcher {
             map.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
         });
 
+        Yaml globalYaml = new Yaml(new Constructor(SingleQuery.class));
+        SingleQuery globalQuery = globalYaml.load(new ClassPathResource("global_query.yml").getInputStream());
+        globalQuery.getQuery().forEach(q->{
+            map.put(q.getName(), env -> getYamlGlobalQuery(esService.CreateQueryParam(env), q));
+        });
         return map;
     }
 
@@ -252,6 +257,24 @@ public final class BentoEsSearch implements DataFetcher {
         request.indices(query.getIndex());
         request.source(getSourceBuilder(param, query));
         return esService.elasticSend(request, getTypeMapper(param, query));
+    }
+
+    private Object getYamlGlobalQuery(QueryParam param, YamlQuery query) throws IOException {
+        Map<String, Object> result = new HashMap<>();
+        // Set Bool Filter
+        SearchSourceBuilder builder = getSourceBuilder(param, query);
+        MultipleRequests request = MultipleRequests.builder()
+                .name(query.getName())
+                .request(new SearchRequest()
+                        .indices(query.getIndex())
+                        .source(builder))
+                .typeMapper(getTypeMapper(param, query)).build();
+        Map<String, Object> multiResult = esService.elasticMultiSend(List.of(request));
+        QueryResult queryResult = (QueryResult) multiResult.get(query.getName());
+        List<Map<String, Object>> searchHits_Test = queryResult.getSearchHits();
+        result.put("result", checkEmptySearch(param, searchHits_Test));
+        result.put("count", checkEmptySearch(param, queryResult.getTotalHits()));
+        return result;
     }
 
     private SearchSourceBuilder getSourceBuilder(QueryParam param, YamlQuery query) {

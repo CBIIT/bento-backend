@@ -1,5 +1,5 @@
 query:
-  - name: global_search_subjects
+  - name: globalSearchSubject
     index: subjects
     filterType:
       type: global
@@ -16,7 +16,7 @@ query:
           type: term
           option: integer
     resultType: global
-  - name: global_search_sample
+  - name: globalSearchSample
     index: sample
     filterType:
       type: global
@@ -30,7 +30,7 @@ query:
         - field: tissue_type_gs
           type: term
     resultType: global
-  - name: global_search_program
+  - name: globalSearchProgram
     index: programs
     filterType:
       type: global
@@ -45,7 +45,7 @@ query:
           type: wildcard
           caseInSensitive: true
     resultType: global
-  - name: global_search_studies
+  - name: globalSearchStudy
     index: studies
     filterType:
       type: global
@@ -59,7 +59,7 @@ query:
         - field: study_type
           type: term
     resultType: global
-  - name: global_search_file
+  - name: globalSearchFile
     index: files
     filterType:
       type: global
@@ -75,7 +75,7 @@ query:
           type: term
     resultType: global
   # About Page
-  - name: global_search_about
+  - name: globalSearchAbout
     index: about_page
     filterType:
       type: global
@@ -91,7 +91,7 @@ query:
       postTag: $
     resultType: global_about
   # Multiple ES Index Search
-  - name: global_search_model
+  - name: globalSearchModel
     index: model_properties,model_values,model_nodes
     filterType:
       type: global

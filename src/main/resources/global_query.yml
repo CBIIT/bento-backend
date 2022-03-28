@@ -80,24 +80,20 @@ query:
           type: term
     resultType: global
   # About Page
+  # TODO awlays from 0 and default-size
   - name: globalSearchAbout
     index:
       - about_page
     filterType:
       type: global
       # Default Sort
-#      selectedField: file_id_num
+      selectedField: content.paragraph
       query:
         - field: content.paragraph
           type: match
     highlight:
       fields:
         - content.paragraph
-        - property_description
-        - property_type
-        - property_required
-        - value
-        - node_name
       # fragmentSize: 1
       preTag: $
       postTag: $

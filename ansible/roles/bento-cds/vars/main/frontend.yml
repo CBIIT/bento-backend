@@ -8,3 +8,4 @@ frontend_container_image: "{{ecr_repo}}/{{project_name}}-{{container_name}}:{{fr
 frontend_container_port: 80
 frontend_container_memory: 128
 frontend_container_cpu: 512
+frontend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"

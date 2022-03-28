@@ -26,7 +26,7 @@
             enable-ecs-log-metadata: "true"
       - name: "{{container_name}}"
         essential: true
-        image: "{{ container_image }}"
+        image: "{{ container_image_url }}:{{image_version}}"
         environment: "{{ container_env }}"
         entryPoint: "{{container_entrypoint}}"
         portMappings:

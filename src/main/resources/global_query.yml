@@ -133,4 +133,4 @@ query:
         - value
         - node_name
       fragmentSize: 1
-    resultType: global_multiples
+    resultType: global_multi_models

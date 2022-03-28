@@ -29,6 +29,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.core.io.ClassPathResource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import static gov.nih.nci.bento.constants.Const.YAML_QUERY;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -220,21 +221,21 @@ public final class BentoEsSearch implements DataFetcher {
 
     public Map<String, graphql.schema.DataFetcher> createYamlQueries() throws IOException {
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
-        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
+        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.SINGLE).getInputStream());
         Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
         singleTypeQuery.getQuery().forEach(q->{
             map.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
         });
 
         Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
-        GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource("group_query.yml").getInputStream());
+        GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.GROUP).getInputStream());
         groupTypeQuery.getGroups().forEach(group->{
             String queryName = group.getName();
             map.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
         });
 
         Yaml globalYaml = new Yaml(new Constructor(SingleTypeQuery.class));
-        SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource("global_query.yml").getInputStream());
+        SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.GLOBAL).getInputStream());
         globalQuery.getQuery().forEach(q->{
             map.put(q.getName(), env -> getYamlGlobalQuery(esService.CreateQueryParam(env), q));
         });
@@ -281,57 +282,56 @@ public final class BentoEsSearch implements DataFetcher {
         result.put("count", checkEmptySearch(param, queryResult.getTotalHits()));
         return result;
     }
-
     private SearchSourceBuilder getSourceBuilder(QueryParam param, YamlQuery query) {
         // Set Arguments
         YamlFilterType filterType = query.getFilterType();
-        if (filterType.getType().equals("aggregation")) {
-            return new AggregationFilter(
-                    FilterParam.builder()
-                            .args(param.getArgs())
-                            .isExcludeFilter(filterType.isFilter())
-                            .selectedField(filterType.getSelectedField())
-                            .build())
-                    .getSourceFilter();
-
-        } else if (filterType.getType().equals("table")) {
-            return new TableFilter(FilterParam.builder()
-                    .args(param.getArgs())
-                    .queryParam(param)
-                    // TODO
+        switch (filterType.getType()) {
+            case YAML_QUERY.FILTER.AGGREGATION:
+                return new AggregationFilter(
+                        FilterParam.builder()
+                                .args(param.getArgs())
+                                .isExcludeFilter(filterType.isFilter())
+                                .selectedField(filterType.getSelectedField())
+                                .build())
+                        .getSourceFilter();
+            case YAML_QUERY.FILTER.TABLE:
+                return new TableFilter(FilterParam.builder()
+                        .args(param.getArgs())
+                        .queryParam(param)
+                        // TODO
 //                    .customOrderBy(getIntCustomOrderBy(param))
-                    .defaultSortField(filterType.getSelectedField())
-                    .build()).getSourceFilter();
-        } else if (filterType.getType().equals("number_of_docs")) {
-            return new SearchCountFilter(
-                    FilterParam.builder()
-                            .args(param.getArgs())
-                            .build())
-                    .getSourceFilter();
-        } else if (filterType.getType().equals("range")) {
-            return new RangeFilter(
-                    FilterParam.builder()
-                            .args(param.getArgs())
-                            .selectedField(filterType.getSelectedField())
-                            .isExcludeFilter(true)
-                            .build())
-                    .getSourceFilter();
-        } else if (filterType.getType().equals("sub_aggregation")) {
-            return new SubAggregationFilter(
-                    FilterParam.builder()
-                            .args(param.getArgs())
-                            .selectedField(filterType.getSelectedField())
-                            .subAggSelectedField(filterType.getSubAggSelectedField())
-                            .build())
-                    .getSourceFilter();
-        } else if (filterType.getType().equals("default")) {
-            return new DefaultFilter(FilterParam.builder()
-                    .args(param.getArgs()).build()).getSourceFilter();
-        } else if (filterType.getType().equals("global")) {
-
-            return createGlobalQuery(param,query);
+                        .defaultSortField(filterType.getDefaultSortField())
+                        .build()).getSourceFilter();
+            case YAML_QUERY.FILTER.NO_OF_DOCUMENTS:
+                return new SearchCountFilter(
+                        FilterParam.builder()
+                                .args(param.getArgs())
+                                .build())
+                        .getSourceFilter();
+            case YAML_QUERY.FILTER.RANGE:
+                return new RangeFilter(
+                        FilterParam.builder()
+                                .args(param.getArgs())
+                                .selectedField(filterType.getSelectedField())
+                                .isExcludeFilter(true)
+                                .build())
+                        .getSourceFilter();
+            case YAML_QUERY.FILTER.SUB_AGGREAGATION:
+                return new SubAggregationFilter(
+                        FilterParam.builder()
+                                .args(param.getArgs())
+                                .selectedField(filterType.getSelectedField())
+                                .subAggSelectedField(filterType.getSubAggSelectedField())
+                                .build())
+                        .getSourceFilter();
+            case YAML_QUERY.FILTER.DEFAULT:
+                return new DefaultFilter(FilterParam.builder()
+                        .args(param.getArgs()).build()).getSourceFilter();
+            case YAML_QUERY.FILTER.GLOBAL:
+                return createGlobalQuery(param,query);
+            default:
+                throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
     }
 
     private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {
@@ -368,10 +368,10 @@ public final class BentoEsSearch implements DataFetcher {
     // Add Conditional Query
     private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, List<QueryBuilder> builders) {
         builders.forEach(q->{
-            if (q.getName().equals("match")) {
+            if (q.getName().equals(YAML_QUERY.QUERY_TERMS.MATCH)) {
                 MatchQueryBuilder matchQuery = getQuery(q);
                 if (!matchQuery.value().equals("")) builder.should(q);
-            } else if (q.getName().equals("term")) {
+            } else if (q.getName().equals(YAML_QUERY.QUERY_TERMS.TERM)) {
                 TermQueryBuilder termQuery = getQuery(q);
                 if (!termQuery.value().equals("")) builder.should(q);
             }
@@ -389,11 +389,11 @@ public final class BentoEsSearch implements DataFetcher {
         List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilterType().getQuery();
         // Add Should Query
         globalQuerySets.forEach(globalQuery -> {
-            if (globalQuery.getType().equals("term")) {
+            if (globalQuery.getType().equals(YAML_QUERY.QUERY_TERMS.TERM)) {
                 boolQueryBuilder.should(QueryBuilders.termQuery(globalQuery.getField(), param.getSearchText()));
-            } else if (globalQuery.getType().equals("wildcard")) {
+            } else if (globalQuery.getType().equals(YAML_QUERY.QUERY_TERMS.WILD_CARD)) {
                 boolQueryBuilder.should(QueryBuilders.wildcardQuery(globalQuery.getField(), "*" + param.getSearchText()+ "*").caseInsensitive(true));
-            } else if (globalQuery.getType().equals("match")) {
+            } else if (globalQuery.getType().equals(YAML_QUERY.QUERY_TERMS.MATCH)) {
                 boolQueryBuilder.should(QueryBuilders.matchQuery(globalQuery.getField(), param.getSearchText()));
             } else {
                 throw new IllegalArgumentException();
@@ -404,21 +404,20 @@ public final class BentoEsSearch implements DataFetcher {
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        if (query.getFilterType().getOptionalQuery() == null) return conditionalList;
         List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery();
         optionalQuerySets.forEach(option-> {
             String filterString = "";
-            if (option.getOption().equals("boolean")) {
+            if (option.getOption().equals(YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
                 filterString = StrUtil.getBoolText(param.getSearchText());
-            } else if (option.getOption().equals("integer")) {
+            } else if (option.getOption().equals(YAML_QUERY.QUERY_TERMS.INTEGER)) {
                 filterString = StrUtil.getIntText(param.getSearchText());
             } else {
                 throw new IllegalArgumentException();
             }
 
-            if (option.getType().equals("match")) {
+            if (option.getType().equals(YAML_QUERY.QUERY_TERMS.MATCH)) {
                 conditionalList.add(QueryBuilders.matchQuery(option.getField(), filterString));
-            } else if (option.getType().equals("term")) {
+            } else if (option.getType().equals(YAML_QUERY.QUERY_TERMS.TERM)) {
                 conditionalList.add(QueryBuilders.termQuery(option.getField(), filterString));
             } else {
                 throw new IllegalArgumentException();
@@ -428,35 +427,34 @@ public final class BentoEsSearch implements DataFetcher {
     }
 
 
-
     private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
         // Set Result Type
 
         switch (query.getResultType()) {
-            case "default":
+            case YAML_QUERY.RESULT_TYPE.DEFAULT:
                 return typeMapper.getDefault(param.getReturnTypes());
-            case "aggregation":
+            case YAML_QUERY.RESULT_TYPE.AGGREGATION:
                 return typeMapper.getAggregate();
-            case "int_total_aggregation":
+            case YAML_QUERY.RESULT_TYPE.INT_TOTAL_AGGREGATION:
                 return typeMapper.getAggregateTotalCnt();
-            case "range":
+            case YAML_QUERY.RESULT_TYPE.RANGE:
                 return typeMapper.getRange();
-            case "arm_program":
+            case YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:
                 return typeMapper.getArmProgram();
-            case "int_total_count":
+            case YAML_QUERY.RESULT_TYPE.INT_TOTAL_COUNT:
                 return typeMapper.getIntTotal();
-            case "str_list":
+            case YAML_QUERY.RESULT_TYPE.STRING_LIST:
                 return typeMapper.getStrList(query.getFilterType().getSelectedField());
-            case "global_about":
+            case YAML_QUERY.RESULT_TYPE.GLOBAL_ABOUT:
                 return typeMapper.getHighLightFragments(query.getFilterType().getSelectedField(),
                         (source, text) -> Map.of(
                                 Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.ABOUT,
                                 Const.BENTO_FIELDS.PAGE, source.get(Const.BENTO_FIELDS.PAGE),
                                 Const.BENTO_FIELDS.TITLE,source.get(Const.BENTO_FIELDS.TITLE),
                                 Const.BENTO_FIELDS.TEXT, text));
-            case "global":
+            case YAML_QUERY.RESULT_TYPE.GLOBAL:
                 return typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes());
-            case "global_multiples":
+            case YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
             default:
                 throw new IllegalArgumentException();

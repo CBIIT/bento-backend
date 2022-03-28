@@ -8,6 +8,52 @@ public class Const {
         public static final String SUBSCRIPTION_TYPE_NAME = "Subscription";
     }
 
+    public static class YAML_QUERY {
+
+        public static class FILE_NAMES {
+            public static final String SINGLE = "single_query.yml";
+            public static final String GROUP = "group_query.yml";
+            public static final String GLOBAL = "global_query.yml";
+
+        }
+
+
+        public static class QUERY_TERMS {
+            public static final String TERM = "term";
+            public static final String MATCH = "match";
+            public static final String WILD_CARD = "wildcard";
+            public static final String BOOLEAN = "boolean";
+            public static final String INTEGER = "integer";
+        }
+
+        public static class FILTER {
+            public static final String AGGREGATION = "aggregation";
+            public static final String TABLE = "table";
+            public static final String NO_OF_DOCUMENTS = "number_of_docs";
+            public static final String RANGE = "range";
+            public static final String SUB_AGGREAGATION = "sub_aggregation";
+            public static final String DEFAULT = "default";
+            public static final String GLOBAL = "global";
+        }
+
+        public static class RESULT_TYPE {
+            public static final String DEFAULT = "default";
+            public static final String AGGREGATION = "aggregation";
+            public static final String INT_TOTAL_AGGREGATION = "int_total_aggregation";
+            public static final String RANGE = "range";
+            public static final String ARM_PROGRAM = "arm_program";
+
+            public static final String INT_TOTAL_COUNT = "int_total_count";
+            public static final String STRING_LIST = "str_list";
+            public static final String GLOBAL_ABOUT = "global_about";
+            public static final String GLOBAL = "global";
+            public static final String GLOBAL_MULTIPLE_MODEL = "global_multi_models";
+        }
+
+
+    }
+
+
     public static class ES_UNITS {
         public static final int DEFAULT_SIZE = 10;
         public static final int MAX_SIZE = 10000;

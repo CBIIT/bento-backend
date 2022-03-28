@@ -38,6 +38,12 @@
   args:
     chdir: "{{ container_build_path }}"
     warn: false
+
+- name: push {{ project_name }}-{{container_name}} image
+  shell: docker push {{ container_image }}
+  args:
+    chdir: "{{ container_build_path }}"
+    warn: false
 #- name: build {{ project_name }}-{{container_name}} image
 #  docker_image:
 #    build:

@@ -19,7 +19,7 @@ query:
     resultType: global
   - name: globalSearchSample
     index:
-      - sample
+      - samples
     filterType:
       type: global
       # Default Sort

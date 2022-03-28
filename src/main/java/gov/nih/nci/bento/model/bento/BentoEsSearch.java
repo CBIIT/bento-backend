@@ -73,7 +73,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .dataFetcher("globalSearch", env ->
                                 globalSearch(esService.CreateQueryParam(env))
                         )
-//                        .dataFetchers(createYamlQueries())
+                        .dataFetchers(createYamlQueries())
 //                        .dataFetcher("searchSubjects", env ->
 //                                multiSearchTest(esService.CreateQueryParam(env))
 //                        )
@@ -243,7 +243,7 @@ public final class BentoEsSearch implements DataFetcher {
             MultipleRequests multipleRequest = MultipleRequests.builder()
                     .name(q.getName())
                     .request(new SearchRequest()
-//                            .indices(q.getIndex())
+                            .indices(q.getIndex())
                             .source(getSourceBuilder(param, q)))
                     .typeMapper(getTypeMapper(param, q)).build();
             requests.add(multipleRequest);
@@ -255,7 +255,7 @@ public final class BentoEsSearch implements DataFetcher {
     private Object getYamlQuery(QueryParam param, YamlQuery query) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
-//        request.indices(query.getIndex());
+        request.indices(query.getIndex());
         request.source(getSourceBuilder(param, query));
         return esService.elasticSend(request, getTypeMapper(param, query));
     }
@@ -267,7 +267,7 @@ public final class BentoEsSearch implements DataFetcher {
         MultipleRequests request = MultipleRequests.builder()
                 .name(query.getName())
                 .request(new SearchRequest()
-//                        .indices(query.getIndex())
+                        .indices(query.getIndex())
                         .source(builder))
                 .typeMapper(getTypeMapper(param, query)).build();
         Map<String, Object> multiResult = esService.elasticMultiSend(List.of(request));

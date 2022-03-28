@@ -115,7 +115,7 @@ public class BentoAutoConfiguration {
     private Object getYamlQuery(QueryParam param, YamlQuery query) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
-//        request.indices(query.getIndex());
+        request.indices(query.getIndex());
         request.source(getSourceBuilder(param, query));
         return esService.elasticSend(request, getTypeMapper(param, query));
     }

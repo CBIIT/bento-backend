@@ -26,11 +26,16 @@
     dest: "{{ container_build_path }}/dist/inject.template.js"
     mode: 0755
 
+- name: copy docker file to build path
+  copy:
+    remote_src: yes
+    src: '{{ dockerfile_path }}'
+    dest: '{{ container_build_path }}/Dockerfile'
+    
 - name: build {{ project_name }}-{{container_name}} image
   docker_image:
     build:
       path: "{{ container_build_path }}"
-      dockerfile: "{{ dockerfile_path }}"
       pull: yes
       nocache: yes
     name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"

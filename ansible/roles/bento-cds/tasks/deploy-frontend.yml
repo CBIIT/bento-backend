@@ -4,3 +4,10 @@
   include_role:
     name: common
     tasks_from: ecr-login
+
+- name: deploy ecs
+  include_role:
+    name: common
+    tasks_from: ecs
+  vars:
+

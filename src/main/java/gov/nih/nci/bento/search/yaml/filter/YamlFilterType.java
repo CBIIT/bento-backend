@@ -1,9 +1,10 @@
-package gov.nih.nci.bento.search.query.yaml.filter;
+package gov.nih.nci.bento.search.yaml.filter;
 
 import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Getter
@@ -13,6 +14,8 @@ public class YamlFilterType {
     private String selectedField;
     private String subAggSelectedField;
     private boolean filter;
+    private Map<String, String> alternativeSort;
+
     // Global Query Sets
     private List<YamlGlobalFilterType.GlobalQuerySet> query;
     // Desired type search query; boolean, integer

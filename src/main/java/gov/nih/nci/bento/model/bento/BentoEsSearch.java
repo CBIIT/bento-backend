@@ -8,11 +8,12 @@ import gov.nih.nci.bento.model.bento.query.BentoQuery;
 import gov.nih.nci.bento.model.bento.query.BentoQueryImpl;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.query.filter.*;
-import gov.nih.nci.bento.search.query.yaml.*;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlQuery;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlFilterType;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlGlobalFilterType;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlHighlight;
+import gov.nih.nci.bento.search.yaml.GroupTypeQuery;
+import gov.nih.nci.bento.search.yaml.SingleTypeQuery;
+import gov.nih.nci.bento.search.yaml.filter.YamlQuery;
+import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
+import gov.nih.nci.bento.search.yaml.filter.YamlGlobalFilterType;
+import gov.nih.nci.bento.search.yaml.filter.YamlHighlight;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
@@ -298,8 +299,7 @@ public final class BentoEsSearch implements DataFetcher {
                 return new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
-                        // TODO
-//                    .customOrderBy(getIntCustomOrderBy(param))
+                        .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();
             case YAML_QUERY.FILTER.NO_OF_DOCUMENTS:
@@ -334,6 +334,20 @@ public final class BentoEsSearch implements DataFetcher {
         }
     }
 
+    private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
+        String orderKey = param.getTableParam().getOrderBy();
+        if (query.getFilterType().getAlternativeSort() == null) return orderKey;
+        Map<String, String> alternativeSortMap = query.getFilterType().getAlternativeSort();
+        return alternativeSortMap.getOrDefault(orderKey, "");
+    }
+
+    private String getIntCustomOrderBy(QueryParam param) {
+        String orderKey = param.getTableParam().getOrderBy();
+        Map<String, String> customKeyMap = Map.of(
+                BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.SUBJECT_ID_NUM,
+                BENTO_FIELDS.SAMPLE_ID, BENTO_FIELDS.SAMPLE_ID_NUM);
+        return customKeyMap.getOrDefault(orderKey, "");
+    }
     private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {
         TableParam tableParam = param.getTableParam();
         // Store Conditional Query
@@ -496,13 +510,7 @@ public final class BentoEsSearch implements DataFetcher {
 //        return getFileSearch(param);
 //    }
 
-    private String getIntCustomOrderBy(QueryParam param) {
-        String orderKey = param.getTableParam().getOrderBy();
-        Map<String, String> customKeyMap = Map.of(
-                BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.SUBJECT_ID_NUM,
-                BENTO_FIELDS.SAMPLE_ID, BENTO_FIELDS.SAMPLE_ID_NUM);
-        return customKeyMap.getOrDefault(orderKey, "");
-    }
+
 
     private List<Map<String, Object>> getFileSearch(QueryParam param) throws IOException {
         SearchRequest request = new SearchRequest();

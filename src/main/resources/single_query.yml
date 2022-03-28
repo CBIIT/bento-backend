@@ -12,6 +12,9 @@ query:
     filterType:
       type: table
       defaultSortField: subject_id_num
+      # Declare alternative sort: key, value
+      alternativeSort:
+        subject_id: subject_id_num
     resultType: default
   - name: sampleOverview
     index:
@@ -19,6 +22,10 @@ query:
     filterType:
       type: table
       defaultSortField: sample_id_num
+      # Declare alternative sort: key, value
+      alternativeSort:
+        sample_id: sample_id_num
+        subject_id: subject_id_num
     resultType: default
   - name: fileOverview
     index:
@@ -47,5 +54,4 @@ query:
       - subjects
     filterType:
       type: default
-#      size: 10000
     resultType: default

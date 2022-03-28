@@ -4,11 +4,12 @@ import gov.nih.nci.bento.classes.*;
 import gov.nih.nci.bento.constants.Const;
 import static gov.nih.nci.bento.constants.Const.YAML_QUERY;
 import gov.nih.nci.bento.search.query.filter.*;
-import gov.nih.nci.bento.search.query.yaml.*;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlQuery;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlFilterType;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlGlobalFilterType;
-import gov.nih.nci.bento.search.query.yaml.filter.YamlHighlight;
+import gov.nih.nci.bento.search.yaml.GroupTypeQuery;
+import gov.nih.nci.bento.search.yaml.SingleTypeQuery;
+import gov.nih.nci.bento.search.yaml.filter.YamlQuery;
+import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
+import gov.nih.nci.bento.search.yaml.filter.YamlGlobalFilterType;
+import gov.nih.nci.bento.search.yaml.filter.YamlHighlight;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
@@ -142,8 +143,7 @@ public class BentoAutoConfiguration {
                 return new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
-                        // TODO
-//                    .customOrderBy(getIntCustomOrderBy(param))
+                    .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();
             case YAML_QUERY.FILTER.NO_OF_DOCUMENTS:
@@ -178,6 +178,12 @@ public class BentoAutoConfiguration {
         }
     }
 
+    private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
+        String orderKey = param.getTableParam().getOrderBy();
+        if (query.getFilterType().getAlternativeSort() == null) return orderKey;
+        Map<String, String> alternativeSortMap = query.getFilterType().getAlternativeSort();
+        return alternativeSortMap.getOrDefault(orderKey, "");
+    }
 
     private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {
         TableParam tableParam = param.getTableParam();

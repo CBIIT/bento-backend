@@ -1,6 +1,6 @@
-package gov.nih.nci.bento.search.query.yaml;
+package gov.nih.nci.bento.search.yaml;
 
-import gov.nih.nci.bento.search.query.yaml.filter.YamlQuery;
+import gov.nih.nci.bento.search.yaml.filter.YamlQuery;
 import lombok.Data;
 import lombok.Getter;
 

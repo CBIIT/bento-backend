@@ -1,7 +1,8 @@
 query:
   - name: global_search_subjects
     index: subjects
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
       selectedField: subject_id_num
       query:
@@ -17,7 +18,8 @@ query:
     resultType: global
   - name: global_search_sample
     index: sample
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
       selectedField: subject_id_num
       query:
@@ -30,7 +32,8 @@ query:
     resultType: global
   - name: global_search_program
     index: programs
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
       selectedField: subject_id_num
       query:
@@ -44,7 +47,8 @@ query:
     resultType: global
   - name: global_search_studies
     index: studies
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
       selectedField: study_id_kw
       query:
@@ -57,7 +61,8 @@ query:
     resultType: global
   - name: global_search_file
     index: files
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
       selectedField: file_id_num
       query:
@@ -69,23 +74,11 @@ query:
         - field: file_format_gs
           type: term
     resultType: global
-  - name: global_search_studies
-    index: studies
-    globalFilterType:
-      # Default Sort
-      selectedField: study_id_kw
-      query:
-        - field: study_id
-          type: term
-        - field: study_name
-          type: term
-        - field: study_type
-          type: term
-    resultType: global
   # About Page
   - name: global_search_about
     index: about_page
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
 #      selectedField: file_id_num
       query:
@@ -100,7 +93,8 @@ query:
   # Multiple ES Index Search
   - name: global_search_model
     index: model_properties,model_values,model_nodes
-    globalFilterType:
+    filterType:
+      type: global
       # Default Sort
 #      selectedField: file_id_num
       query:
@@ -121,4 +115,4 @@ query:
     highlight:
       field: property_name,property_description,property_type,property_required,value,node_name
       fragmentSize: 1
-    resultType: global_highlights
+    resultType: global_multiples

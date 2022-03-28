@@ -698,7 +698,15 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SUBJECTS)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes())).build();
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.SUBJECT_ID,
+                        Const.BENTO_FIELDS.PROGRAM,
+                        Const.BENTO_FIELDS.STUDY_ACRONYM,
+                        Const.BENTO_FIELDS.DIAGNOSES,
+                        Const.BENTO_FIELDS.AGE
+                ))).build();
     }
 
     @Override
@@ -719,7 +727,15 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SAMPLES)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes())).build();
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.SUBJECT_ID,
+                        Const.BENTO_FIELDS.SAMPLE_ID,
+                        Const.BENTO_FIELDS.DIAGNOSES,
+                        Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE,
+                        Const.BENTO_FIELDS.TISSUE_TYPE
+                ))).build();
     }
 
     @Override
@@ -740,7 +756,12 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.PROGRAMS)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes())).build();
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_CODE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.PROGRAM_NAME
+                ))).build();
     }
 
     @Override
@@ -760,7 +781,14 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.STUDIES)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes())).build();
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.STUDY_ID,
+                        Const.BENTO_FIELDS.STUDY_TYPE,
+                        Const.BENTO_FIELDS.STUDY_CODE,
+                        Const.BENTO_FIELDS.STUDY_NAME
+                ))).build();
     }
 
     @Override
@@ -780,7 +808,15 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.FILES)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes())).build();
+                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.PROGRAM_ID,
+                        Const.BENTO_FIELDS.SUBJECT_ID,
+                        Const.BENTO_FIELDS.SAMPLE_ID,
+                        Const.BENTO_FIELDS.FILE_NAME,
+                        Const.BENTO_FIELDS.FILE_FORMAT,
+                        Const.BENTO_FIELDS.FILE_ID
+                ))).build();
     }
 
     @Override
@@ -819,7 +855,15 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(new String[]{Const.BENTO_INDEX.MODEL_PROPERTIES, Const.BENTO_INDEX.MODEL_VALUES, Const.BENTO_INDEX.MODEL_NODES})
                         .source(builder))
-                .typeMapper(typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes())).build();
+                .typeMapper(typeMapper.getMapWithHighlightedFields(Set.of(
+                        Const.BENTO_FIELDS.TYPE,
+                        Const.BENTO_FIELDS.NODE_NAME,
+                        Const.BENTO_FIELDS.PROPERTY_NAME,
+                        Const.BENTO_FIELDS.PROPERTY_DESCRIPTION,
+                        Const.BENTO_FIELDS.PROPERTY_TYPE,
+                        Const.BENTO_FIELDS.PROPERTY_REQUIRED,
+                        Const.BENTO_FIELDS.VALUE
+                ))).build();
     }
 
     @Override

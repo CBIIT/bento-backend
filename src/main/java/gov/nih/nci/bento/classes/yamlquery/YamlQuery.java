@@ -10,7 +10,6 @@ public class YamlQuery {
     private String index;
     private String resultType;
     private YamlFilterType filterType;
-    private YamlGlobalFilterType globalFilterType;
     private HighlightQuery highlight;
 
 }

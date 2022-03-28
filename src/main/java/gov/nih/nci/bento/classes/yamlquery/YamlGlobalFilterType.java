@@ -8,8 +8,9 @@ import java.util.List;
 @Data
 @Getter
 public class YamlGlobalFilterType {
-    private List<GlobalQuerySet> query;
+    private String type;
     private String selectedField;
+    private List<GlobalQuerySet> query;
     private List<GlobalQuerySet> optionalQuery;
 
     @Data

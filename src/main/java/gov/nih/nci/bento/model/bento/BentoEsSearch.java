@@ -1,10 +1,8 @@
 package gov.nih.nci.bento.model.bento;
 
 import gov.nih.nci.bento.classes.*;
-import gov.nih.nci.bento.classes.yamlquery.GroupQuery;
-import gov.nih.nci.bento.classes.yamlquery.SingleQuery;
-import gov.nih.nci.bento.classes.yamlquery.YamlFilterType;
-import gov.nih.nci.bento.classes.yamlquery.YamlQuery;
+import gov.nih.nci.bento.classes.yamlquery.*;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.constants.Const.ES_UNITS;
@@ -15,9 +13,13 @@ import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
+import gov.nih.nci.bento.utility.StrUtil;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.core.io.ClassPathResource;
 import org.yaml.snakeyaml.Yaml;
@@ -32,6 +34,7 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 @RequiredArgsConstructor
 public final class BentoEsSearch implements DataFetcher {
 
+    private static final Logger logger = LogManager.getLogger(BentoEsSearch.class);
     private final EsSearch esService;
     private final TypeMapperImpl typeMapper;
     private BentoQuery bentoQuery;
@@ -45,27 +48,27 @@ public final class BentoEsSearch implements DataFetcher {
     public RuntimeWiring buildRuntimeWiring() throws IOException {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
-                        .dataFetcher("globalSearchProgram", env ->
-                                globalSearchProgram(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("globalSearchStudy", env ->
-                                globalSearchStudy(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("globalSearchFile", env ->
-                                globalSearchFile(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("globalSearchModel", env ->
-                                globalSearchModel(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("globalSearchAbout", env ->
-                                globalSearchAbout(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("globalSearchSample", env ->
-                                globalSearchSample(esService.CreateQueryParam(env))
-                        )
-                        .dataFetcher("globalSearchSubject", env ->
-                                globalSearchSubject(esService.CreateQueryParam(env))
-                        )
+//                        .dataFetcher("globalSearchProgram", env ->
+//                                globalSearchProgram(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("globalSearchStudy", env ->
+//                                globalSearchStudy(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("globalSearchFile", env ->
+//                                globalSearchFile(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("globalSearchModel", env ->
+//                                globalSearchModel(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("globalSearchAbout", env ->
+//                                globalSearchAbout(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("globalSearchSample", env ->
+//                                globalSearchSample(esService.CreateQueryParam(env))
+//                        )
+//                        .dataFetcher("globalSearchSubject", env ->
+//                                globalSearchSubject(esService.CreateQueryParam(env))
+//                        )
                         .dataFetcher("globalSearch", env ->
                                 globalSearch(esService.CreateQueryParam(env))
                         )
@@ -258,8 +261,8 @@ public final class BentoEsSearch implements DataFetcher {
             return new AggregationFilter(
                     FilterParam.builder()
                             .args(param.getArgs())
-                            .selectedField(filterType.getSelectedField())
                             .isExcludeFilter(filterType.isFilter())
+                            .selectedField(filterType.getSelectedField())
                             .build())
                     .getSourceFilter();
 
@@ -267,7 +270,8 @@ public final class BentoEsSearch implements DataFetcher {
             return new TableFilter(FilterParam.builder()
                     .args(param.getArgs())
                     .queryParam(param)
-                    .customOrderBy(getIntCustomOrderBy(param))
+                    // TODO
+//                    .customOrderBy(getIntCustomOrderBy(param))
                     .defaultSortField(filterType.getSelectedField())
                     .build()).getSourceFilter();
         } else if (filterType.getType().equals("number_of_docs")) {
@@ -295,29 +299,126 @@ public final class BentoEsSearch implements DataFetcher {
         } else if (filterType.getType().equals("default")) {
             return new DefaultFilter(FilterParam.builder()
                     .args(param.getArgs()).build()).getSourceFilter();
+        } else if (filterType.getType().equals("global")) {
+
+            return createGlobalQuery(param,query);
         }
         throw new IllegalArgumentException();
     }
 
+    private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {
+        TableParam tableParam = param.getTableParam();
+        // Store Conditional Query
+        return new SearchSourceBuilder()
+                .size(tableParam.getPageSize())
+                .from(tableParam.getOffSet())
+// TODO
+//                    .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
+                .query(
+                        addConditionalQuery(
+                                createGlobalQuerySets(param, query),
+                                createGlobalConditionalQueries(param, query))
+                );
+    }
+
+    // Add Conditional Query
+    private BoolQueryBuilder addConditionalQuery(BoolQueryBuilder builder, List<QueryBuilder> builders) {
+        builders.forEach(q->{
+            if (q.getName().equals("match")) {
+                MatchQueryBuilder matchQuery = getQuery(q);
+                if (!matchQuery.value().equals("")) builder.should(q);
+            } else if (q.getName().equals("term")) {
+                TermQueryBuilder termQuery = getQuery(q);
+                if (!termQuery.value().equals("")) builder.should(q);
+            }
+        });
+        return builder;
+    }
+    @SuppressWarnings("unchecked")
+    private <T> T getQuery(QueryBuilder q) {
+        String queryType = q.getName();
+        return (T) q.queryName(queryType);
+    }
+
+    private BoolQueryBuilder createGlobalQuerySets(QueryParam param, YamlQuery query) {
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilterType().getQuery();
+        // Add Should Query
+        globalQuerySets.forEach(globalQuery -> {
+            if (globalQuery.getType().equals("term")) {
+                boolQueryBuilder.should(QueryBuilders.termQuery(globalQuery.getField(), param.getSearchText()));
+            } else if (globalQuery.getType().equals("wildcard")) {
+                boolQueryBuilder.should(QueryBuilders.wildcardQuery(globalQuery.getField(), "*" + param.getSearchText()+ "*").caseInsensitive(true));
+            } else if (globalQuery.getType().equals("match")) {
+                boolQueryBuilder.should(QueryBuilders.matchQuery(globalQuery.getField(), param.getSearchText()));
+            } else {
+                throw new IllegalArgumentException();
+            }
+        });
+        return boolQueryBuilder;
+    }
+
+    private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
+        List<QueryBuilder> conditionalList = new ArrayList<>();
+        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery();
+        optionalQuerySets.forEach(option-> {
+            String filterString = "";
+            if (option.getOption().equals("boolean")) {
+                filterString = StrUtil.getBoolText(param.getSearchText());
+            } else if (option.getOption().equals("integer")) {
+                filterString = StrUtil.getIntText(param.getSearchText());
+            } else {
+                throw new IllegalArgumentException();
+            }
+
+            if (option.getType().equals("match")) {
+                conditionalList.add(QueryBuilders.matchQuery(option.getField(), filterString));
+            } else if (option.getType().equals("term")) {
+                conditionalList.add(QueryBuilders.termQuery(option.getField(), filterString));
+            } else {
+                throw new IllegalArgumentException();
+            }
+        });
+        return conditionalList;
+    }
+
+
+
     private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
         // Set Result Type
-        if (query.getResultType().equals("default")) {
-            return typeMapper.getDefault(param.getReturnTypes());
-        } else if (query.getResultType().equals("aggregation")) {
-            return typeMapper.getAggregate();
-        } else if (query.getResultType().equals("int_total_aggregation")) {
-            return typeMapper.getAggregateTotalCnt();
-        }  else if (query.getResultType().equals("range")) {
-            return typeMapper.getRange();
-        }  else if (query.getResultType().equals("arm_program")) {
-            return typeMapper.getArmProgram();
-        }  else if (query.getResultType().equals("int_total_count")) {
-            return typeMapper.getIntTotal();
-        }  else if (query.getResultType().equals("str_list")) {
-            return typeMapper.getStrList(query.getFilterType().getSelectedField());
+
+        switch (query.getResultType()) {
+            case "default":
+                return typeMapper.getDefault(param.getReturnTypes());
+            case "aggregation":
+                return typeMapper.getAggregate();
+            case "int_total_aggregation":
+                return typeMapper.getAggregateTotalCnt();
+            case "range":
+                return typeMapper.getRange();
+            case "arm_program":
+                return typeMapper.getArmProgram();
+            case "int_total_count":
+                return typeMapper.getIntTotal();
+            case "str_list":
+                return typeMapper.getStrList(query.getFilterType().getSelectedField());
+            // TODO
+            case "global_about":
+                return typeMapper.getHighLightFragments(Const.BENTO_FIELDS.CONTENT_PARAGRAPH,
+                        (source, text) -> Map.of(
+                                Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.ABOUT,
+                                Const.BENTO_FIELDS.PAGE, source.get(Const.BENTO_FIELDS.PAGE),
+                                Const.BENTO_FIELDS.TITLE,source.get(Const.BENTO_FIELDS.TITLE),
+                                Const.BENTO_FIELDS.TEXT, text));
+            case "global":
+                return typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes());
+            case "global_multiples":
+                return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
+            default:
+                throw new IllegalArgumentException();
         }
-        throw new IllegalArgumentException();
     }
+
     private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();

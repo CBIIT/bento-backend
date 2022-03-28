@@ -2,6 +2,6 @@
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
 frontend_container_name: "frontend"
 frontend_image_version: "{{ frontend_version }}"
-frontend_container_build_path: "{{workspace}}/{{project_name}}-frontend"
+frontend_container_build_path: "{{workspace}}/bento-frontend"
 frontend_dockerfile_path: "{{workspace}}/icdc-devops/docker/dockerfiles/nginx-frontend-dockerfile"
 

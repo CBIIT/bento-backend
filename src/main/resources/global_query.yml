@@ -80,7 +80,7 @@ query:
           type: term
     resultType: global
   # About Page
-  # TODO awlays from 0 and default-size
+  # Always Set offset= 0 and default-size=10000
   - name: globalSearchAbout
     index:
       - about_page
@@ -94,12 +94,11 @@ query:
     highlight:
       fields:
         - content.paragraph
-      # fragmentSize: 1
       preTag: $
       postTag: $
     resultType: global_about
   # Multiple ES Index Search
-  # TODO Always query offset 0, size 10000
+  # Always Set offset= 0 and default-size=10000
   - name: globalSearchModel
     index:
       - model_properties
@@ -108,7 +107,7 @@ query:
     filterType:
       type: global
       # Default Sort
-#      selectedField: file_id_num
+#      selectedField:
       query:
         - field: value.keyword
           type: wildcard

@@ -1,6 +1,7 @@
 query:
   - name: globalSearchSubject
-    index: subjects
+    index:
+      - subjects
     filterType:
       type: global
       # Default Sort
@@ -17,7 +18,8 @@ query:
           option: integer
     resultType: global
   - name: globalSearchSample
-    index: sample
+    index:
+      - sample
     filterType:
       type: global
       # Default Sort
@@ -31,7 +33,8 @@ query:
           type: term
     resultType: global
   - name: globalSearchProgram
-    index: programs
+    index:
+      - programs
     filterType:
       type: global
       # Default Sort
@@ -46,7 +49,8 @@ query:
           caseInSensitive: true
     resultType: global
   - name: globalSearchStudy
-    index: studies
+    index:
+      - studies
     filterType:
       type: global
       # Default Sort
@@ -60,7 +64,8 @@ query:
           type: term
     resultType: global
   - name: globalSearchFile
-    index: files
+    index:
+      - files
     filterType:
       type: global
       # Default Sort
@@ -76,23 +81,8 @@ query:
     resultType: global
   # About Page
   - name: globalSearchAbout
-    index: about_page
-    filterType:
-      type: global
-      # Default Sort
-      selectedField: file_id_num
-      query:
-        - field: file_id_gs
-          type: term
-        - field: file_name
-          type: wildcard
-          caseInSensitive: true
-        - field: file_format_gs
-          type: term
-    resultType: global
-  # About Page
-  - name: globalSearchAbout
-    index: about_page
+    index:
+      - about_page
     filterType:
       type: global
       # Default Sort
@@ -115,7 +105,10 @@ query:
   # Multiple ES Index Search
   # TODO Always query offset 0, size 10000
   - name: globalSearchModel
-    index: model_properties,model_values,model_nodes
+    index:
+      - model_properties
+      - model_values
+      - model_nodes
     filterType:
       type: global
       # Default Sort

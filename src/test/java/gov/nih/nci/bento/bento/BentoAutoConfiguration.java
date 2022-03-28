@@ -50,33 +50,33 @@ public class BentoAutoConfiguration {
         assertThat(singleQueryMap.size(), equalTo(singleQuery.getQuery().size()));
     }
 
-//    @Test
-//    public void groupQueryYaml_Test() throws IOException {
-//        Yaml yaml = new Yaml(new Constructor(GroupQuery.class));
-//        GroupQuery groupQuery = yaml.load(new ClassPathResource("group_query.yml").getInputStream());
-//        Map<String, DataFetcher> groupQueryMap = new HashMap<>();
+    @Test
+    public void groupQueryYaml_Test() throws IOException {
+        Yaml yaml = new Yaml(new Constructor(GroupQuery.class));
+        GroupQuery groupQuery = yaml.load(new ClassPathResource("group_query.yml").getInputStream());
+        Map<String, DataFetcher> groupQueryMap = new HashMap<>();
+
+        groupQuery.getGroups().forEach(group->{
+            String queryName = group.getName();
+            groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
+
+            // Set Rest API Request
+//            group.getQuery().forEach(q->{
 //
-//        groupQuery.getGroups().forEach(group->{
-//            String queryName = group.getName();
-//            groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
 //
-//            // Set Rest API Request
-////            group.getQuery().forEach(q->{
-////
-////
-////                SearchRequest request = new SearchRequest();
-////                request.indices(q.getIndex());
-////                request.source(getSourceBuilder(param, query));
-////                Object obj = esService.elasticSend(request, getTypeMapper(param, query));
-////
-////            });
-//        });
-//        assertThat(groupQueryMap.size(), greaterThan(0));
+//                SearchRequest request = new SearchRequest();
+//                request.indices(q.getIndex());
+//                request.source(getSourceBuilder(param, query));
+//                Object obj = esService.elasticSend(request, getTypeMapper(param, query));
 //
-////        Integer sum = groupQuery.getGroups().stream()
-////                .mapToInt(i->i.getQuery().size())
-////                .sum();
-//    }
+//            });
+        });
+        assertThat(groupQueryMap.size(), greaterThan(0));
+
+//        Integer sum = groupQuery.getGroups().stream()
+//                .mapToInt(i->i.getQuery().size())
+//                .sum();
+    }
 
     @Test
     // TODO index exist test
@@ -102,7 +102,7 @@ public class BentoAutoConfiguration {
             MultipleRequests multipleRequest = MultipleRequests.builder()
                     .name(q.getName())
                     .request(new SearchRequest()
-                            .indices(q.getIndex())
+//                            .indices(q.getIndex())
                             .source(getSourceBuilder(param, q)))
                     .typeMapper(getTypeMapper(param, q)).build();
             requests.add(multipleRequest);
@@ -115,7 +115,7 @@ public class BentoAutoConfiguration {
     private Object getYamlQuery(QueryParam param, YamlQuery query) throws IOException {
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
-        request.indices(query.getIndex());
+//        request.indices(query.getIndex());
         request.source(getSourceBuilder(param, query));
         return esService.elasticSend(request, getTypeMapper(param, query));
     }

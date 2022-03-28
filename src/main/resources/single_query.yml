@@ -7,38 +7,44 @@
 
 query:
   - name: subjectOverview
-    index: subjects
+    index:
+      - subjects
     filterType:
       type: table
       selectedField: subject_id_num
     resultType: default
   - name: sampleOverview
-    index: samples
+    index:
+      - samples
     filterType:
       type: table
       selectedField: sample_id_num
     resultType: default
   - name: fileOverview
-    index: files
+    index:
+      - files
     filterType:
       type: table
       selectedField: file_name
     resultType: default
   - name: fileIDsFromList
-    index: files
+    index:
+      - files
     filterType:
       type: default
       selectedField: file_id
     # List<String>
     resultType: str_list
   - name: filesInList
-    index: files
+    index:
+      - files
     filterType:
       type: table
       selectedField: file_name
     resultType: default
   - name: findSubjectIdsInList
-    index: subjects
+    index:
+      - subjects
     filterType:
       type: default
 #      size: 10000

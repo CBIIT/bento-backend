@@ -14,16 +14,16 @@
           options:
             enable-ecs-log-metadata: "true"
       - name: newrelic-firelens
-          essential: true
-          image: "533243300146.dkr.ecr.us-east-1.amazonaws.com/newrelic/logging-firelens-fluentbit"
-          memory: 100
-          secretOptions:
-          - name: "apiKey"
-            valueFrom: "arn:aws:secretsmanager:{{region}}:{{account}}:secret:{{newrelic_api_secret}}"
-          firelensConfiguration:
-            type: fluentbit
-            options:
-              enable-ecs-log-metadata: "true"
+        essential: true
+        image: "533243300146.dkr.ecr.us-east-1.amazonaws.com/newrelic/logging-firelens-fluentbit"
+        memory: 100
+        secretOptions:
+        - name: "apiKey"
+          valueFrom: "arn:aws:secretsmanager:{{region}}:{{account}}:secret:{{newrelic_api_secret}}"
+        firelensConfiguration:
+          type: fluentbit
+          options:
+            enable-ecs-log-metadata: "true"
       - name: "{{container_name}}"
         essential: true
         image: "{{ container_image }}"

@@ -12,6 +12,7 @@ import graphql.schema.DataFetcher;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,32 +50,38 @@ public class BentoAutoConfiguration {
         assertThat(singleQueryMap.size(), equalTo(singleQuery.getQuery().size()));
     }
 
+//    @Test
+//    public void groupQueryYaml_Test() throws IOException {
+//        Yaml yaml = new Yaml(new Constructor(GroupQuery.class));
+//        GroupQuery groupQuery = yaml.load(new ClassPathResource("group_query.yml").getInputStream());
+//        Map<String, DataFetcher> groupQueryMap = new HashMap<>();
+//
+//        groupQuery.getGroups().forEach(group->{
+//            String queryName = group.getName();
+//            groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
+//
+//            // Set Rest API Request
+////            group.getQuery().forEach(q->{
+////
+////
+////                SearchRequest request = new SearchRequest();
+////                request.indices(q.getIndex());
+////                request.source(getSourceBuilder(param, query));
+////                Object obj = esService.elasticSend(request, getTypeMapper(param, query));
+////
+////            });
+//        });
+//        assertThat(groupQueryMap.size(), greaterThan(0));
+//
+////        Integer sum = groupQuery.getGroups().stream()
+////                .mapToInt(i->i.getQuery().size())
+////                .sum();
+//    }
+
     @Test
-    public void groupQueryYaml_Test() throws IOException {
-        Yaml yaml = new Yaml(new Constructor(GroupQuery.class));
-        GroupQuery groupQuery = yaml.load(new ClassPathResource("group_query.yml").getInputStream());
-        Map<String, DataFetcher> groupQueryMap = new HashMap<>();
+    // TODO index exist test
+    public void testIndexExists() {
 
-        groupQuery.getGroups().forEach(group->{
-            String queryName = group.getName();
-            groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
-
-            // Set Rest API Request
-//            group.getQuery().forEach(q->{
-//
-//
-//                SearchRequest request = new SearchRequest();
-//                request.indices(q.getIndex());
-//                request.source(getSourceBuilder(param, query));
-//                Object obj = esService.elasticSend(request, getTypeMapper(param, query));
-//
-//            });
-        });
-        assertThat(groupQueryMap.size(), greaterThan(0));
-
-//        Integer sum = groupQuery.getGroups().stream()
-//                .mapToInt(i->i.getQuery().size())
-//                .sum();
     }
 
     @Test
@@ -169,7 +176,7 @@ public class BentoAutoConfiguration {
     private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {
         TableParam tableParam = param.getTableParam();
         // Store Conditional Query
-        return new SearchSourceBuilder()
+        SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
                 .from(tableParam.getOffSet())
 // TODO
@@ -179,6 +186,18 @@ public class BentoAutoConfiguration {
                                 createGlobalQuerySets(param, query),
                                 createGlobalConditionalQueries(param, query))
                 );
+
+        if (query.getHighlight() != null) {
+            HighlightBuilder highlightBuilder = new HighlightBuilder();
+            HighlightQuery highlightQuery = query.getHighlight();
+            // Set Multiple Highlight Fields
+            highlightQuery.getFields().forEach((f)->highlightBuilder.field(f));
+            highlightBuilder.preTags(highlightQuery.getPreTag() == null ? "" : highlightQuery.getPreTag());
+            highlightBuilder.postTags(highlightQuery.getPostTag() == null ? "" : highlightQuery.getPreTag());
+            if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(highlightQuery.getFragmentSize());
+            builder.highlighter(highlightBuilder);
+        }
+        return builder;
     }
 
     private BoolQueryBuilder createGlobalQuerySets(QueryParam param, YamlQuery query) {

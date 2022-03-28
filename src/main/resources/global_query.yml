@@ -80,17 +80,40 @@ query:
     filterType:
       type: global
       # Default Sort
+      selectedField: file_id_num
+      query:
+        - field: file_id_gs
+          type: term
+        - field: file_name
+          type: wildcard
+          caseInSensitive: true
+        - field: file_format_gs
+          type: term
+    resultType: global
+  # About Page
+  - name: globalSearchAbout
+    index: about_page
+    filterType:
+      type: global
+      # Default Sort
 #      selectedField: file_id_num
       query:
         - field: content.paragraph
           type: match
     highlight:
-      field: content.paragraph
+      fields:
+        - content.paragraph
+        - property_description
+        - property_type
+        - property_required
+        - value
+        - node_name
       # fragmentSize: 1
       preTag: $
       postTag: $
     resultType: global_about
   # Multiple ES Index Search
+  # TODO Always query offset 0, size 10000
   - name: globalSearchModel
     index: model_properties,model_values,model_nodes
     filterType:
@@ -113,6 +136,12 @@ query:
           type: match
           option: boolean
     highlight:
-      field: property_name,property_description,property_type,property_required,value,node_name
+      fields:
+        - property_name
+        - property_description
+        - property_type
+        - property_required
+        - value
+        - node_name
       fragmentSize: 1
     resultType: global_multiples

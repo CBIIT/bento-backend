@@ -1,15 +1,18 @@
 package gov.nih.nci.bento.model.bento;
 
 import gov.nih.nci.bento.classes.*;
-import gov.nih.nci.bento.classes.yamlquery.*;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
-import gov.nih.nci.bento.constants.Const.ES_UNITS;
 import gov.nih.nci.bento.model.bento.query.BentoQuery;
 import gov.nih.nci.bento.model.bento.query.BentoQueryImpl;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.query.filter.*;
+import gov.nih.nci.bento.search.query.yaml.*;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlQuery;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlFilterType;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlGlobalFilterType;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlHighlight;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
@@ -22,6 +25,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.core.io.ClassPathResource;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -215,29 +219,29 @@ public final class BentoEsSearch implements DataFetcher {
 //    }
 
     public Map<String, graphql.schema.DataFetcher> createYamlQueries() throws IOException {
-        Yaml yaml = new Yaml(new Constructor(SingleQuery.class));
-        SingleQuery singleQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
+        Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
+        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
         Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
-        singleQuery.getQuery().forEach(q->{
+        singleTypeQuery.getQuery().forEach(q->{
             map.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
         });
 
-        Yaml groupYaml = new Yaml(new Constructor(GroupQuery.class));
-        GroupQuery groupQuery = groupYaml.load(new ClassPathResource("group_query.yml").getInputStream());
-        groupQuery.getGroups().forEach(group->{
+        Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
+        GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource("group_query.yml").getInputStream());
+        groupTypeQuery.getGroups().forEach(group->{
             String queryName = group.getName();
             map.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
         });
 
-        Yaml globalYaml = new Yaml(new Constructor(SingleQuery.class));
-        SingleQuery globalQuery = globalYaml.load(new ClassPathResource("global_query.yml").getInputStream());
+        Yaml globalYaml = new Yaml(new Constructor(SingleTypeQuery.class));
+        SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource("global_query.yml").getInputStream());
         globalQuery.getQuery().forEach(q->{
             map.put(q.getName(), env -> getYamlGlobalQuery(esService.CreateQueryParam(env), q));
         });
         return map;
     }
 
-    private Object createGroupQuery(GroupQuery.Group group,QueryParam param) throws IOException {
+    private Object createGroupQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
         List<MultipleRequests> requests = new ArrayList<>();
         group.getQuery().forEach(q->{
             MultipleRequests multipleRequest = MultipleRequests.builder()
@@ -334,28 +338,31 @@ public final class BentoEsSearch implements DataFetcher {
         TableParam tableParam = param.getTableParam();
         // Store Conditional Query
         SearchSourceBuilder builder = new SearchSourceBuilder()
-                // TODO
                 .size(tableParam.getPageSize())
                 .from(tableParam.getOffSet())
-// TODO
-//                    .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(
                         addConditionalQuery(
                                 createGlobalQuerySets(param, query),
                                 createGlobalConditionalQueries(param, query))
                 );
+        // Set Sort
+        if (query.getFilterType().getDefaultSortField() !=null) builder.sort(query.getFilterType().getDefaultSortField(), SortOrder.DESC);
+        // Set Highlight Query
+        setGlobalHighlightQuery(query, builder);
+        return builder;
+    }
 
+    private void setGlobalHighlightQuery(YamlQuery query, SearchSourceBuilder builder) {
         if (query.getHighlight() != null) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
-            HighlightQuery highlightQuery = query.getHighlight();
+            YamlHighlight yamlHighlight = query.getHighlight();
             // Set Multiple Highlight Fields
-            highlightQuery.getFields().forEach((f)->highlightBuilder.field(f));
-            highlightBuilder.preTags(highlightQuery.getPreTag() == null ? "" : highlightQuery.getPreTag());
-            highlightBuilder.postTags(highlightQuery.getPostTag() == null ? "" : highlightQuery.getPostTag());
-            if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(highlightQuery.getFragmentSize());
+            yamlHighlight.getFields().forEach((f)->highlightBuilder.field(f));
+            highlightBuilder.preTags(yamlHighlight.getPreTag() == null ? "" : yamlHighlight.getPreTag());
+            highlightBuilder.postTags(yamlHighlight.getPostTag() == null ? "" : yamlHighlight.getPostTag());
+            if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(yamlHighlight.getFragmentSize());
             builder.highlighter(highlightBuilder);
         }
-        return builder;
     }
 
     // Add Conditional Query
@@ -456,20 +463,20 @@ public final class BentoEsSearch implements DataFetcher {
         }
     }
 
-    private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {
-        // Set Rest API Request
-        SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.SUBJECTS);
-        request.source(
-                new TableFilter(FilterParam.builder()
-                        .args(param.getArgs())
-                        .queryParam(param)
-                        .customOrderBy(getIntCustomOrderBy(param))
-                        .defaultSortField(BENTO_FIELDS.SUBJECT_ID_NUM)
-                        .build()).getSourceFilter()
-        );
-        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
-    }
+//    private List<Map<String, Object>> subjectOverview(QueryParam param) throws IOException {
+//        // Set Rest API Request
+//        SearchRequest request = new SearchRequest();
+//        request.indices(BENTO_INDEX.SUBJECTS);
+//        request.source(
+//                new TableFilter(FilterParam.builder()
+//                        .args(param.getArgs())
+//                        .queryParam(param)
+//                        .customOrderBy(getIntCustomOrderBy(param))
+//                        .defaultSortField(BENTO_FIELDS.SUBJECT_ID_NUM)
+//                        .build()).getSourceFilter()
+//        );
+//        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
+//    }
 
 //    private List<Map<String, Object>> sampleOverview(QueryParam param) throws IOException {
 //        // Set Rest API Request
@@ -584,78 +591,78 @@ public final class BentoEsSearch implements DataFetcher {
         return result;
     }
 
-    private List<Map<String, Object>> findSubjectIdsInList(QueryParam param) throws IOException {
-        // Set Filter
-        SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
-                        .args(param.getArgs()).build()).getSourceFilter();
-        builder.size(ES_UNITS.MAX_SIZE);
-        // Set Rest API Request
-        SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.SUBJECTS);
-        request.source(builder);
-        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
-    }
+//    private List<Map<String, Object>> findSubjectIdsInList(QueryParam param) throws IOException {
+//        // Set Filter
+//        SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
+//                        .args(param.getArgs()).build()).getSourceFilter();
+//        builder.size(ES_UNITS.MAX_SIZE);
+//        // Set Rest API Request
+//        SearchRequest request = new SearchRequest();
+//        request.indices(BENTO_INDEX.SUBJECTS);
+//        request.source(builder);
+//        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
+//    }
+//
+//    private List<Map<String, Object>> filesInList(QueryParam param) throws IOException {
+//        // Set Rest API Request
+//        return getFileSearch(param);
+//    }
 
-    private List<Map<String, Object>> filesInList(QueryParam param) throws IOException {
-        // Set Rest API Request
-        return getFileSearch(param);
-    }
+//    private List<String> fileIDsFromList(QueryParam param) throws IOException {
+//        SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
+//                .args(param.getArgs()).build()).getSourceFilter();
+//        builder.size(ES_UNITS.MAX_SIZE);
+//        // Set Rest API Request
+//        SearchRequest request = new SearchRequest();
+//        request.indices(BENTO_INDEX.FILES);
+//        request.source(builder);
+//        return esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
+//    }
 
-    private List<String> fileIDsFromList(QueryParam param) throws IOException {
-        SearchSourceBuilder builder = new DefaultFilter(FilterParam.builder()
-                .args(param.getArgs()).build()).getSourceFilter();
-        builder.size(ES_UNITS.MAX_SIZE);
-        // Set Rest API Request
-        SearchRequest request = new SearchRequest();
-        request.indices(BENTO_INDEX.FILES);
-        request.source(builder);
-        return esService.elasticSend(request, typeMapper.getStrList(BENTO_FIELDS.FILE_ID));
-    }
-
-    private Map<String, Object> multiSearchTest(QueryParam param) throws IOException {
-        Map<String, Object> args = param.getArgs();
-        List<MultipleRequests> requests = List.of(
-                bentoQuery.findNumberOfPrograms(args),
-                bentoQuery.findNumberOfStudies(args),
-                bentoQuery.findNumberOfSubjects(args),
-                bentoQuery.findNumberOfSamples(args),
-                bentoQuery.findNumberOfLabProcedures(args),
-                bentoQuery.findNumberOfFiles(args),
-                bentoQuery.findSubjectCntProgram(args),
-                bentoQuery.findFilterSubjectCntProgram(args),
-                bentoQuery.findSubjectCntStudy(args),
-                bentoQuery.findFilterSubjectCntStudy(args),
-                bentoQuery.findSubjectCntDiagnoses(args),
-                bentoQuery.findFilterSubjectCntDiagnoses(args),
-                bentoQuery.findSubjectCntRecurrence(args),
-                bentoQuery.findFilterSubjectCntRecurrence(args),
-                bentoQuery.findSubjectCntTumorSize(args),
-                bentoQuery.findFilterSubjectCntTumorSize(args),
-                bentoQuery.findSubjectCntTumorGrade(args),
-                bentoQuery.findFilterSubjectCntTumorGrade(args),
-                bentoQuery.findSubjectCntErGrade(args),
-                bentoQuery.findFilterSubjectCntErGrade(args),
-                bentoQuery.findSubjectCntPrStatus(args),
-                bentoQuery.findFilterSubjectCntPrStatus(args),
-                bentoQuery.findSubjectCntChemo(args),
-                bentoQuery.findFilterSubjectCntChemo(args),
-                bentoQuery.findSubjectCntEndoTherapy(args),
-                bentoQuery.findFilterSubjectCntEndoTherapy(args),
-                bentoQuery.findSubjectCntMenoTherapy(args),
-                bentoQuery.findFilterSubjectCntMenoTherapy(args),
-                bentoQuery.findSubjectCntTissueType(args),
-                bentoQuery.findFilterSubjectCntTissueType(args),
-                bentoQuery.findSubjectCntTissueComposition(args),
-                bentoQuery.findFilterSubjectCntTissueComposition(args),
-                bentoQuery.findSubjectCntFileAssociation(args),
-                bentoQuery.findFilterSubjectCntFileAssociation(args),
-                bentoQuery.findSubjectCntFileType(args),
-                bentoQuery.findFilterSubjectCntFileType(args),
-                bentoQuery.findNumberOfArms(args),
-                bentoQuery.findSubjectCntLabProcedures(args),
-                bentoQuery.findFilterSubjectCntLabProcedures(args),
-                bentoQuery.findFilterSubjectCntByAge(args)
-        );
-        return esService.elasticMultiSend(requests);
-    }
+//    private Map<String, Object> multiSearchTest(QueryParam param) throws IOException {
+//        Map<String, Object> args = param.getArgs();
+//        List<MultipleRequests> requests = List.of(
+//                bentoQuery.findNumberOfPrograms(args),
+//                bentoQuery.findNumberOfStudies(args),
+//                bentoQuery.findNumberOfSubjects(args),
+//                bentoQuery.findNumberOfSamples(args),
+//                bentoQuery.findNumberOfLabProcedures(args),
+//                bentoQuery.findNumberOfFiles(args),
+//                bentoQuery.findSubjectCntProgram(args),
+//                bentoQuery.findFilterSubjectCntProgram(args),
+//                bentoQuery.findSubjectCntStudy(args),
+//                bentoQuery.findFilterSubjectCntStudy(args),
+//                bentoQuery.findSubjectCntDiagnoses(args),
+//                bentoQuery.findFilterSubjectCntDiagnoses(args),
+//                bentoQuery.findSubjectCntRecurrence(args),
+//                bentoQuery.findFilterSubjectCntRecurrence(args),
+//                bentoQuery.findSubjectCntTumorSize(args),
+//                bentoQuery.findFilterSubjectCntTumorSize(args),
+//                bentoQuery.findSubjectCntTumorGrade(args),
+//                bentoQuery.findFilterSubjectCntTumorGrade(args),
+//                bentoQuery.findSubjectCntErGrade(args),
+//                bentoQuery.findFilterSubjectCntErGrade(args),
+//                bentoQuery.findSubjectCntPrStatus(args),
+//                bentoQuery.findFilterSubjectCntPrStatus(args),
+//                bentoQuery.findSubjectCntChemo(args),
+//                bentoQuery.findFilterSubjectCntChemo(args),
+//                bentoQuery.findSubjectCntEndoTherapy(args),
+//                bentoQuery.findFilterSubjectCntEndoTherapy(args),
+//                bentoQuery.findSubjectCntMenoTherapy(args),
+//                bentoQuery.findFilterSubjectCntMenoTherapy(args),
+//                bentoQuery.findSubjectCntTissueType(args),
+//                bentoQuery.findFilterSubjectCntTissueType(args),
+//                bentoQuery.findSubjectCntTissueComposition(args),
+//                bentoQuery.findFilterSubjectCntTissueComposition(args),
+//                bentoQuery.findSubjectCntFileAssociation(args),
+//                bentoQuery.findFilterSubjectCntFileAssociation(args),
+//                bentoQuery.findSubjectCntFileType(args),
+//                bentoQuery.findFilterSubjectCntFileType(args),
+//                bentoQuery.findNumberOfArms(args),
+//                bentoQuery.findSubjectCntLabProcedures(args),
+//                bentoQuery.findFilterSubjectCntLabProcedures(args),
+//                bentoQuery.findFilterSubjectCntByAge(args)
+//        );
+//        return esService.elasticMultiSend(requests);
+//    }
 }

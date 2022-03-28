@@ -11,21 +11,21 @@ query:
       - subjects
     filterType:
       type: table
-      selectedField: subject_id_num
+      defaultSortField: subject_id_num
     resultType: default
   - name: sampleOverview
     index:
       - samples
     filterType:
       type: table
-      selectedField: sample_id_num
+      defaultSortField: sample_id_num
     resultType: default
   - name: fileOverview
     index:
       - files
     filterType:
       type: table
-      selectedField: file_name
+      defaultSortField: file_name
     resultType: default
   - name: fileIDsFromList
     index:
@@ -33,14 +33,14 @@ query:
     filterType:
       type: default
       selectedField: file_id
-    # List<String>
+    # Return as List<String>
     resultType: str_list
   - name: filesInList
     index:
       - files
     filterType:
       type: table
-      selectedField: file_name
+      defaultSortField: file_name
     resultType: default
   - name: findSubjectIdsInList
     index:

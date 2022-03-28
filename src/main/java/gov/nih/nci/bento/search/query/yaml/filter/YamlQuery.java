@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.classes.yamlquery;
+package gov.nih.nci.bento.search.query.yaml.filter;
 
 import lombok.Data;
 import lombok.Getter;
@@ -11,5 +11,5 @@ public class YamlQuery {
     private String[] index;
     private String resultType;
     private YamlFilterType filterType;
-    private HighlightQuery highlight;
+    private YamlHighlight highlight;
 }

@@ -5,7 +5,7 @@ query:
     filterType:
       type: global
       # Default Sort
-      selectedField: subject_id_num
+      defaultSortField: subject_id_num
       query:
         - field: subject_id_gs
           type: term
@@ -23,7 +23,7 @@ query:
     filterType:
       type: global
       # Default Sort
-      selectedField: subject_id_num
+      defaultSortField: subject_id_num
       query:
         - field: sample_id_gs
           type: term
@@ -38,7 +38,7 @@ query:
     filterType:
       type: global
       # Default Sort
-      selectedField: subject_id_num
+      defaultSortField: subject_id_num
       query:
         - field: program_id
           type: term
@@ -54,7 +54,7 @@ query:
     filterType:
       type: global
       # Default Sort
-      selectedField: study_id_kw
+      defaultSortField: study_id_kw
       query:
         - field: study_id
           type: term
@@ -69,7 +69,7 @@ query:
     filterType:
       type: global
       # Default Sort
-      selectedField: file_id_num
+      defaultSortField: file_id_num
       query:
         - field: file_id_gs
           type: term

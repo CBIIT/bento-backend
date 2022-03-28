@@ -1,4 +1,4 @@
-package gov.nih.nci.bento.classes.yamlquery;
+package gov.nih.nci.bento.search.query.yaml.filter;
 
 import lombok.Data;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Getter
-public class HighlightQuery {
+public class YamlHighlight {
 
     private List<String> fields;
     private String preTag;

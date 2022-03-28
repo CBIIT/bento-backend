@@ -1,9 +1,13 @@
 package gov.nih.nci.bento.bento;
 
 import gov.nih.nci.bento.classes.*;
-import gov.nih.nci.bento.classes.yamlquery.*;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.*;
+import gov.nih.nci.bento.search.query.yaml.*;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlQuery;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlFilterType;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlGlobalFilterType;
+import gov.nih.nci.bento.search.query.yaml.filter.YamlHighlight;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.EsSearch;
@@ -13,6 +17,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,22 +46,22 @@ public class BentoAutoConfiguration {
 
     @Test
     public void singleQueryYaml_Test() throws IOException {
-        Yaml yaml = new Yaml(new Constructor(SingleQuery.class));
-        SingleQuery singleQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
+        Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
+        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource("single_query.yml").getInputStream());
         Map<String, DataFetcher> singleQueryMap = new HashMap<>();
-        singleQuery.getQuery().forEach(q->{
+        singleTypeQuery.getQuery().forEach(q->{
             singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
         });
-        assertThat(singleQueryMap.size(), equalTo(singleQuery.getQuery().size()));
+        assertThat(singleQueryMap.size(), equalTo(singleTypeQuery.getQuery().size()));
     }
 
     @Test
     public void groupQueryYaml_Test() throws IOException {
-        Yaml yaml = new Yaml(new Constructor(GroupQuery.class));
-        GroupQuery groupQuery = yaml.load(new ClassPathResource("group_query.yml").getInputStream());
+        Yaml yaml = new Yaml(new Constructor(GroupTypeQuery.class));
+        GroupTypeQuery groupTypeQuery = yaml.load(new ClassPathResource("group_query.yml").getInputStream());
         Map<String, DataFetcher> groupQueryMap = new HashMap<>();
 
-        groupQuery.getGroups().forEach(group->{
+        groupTypeQuery.getGroups().forEach(group->{
             String queryName = group.getName();
             groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
 
@@ -86,23 +91,23 @@ public class BentoAutoConfiguration {
 
     @Test
     public void globalQueryYaml_Test() throws IOException {
-        Yaml yaml = new Yaml(new Constructor(SingleQuery.class));
-        SingleQuery singleQuery = yaml.load(new ClassPathResource("global_query.yml").getInputStream());
+        Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
+        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource("global_query.yml").getInputStream());
         Map<String, DataFetcher> singleQueryMap = new HashMap<>();
-        singleQuery.getQuery().forEach(q->{
+        singleTypeQuery.getQuery().forEach(q->{
             singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
         });
-        assertThat(singleQueryMap.size(), equalTo(singleQuery.getQuery().size()));
+        assertThat(singleQueryMap.size(), equalTo(singleTypeQuery.getQuery().size()));
     }
 
 
-    private Object createGroupQuery(GroupQuery.Group group,QueryParam param) throws IOException {
+    private Object createGroupQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
         List<MultipleRequests> requests = new ArrayList<>();
         group.getQuery().forEach(q->{
             MultipleRequests multipleRequest = MultipleRequests.builder()
                     .name(q.getName())
                     .request(new SearchRequest()
-//                            .indices(q.getIndex())
+                            .indices(q.getIndex())
                             .source(getSourceBuilder(param, q)))
                     .typeMapper(getTypeMapper(param, q)).build();
             requests.add(multipleRequest);
@@ -138,7 +143,7 @@ public class BentoAutoConfiguration {
                     .queryParam(param)
                     // TODO
 //                    .customOrderBy(getIntCustomOrderBy(param))
-                    .defaultSortField(filterType.getSelectedField())
+                    .defaultSortField(filterType.getDefaultSortField())
                     .build()).getSourceFilter();
         } else if (filterType.getType().equals("number_of_docs")) {
             return new SearchCountFilter(
@@ -179,25 +184,29 @@ public class BentoAutoConfiguration {
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .size(tableParam.getPageSize())
                 .from(tableParam.getOffSet())
-// TODO
-//                    .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(
                         addConditionalQuery(
                                 createGlobalQuerySets(param, query),
                                 createGlobalConditionalQueries(param, query))
                 );
+        // Set Sort
+        if (query.getFilterType().getDefaultSortField() !=null) builder.sort(query.getFilterType().getDefaultSortField(), SortOrder.DESC);
+        // Set Highlight Query
+        setGlobalHighlightQuery(query, builder);
+        return builder;
+    }
 
+    private void setGlobalHighlightQuery(YamlQuery query, SearchSourceBuilder builder) {
         if (query.getHighlight() != null) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
-            HighlightQuery highlightQuery = query.getHighlight();
+            YamlHighlight yamlHighlight = query.getHighlight();
             // Set Multiple Highlight Fields
-            highlightQuery.getFields().forEach((f)->highlightBuilder.field(f));
-            highlightBuilder.preTags(highlightQuery.getPreTag() == null ? "" : highlightQuery.getPreTag());
-            highlightBuilder.postTags(highlightQuery.getPostTag() == null ? "" : highlightQuery.getPreTag());
-            if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(highlightQuery.getFragmentSize());
+            yamlHighlight.getFields().forEach((f)->highlightBuilder.field(f));
+            highlightBuilder.preTags(yamlHighlight.getPreTag() == null ? "" : yamlHighlight.getPreTag());
+            highlightBuilder.postTags(yamlHighlight.getPostTag() == null ? "" : yamlHighlight.getPostTag());
+            if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(yamlHighlight.getFragmentSize());
             builder.highlighter(highlightBuilder);
         }
-        return builder;
     }
 
     private BoolQueryBuilder createGlobalQuerySets(QueryParam param, YamlQuery query) {

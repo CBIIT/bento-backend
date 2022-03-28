@@ -14,3 +14,4 @@
     image_version: "{{ frontend_image_version }}"
     container_build_path: "{{ frontend_container_build_path }}"
     dockerfile_path: "{{ frontend_dockerfile_path }}"
+    container_image: "{{ frontend_container_image }}"

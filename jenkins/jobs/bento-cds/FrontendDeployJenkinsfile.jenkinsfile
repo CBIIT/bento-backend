@@ -126,24 +126,6 @@ pipeline {
 			    }
 			}
 
-		script {
-			if ("${params.Test_Params}"?.trim()) {
-				echo 'Run Bento Katalon Tests'
-				def params = "[${params.Test_Params}]"
-				def list_params = evaluate(params)
-				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
-			}
-		}
-
-		script {
-			if (params.Reload_ES_Data) {
-				echo 'Reload data to Elasticsearch'
-				String be_tag = "${params.Backend_Image}"
-				String be_branch = "${be_tag}".substring(0, "${be_tag}".lastIndexOf("-")) + "-bento" + "${be_tag}".substring("${be_tag}".lastIndexOf("-"), "${be_tag}".length())
-				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Frontend_Branch', value: "${params.Frontend_Image}"), gitParameter(name: 'Backend_Branch', value: "${be_branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
-			}
-		}
-
 	}
 
 	cleanup {

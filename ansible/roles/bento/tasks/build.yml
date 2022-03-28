@@ -1,9 +1,6 @@
 ---
-
 ############################################################################################################################
-
 #     Set Environment
-
 ############################################################################################################################
 
 - name: get db ip
@@ -58,7 +55,7 @@
 
 ############################################################################################################################
 
-- name: remove the application_example.properties file 
+- name: remove the application_example.properties file
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
@@ -166,7 +163,7 @@
     src: inject.template.js
     dest: "{{workspace}}/{{ project }}-frontend/dist/inject.template.js"
     mode: 0755
-          
+
 - name: build {{ project }}-frontend image
   docker_image:
     build:

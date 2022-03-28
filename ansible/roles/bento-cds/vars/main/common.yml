@@ -1,12 +1,12 @@
 #db
-database_name: "{{project}}-{{tier}}-neo4j-4"
+database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 
 #auth
 app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
 
 #build
 stack_name: cds
-project: cds
+project_name: cds
 platform: aws
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
@@ -23,3 +23,4 @@ sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
 sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'monitoring/sumologic.collector_token', nested=true, region='us-east-1' ) }}"
+container_registry_url: "{{ecr_repo}}"

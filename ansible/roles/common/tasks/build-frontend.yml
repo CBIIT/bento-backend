@@ -1,0 +1,48 @@
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
+    dest: '"{{ container_build_path }}/nginx.conf'
+
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{ container_build_path }}/nginx-entrypoint.sh"
+    mode: 0755
+
+- name: run npm install in {{workspace}}/{{ project_name }}-frontend/
+  command: "{{item}}"
+  args:
+    chdir: "{{ container_build_path }}"
+    warn: false
+  loop:
+    - npm set progress=false
+    - npm install --silent
+    - npm run build --silent
+
+- name: copy env to dist
+  copy:
+    src: inject.template.js
+    dest: "{{ container_build_path }}/dist/inject.template.js"
+    mode: 0755
+
+- name: build {{ project_name }}-{{container_name}} image
+  docker_image:
+    build:
+      path: "{{ container_build_path }}"
+      dockerfile: "{{ dockerfile_path }}"
+      pull: yes
+      nocache: yes
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add  latest tag to {{ project_name }}-{{container_name}} image
+  docker_image:
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
+    force_tag: yes
+    push: yes
+    source: local

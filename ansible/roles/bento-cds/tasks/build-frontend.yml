@@ -1,0 +1,16 @@
+---
+#docker login
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: build frontend
+  include_role:
+    name: common
+    tasks_from: build-frontend
+  vars:
+    container_name: "{{ frontend_container_name }}"
+    image_version: "{{ frontend_image_version }}"
+    container_build_path: "{{ frontend_container_build_path }}"
+    dockerfile_path: "{{ frontend_dockerfile_path }}"

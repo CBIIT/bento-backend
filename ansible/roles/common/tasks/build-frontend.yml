@@ -33,28 +33,28 @@
     dest: '{{ container_build_path }}/Dockerfile'
 
 
-- name: build {{ project_name }}-{{container_name}} image
-  shell: docker build -t {{ container_image }} .
-  args:
-    chdir: "{{ container_build_path }}"
-    warn: false
-
-- name: push {{ project_name }}-{{container_name}} image
-  shell: docker push {{ container_image }}
-  args:
-    chdir: "{{ container_build_path }}"
-    warn: false
 #- name: build {{ project_name }}-{{container_name}} image
-#  docker_image:
-#    build:
-#      path: "{{ container_build_path }}"
-#      pull: yes
+#  shell: docker build -t {{ container_image }} .
+#  args:
+#    chdir: "{{ container_build_path }}"
+#    warn: false
+#
+#- name: push {{ project_name }}-{{container_name}} image
+#  shell: docker push {{ container_image }}
+#  args:
+#    chdir: "{{ container_build_path }}"
+#    warn: false
+- name: build {{ project_name }}-{{container_name}} image
+  docker_image:
+    build:
+      path: "{{ container_build_path }}"
+      pull: yes
 #      nocache: yes
-#    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
-#    tag: "{{ image_version }}-{{build_number}}"
-#    push: yes
-#    force_source: yes
-#    source: build
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{build_number}}"
+    push: yes
+    force_source: yes
+    source: build
 
 - name: Add  latest tag to {{ project_name }}-{{container_name}} image
   docker_image:

@@ -28,7 +28,9 @@
         essential: true
         image: "{{ container_image_url }}:{{image_version}}"
         environment: "{{ container_env }}"
+        {% if container_entrypoint is defined %}
         entryPoint: "{{container_entrypoint}}"
+        {% endif %}
         portMappings:
           - containerPort: "{{ container_port }}"
             hostPort: "{{ container_port }}"

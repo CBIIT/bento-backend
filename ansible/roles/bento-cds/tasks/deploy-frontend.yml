@@ -19,7 +19,6 @@
     container_name: "{{ frontend_container_name }}"
     image_version: "{{ frontend_image_version }}"
     container_image_url: "{{ frontend_container_image_url }}"
-    container_entrypoint:
     container_port: "{{ frontend_container_port }}"
     container_memory: "{{ frontend_container_memory }}"
     container_cpu: "{{  frontend_container_cpu  }}"

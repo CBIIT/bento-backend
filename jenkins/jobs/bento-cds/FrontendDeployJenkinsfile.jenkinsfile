@@ -63,6 +63,7 @@ pipeline {
 	   SLACK_URL = "${SLACK_URL}"
        TIER = "${params.Environment}"
        FE_VERSION = "${params.Frontend_Image}"
+       BE_VERSION = "${params.Backend_Image}"
 	   SLACK_CHANNEL = "#system-alerts"
 	   URL_DOMAIN = "bento-tools.org"
       }

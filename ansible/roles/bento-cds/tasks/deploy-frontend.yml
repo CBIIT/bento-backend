@@ -23,4 +23,31 @@
     container_port: "{{ frontend_container_port }}"
     container_memory: "{{ frontend_container_memory }}"
     container_cpu: "{{  frontend_container_cpu  }}"
+    container_env:
+      - name: REACT_APP_BACKEND_API
+        value: "{% if tier == 'prod' %}https://bento-tools.org/v1/graphql/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
+      - name: REACT_APP_FILE_SERVICE_API
+        value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
+      - name: REACT_APP_BE_VERSION
+        value: "{{ backend_version }}"
+      - name: REACT_APP_FE_VERSION
+        value: "{{frontend_version}}"
+      - name: REACT_APP_ABOUT_CONTENT_URL
+        value: "{{about_content_url}}"
+      - name: NEW_RELIC_LICENSE_KEY
+        value: "{{ newrelic_license_key }}"
+      - name: NEW_RELIC_APP_NAME
+        value: "{{ app_name }}-{{container_name}}"
+      - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+        value: true
+      - name: NEW_RELIC_HOST
+        value: "gov-collector.newrelic.com"
+      - name: NEW_RELIC_NO_CONFIG_FILE
+        value: true
+      - name: NEW_RELIC_LABELS
+        value: "Project:{{ project_name }};Environment:{{ tier }}"
+      - name: REACT_APP_GOOGLE_CLIENT_ID
+        value: "{{ app_google_client_id }}"
+      - name: REACT_APP_AUTH_API
+        value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{project}}-{{ tier }}.bento-tools.org{% endif %}"
 

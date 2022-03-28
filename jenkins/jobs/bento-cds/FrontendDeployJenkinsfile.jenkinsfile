@@ -1,0 +1,155 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+	extendedChoice(
+        name: 'Project',
+        defaultValue: 'cds',
+        description: 'Choose the project to build',
+        type: 'PT_SINGLE_SELECT',
+        value: 'cds,bento,gmb,icdc')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,perf,icdc,prod' )
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('deploy'){
+	  environment {
+	   SLACK_URL = "${SLACK_URL}"
+       TIER = "${params.Environment}"
+       FE_VERSION = "${params.Frontend_Image}"
+	   SLACK_CHANNEL = "#system-alerts"
+	   URL_DOMAIN = "bento-tools.org"
+      }
+  		steps{
+		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+  			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/cds-deploy-frontend.yml',
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		extraVars: [
+                    project_name: "${params.Project}"
+                    ],
+					colorized: true)
+ 			}
+		  }
+ 		}
+  	   }
+  	}
+
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+
+    }
+
+	success {
+
+		script {
+		    if (env.Tier == 'prod') {
+			    withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+				    sh label: 'GIT-Set Releases', script: '''#!/bin/bash
+
+					data={\\"tag_name\\":\\"${Frontend_Image}\\"}
+					curl_cmd='curl -i -u michael-fleming:'${git_token}' POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-frontend/releases -d {"tag_name":"${Frontend_Image}"}'
+					$curl_cmd
+					
+					bento_tag=$(echo "${Backend_Image}" | sed 's/-/-bento-/g')
+					data={\\"tag_name\\":\\"$bento_tag\\"}
+					curl_cmd='curl -i -u michael-fleming:'${git_token}' POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-backend/releases -d '$data''
+					$curl_cmd
+
+				    '''
+
+				    }
+			    }
+			}
+
+		script {
+			if ("${params.Test_Params}"?.trim()) {
+				echo 'Run Bento Katalon Tests'
+				def params = "[${params.Test_Params}]"
+				def list_params = evaluate(params)
+				build quietPeriod: 300, wait: false, job: 'Test_Automation/Katalon_prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
+			}
+		}
+
+		script {
+			if (params.Reload_ES_Data) {
+				echo 'Reload data to Elasticsearch'
+				String be_tag = "${params.Backend_Image}"
+				String be_branch = "${be_tag}".substring(0, "${be_tag}".lastIndexOf("-")) + "-bento" + "${be_tag}".substring("${be_tag}".lastIndexOf("-"), "${be_tag}".length())
+				build job: 'Bento/_Data_Processing/BentoDataLoader_ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Frontend_Branch', value: "${params.Frontend_Image}"), gitParameter(name: 'Backend_Branch', value: "${be_branch}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+
+	}
+
+	cleanup {
+	
+		cleanWs()
+    
+	}
+  }
+}

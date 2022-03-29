@@ -1,6 +1,1 @@
 ---
-# defaults file for common
-region: us-east-1
-sumo_collector_endpoint: collectors.fed.sumologic.com
-sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'monitoring/sumologic.collector_token', nested=true, region='us-east-1' ) }}"
-newrelic_api_secret: "{{ lookup('amazon.aws.aws_secret', 'monitoring/newrelic.api_key', nested=true, region='us-east-1' ) }}"

@@ -1,0 +1,33 @@
+# vars file for data loading
+tier: "{{ lookup('env','TIER') }}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_user', nested=true, region='us-east-1' ) }}"
+neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
+s3_folder: "{{ lookup('env','S3_FOLDER') }}"
+wipe_db:  "{{ lookup('env','WIPE_DB') }}"
+cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
+split_transactions:  "{{ lookup('env','SPLIT')}}"
+project_name:  "{{lookup('env','PROJECT_NAME')}}"
+region: us-east-1
+data_bucket: "{{ bucket }}"
+#vars for match files
+#match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
+#okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
+#bucket_Name: "{{ lookup('env','S3_BUCKET') }}"
+#arm_Id: "{{ lookup('env','ARM_ID') }}"
+#phs_Id: "{{ lookup('env','PHS_ID') }}"
+#okta_key: "{{ lookup('env','OKTA_KEY') }}"
+#secret_name: "{{ lookup('env','SECRET_NAME') }}"
+#meta_data_path: "{{ lookup('env','META_DATA_PATH') }}"
+#meta_data_bucket: "{{ lookup('env','META_DATA_BUCKET') }}"
+#meta_data_bucket: sample-meta-data-bucket
+#use_prod: "{{ lookup('env','USE_PROD') }}"
+#cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
+
+#vars for data validation
+#ctdc_base_url: "https://trialcommons-dev.cancer.gov"
+#s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
+#manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
+
+
+

@@ -10,8 +10,7 @@
       include_role:
         name: common
         tasks_from: neo4j-ip
-      vars
-        database_name: "{{ project_name }}-{{tier}}-neo4j-4"
+
     - name: perform data loading
       include_role:
         name: common

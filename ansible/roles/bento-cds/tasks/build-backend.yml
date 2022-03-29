@@ -26,5 +26,5 @@
     container_build_path: "{{ backend_container_build_path }}"
     dockerfile_path: "{{ backend_dockerfile_path }}"
     container_image: "{{ backend_container_image }}"
-    container_registry_url: "{{ container_registry_url }}"
+    container_registry_url: "{{ ecr_repo }}"
     bento_api_version: "{{ backend_image_version }}"

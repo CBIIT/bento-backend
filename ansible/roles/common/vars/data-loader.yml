@@ -7,7 +7,6 @@ s3_folder: "{{ lookup('env','S3_FOLDER') }}"
 wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
 split_transactions:  "{{ lookup('env','SPLIT')}}"
-project_name:  "{{lookup('env','PROJECT_NAME')}}"
 region: us-east-1
 data_bucket: "{{ bucket }}"
 #vars for match files

@@ -5,11 +5,15 @@
   gather_facts: yes
   become: yes
 
+  vars:
+
   tasks:
     - name: get db ip
       include_role:
         name: common
         tasks_from: neo4j-ip
+      vars:
+        database_name: "{{ project_name }}-{{tier}}-neo4j-4"
     - name: perform data loading
       include_role:
         name: common
@@ -21,4 +25,3 @@
         property_file: "config/props-bento-ext.yml"
         bucket: bento-metadata-dev
         ansible_python_interpreter: /usr/bin/python2.7
-        database_name: "{{ project_name }}-{{tier}}-neo4j-4"

@@ -19,7 +19,7 @@
 - name: build frontend
   include_role:
     name: common
-    tasks_from: build-frontend
+    tasks_from: build-backend
   vars:
     container_name: "{{ backend_container_name }}"
     image_version: "{{ backend_image_version }}"

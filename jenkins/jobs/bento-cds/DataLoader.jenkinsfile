@@ -93,7 +93,6 @@ pipeline {
             CHEAT_MODE = "${params.CheatMode}"
             SPLIT  = "${params.SplitTransactions}"
  			SLACK_URL = "${SLACK_URL}"
-            TIER = "${params.Environment}"
             PROJECT_NAME = "${params.ProjectName}"
  		}
  		steps {

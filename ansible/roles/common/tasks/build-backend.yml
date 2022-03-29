@@ -1,0 +1,73 @@
+############################################################################################################################
+#     Backend Build
+############################################################################################################################
+
+- name: remove the application_example.properties file
+  file:
+    path: "{{ workspace }}/src/main/resources/application_example.properties"
+    state: absent
+
+- name: copy application.properties file to /src/main/resources/
+  template:
+    src: "{{workspace}}/src/main/resources/application.properties.j2"
+    dest: "{{workspace}}/src/main/resources/application.properties"
+
+- name: create graphql directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/graphql"
+
+- name: create yaml directory in backend
+  file:
+    state: directory
+    path: "{{workspace}}/src/main/resources/yaml"
+
+- name: copy schema from frontend to resources
+  template:
+    src: "{{workspace}}/{{ project_name }}-frontend/graphql/{{ schema_file}}"
+    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file}}"
+
+- name: verify test queries file exists
+  stat:
+    path: "{{workspace}}/{{ project_name }}-frontend/yaml/{{ test_queries_file }}"
+  register: test_queries
+
+- name: copy test queries from frontend to resources
+  template:
+    src: "{{workspace}}/{{ project_name }}-frontend/yaml/{{ test_queries_file }}"
+    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
+  when: test_queries.stat.exists
+
+- name: build springboot code
+  command: mvn package -DskipTests
+  args:
+    chdir: "{{workspace}}"
+
+- name: copy Bento-0.0.1.war to ROOT.war
+  copy:
+    remote_src: yes
+    src: "{{workspace}}/target/Bento-0.0.1.war"
+    dest: "{{workspace}}/target/ROOT.war"
+
+- name: build {{ project_name }}-{{ container_name }} image
+  docker_image:
+    buildargs:
+      ECR_REPO: "{{ container_registry_url }}"
+    build:
+      path: "{{ workspace }}"
+      dockerfile: "{{ dockerfile_path }}"
+      pull: yes
+      nocache: yes
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to {{ project_name }}-{{container_name}} image
+  docker_image:
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
+    force_tag: yes
+    push: yes
+    source: local

@@ -13,10 +13,6 @@ workspace: "{{ lookup('env','WORKSPACE') }}"
 build_number: "{{ lookup('env','BUILD_NUMBER')}}" 
 region: us-east-1
 
-#ecs cluster
-
-
-
 #docker
 docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region='us-east-1' ) }}"
 docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region='us-east-1' ) }}"

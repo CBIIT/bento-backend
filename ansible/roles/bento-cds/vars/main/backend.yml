@@ -1,40 +1,30 @@
 ---
 #build
-stack_name: cds
-project: cds
-platform: aws
-tier: "{{ lookup('env','TIER') }}"
-workspace: "{{ lookup('env','WORKSPACE') }}"
-build_number: "{{ lookup('env','BUILD_NUMBER')}}" 
-app_name: "{{stack_name}}-{{platform}}-{{tier}}"
 backend_version: "{{ lookup('env','BE_VERSION') }}"
-region: us-east-1
 es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
 
 # build
-docker_user: "{{ lookup('amazon.aws.aws_secret', 'docker.username', nested=true, region='us-east-1' ) }}"
-docker_password:  "{{ lookup('amazon.aws.aws_secret', 'docker.password', nested=true, region='us-east-1' ) }}"
 backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version }}/src/content/{{ tier }}/aboutPagesContent.yaml
 
 
 # db
 neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_user', nested=true, region='us-east-1' ) }}"
 neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
-
-# redis
-enable_redis: false
-redis_password: ""
-redis_port: 6379
-use_cluster: true
-
 # elasticsearch
 enable_es_filter: true
 es_schema_file:
-# monitoring agents
-newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
-sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
-sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
-syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
+
 
 #graphql
 schema_file: "bento-extended.graphql"
+
+backend_container_name: "backend"
+backend_image_version: "{{ backend_version }}"
+backend_container_build_path: "{{workspace}}/{{project_name}}-backend"
+backend_dockerfile_path: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+backend_container_image: "{{ecr_repo}}/{{project_name}}-{{container_name}}:{{backend_version}}-{{build_number}}"
+backend_container_port: 8080
+backend_container_memory: 1024
+backend_container_cpu: 512
+backend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
+backend_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"

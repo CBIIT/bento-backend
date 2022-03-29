@@ -5,6 +5,7 @@
     name: common
     tasks_from: collections
 
+#docker login
 - name: docker login
   include_role:
     name: common
@@ -15,140 +16,48 @@
     name: common
     tasks_from: neo4j-ip
 
-- name: Get the current caller identity information
-  aws_caller_info:
-  register: caller_info
-
-- name: get account info
-  set_fact:
-    account: "{{ caller_info.account }}"
-
-- name: create task definition - backend
-  ecs_taskdefinition:
-    containers:
-    - name: sumologic-firelens
-      essential: true
-      image: "amazon/aws-for-fluent-bit:latest"
-      memory: 100
-      logConfiguration:
-        logDriver: awslogs
-        options:
-          awslogs-group: "{{stack_name}}-{{tier}}-es-log"
-          awslogs-region: us-east-1
-          awslogs-stream-prefix: ecs
-      firelensConfiguration:
-        type: fluentbit
-        options:
-          enable-ecs-log-metadata: "true"
-    - name: backend
-      essential: true
-      image: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}"
-      environment:
-        - name: NEO4J_URL
-          value: bolt://{{ neo4j_ip }}:7687
-        - name: NEO4J_USER
-          value: "{{ neo4j_user }}"
-        - name: NEO4J_PASSWORD
-          value: "{{ neo4j_password }}"
-        - name: NEO4J_GRAPHQL_ENDPOINT
-          value: http://{{ neo4j_ip }}:7474/graphql/
-        - name: BENTO_API_VERSION
-          value: "{{bento_api_version}}"
-        - name: ES_HOST
-          value: "{{es_host}}"
-        - name: ES_FILTER_ENABLED
-          value: "{{ enable_es_filter }}"
-        - name: NEW_RELIC_LICENSE_KEY
-          value: "{{ newrelic_license_key }}"
-        - name: NEW_RELIC_APP_NAME
-          value: "{{ app_name }}-backend"
-        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-          value: true
-        - name: NEW_RELIC_HOST
-          value: "gov-collector.newrelic.com"
-        - name: NEW_RELIC_LOG_FILE_NAME
-          value: "STDOUT"
-        - name: NEW_RELIC_LABELS
-          value: "Project:{{ project }};Environment:{{ tier }}"
-        - name: JAVA_OPTS
-          value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
-      entryPoint:
-        - "/bin/ash"
-        - "-c"
-        - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
-      portMappings:
-        - containerPort: "8080"
-          hostPort: "8080"
-      logConfiguration:
-        logDriver: awsfirelens
-        options:
-          Name: "{{stack_name }}-{{ tier }}-backend-logs"
-          Host: "collectors.fed.sumologic.com"
-          URI: "/receiver/v1/http/{{ sumo_collector_token }}"
-          Port: '443'
-          tls: 'on'
-          tls.verify: 'off'
-          Format: 'json_lines'
-    launch_type: FARGATE
-    network_mode: awsvpc
-    execution_role_arn: "arn:aws:iam::{{account}}:role/{{stack_name }}-{{ tier }}-task-execu\tion-role"
-    task_role_arn: "arn:aws:iam::{{account}}:role/{{stack_name }}-{{ tier }}-task-role"
-    family: "{{stack_name }}-{{tier}}-backend"
-    memory: '1024'
-    cpu: '512'
-    state: present
-    region: "{{region}}"
-  register: task_output
-
-
-############################################################################################################################
-#     Task Definition Queries
-
-############################################################################################################################
-
-- name: query task definition - backend
-  ecs_taskdefinition_info:
-    task_definition: "{{stack_name }}-{{tier}}-backend"
-    region: "{{region}}" 
-  register: task_backend
-
-############################################################################################################################
-#     Service Queries
-############################################################################################################################
-
-- name: query backend service
-  ecs_service_info:
-    cluster: "{{stack_name }}-{{tier}}-ecs"
-    service: "{{stack_name }}-{{tier}}-backend"
-    details: true
-    region: "{{region}}"
-  register: service_backend
-
-- name: set facts
-  set_fact:
-    backend_revision: "{{task_backend.revision}}"
-    task_backend_name: "{{task_backend.family}}"
-    lb_backend: "{{service_backend.services[0].loadBalancers}}"
-    role_arn: "{{service_backend.services[0].roleArn}}"
-
-
-###########################################################################################################################
-#Update Services
-############################################################################################################################
-
-- name: update backend service
-  ecs_service:
-    state: present
-    name: "{{stack_name }}-{{tier}}-backend"
-    cluster: "{{stack_name }}-{{tier}}-ecs"
-    task_definition: "{{task_backend_name}}:{{backend_revision}}"
-    role: "{{role_arn}}"
-    force_new_deployment: yes
-    deployment_configuration:
-      minimum_healthy_percent: 50
-      maximum_percent: 200
-    desired_count: 1
-    load_balancers: "{{ lb_backend }}"
-    region: "{{region}}"
-  register: service_backend_output
-
+- name: deploy ecs
+  include_role:
+    name: common
+    tasks_from: ecs
+  vars:
+    container_name: "{{ backend_container_name }}"
+    image_version: "{{ backend_image_version }}"
+    container_image_url: "{{ backend_container_image_url }}"
+    container_port: "{{ backend_container_port }}"
+    container_memory: "{{ backend_container_memory }}"
+    container_cpu: "{{  backend_container_cpu  }}"
+    ecs_cluster_name: "{{ backend_ecs_cluster_name }}"
+    container_entrypoint:
+      - "/bin/ash"
+      - "-c"
+      - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
+    container_env:
+      - name: NEO4J_URL
+        value: bolt://{{ neo4j_ip }}:7687
+      - name: NEO4J_USER
+        value: "{{ neo4j_user }}"
+      - name: NEO4J_PASSWORD
+        value: "{{ neo4j_password }}"
+      - name: NEO4J_GRAPHQL_ENDPOINT
+        value: http://{{ neo4j_ip }}:7474/graphql/
+      - name: BENTO_API_VERSION
+        value: "{{image_version}}"
+      - name: ES_HOST
+        value: "{{es_host}}"
+      - name: ES_FILTER_ENABLED
+        value: "{{ enable_es_filter }}"
+      - name: NEW_RELIC_LICENSE_KEY
+        value: "{{ newrelic_license_key }}"
+      - name: NEW_RELIC_APP_NAME
+        value: "{{ app_name }}-{{container_name}}"
+      - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+        value: true
+      - name: NEW_RELIC_HOST
+        value: "gov-collector.newrelic.com"
+      - name: NEW_RELIC_LOG_FILE_NAME
+        value: "STDOUT"
+      - name: NEW_RELIC_LABELS
+        value: "Project:{{ project_name }};Environment:{{ tier }}"
+      - name: JAVA_OPTS
+        value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"

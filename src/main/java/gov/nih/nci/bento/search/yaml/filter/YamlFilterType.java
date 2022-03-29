@@ -1,13 +1,11 @@
 package gov.nih.nci.bento.search.yaml.filter;
 
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
 
 @Data
-@Getter
 public class YamlFilterType {
     private String type;
     private String defaultSortField;
@@ -22,7 +20,6 @@ public class YamlFilterType {
     private List<YamlGlobalFilterType.GlobalQuerySet> optionalQuery;
 
     @Data
-    @Getter
     public static  class GlobalQuerySet {
         private String field;
         private String type;

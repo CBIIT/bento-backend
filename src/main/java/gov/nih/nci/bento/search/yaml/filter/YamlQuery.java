@@ -1,10 +1,8 @@
 package gov.nih.nci.bento.search.yaml.filter;
 
 import lombok.Data;
-import lombok.Getter;
 
 @Data
-@Getter
 public class YamlQuery {
 
     private String name;

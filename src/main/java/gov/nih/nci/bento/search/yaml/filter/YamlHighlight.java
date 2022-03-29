@@ -1,12 +1,10 @@
 package gov.nih.nci.bento.search.yaml.filter;
 
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 
 @Data
-@Getter
 public class YamlHighlight {
 
     private List<String> fields;

@@ -57,7 +57,6 @@ public class GraphQLController {
 	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	@ResponseBody
 	public ResponseEntity<String> getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response){
-
 		logger.info("hit end point:/v1/graphql/");
 		// Get graphql query from request
 		String operation = new String();
@@ -80,6 +79,25 @@ public class GraphQLController {
 		}
 		String error = ApiError.jsonApiError(HttpStatus.BAD_REQUEST, "Unknown operation in request", operation+" operation is not recognized.");
 		return logAndReturnError(HttpStatus.BAD_REQUEST, error);
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = "/test/graphql/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+	@ResponseBody
+	public ResponseEntity<String> getGraphQLTest(@RequestBody String jsonparams){
+		logger.info("hit end point:/test/graphql/");
+		// Get graphql query from request
+		try {
+			String body = jsonparams;
+			JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
+			Map<String, Object> variables = gson.fromJson(jsonObject.get("variables"), Map.class);
+			return ResponseEntity.ok(graphQL.query(getQuery(jsonObject), variables));
+
+		} catch(Exception e) {
+			String error = ApiError.jsonApiError(HttpStatus.BAD_REQUEST, "Invalid query in request", e.getMessage());
+			logger.error(error);
+		}
+		throw new RuntimeException();
 	}
 
 	private boolean isValid(String operation) {

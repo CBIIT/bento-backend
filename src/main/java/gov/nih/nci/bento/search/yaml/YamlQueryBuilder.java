@@ -237,8 +237,9 @@ public class YamlQueryBuilder {
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
+        if (query.getFilterType().getOptionalQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery();
+        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery() ;
         optionalQuerySets.forEach(option-> {
             String filterString = "";
             if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.BOOLEAN)) {

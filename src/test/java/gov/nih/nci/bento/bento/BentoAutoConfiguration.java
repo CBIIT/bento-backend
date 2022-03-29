@@ -236,6 +236,7 @@ public class BentoAutoConfiguration {
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
+        if (query.getFilterType().getOptionalQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
         List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery();
         optionalQuerySets.forEach(option-> {

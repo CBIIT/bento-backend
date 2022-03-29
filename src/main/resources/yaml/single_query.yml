@@ -1,10 +1,66 @@
+# Query Parameters Required
+  # index: Declare Elasticsearch Index Name
+  # name: Declare GraphQl Query Name
+  # filterType: Declare Type of GraphQl Query
+  # resultType: Declare Desired Return Type
+
 # Filter Type
-# - default
-# - table
+  # - default
+    # Required: selectedField
+  # - table
+    # Required: none
+    # Optional: defaultSortField, alternativeSort
+  # - aggregation
+    # Required: selectedField
+    # Optional: filter
+  # - number_of_docs
+    # Required: none
+  # - range
+    # Required: selectedField
+    # Optional: filter
+  # - sub_aggregation
+    # Required: selectedField, subAggSelectedField
+  # - global
+    # Required: defaultSortField, query
+      # query
+        # Required: field, type
+          # type includes elements with term, match, and wildcard
+    # Optional: optionalQuery
+      # query: same rules applied as required above
 
 # Return Type
-# - default
+  # - default @return List<Map<String, Object>>
+  # - aggregation @return List<Map<String, Object>>
+  # - int_total_aggregation @return Integer
+  # - range @return Map<String, Object>
+    # ex) {lowerBound: 0.00, upperBound: 0.00, subjects: XXX}
+  # - arm_program @return List<Map<String, Object>>
+  # - int_total_count @return Long
+  # - str_list @return List<String>
+  # - global_about @return Map<String, Object>
+    # ex) {type: about, page: XXXX, title: XXXX, text, XXXX}
+  # - global @return Map<String, Object>
+    # ex) {result: {A: XX, B: X...}, count: 9999}
+  # - global_multi_models @Map<String, Object>
+    #  ex) {result: {A: XX, B: X...}, count: 9999}
 
+# Highlight
+  # Pre-requisite: Global Filter Type
+  # highlight:
+    # Required: fields
+      # declare list of Strings to highlight
+    # Optional: fragmentSize, preTag, postTag, fragmentSize
+
+# Query Pairing Must be Filter Type <-> Return Type
+  # default <-> default, str_list
+  # table <-> default
+  # sub_aggregation <-> arm_program
+  # aggregation <-> aggregation, int_total_aggregation, int_total_count
+  # range <-> range
+  # global <-> global, global_multi_models
+
+# Detailed Explanation
+  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
 query:
   - name: subjectOverview
     index:

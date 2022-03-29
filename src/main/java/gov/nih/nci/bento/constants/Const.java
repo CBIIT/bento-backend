@@ -12,7 +12,7 @@ public class Const {
 
         public static class FILE_NAMES {
             public static final String SINGLE = "yaml/single_query.yml";
-            public static final String GROUP = "yaml/multiple_query.yml";
+            public static final String GROUP = "yaml/group_query.yml";
             public static final String GLOBAL = "yaml/global_query.yml";
 
         }

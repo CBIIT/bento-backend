@@ -66,29 +66,8 @@ public class BentoAutoConfiguration {
         groupTypeQuery.getGroups().forEach(group->{
             String queryName = group.getName();
             groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
-
-            // Set Rest API Request
-//            group.getQuery().forEach(q->{
-//
-//
-//                SearchRequest request = new SearchRequest();
-//                request.indices(q.getIndex());
-//                request.source(getSourceBuilder(param, query));
-//                Object obj = esService.elasticSend(request, getTypeMapper(param, query));
-//
-//            });
         });
         assertThat(groupQueryMap.size(), greaterThan(0));
-
-//        Integer sum = groupQuery.getGroups().stream()
-//                .mapToInt(i->i.getQuery().size())
-//                .sum();
-    }
-
-    @Test
-    // TODO index exist test
-    public void testIndexExists() {
-
     }
 
     @Test
@@ -283,7 +262,6 @@ public class BentoAutoConfiguration {
 
     private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
         // Set Result Type
-
         switch (query.getResultType()) {
             case YAML_QUERY.RESULT_TYPE.DEFAULT:
                 return typeMapper.getDefault(param.getReturnTypes());

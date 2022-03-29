@@ -39,29 +39,30 @@ public class YamlQueryBuilder {
 
     public Map<String, DataFetcher> createYamlQueries() throws IOException {
         logger.info("Yaml File Queries Loaded");
+        // Set Single Request API
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.SINGLE).getInputStream());
         Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
         singleTypeQuery.getQuery().forEach(q->{
-            map.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
+            map.put(q.getName(), env -> createSingleYamlQuery(esService.CreateQueryParam(env), q));
         });
-
+        // Set Group Request API
         Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
         GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.GROUP).getInputStream());
         groupTypeQuery.getGroups().forEach(group->{
             String queryName = group.getName();
-            map.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
+            map.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
         });
-
+        // Set Global Search Request API
         Yaml globalYaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.GLOBAL).getInputStream());
         globalQuery.getQuery().forEach(q->{
-            map.put(q.getName(), env -> getYamlGlobalQuery(esService.CreateQueryParam(env), q));
+            map.put(q.getName(), env -> createGlobalYamlQuery(esService.CreateQueryParam(env), q));
         });
         return map;
     }
 
-    private Object createGroupQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
+    private Object createGroupYamlQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
         logger.info("Group Search API Requested: " + group.getName());
         List<MultipleRequests> requests = new ArrayList<>();
         group.getQuery().forEach(q->{
@@ -69,15 +70,15 @@ public class YamlQueryBuilder {
                     .name(q.getName())
                     .request(new SearchRequest()
                             .indices(q.getIndex())
-                            .source(getSourceBuilder(param, q)))
-                    .typeMapper(getTypeMapper(param, q)).build();
+                            .source(getQueryFilter(param, q)))
+                    .typeMapper(getReturnType(param, q)).build();
             requests.add(multipleRequest);
 
         });
         return esService.elasticMultiSend(requests);
     }
 
-    private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
+    private TypeMapper getReturnType(QueryParam param, YamlQuery query) {
         // Set Result Type
 
         switch (query.getResultType()) {
@@ -119,17 +120,17 @@ public class YamlQueryBuilder {
         return param.getSearchText().equals("") ? 0 :result;
     }
 
-    private Object getYamlGlobalQuery(QueryParam param, YamlQuery query) throws IOException {
+    private Object createGlobalYamlQuery(QueryParam param, YamlQuery query) throws IOException {
         logger.info("ES Search Global API Requested: " + query.getName());
         Map<String, Object> result = new HashMap<>();
         // Set Bool Filter
-        SearchSourceBuilder builder = getSourceBuilder(param, query);
+        SearchSourceBuilder builder = getQueryFilter(param, query);
         MultipleRequests request = MultipleRequests.builder()
                 .name(query.getName())
                 .request(new SearchRequest()
                         .indices(query.getIndex())
                         .source(builder))
-                .typeMapper(getTypeMapper(param, query)).build();
+                .typeMapper(getReturnType(param, query)).build();
         Map<String, Object> multiResult = esService.elasticMultiSend(List.of(request));
         QueryResult queryResult = (QueryResult) multiResult.get(query.getName());
         List<Map<String, Object>> searchHits_Test = queryResult.getSearchHits();
@@ -138,16 +139,16 @@ public class YamlQueryBuilder {
         return result;
     }
 
-    private Object getYamlQuery(QueryParam param, YamlQuery query) throws IOException {
+    private Object createSingleYamlQuery(QueryParam param, YamlQuery query) throws IOException {
         logger.info("ES Search API Requested: " + query.getName());
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(query.getIndex());
-        request.source(getSourceBuilder(param, query));
-        return esService.elasticSend(request, getTypeMapper(param, query));
+        request.source(getQueryFilter(param, query));
+        return esService.elasticSend(request, getReturnType(param, query));
     }
 
-    private SearchSourceBuilder getSourceBuilder(QueryParam param, YamlQuery query) {
+    private SearchSourceBuilder getQueryFilter(QueryParam param, YamlQuery query) {
         // Set Arguments
         YamlFilterType filterType = query.getFilterType();
         switch (filterType.getType()) {

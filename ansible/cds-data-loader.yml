@@ -9,7 +9,7 @@
     project_name:  "{{lookup('env','PROJECT_NAME')}}"
     tier: "{{ lookup('env','TIER') }}"
     workspace: "{{ lookup('env','WORKSPACE') }}"
-    
+
   tasks:
     - name: get db ip
       include_role:

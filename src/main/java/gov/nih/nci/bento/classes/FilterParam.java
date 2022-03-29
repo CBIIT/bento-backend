@@ -18,7 +18,6 @@ public class FilterParam {
     private TableParam tableParam;
 
     @Builder
-    @SuppressWarnings("unchecked")
     public FilterParam(Map<String, Object> args, String selectedField, String subAggSelectedField,
                        boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy) {
         this.args = args;

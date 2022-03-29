@@ -9,7 +9,7 @@ public class MultipleRequests {
 
     private final String name;
     private final SearchRequest request;
-    private TypeMapper typeMapper;
+    private final TypeMapper typeMapper;
 
     @Builder
     public MultipleRequests(SearchRequest request, TypeMapper typeMapper, String name) {

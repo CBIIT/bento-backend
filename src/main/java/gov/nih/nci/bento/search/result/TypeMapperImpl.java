@@ -78,6 +78,7 @@ public class TypeMapperImpl {
         };
     }
 
+    @SuppressWarnings("unchecked")
     public TypeMapper<List<Map<String, Object>>> getAggregate() {
         return (response) -> {
             List<Map<String, Object>> result = new ArrayList<>();
@@ -96,6 +97,7 @@ public class TypeMapperImpl {
         };
     }
 
+    @SuppressWarnings("unchecked")
     public TypeMapper<Integer> getAggregateTotalCnt() {
         return (response) -> {
             Aggregations aggregate = response.getAggregations();

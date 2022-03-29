@@ -11,7 +11,6 @@ public class QueryResult {
     private final List<Map<String, Object>> searchHits;
     private final int totalHits;
 
-    @SuppressWarnings("unchecked")
     @Builder
     public QueryResult(List<Map<String, Object>> searchHits, long totalHits) {
         this.searchHits = searchHits;

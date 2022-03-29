@@ -16,7 +16,6 @@
         name: common
         tasks_from: data-loader
       vars:
-        data_bucket: nci-cbiit-ctdc-dev
         model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
         model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
         property_file: "config/props-bento-ext.yml"

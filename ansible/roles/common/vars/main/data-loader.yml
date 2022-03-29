@@ -1,5 +1,7 @@
 # vars file for data loading
+project_name:  "{{lookup('env','PROJECT_NAME')}}"
 tier: "{{ lookup('env','TIER') }}"
+stack_name: "{{project_name}}"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_user', nested=true, region='us-east-1' ) }}"
 neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"

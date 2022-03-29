@@ -1,6 +1,7 @@
 ---
 #build
 backend_version: "{{ lookup('env','BE_VERSION') }}"
+bento_api_version: "{{  }}"
 es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
 
 # build
@@ -17,7 +18,6 @@ es_schema_file:
 
 #graphql
 schema_file: "bento-extended.graphql"
-
 backend_container_name: "backend"
 backend_image_version: "{{ backend_version }}"
 backend_container_build_path: "{{workspace}}/{{project_name}}-backend"

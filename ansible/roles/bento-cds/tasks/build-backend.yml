@@ -27,3 +27,4 @@
     dockerfile_path: "{{ backend_dockerfile_path }}"
     container_image: "{{ backend_container_image }}"
     container_registry_url: "{{ container_registry_url }}"
+    bento_api_version: "{{ backend_image_version }}"

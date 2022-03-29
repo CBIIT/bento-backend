@@ -12,24 +12,6 @@ cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
 split_transactions:  "{{ lookup('env','SPLIT')}}"
 region: us-east-1
 data_bucket: "{{ bucket }}"
-#vars for match files
-#match_base_url: "{{ lookup('env','MATCH_BASE_URL') }}"
-#okta_url: https://bioappdev.okta.com/oauth2/{{okta_key}}/v1/token
-#bucket_Name: "{{ lookup('env','S3_BUCKET') }}"
-#arm_Id: "{{ lookup('env','ARM_ID') }}"
-#phs_Id: "{{ lookup('env','PHS_ID') }}"
-#okta_key: "{{ lookup('env','OKTA_KEY') }}"
-#secret_name: "{{ lookup('env','SECRET_NAME') }}"
-#meta_data_path: "{{ lookup('env','META_DATA_PATH') }}"
-#meta_data_bucket: "{{ lookup('env','META_DATA_BUCKET') }}"
-#meta_data_bucket: sample-meta-data-bucket
-#use_prod: "{{ lookup('env','USE_PROD') }}"
-#cipher_key: "{{ lookup('env','CIPHER_KEY') }}"
-
-#vars for data validation
-#ctdc_base_url: "https://trialcommons-dev.cancer.gov"
-#s3_bucket: "{{ lookup('env','S3_BUCKET') }}"
-#manifest_file: "{{ lookup('env','MANIFEST_FILE') }}"
 
 
 

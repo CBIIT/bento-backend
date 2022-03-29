@@ -672,6 +672,7 @@ public class BentoQueryImpl implements BentoQuery {
                                         .args(args)
                                         .selectedField(Const.BENTO_FIELDS.AGE_AT_INDEX)
                                         .isExcludeFilter(true)
+                                        .isRangeFilter(true)
                                         .build())
                                 .getSourceFilter()
                         ))

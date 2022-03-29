@@ -1,6 +1,6 @@
 package gov.nih.nci.bento.search.query;
 
-import gov.nih.nci.bento.constants.Const;
+import gov.nih.nci.bento.classes.FilterParam;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class BentoQueryCreator extends QueryCreator {
 
-    public BentoQueryCreator(Map<String, Object> args) {
-        super(args);
+    public BentoQueryCreator(Map<String, Object> args, FilterParam param) {
+        super(args, param);
     }
 
     @Override

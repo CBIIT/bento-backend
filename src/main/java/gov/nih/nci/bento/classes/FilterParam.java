@@ -15,11 +15,12 @@ public class FilterParam {
     private final QueryParam queryParam;
     private final String defaultSortField;
     private final String customOrderBy;
+    private final boolean isRangeFilter;
     private TableParam tableParam;
 
     @Builder
     public FilterParam(Map<String, Object> args, String selectedField, String subAggSelectedField,
-                       boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy) {
+                       boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy, boolean isRangeFilter) {
         this.args = args;
         this.selectedField = selectedField;
         this.subAggSelectedField = subAggSelectedField;
@@ -27,6 +28,7 @@ public class FilterParam {
         this.queryParam = queryParam;
         this.defaultSortField = defaultSortField;
         this.customOrderBy = customOrderBy;
+        this.isRangeFilter = isRangeFilter;
         if (queryParam != null) this.tableParam = queryParam.getTableParam();
     }
 }

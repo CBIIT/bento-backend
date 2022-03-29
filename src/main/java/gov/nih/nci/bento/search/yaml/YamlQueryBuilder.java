@@ -178,6 +178,7 @@ public class YamlQueryBuilder {
                                 .args(param.getArgs())
                                 .selectedField(filterType.getSelectedField())
                                 .isExcludeFilter(true)
+                                .isRangeFilter(true)
                                 .build())
                         .getSourceFilter();
             case Const.YAML_QUERY.FILTER.SUB_AGGREAGATION:

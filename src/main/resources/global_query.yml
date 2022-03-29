@@ -38,7 +38,7 @@ query:
     filterType:
       type: global
       # Default Sort
-      defaultSortField: subject_id_num
+      defaultSortField: program_id_kw
       query:
         - field: program_id
           type: term
@@ -46,7 +46,6 @@ query:
           type: term
         - field: program_name
           type: wildcard
-          caseInSensitive: true
     resultType: global
   - name: globalSearchStudy
     index:

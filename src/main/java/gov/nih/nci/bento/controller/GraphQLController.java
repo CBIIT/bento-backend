@@ -2,8 +2,8 @@ package gov.nih.nci.bento.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.config.ConfigurationDAO;
+import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.search.GraphQLBuilder;
 import graphql.language.Document;
 import graphql.language.OperationDefinition;
@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
@@ -42,6 +43,7 @@ public class GraphQLController {
 	}
 
 	@CrossOrigin
+	@ApiIgnore
 	@RequestMapping
 			(value = "/v1/graphql/", method = {
 				RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PUT, RequestMethod.DELETE,
@@ -61,7 +63,7 @@ public class GraphQLController {
 		// Get graphql query from request
 		String operation = new String();
 		try {
-			String body = httpEntity.getBody().toString();
+			String body = httpEntity.getBody();
 			JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
 			operation = getOperation(jsonObject);
 
@@ -84,12 +86,11 @@ public class GraphQLController {
 	@CrossOrigin
 	@RequestMapping(value = "/test/graphql/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	@ResponseBody
-	public ResponseEntity<String> getGraphQLTest(@RequestBody String jsonparams){
+	public ResponseEntity<String> getGraphQLTest(@RequestBody String jsonBody){
 		logger.info("hit end point:/test/graphql/");
 		// Get graphql query from request
 		try {
-			String body = jsonparams;
-			JsonObject jsonObject = gson.fromJson(body, JsonObject.class);
+			JsonObject jsonObject = gson.fromJson(jsonBody, JsonObject.class);
 			Map<String, Object> variables = gson.fromJson(jsonObject.get("variables"), Map.class);
 			return ResponseEntity.ok(graphQL.query(getQuery(jsonObject), variables));
 

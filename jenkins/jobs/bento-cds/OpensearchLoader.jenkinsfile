@@ -17,7 +17,6 @@ pipeline {
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
             value: 'dev,qa,perf,ctdc' )
-      }
     gitParameter(branchFilter: 'origin/(.*)', 
         defaultValue: 'master',
         name: 'Dataloader_Branch', 
@@ -45,7 +44,7 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-frontend')
-  }
+    }
   // options {
   // 	ansiColor('xterm')
   // }

@@ -1,9 +1,15 @@
 package gov.nih.nci.bento.model.bento.query;
 
-import gov.nih.nci.bento.classes.*;
+import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryParam;
+import gov.nih.nci.bento.classes.TableParam;
 import gov.nih.nci.bento.constants.Const;
-import gov.nih.nci.bento.search.query.filter.*;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.query.filter.AggregationFilter;
+import gov.nih.nci.bento.search.query.filter.RangeFilter;
+import gov.nih.nci.bento.search.query.filter.SearchCountFilter;
+import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
+import gov.nih.nci.bento.search.result.TypeMapperService;
 import gov.nih.nci.bento.utility.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.search.SearchRequest;
@@ -20,7 +26,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BentoQueryImpl implements BentoQuery {
 
-    public final TypeMapperImpl typeMapper;
+    public final TypeMapperService typeMapper;
 
     @Override
     public MultipleRequests findNumberOfPrograms(Map<String, Object> args) {

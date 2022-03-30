@@ -2,7 +2,7 @@ package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.TableParam;
-import gov.nih.nci.bento.search.query.QueryCreator;
+import gov.nih.nci.bento.search.query.QueryFactory;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 public class TableFilter extends AbstractFilter {
@@ -12,7 +12,7 @@ public class TableFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilter(FilterParam param, QueryCreator bentoParam) {
+    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
         TableParam tableParam = param.getTableParam();
         return new SearchSourceBuilder()
                 .query(

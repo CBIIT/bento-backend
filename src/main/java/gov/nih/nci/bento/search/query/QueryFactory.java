@@ -7,12 +7,12 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import java.util.*;
 
-public abstract class QueryCreator {
+public abstract class QueryFactory {
     // Range Query Has Different Query Option
-    private Set<String> rangeFields;
+    private final Set<String> rangeFields;
     private Map<String, Object> args;
 
-    public QueryCreator(Map<String, Object> args, FilterParam param) {
+    public QueryFactory(Map<String, Object> args, FilterParam param) {
         this.args = args;
         this.rangeFields = param.isRangeFilter() ? Set.of(param.getSelectedField()) : new HashSet<>();
     }

@@ -4,7 +4,7 @@ import gov.nih.nci.bento.classes.*;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapper;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperService;
 import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
 import gov.nih.nci.bento.search.yaml.filter.YamlGlobalFilterType;
 import gov.nih.nci.bento.search.yaml.filter.YamlHighlight;
@@ -31,11 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class YamlQueryBuilder {
+public class YamlQueryFactory {
 
     private final EsSearch esService;
-    private final TypeMapperImpl typeMapper;
-    private static final Logger logger = LogManager.getLogger(YamlQueryBuilder.class);
+    private final TypeMapperService typeMapper;
+    private static final Logger logger = LogManager.getLogger(YamlQueryFactory.class);
 
     public Map<String, DataFetcher> createYamlQueries() throws IOException {
         logger.info("Yaml File Queries Loaded");

@@ -8,8 +8,8 @@ import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.model.bento.query.BentoQuery;
 import gov.nih.nci.bento.model.bento.query.BentoQueryImpl;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
-import gov.nih.nci.bento.search.yaml.YamlQueryBuilder;
+import gov.nih.nci.bento.search.result.TypeMapperService;
+import gov.nih.nci.bento.search.yaml.YamlQueryFactory;
 import gov.nih.nci.bento.service.EsSearch;
 import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +27,14 @@ public final class BentoEsSearch implements DataFetcher {
 
     private static final Logger logger = LogManager.getLogger(BentoEsSearch.class);
     private final EsSearch esService;
-    private final TypeMapperImpl typeMapper;
+    private final TypeMapperService typeMapper;
     private BentoQuery bentoQuery;
-    private YamlQueryBuilder yamlQueryBuilder;
+    private YamlQueryFactory yamlQueryFactory;
 
     @PostConstruct
     public void init() {
         bentoQuery = new BentoQueryImpl(typeMapper);
-        yamlQueryBuilder = new YamlQueryBuilder(esService, typeMapper);
+        yamlQueryFactory = new YamlQueryFactory(esService, typeMapper);
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class BentoEsSearch implements DataFetcher {
                         .dataFetcher("globalSearch", env ->
                                 globalSearch(esService.CreateQueryParam(env))
                         )
-                        .dataFetchers(yamlQueryBuilder.createYamlQueries())
+                        .dataFetchers(yamlQueryFactory.createYamlQueries())
 //                        .dataFetcher("searchSubjects", env ->
 //                                multiSearchTest(esService.CreateQueryParam(env))
 //                        )

@@ -8,9 +8,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import java.util.List;
 import java.util.Map;
 
-public class BentoQueryCreator extends QueryCreator {
+public class BentoQueryFactory extends QueryFactory {
 
-    public BentoQueryCreator(Map<String, Object> args, FilterParam param) {
+    public BentoQueryFactory(Map<String, Object> args, FilterParam param) {
         super(args, param);
     }
 

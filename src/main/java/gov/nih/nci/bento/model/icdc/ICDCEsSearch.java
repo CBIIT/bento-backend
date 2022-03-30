@@ -1,13 +1,13 @@
 package gov.nih.nci.bento.model.icdc;
 
-import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
-import gov.nih.nci.bento.search.result.TypeMapperImpl;
+import gov.nih.nci.bento.search.result.TypeMapperService;
 import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.DataFetchingEnvironment;
@@ -34,7 +34,7 @@ public class ICDCEsSearch implements DataFetcher {
     private static final Logger logger = LogManager.getLogger(ICDCEsSearch.class);
     private final EsSearch esService;
 
-    public final TypeMapperImpl typeMapper;
+    public final TypeMapperService typeMapper;
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

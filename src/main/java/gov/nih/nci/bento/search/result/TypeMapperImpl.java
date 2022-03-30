@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class TypeMapperImpl {
+public class TypeMapperImpl implements TypeMapperService {
 
     // ElasticSearch Default Mapping Value Mapper
     public TypeMapper<List<Map<String, Object>>> getDefault(Set<String> returnTypes) {

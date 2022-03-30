@@ -11,7 +11,7 @@
           options:
             awslogs-group: "/ecs/{{project_name}}/{{tier}}/logs"
             awslogs-region: "{{region}}"
-            awslogs-create-group: "true",
+            awslogs-create-group: "true"
             awslogs-stream-prefix: {{project_name}}-{{container_name}}
         firelensConfiguration:
           type: fluentbit

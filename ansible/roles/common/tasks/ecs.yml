@@ -20,9 +20,6 @@
             hostPort: "{{ container_port }}"
         logConfiguration:
           logDriver: awsfirelens
-          secretOptions:
-            - name: "apiKey"
-              valueFrom: "arn:aws:secretsmanager:{{region}}:{{account}}:secret:{{newrelic_api_secret}}"
           options:
             Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
             Host: "{{ sumo_collector_endpoint }}"

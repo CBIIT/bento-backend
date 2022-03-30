@@ -1,4 +1,5 @@
 #db
+project_name: cds
 database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 
 #auth
@@ -6,7 +7,6 @@ app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/
 
 #build
 stack_name: cds
-project_name: cds
 platform: aws
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

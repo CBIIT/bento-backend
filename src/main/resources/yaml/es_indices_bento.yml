@@ -21,9 +21,9 @@ Indices:
       lab_procedures:
         type: keyword
       subject_id:
-        type: keywords
+        type: keyword
       subject_id_num:
-        type: keywords
+        type: long
       subject_id_gs:
         type: keyword
       diagnosis:
@@ -46,10 +46,12 @@ Indices:
         type: keyword
       menopause_status:
         type: keyword
+      age:
+        type: long
       age_at_index:
-        type: keywords
+        type: long
       age_at_index_gs:
-        type: keyword
+        type: long
       survival_time:
         type: integer
       survival_time_unit:
@@ -98,6 +100,7 @@ Indices:
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endocrine_therapy,
       demo.menopause_status AS  menopause_status,
+      demo.age_at_index AS age,
       demo.age_at_index AS age_at_index,
       demo.age_at_index AS age_at_index_gs,
       demo.survival_time AS survival_time,
@@ -121,7 +124,7 @@ Indices:
       subject_ids:
         type: keyword
       subject_id_num:
-        type: keywords
+        type: keyword
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
@@ -151,9 +154,9 @@ Indices:
       subject_id:
         type: keyword
       subject_id_num:
-        type: keyword
+        type: integer
       sample_id:
-        type: keywords
+        type: keyword
       sample_id_gs:
         type: keyword
       sample_id_num:
@@ -197,7 +200,7 @@ Indices:
       file_type:
         type: keyword
       age_at_index:
-        type: keyword
+        type: integer
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
@@ -271,11 +274,11 @@ Indices:
       file_id_num:
         type: integer
       file_id_gs:
-        type: keywords
+        type: keyword
       file_name:
         type: keyword
       file_name_gs:
-        type: keywords
+        type: keyword
       file_description:
         type: keyword
       file_format:
@@ -313,7 +316,7 @@ Indices:
       file_type:
         type: keyword
       age_at_index:
-        type: keyword
+        type: integer
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -368,15 +371,15 @@ Indices:
       type:
         type: keyword
       program_code:
-        type: keywords
+        type: keyword
       program_id:
-        type: keywords
+        type: keyword
       program_id_kw:
-        type: keywords
+        type: keyword
       program_file_names:
         type: keyword
       program_name:
-        type: keywords
+        type: keyword
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -401,13 +404,21 @@ Indices:
       study_code:
         type: keyword
       study_id:
-        type: keywords
+        type: keyword
+      study_info:
+        type: keyword
       study_id_kw:
         type: keyword
       study_name:
-        type: keyword
+        type: text
+        fields:
+          keyword:
+            type: keyword
       study_type:
-        type: keyword
+        type: text
+        fields:
+          keyword:
+            type: keyword
       study_file_names:
         type: keyword
 
@@ -422,6 +433,7 @@ Indices:
         s.study_id AS study_id,
         s.study_id AS study_id_kw,
         s.study_acronym AS study_code,
+        (s.study_acronym + ': ' + s.study_name) AS study_info,
         s.study_name AS study_name,
         s.study_type AS study_type,
         COLLECT(DISTINCT sf.file_name) AS study_file_names
@@ -460,15 +472,24 @@ Indices:
       node_name:
         type: keyword
       property_name:
-        type: keywords
+        type: keyword
       property_kw:
         type: keyword
       property_description:
-        type: keyword
+        type: text
+        fields:
+          keyword:
+            type: keyword
       property_required:
-        type: keyword
+        type: boolean
+        fields:
+          keyword:
+            type: keyword
       property_type:
         type: keyword
+        fields:
+          keyword:
+            type: keyword
 
   - index_name: model_values
     type: model
@@ -480,14 +501,17 @@ Indices:
       node_name:
         type: keyword
       property_name:
-        type: keywords
+        type: keyword
       property_description:
         type: keyword
       property_required:
-        type: keyword
+        type: boolean
       property_type:
         type: keyword
       value:
-        type: keywords
+        type: text
+        fields:
+          keyword:
+            type: keyword
       value_kw:
         type: keyword

@@ -1,8 +1,8 @@
 ---
-#################################################################################################################################
+#######################################################################################################################
 # task definition
 #######################################################################################################################
-- name: create task definition for "{{project_name}}-{{container_name}}"
+- name: create task definition for {{project_name}}-{{container_name}}
   ecs_taskdefinition:
     containers:
       - name: sumologic-firelens
@@ -13,14 +13,6 @@
           type: fluentbit
           options:
             enable-ecs-log-metadata: "true"
-#      - name: newrelic-firelens
-#        essential: true
-#        image: "533243300146.dkr.ecr.us-east-1.amazonaws.com/newrelic/logging-firelens-fluentbit"
-#        memory: 100
-#        firelensConfiguration:
-#          type: fluentbit
-#          options:
-#            enable-ecs-log-metadata: "true"
       - name: "{{container_name}}"
         essential: true
         image: "{{ container_image_url }}:{{image_version}}"

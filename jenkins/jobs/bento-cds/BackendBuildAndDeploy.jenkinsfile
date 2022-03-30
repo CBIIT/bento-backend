@@ -115,6 +115,7 @@ pipeline {
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
               extraVars: [
                             test_queries_file: "${params.Test_Queries_File}",
+                            project_name: "${params.Project}"
                           ],
               colorized: true)
           }
@@ -135,6 +136,7 @@ pipeline {
             inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
             extraVars: [
 					            enable_es_filter: "${params.Enable_ES_Filter}",
+					            project_name: "${params.Project}"
                         ],
 					colorized: true)
   			}

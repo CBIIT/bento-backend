@@ -111,7 +111,7 @@ pipeline {
             	playbook: '${WORKSPACE}/icdc-devops/ansible/cds-opensearch-loader.yml',
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 					extraVars: [
-                                   tier: "${params.Environment}"
+                                   tier: "${params.Environment}",
                                    project_name: "${params.ProjectName}"
                                ],
             		colorized: true) 

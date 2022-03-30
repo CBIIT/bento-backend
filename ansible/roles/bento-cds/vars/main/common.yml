@@ -1,7 +1,8 @@
-#db
-project_name: cds
+
 database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 
+#db
+project_name: cds
 #auth
 app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
 

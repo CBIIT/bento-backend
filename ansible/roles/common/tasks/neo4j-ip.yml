@@ -5,7 +5,7 @@
     filters:
       "tag:Name": "{{ database_name }}"
       "instance-state-name": running
-      "tag:Environment": "{{tier}}"
+      "tag:Environment": "{{ tier }}"
   register: neo4j
 
 - name: set instance name

@@ -26,3 +26,4 @@ sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'monitoring/sumologic.
 container_registry_url: "{{ecr_repo}}"
 app_name: "{{project_name}}-{{platform}}-{{tier}}"
 about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"
+sumo_collector_endpoint: collectors.fed.sumologic.com

@@ -86,6 +86,9 @@
     deployment_configuration:
       minimum_healthy_percent: 50
       maximum_percent: 200
+      deployment_circuit_breaker:
+        enable: true
+        rollback: false
     desired_count: 1
     load_balancers: "{{ lb }}"
     region: "{{ region }}"

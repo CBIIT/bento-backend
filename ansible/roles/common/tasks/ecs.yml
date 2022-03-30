@@ -1,5 +1,5 @@
 ---
-- name: create task definition for {{project_name}}-{{container_name}}
+- name: create task definition for 
   ecs_taskdefinition:
     containers:
       - name: sumologic-firelens

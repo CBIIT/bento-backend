@@ -25,9 +25,9 @@
     ecs_cluster_name: "{{frontend_ecs_cluster_name}}"
     container_env:
       - name: REACT_APP_BACKEND_API
-        value: "{% if tier == 'prod' %}https://bento-tools.org/v1/graphql/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
+        value: "{% if tier == 'prod' %}https://bento-tools.org/v1/graphql/{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
       - name: REACT_APP_FILE_SERVICE_API
-        value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{project}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
+        value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
       - name: REACT_APP_BE_VERSION
         value: "{{ backend_version }}"
       - name: REACT_APP_FE_VERSION
@@ -49,5 +49,5 @@
       - name: REACT_APP_GOOGLE_CLIENT_ID
         value: "{{ app_google_client_id }}"
       - name: REACT_APP_AUTH_API
-        value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{project}}-{{ tier }}.bento-tools.org{% endif %}"
+        value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org{% endif %}"
 

@@ -12,6 +12,8 @@ cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
 split_transactions:  "{{ lookup('env','SPLIT')}}"
 region: us-east-1
 data_bucket: "{{ bucket }}"
+es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
+
 
 
 

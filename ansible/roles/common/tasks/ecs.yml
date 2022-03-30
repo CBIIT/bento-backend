@@ -9,7 +9,7 @@
         logConfiguration:
           logDriver: awslogs
           options:
-            awslogs-group: "/ecs/{{project_name}}/{{tier}}/logs"
+            awslogs-group: "/ecs/{{project_name}}/{{tier}}/sumologic/logs"
             awslogs-region: "{{region}}"
             awslogs-create-group: "true"
             awslogs-stream-prefix: "{{project_name}}-{{container_name}}"
@@ -26,15 +26,21 @@
           - containerPort: "{{ container_port }}"
             hostPort: "{{ container_port }}"
         logConfiguration:
-          logDriver: awsfirelens
+          logDriver: awslogs
           options:
-            Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
-            Host: "{{ sumo_collector_endpoint }}"
-            URI: "/receiver/v1/http/{{ sumo_collector_token }}"
-            Port: '443'
-            tls: 'on'
-            tls.verify: 'off'
-            Format: 'json_lines'
+            awslogs-group: "/ecs/{{project_name}}/{{container_name}}/logs"
+            awslogs-region: "{{region}}"
+            awslogs-create-group: "true"
+            awslogs-stream-prefix: "{{tier}}"
+#          logDriver: awsfirelens
+#          options:
+#            Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
+#            Host: "{{ sumo_collector_endpoint }}"
+#            URI: "/receiver/v1/http/{{ sumo_collector_token }}"
+#            Port: '443'
+#            tls: 'on'
+#            tls.verify: 'off'
+#            Format: 'json_lines'
     launch_type: FARGATE
     network_mode: awsvpc
     execution_role_arn: "arn:aws:iam::{{ account }}:role/{{ project_name }}-{{ tier }}-task-execution-role"

@@ -1,8 +1,9 @@
 
-database_name: "{{ project_name }}-{{tier}}-neo4j-4"
+
 
 #db
 project_name: cds
+database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 #auth
 app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
 
@@ -24,7 +25,7 @@ sumo_access_id: "{{ lookup('aws_ssm', 'sumo_access_id', region='us-east-1' ) }}"
 sumo_access_key: "{{ lookup('aws_ssm', 'sumo_access_key', region='us-east-1' ) }}"
 syslog_host: "{{ lookup('aws_ssm', 'syslog_host', region='us-east-1' ) }}"
 sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'monitoring/sumologic.collector_token', nested=true, region='us-east-1' ) }}"
-container_registry_url: "{{ecr_repo}}"
+container_registry_url: "{{ ecr_repo }}"
 app_name: "{{project_name}}-{{platform}}-{{tier}}"
 about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"
 sumo_collector_endpoint: collectors.fed.sumologic.com

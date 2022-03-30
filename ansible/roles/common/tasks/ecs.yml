@@ -4,7 +4,7 @@
     containers:
       - name: sumologic-firelens
         essential: true
-        image: "amazon/aws-for-fluent-bit:latest"
+        image: "906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:2.21.3"
         memory: 100
         logConfiguration:
           logDriver: awslogs

@@ -42,7 +42,7 @@
 ############################################################################################################################
 #     Task Definition Queries
 ############################################################################################################################
-- name: query task definition - backend
+- name: query task definition - {{ container_name }}
   ecs_taskdefinition_info:
     task_definition: "{{project_name }}-{{tier}}-{{ container_name }}"
     region: "{{region}}"

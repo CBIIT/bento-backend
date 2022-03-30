@@ -5,6 +5,19 @@ pipeline {
 		}
 	}
 	parameters {
+	extendedChoice(
+            name: 'ProjectName',
+            defaultValue: 'cds',
+            description: 'Choose the environment to build',
+            type: 'PT_SINGLE_SELECT',
+            value: 'cds' )
+	extendedChoice(
+            name: 'Environment',
+            defaultValue: 'dev',
+            description: 'Choose the environment to build',
+            type: 'PT_SINGLE_SELECT',
+            value: 'dev,qa,perf,ctdc' )
+      }
     gitParameter(branchFilter: 'origin/(.*)', 
         defaultValue: 'master',
         name: 'Dataloader_Branch', 
@@ -32,12 +45,6 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-frontend')
-	extendedChoice( 
-        name: 'Environment', 
-        defaultValue: 'dev', 
-        description: 'Choose the environment to build', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,perf,ctdc' )
   }
   // options {
   // 	ansiColor('xterm')
@@ -98,6 +105,7 @@ pipeline {
  		environment {
  			SLACK_URL = "${SLACK_URL}"
 			FRONTEND_BRANCH = "${params.frontend_branch}"
+			PROJECT_NAME = "${params.ProjectName}"
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

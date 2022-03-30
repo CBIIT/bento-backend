@@ -61,3 +61,13 @@
         value: "Project:{{ project_name }};Environment:{{ tier }}"
       - name: JAVA_OPTS
         value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+      - name: REDIS_ENABLE
+        value: "{{ enable_redis }}"
+      - name: REDIS_USE_CLUSTER
+        value: "{{ use_cluster }}"
+      - name: REDIS_HOST
+        value: "{{ redis_host[tier] }}"
+      - name: REDIS_PORT
+        value: "{{ redis_port }}"
+      - name: REDIS_FILTER_ENABLE
+        value: false

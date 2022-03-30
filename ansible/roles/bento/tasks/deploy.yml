@@ -45,7 +45,7 @@
         - name: REDIS_USE_CLUSTER
           value: "{{ use_cluster }}"
         - name: REDIS_HOST
-          value: "{{ redis_host[tier] }}"
+          value: "{{ redis_host }}"
         - name: REDIS_PORT
           value: "{{ redis_port }}"
         - name: REDIS_FILTER_ENABLE

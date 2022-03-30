@@ -27,3 +27,10 @@ backend_container_memory: 1024
 backend_container_cpu: 512
 backend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
 backend_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"
+
+# redis
+enable_redis: false
+redis_password: ""
+redis_port: 6379
+use_cluster: true
+redis_host: localhost

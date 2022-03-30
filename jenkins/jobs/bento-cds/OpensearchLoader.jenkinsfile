@@ -109,7 +109,11 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 			ansiblePlaybook( 
             	playbook: '${WORKSPACE}/icdc-devops/ansible/cds-opensearch-loader.yml',
-					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+					extraVars: [
+                                   tier: "${params.Environment}"
+                                   project_name: "${params.ProjectName}"
+                               ],
             		colorized: true) 
  			}
  		}

@@ -102,7 +102,7 @@ pipeline {
   	stage('load-es-data'){
  		environment {
  			SLACK_URL = "${SLACK_URL}"
-			FRONTEND_BRANCH = "${params.frontend_branch}"
+// 			FRONTEND_BRANCH = "${params.frontend_branch}"
 			PROJECT_NAME = "${params.ProjectName}"
  		}
  		steps {

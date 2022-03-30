@@ -6,6 +6,8 @@
   become: yes
 
   tasks:
+    - debug:
+      msg: "{{project_name}}"
     - name: get db ip
       include_role:
         name: common
@@ -19,6 +21,6 @@
         model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
         model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
         property_file: "config/props-bento-ext.yml"
-        about_file: "{ { workspace } }/bento-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+        about_file: "{{ workspace }}/bento-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
         indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_bento.yml"
         ansible_python_interpreter: /usr/bin/python2.7

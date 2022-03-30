@@ -53,8 +53,7 @@ pipeline {
   	maven 'Default' 
     jdk 'Default' 
   }
-  stages{
-
+  stages {
   	stage('checkout'){
   		steps {
   			checkout([$class: 'GitSCM', 
@@ -96,10 +95,11 @@ pipeline {
 			
 			dir('bento-model'){
                 git branch: 'master',
-                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'}
+                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
+            }
 
   		}
- 
+     }
   	}
   	stage('load-es-data'){
  		environment {

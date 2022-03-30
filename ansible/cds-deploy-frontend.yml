@@ -5,7 +5,7 @@
   become: yes
 
   tasks:
-    - name: build stage for cds backend
+    - name: build stage for cds frontend
       include_role:
         name: bento-cds
         tasks_from: deploy-frontend

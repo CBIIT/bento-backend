@@ -13,10 +13,10 @@
             awslogs-region: "{{region}}"
             awslogs-create-group: "true"
             awslogs-stream-prefix: "{{project_name}}-{{container_name}}"
-        firelensConfiguration:
-          type: fluentbit
-          options:
-            enable-ecs-log-metadata: "true"
+#        firelensConfiguration:
+#          type: fluentbit
+#          options:
+#            enable-ecs-log-metadata: "true"
       - name: "{{container_name}}"
         essential: true
         image: "{{ container_image_url }}:{{image_version}}"

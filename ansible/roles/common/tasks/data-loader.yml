@@ -1,5 +1,4 @@
 ---
-
 - name: Check if tmp directory exist
   stat:
     path: "{{workspace}}/tmp"

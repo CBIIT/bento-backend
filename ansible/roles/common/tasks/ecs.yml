@@ -6,6 +6,12 @@
         essential: true
         image: "amazon/aws-for-fluent-bit:latest"
         memory: 100
+        logConfiguration:
+          logDriver: awslogs
+          options:
+            awslogs-group: "{{project_name}}-{{tier}}-ecs-logs"
+            awslogs-region: "{{region}}"
+            awslogs-stream-prefix: ecs
         firelensConfiguration:
           type: fluentbit
           options:

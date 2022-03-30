@@ -7,7 +7,7 @@
 
   tasks:
     - debug:
-      msg: "{{project_name}}"
+        msg: "{{project_name}}"
     - name: get db ip
       include_role:
         name: common

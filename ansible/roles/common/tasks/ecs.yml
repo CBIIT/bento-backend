@@ -90,6 +90,12 @@
     task_definition: "{{ task_name }}:{{ task_revision }}"
     role: "{{ role_arn }}"
     force_new_deployment: yes
+    network_configuration:
+      subnets:
+        - subnet-abcd1234
+      security_groups:
+        - sg-aaaa1111
+        - my_security_group
     deployment_configuration:
       minimum_healthy_percent: 50
       maximum_percent: 200

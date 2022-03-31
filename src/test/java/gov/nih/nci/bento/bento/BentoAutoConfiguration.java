@@ -31,6 +31,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -51,9 +52,9 @@ public class BentoAutoConfiguration {
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.SINGLE).getInputStream());
         Map<String, DataFetcher> singleQueryMap = new HashMap<>();
-        singleTypeQuery.getQuery().forEach(q->{
-            singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));
-        });
+        singleTypeQuery.getQuery().forEach(q->
+            singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q))
+        );
         assertThat(singleQueryMap.size(), equalTo(singleTypeQuery.getQuery().size()));
     }
 
@@ -188,7 +189,7 @@ public class BentoAutoConfiguration {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
             YamlHighlight yamlHighlight = query.getHighlight();
             // Set Multiple Highlight Fields
-            yamlHighlight.getFields().forEach((f)->highlightBuilder.field(f));
+            yamlHighlight.getFields().forEach(highlightBuilder::field);
             highlightBuilder.preTags(yamlHighlight.getPreTag() == null ? "" : yamlHighlight.getPreTag());
             highlightBuilder.postTags(yamlHighlight.getPostTag() == null ? "" : yamlHighlight.getPostTag());
             if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(yamlHighlight.getFragmentSize());
@@ -201,14 +202,19 @@ public class BentoAutoConfiguration {
         List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilterType().getQuery();
         // Add Should Query
         globalQuerySets.forEach(globalQuery -> {
-            if (globalQuery.getType().equals(YAML_QUERY.QUERY_TERMS.TERM)) {
-                boolQueryBuilder.should(QueryBuilders.termQuery(globalQuery.getField(), param.getSearchText()));
-            } else if (globalQuery.getType().equals(YAML_QUERY.QUERY_TERMS.WILD_CARD)) {
-                boolQueryBuilder.should(QueryBuilders.wildcardQuery(globalQuery.getField(), "*" + param.getSearchText()+ "*").caseInsensitive(true));
-            } else if (globalQuery.getType().equals(YAML_QUERY.QUERY_TERMS.MATCH)) {
-                boolQueryBuilder.should(QueryBuilders.matchQuery(globalQuery.getField(), param.getSearchText()));
-            } else {
-                throw new IllegalArgumentException();
+
+            switch (globalQuery.getType()) {
+                case YAML_QUERY.QUERY_TERMS.TERM:
+                    boolQueryBuilder.should(QueryBuilders.termQuery(globalQuery.getField(), param.getSearchText()));
+                    break;
+                case YAML_QUERY.QUERY_TERMS.WILD_CARD:
+                    boolQueryBuilder.should(QueryBuilders.wildcardQuery(globalQuery.getField(), "*" + param.getSearchText()+ "*").caseInsensitive(true));
+                    break;
+                case YAML_QUERY.QUERY_TERMS.MATCH:
+                    boolQueryBuilder.should(QueryBuilders.matchQuery(globalQuery.getField(), param.getSearchText()));
+                    break;
+                default:
+                    throw new IllegalArgumentException();
             }
         });
         return boolQueryBuilder;
@@ -218,12 +224,13 @@ public class BentoAutoConfiguration {
         if (query.getFilterType().getOptionalQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
         List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery();
+        AtomicReference<String> filterString = new AtomicReference<>("");
         optionalQuerySets.forEach(option-> {
-            String filterString = "";
+
             if (option.getOption().equals(YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
-                filterString = StrUtil.getBoolText(param.getSearchText());
+                filterString.set(StrUtil.getBoolText(param.getSearchText()));
             } else if (option.getOption().equals(YAML_QUERY.QUERY_TERMS.INTEGER)) {
-                filterString = StrUtil.getIntText(param.getSearchText());
+                filterString.set(StrUtil.getIntText(param.getSearchText()));
             } else {
                 throw new IllegalArgumentException();
             }
@@ -231,7 +238,7 @@ public class BentoAutoConfiguration {
             if (option.getType().equals(YAML_QUERY.QUERY_TERMS.MATCH)) {
                 conditionalList.add(QueryBuilders.matchQuery(option.getField(), filterString));
             } else if (option.getType().equals(YAML_QUERY.QUERY_TERMS.TERM)) {
-                conditionalList.add(QueryBuilders.termQuery(option.getField(), filterString));
+                conditionalList.add(QueryBuilders.termQuery(option.getField(), filterString.get()));
             } else {
                 throw new IllegalArgumentException();
             }
@@ -264,7 +271,7 @@ public class BentoAutoConfiguration {
         // Set Result Type
         switch (query.getResultType()) {
             case YAML_QUERY.RESULT_TYPE.DEFAULT:
-                return typeMapper.getDefault(param.getReturnTypes());
+                return typeMapper.getList(param.getReturnTypes());
             case YAML_QUERY.RESULT_TYPE.AGGREGATION:
                 return typeMapper.getAggregate();
             case YAML_QUERY.RESULT_TYPE.INT_TOTAL_AGGREGATION:
@@ -285,7 +292,7 @@ public class BentoAutoConfiguration {
                                 Const.BENTO_FIELDS.TITLE,source.get(Const.BENTO_FIELDS.TITLE),
                                 Const.BENTO_FIELDS.TEXT, text));
             case YAML_QUERY.RESULT_TYPE.GLOBAL:
-                return typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes());
+                return typeMapper.getQueryResult(param.getGlobalSearchResultTypes());
             case YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
             default:

@@ -8,8 +8,8 @@ import java.util.Set;
 
 public interface TypeMapperService {
 
-    TypeMapper<List<Map<String, Object>>> getDefault(Set<String> returnTypes);
-    TypeMapper<QueryResult> getDefaultReturnTypes(Set<String> returnTypes);
+    TypeMapper<List<Map<String, Object>>> getList(Set<String> returnTypes);
+    TypeMapper<QueryResult> getQueryResult(Set<String> returnTypes);
     TypeMapper<List<Map<String, Object>>> getAggregate();
     TypeMapper<Integer> getAggregateTotalCnt();
     TypeMapper<List<String>> getStrList(String field);

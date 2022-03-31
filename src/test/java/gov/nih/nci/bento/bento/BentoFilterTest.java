@@ -43,7 +43,6 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
-
     @Test
     public void searchAggregationStudiesCnt_Test() throws IOException {
 
@@ -111,7 +110,7 @@ public class BentoFilterTest {
         returnTypes.add("subject_id_gs");
         returnTypes.add("age_at_index_gs");
 
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(returnTypes));
+        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getList(returnTypes));
         assertThat(result.size(), greaterThan(0));
         assertThat(result.get(0), hasKey("subject_id_gs"));
         // Check Size
@@ -139,7 +138,7 @@ public class BentoFilterTest {
         returnTypes.add(BENTO_FIELDS.SUBJECT_ID);
         returnTypes.add(BENTO_FIELDS.PROGRAM_ID);
 
-        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getDefault(returnTypes));
+        List<Map<String, Object>> result = esService.elasticSend(request, typeMapper.getList(returnTypes));
         assertThat(result.size(), greaterThan(0));
         assertThat(result.get(0), hasKey(BENTO_FIELDS.SUBJECT_ID));
         // Check Result as expected size

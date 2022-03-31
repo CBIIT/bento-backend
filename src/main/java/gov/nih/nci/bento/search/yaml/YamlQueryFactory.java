@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 public class YamlQueryFactory {
@@ -42,24 +43,24 @@ public class YamlQueryFactory {
         // Set Single Request API
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.SINGLE).getInputStream());
-        Map<String, graphql.schema.DataFetcher> map = new HashMap<>();
-        singleTypeQuery.getQuery().forEach(q->{
-            map.put(q.getName(), env -> createSingleYamlQuery(esService.CreateQueryParam(env), q));
-        });
+        Map<String, graphql.schema.DataFetcher> result = new HashMap<>();
+        singleTypeQuery.getQuery().forEach(q->
+            result.put(q.getName(), env -> createSingleYamlQuery(esService.CreateQueryParam(env), q))
+        );
         // Set Group Request API
         Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
         GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.GROUP).getInputStream());
         groupTypeQuery.getGroups().forEach(group->{
             String queryName = group.getName();
-            map.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
+            result.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
         });
         // Set Global Search Request API
         Yaml globalYaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.GLOBAL).getInputStream());
-        globalQuery.getQuery().forEach(q->{
-            map.put(q.getName(), env -> createGlobalYamlQuery(esService.CreateQueryParam(env), q));
-        });
-        return map;
+        globalQuery.getQuery().forEach(q->
+            result.put(q.getName(), env -> createGlobalYamlQuery(esService.CreateQueryParam(env), q))
+        );
+        return result;
     }
 
     private Object createGroupYamlQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
@@ -83,7 +84,7 @@ public class YamlQueryFactory {
 
         switch (query.getResultType()) {
             case Const.YAML_QUERY.RESULT_TYPE.DEFAULT:
-                return typeMapper.getDefault(param.getReturnTypes());
+                return typeMapper.getList(param.getReturnTypes());
             case Const.YAML_QUERY.RESULT_TYPE.AGGREGATION:
                 return typeMapper.getAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.INT_TOTAL_AGGREGATION:
@@ -104,7 +105,7 @@ public class YamlQueryFactory {
                                 Const.BENTO_FIELDS.TITLE,source.get(Const.BENTO_FIELDS.TITLE),
                                 Const.BENTO_FIELDS.TEXT, text));
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL:
-                return typeMapper.getDefaultReturnTypes(param.getGlobalSearchResultTypes());
+                return typeMapper.getQueryResult(param.getGlobalSearchResultTypes());
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
             default:
@@ -241,12 +242,12 @@ public class YamlQueryFactory {
         if (query.getFilterType().getOptionalQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
         List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery() ;
+        AtomicReference<String> filterString = new AtomicReference<>("");
         optionalQuerySets.forEach(option-> {
-            String filterString = "";
             if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
-                filterString = StrUtil.getBoolText(param.getSearchText());
+                filterString.set(StrUtil.getBoolText(param.getSearchText()));
             } else if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.INTEGER)) {
-                filterString = StrUtil.getIntText(param.getSearchText());
+                filterString.set(StrUtil.getIntText(param.getSearchText()));
             } else {
                 throw new IllegalArgumentException();
             }
@@ -254,7 +255,7 @@ public class YamlQueryFactory {
             if (option.getType().equals(Const.YAML_QUERY.QUERY_TERMS.MATCH)) {
                 conditionalList.add(QueryBuilders.matchQuery(option.getField(), filterString));
             } else if (option.getType().equals(Const.YAML_QUERY.QUERY_TERMS.TERM)) {
-                conditionalList.add(QueryBuilders.termQuery(option.getField(), filterString));
+                conditionalList.add(QueryBuilders.termQuery(option.getField(), filterString.get()));
             } else {
                 throw new IllegalArgumentException();
             }
@@ -267,7 +268,7 @@ public class YamlQueryFactory {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
             YamlHighlight yamlHighlight = query.getHighlight();
             // Set Multiple Highlight Fields
-            yamlHighlight.getFields().forEach((f)->highlightBuilder.field(f));
+            yamlHighlight.getFields().forEach(highlightBuilder::field);
             highlightBuilder.preTags(yamlHighlight.getPreTag() == null ? "" : yamlHighlight.getPreTag());
             highlightBuilder.postTags(yamlHighlight.getPostTag() == null ? "" : yamlHighlight.getPostTag());
             if (highlightBuilder.fragmentSize() != null) highlightBuilder.fragmentSize(yamlHighlight.getFragmentSize());
@@ -280,14 +281,18 @@ public class YamlQueryFactory {
         List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilterType().getQuery();
         // Add Should Query
         globalQuerySets.forEach(globalQuery -> {
-            if (globalQuery.getType().equals(Const.YAML_QUERY.QUERY_TERMS.TERM)) {
-                boolQueryBuilder.should(QueryBuilders.termQuery(globalQuery.getField(), param.getSearchText()));
-            } else if (globalQuery.getType().equals(Const.YAML_QUERY.QUERY_TERMS.WILD_CARD)) {
-                boolQueryBuilder.should(QueryBuilders.wildcardQuery(globalQuery.getField(), "*" + param.getSearchText()+ "*").caseInsensitive(true));
-            } else if (globalQuery.getType().equals(Const.YAML_QUERY.QUERY_TERMS.MATCH)) {
-                boolQueryBuilder.should(QueryBuilders.matchQuery(globalQuery.getField(), param.getSearchText()));
-            } else {
-                throw new IllegalArgumentException();
+            switch (globalQuery.getType()) {
+                case Const.YAML_QUERY.QUERY_TERMS.TERM:
+                    boolQueryBuilder.should(QueryBuilders.termQuery(globalQuery.getField(), param.getSearchText()));
+                    break;
+                case Const.YAML_QUERY.QUERY_TERMS.WILD_CARD:
+                    boolQueryBuilder.should(QueryBuilders.wildcardQuery(globalQuery.getField(), "*" + param.getSearchText()+ "*").caseInsensitive(true));
+                    break;
+                case Const.YAML_QUERY.QUERY_TERMS.MATCH:
+                    boolQueryBuilder.should(QueryBuilders.matchQuery(globalQuery.getField(), param.getSearchText()));
+                    break;
+                default:
+                    throw new IllegalArgumentException();
             }
         });
         return boolQueryBuilder;

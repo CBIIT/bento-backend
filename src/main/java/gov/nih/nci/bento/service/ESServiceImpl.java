@@ -1,7 +1,7 @@
 package gov.nih.nci.bento.service;
 
-import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.service.connector.DefaultClient;
@@ -37,8 +37,7 @@ public class ESServiceImpl implements EsSearch {
         } catch (RuntimeException e) {
             logger.error(e.toString());
         }
-        T result = mapper.get(searchResponse);
-        return result;
+        return mapper.get(searchResponse);
     }
 
     @Override

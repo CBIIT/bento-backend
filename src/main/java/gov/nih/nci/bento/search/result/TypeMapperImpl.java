@@ -23,12 +23,12 @@ import java.util.*;
 public class TypeMapperImpl implements TypeMapperService {
 
     // ElasticSearch Default Mapping Value Mapper
-    public TypeMapper<List<Map<String, Object>>> getDefault(Set<String> returnTypes) {
+    public TypeMapper<List<Map<String, Object>>> getList(Set<String> returnTypes) {
         return (response) -> getMaps(response, returnTypes);
     }
 
 
-    public TypeMapper<QueryResult> getDefaultReturnTypes(Set<String> returnTypes) {
+    public TypeMapper<QueryResult> getQueryResult(Set<String> returnTypes) {
         return (response) -> getDefaultMaps(response, returnTypes);
     }
 
@@ -97,13 +97,12 @@ public class TypeMapperImpl implements TypeMapperService {
         };
     }
 
-    @SuppressWarnings("unchecked")
     public TypeMapper<Integer> getAggregateTotalCnt() {
         return (response) -> {
             Aggregations aggregate = response.getAggregations();
             Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
-            List<Terms.Bucket> buckets = (List<Terms.Bucket>) terms.getBuckets();
-            return buckets.size();
+            long totalCount = terms.getBuckets().size() + terms.getSumOfOtherDocCounts();
+            return (int) totalCount;
         };
     }
 
@@ -155,11 +154,11 @@ public class TypeMapperImpl implements TypeMapperService {
                 Map<String, Object> source = hit.getSourceAsMap();
                 HighlightField highlightField = highlightFieldMap.get(field);
                 Text[] texts = highlightField.getFragments();
-                Arrays.stream(texts).forEach(text->{
+                Arrays.stream(texts).forEach(text->
                     result.add(
                             mapper.getMap(source, text)
-                    );
-                });
+                    )
+                );
             });
             return QueryResult.builder()
                     .searchHits(result)
@@ -179,7 +178,7 @@ public class TypeMapperImpl implements TypeMapperService {
                 Map<String, Object> returnMap = parseReturnMap(returnTypes, source);
                 highlightFieldMap.forEach((k,highlightField)->{
                     Text[] texts = highlightField.getFragments();
-                    Optional<String> text = Arrays.stream(texts).findFirst().map(v->v.toString()).stream().findFirst();
+                    Optional<String> text = Arrays.stream(texts).findFirst().map(Text::toString).stream().findFirst();
                     // Set Highlight Field & Get First Found Match Keyword
                     text.ifPresent(v->returnMap.put(BENTO_FIELDS.HIGHLIGHT, v));
                 });
@@ -194,7 +193,7 @@ public class TypeMapperImpl implements TypeMapperService {
 
     private Map<String, Object> parseReturnMap(Set<String> returnTypes, Map<String, Object> source) {
         return returnTypes.stream()
-                .filter(p->source.containsKey(p))
+                .filter(source::containsKey)
                 .collect(HashMap::new, (k,v)->k.put(v, source.get(v)), HashMap::putAll);
     }
 
@@ -211,13 +210,13 @@ public class TypeMapperImpl implements TypeMapperService {
                         Terms subTerms = subAggregate.get(ES_PARAMS.TERMS_AGGS);
                         List<Terms.Bucket> subBuckets = (List<Terms.Bucket>) subTerms.getBuckets();
                         List<Map<String, Object>> studies = new ArrayList<>();
-                        subBuckets.forEach((subBucket)->{
+                        subBuckets.forEach((subBucket)->
                             studies.add(Map.of(
                                     BENTO_FIELDS.ARM,subBucket.getKey(),
                                     BENTO_FIELDS.CASE_SIZE,subBucket.getDocCount(),
                                     BENTO_FIELDS.SIZE,subBucket.getDocCount()
-                            ));
-                        });
+                            ))
+                        );
                         result.add(
                                 Map.of(
                                         BENTO_FIELDS.PROGRAM, bucket.getKey(),

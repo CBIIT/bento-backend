@@ -705,7 +705,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SUBJECTS)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                .typeMapper(typeMapper.getQueryResult(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_ID,
                         Const.BENTO_FIELDS.SUBJECT_ID,
@@ -734,7 +734,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SAMPLES)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                .typeMapper(typeMapper.getQueryResult(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_ID,
                         Const.BENTO_FIELDS.SUBJECT_ID,
@@ -763,7 +763,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.PROGRAMS)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                .typeMapper(typeMapper.getQueryResult(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_CODE,
                         Const.BENTO_FIELDS.PROGRAM_ID,
@@ -788,7 +788,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.STUDIES)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                .typeMapper(typeMapper.getQueryResult(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_ID,
                         Const.BENTO_FIELDS.STUDY_ID,
@@ -815,7 +815,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.FILES)
                         .source(builder))
-                .typeMapper(typeMapper.getDefaultReturnTypes(Set.of(
+                .typeMapper(typeMapper.getQueryResult(Set.of(
                         Const.BENTO_FIELDS.TYPE,
                         Const.BENTO_FIELDS.PROGRAM_ID,
                         Const.BENTO_FIELDS.SUBJECT_ID,

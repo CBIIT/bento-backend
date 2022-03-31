@@ -217,7 +217,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.CASES);
         request.source(searchSourceBuilder);
 
-        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
+        return esService.elasticSend(request, typeMapper.getList(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> sampleOverview(QueryParam param, String sortDirection) throws IOException {
@@ -239,7 +239,7 @@ public class ICDCEsSearch implements DataFetcher {
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.SAMPLES);
         request.source(searchSourceBuilder);
-        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
+        return esService.elasticSend(request, typeMapper.getList(param.getReturnTypes()));
     }
 
     private List<Map<String, Object>> caseCountByDiagnosis(QueryParam param) throws IOException {
@@ -287,7 +287,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.FILES);
         request.source(searchSourceBuilder);
 
-        return esService.elasticSend(request, typeMapper.getDefault(param.getReturnTypes()));
+        return esService.elasticSend(request, typeMapper.getList(param.getReturnTypes()));
     }
 
 }

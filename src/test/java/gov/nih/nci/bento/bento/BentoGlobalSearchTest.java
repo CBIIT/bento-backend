@@ -117,19 +117,19 @@ public class BentoGlobalSearchTest {
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.PROGRAMS)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.PROGRAMS)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.PROGRAMS)
                                 .source(testBuilder03))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build()
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build()
         );
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
@@ -197,19 +197,19 @@ public class BentoGlobalSearchTest {
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SUBJECTS)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SUBJECTS)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SUBJECTS)
                                 .source(testBuilder03))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build()
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build()
         );
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
@@ -275,19 +275,19 @@ public class BentoGlobalSearchTest {
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SAMPLES)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SAMPLES)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.SAMPLES)
                                 .source(testBuilder03))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build()
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build()
         );
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
@@ -354,19 +354,19 @@ public class BentoGlobalSearchTest {
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.FILES)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.FILES)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.FILES)
                                 .source(testBuilder03))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build()
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build()
         );
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
@@ -626,25 +626,25 @@ public class BentoGlobalSearchTest {
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.MODEL_PROPERTIES)
                                 .source(testBuilder01))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.MODEL_PROPERTIES)
                                 .source(testBuilder02))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.MODEL_PROPERTIES)
                                 .source(testBuilder03))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST04")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.MODEL_PROPERTIES)
                                 .source(testBuilder04))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST05")
                         .request(new SearchRequest()
@@ -768,19 +768,19 @@ public class BentoGlobalSearchTest {
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.STUDIES)
                                 .source(studyIdBuilder))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST02")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.STUDIES)
                                 .source(studyNameBuilder))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build(),
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build(),
                 MultipleRequests.builder()
                         .name("TEST03")
                         .request(new SearchRequest()
                                 .indices(Const.BENTO_INDEX.STUDIES)
                                 .source(studyTypeBuilder))
-                        .typeMapper(typeMapper.getDefaultReturnTypes(returnTypes)).build()
+                        .typeMapper(typeMapper.getQueryResult(returnTypes)).build()
         );
 
         Map<String, Object> result = esService.elasticMultiSend(requests);

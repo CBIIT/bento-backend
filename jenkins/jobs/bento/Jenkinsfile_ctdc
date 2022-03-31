@@ -58,16 +58,12 @@ pipeline {
 		name: 'Flush_Redis')
 	booleanParam(
 		defaultValue: true,
-		description: 'Enable the Redis filter',
-		name: 'Enable_Redis_Filter')
-	string(
-	    defaultValue: 'redis-schema.graphql',
-		description: 'The file to use when loading redis schema',
-		name: 'Redis_Schema_File')
-	string(
-	    defaultValue: 'redis-filter-config.bento.yaml',
-		description: 'The file to use when loading redis queries',
-		name: 'Redis_Queries_File')
+		description: 'Enable the Elasticsearch filter',
+		name: 'Enable_ES_Filter')
+	booleanParam(
+		defaultValue: true,
+		description: 'Reload Elasticsearch data',
+		name: 'Reload_ES_Data')
 	string(
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',
@@ -222,20 +218,24 @@ pipeline {
           script {
             switch("${params.Environment}") {
               case "dev":
-                withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'es_ctdc_host', variable: 'ES_HOST'),
+				    usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_CTDC_IP}"
                   env.TIER  = "dev"
-				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
-			  break
+              break
               default:
-                withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                withCredentials([string(credentialsId: 'es_ctdc_host', variable: 'ES_HOST'),
+				    usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
                   env.NEO4J_IP    = "${NEO4J_CTDC_IP}"
                   env.TIER  = "dev"
-				  env.NEO4J_USER = "${NEO4J_USER}"
+                  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
+				  env.ES_HOST = "${ES_HOST}"
 
                 }
               break
@@ -246,7 +246,6 @@ pipeline {
 
   	stage('build'){
       environment {
-       VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}"
        BE_VERSION = "${params.Backend_Tag}"
       }
@@ -255,12 +254,12 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build.yml', 
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/bento-build-ctdc-dev.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
 						project: 'ctdc',
-                        redis_schema_file: "${params.Redis_Schema_File}",
-						redis_init_queries_file: "${params.Redis_Queries_File}",
+                        redis_schema_file: "",
+						redis_init_queries_file: "",
                         test_queries_file: "${params.Test_Queries_File}",
 						frontend_commit_id: "${params.fe_commit_id}",
 						backend_commit_id: "${params.be_commit_id}",
@@ -307,7 +306,6 @@ pipeline {
 
   	stage('deploy'){
 	  environment {
-       VERSION = "${params.Frontend_Tag}"
        FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
@@ -316,7 +314,7 @@ pipeline {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
+				branches: [[name: '*/master']],
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -334,7 +332,7 @@ pipeline {
             		extraVars: [
 					project: 'ctdc',
                     enable_redis: "${params.Use_Redis}",
-					enable_redis_filter: "${params.Enable_Redis_Filter}",
+					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)
   			}
@@ -389,8 +387,8 @@ pipeline {
 
     }
 
-//	success {
-//
+	success {
+
 //		script {
 //			withCredentials([usernamePassword(credentialsId: 'github_user', passwordVariable: 'git_password', usernameVariable: 'git_user')]) {
 //				sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
@@ -423,8 +421,15 @@ pipeline {
 //			
 //				}
 //			}
-//		
-//		}
+
+        script {
+			if (params.Reload_ES_Data) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'CTDC-Dev/_Data_Processing/BentoDataLoader_ES_CTDC', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Frontend_Branch', value: "${params.Frontend_Tag}"), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Tag}"), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+			}
+		}
+		
+		}
 
 	cleanup {
 	

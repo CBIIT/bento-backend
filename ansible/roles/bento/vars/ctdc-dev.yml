@@ -1,0 +1,9 @@
+---
+# vars file for bento
+redis_host: 
+  dev: "bento-dev-redis-cluster.l5vrvc.0001.use1.cache.amazonaws.com"
+
+schema_file: "ctdc.graphql"
+es_schema_file: "es-schema-ctdc.graphql"
+
+about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"

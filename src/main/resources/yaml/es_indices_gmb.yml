@@ -126,6 +126,8 @@ Indices:
         type: keyword
       file_type:
         type: keyword
+      md5sum:
+        type: keyword
     cypher_query: "
       MATCH (f:FILE)
       OPTIONAL MATCH (f)-->(s:SUBJECT)-->(ct:CLINICALTRIAL)
@@ -162,7 +164,8 @@ Indices:
         ae.AE_OUTCOME AS outcome,
         gv.GRMLN_VAR_PTHGNC_CAT AS germline_pathogenicity,
         sv.SOMATIC_VAR_PTHGNC_CAT AS somatic_pathogenicity,
-        f.FILE_TYPE AS file_type
+        f.FILE_TYPE AS file_type,
+        f.MD5SUM AS md5sum
     "
   # Trials Index
   - index_name: trials

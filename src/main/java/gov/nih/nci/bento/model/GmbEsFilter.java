@@ -89,9 +89,20 @@ public class GmbEsFilter implements DataFetcher{
                             Map<String, Object> args = env.getArguments();
                             return globalSearch(args);
                         })
+                        .dataFetcher("filesInList", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return filesInList(args);
+                        })
+                        .dataFetcher("fileIdsFromFileName", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return fileIdsFromFileName(args);
+                        })
+                        .dataFetcher("idsLists", env -> idsLists())
                 )
                 .build();
     }
+
+
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {
         //Get node counts
@@ -361,6 +372,76 @@ public class GmbEsFilter implements DataFetcher{
             result.put(category, pagedCategory);
         }
 
+        return result;
+    }
+
+    private List<Map<String, Object>> fileIdsFromFileName(Map<String, Object> params) throws IOException{
+        final String[][] properties = new String[][]{
+                new String[]{"file_name", "file_name"},
+                new String[]{"file_id", "file_id"}
+        };
+
+        String defaultSort = "file_name";
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("file_name", "file_name"),
+                Map.entry("file_id", "file_id")
+        );
+
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(ORDER_BY, SORT_DIRECTION));
+        String order_by = (String)params.get(ORDER_BY);
+        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
+        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        Request request = new Request("GET", FILES_END_POINT);
+
+        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+    }
+
+    private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException{
+        final String[][] properties = new String[][]{
+                new String[]{"subject_id", "subject_id"},
+                new String[]{"file_name", "file_name"},
+                new String[]{"fileType", "file_type"},
+                new String[]{"description", "file_description"},
+                new String[]{"fileFormat", "file_format"},
+                new String[]{"size", "file_size"},
+                new String[]{"file_id", "file_id"},
+                new String[]{"md5sum", "md5sum"}
+        };
+
+        String defaultSort = "file_name";
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("subject_id", "subject_id"),
+                Map.entry("file_name", "file_name"),
+                Map.entry("fileType", "file_type"),
+                Map.entry("description", "file_description"),
+                Map.entry("fileFormat", "file_format"),
+                Map.entry("size", "file_size"),
+                Map.entry("file_id", "file_id"),
+                Map.entry("md5sum", "md5sum")
+        );
+
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(ORDER_BY, SORT_DIRECTION));
+        String order_by = (String)params.get(ORDER_BY);
+        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
+        query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        Request request = new Request("GET", FILES_END_POINT);
+
+        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+    }
+
+    private Map<String, Object> idsLists() throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"subject_id", "subject_id"}
+        };
+        Request request = new Request("GET", SUBJECTS_END_POINT);
+        List<Map<String, Object>> response = esService.collectPage(request, new HashMap<String, Object>(), PROPERTIES, ESService.MAX_ES_SIZE, 0);
+        ArrayList<String> subject_ids = new ArrayList<>();
+        response.forEach(x -> subject_ids.add((String) x.get("subject_id")));
+        Map<String, Object> result = Map.of(
+                "subject_ids", subject_ids
+        );
         return result;
     }
 

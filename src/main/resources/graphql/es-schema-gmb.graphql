@@ -36,6 +36,10 @@ type SearchResultES {
     filterSubjectCountByFileType: [GroupCountES]
 }
 
+type SubjectIds{
+    subject_ids: [String]
+}
+
 type GroupCountES {
     group: String
     subjects: Int
@@ -62,6 +66,8 @@ type FileOverviewES {
     fileFormat: String
     size: String
     fileType: String
+    file_id: String
+    md5sum: String
 }
 
 type GlobalSearchResult {
@@ -194,4 +200,19 @@ type QueryType {
         first: Int = 10, 
         offset: Int = 0
     ): GlobalSearchResult
+
+    fileIdsFromFileName(
+        file_name: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC"
+    ): [FileOverviewES]
+
+    filesInList(
+        file_id: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC"
+    ): [FileOverviewES]
+
+    idsLists: SubjectIds
+    
 }

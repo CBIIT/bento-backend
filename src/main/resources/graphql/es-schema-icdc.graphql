@@ -110,7 +110,8 @@ type FileOverviewES {
     concurrent_disease_type: String
     cohort_description: String
     arm: String
-    other_cases: [String]
+    other_cases: [String],
+    md5sum: String
 }
 
 schema {

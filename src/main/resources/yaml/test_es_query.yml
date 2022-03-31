@@ -1,0 +1,170 @@
+query:
+  - name: Global Search Program
+    request: {
+      "operationName": "globalSearchProgram",
+      "variables": {
+        "input": "Trial",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchProgram($input: String, $first: Int, $offset: Int) {\n  globalSearchProgram(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      program_id\n      program_code\n      program_name\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Global Search Study
+    request: {
+      "operationName": "globalSearchStudy",
+      "variables": {
+        "input": "randomized",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchStudy($input: String, $first: Int, $offset: Int) {\n  globalSearchStudy(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      study_id\n      program_id\n      study_name\n      study_type\n      study_code\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Global Search File
+    request: {
+      "operationName": "globalSearchFile",
+      "variables": {
+        "input": "1025_OncotypeDXqRTPCR.txt",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchFile($input: String, $first: Int, $offset: Int) {\n  globalSearchFile(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      file_id\n      file_name\n      file_format\n      program_id\n      subject_id\n      sample_id\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Global Search Subject
+    request: {
+      "operationName": "globalSearchSubject",
+      "variables": {
+        "input": "BENTO-CASE-7356713",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchSubject($input: String, $first: Int, $offset: Int) {\n  globalSearchSubject(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      subject_id\n      program_id\n      program\n      study_acronym\n      diagnosis\n      age\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Global Search Sample
+    request: {
+      "operationName": "globalSearchSample",
+      "variables": {
+        "input": "Breast",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchSample($input: String, $first: Int, $offset: Int) {\n  globalSearchSample(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      sample_id\n      program_id\n      subject_id\n      diagnosis\n      sample_anatomic_site\n      tissue_type\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Global Search About
+    request: {
+      "operationName": "globalSearchAbout",
+      "variables": {
+        "input": "framework",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchAbout($input: String, $first: Int, $offset: Int) {\n  globalSearchAbout(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      page\n      title\n      type\n      text\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Global Search Model
+    request: {
+      "operationName": "globalSearchModel",
+      "variables": {
+        "input": "IMR-Immunoresponse",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query globalSearchModel($input: String, $first: Int, $offset: Int) {\n  globalSearchModel(input: $input, first: $first, offset: $offset) {\n    result {\n      type\n      node_name\n      property_name\n      property_description\n      property_required\n      property_type\n      value\n      highlight\n      __typename\n    }\n      count\n    __typename\n  }\n}\n"
+    }
+  - name: Table Subject Overview
+    request: {
+      "operationName": "subjectOverview",
+      "variables": {
+        "programs": [],
+        "studies": [],
+        "diagnoses": [],
+        "rc_scores": [],
+        "tumor_sizes": [],
+        "chemo_regimen": [],
+        "tumor_grades": [],
+        "er_status": [],
+        "pr_status": [],
+        "endo_therapies": [],
+        "meno_status": [],
+        "tissue_type": [],
+        "composition": [],
+        "association": [],
+        "file_type": [],
+        "age_at_index": [],
+        "order_by": "subject_id",
+        "sort_direction": "asc"
+      },
+      "query": "query subjectOverview($subject_ids: [String], $programs: [String], $studies: [String], $diagnoses: [String], $rc_scores: [String], $tumor_sizes: [String], $chemo_regimen: [String], $tumor_grades: [String], $er_status: [String], $pr_status: [String], $endo_therapies: [String], $meno_status: [String], $tissue_type: [String], $composition: [String], $association: [String], $file_type: [String], $age_at_index: [Float], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  subjectOverview(subject_id: $subject_ids, program: $programs, study_info: $studies, diagnosis: $diagnoses, recurrence_score: $rc_scores, tumor_size: $tumor_sizes, chemotherapy: $chemo_regimen, tumor_grade: $tumor_grades, er_status: $er_status, pr_status: $pr_status, endocrine_therapy: $endo_therapies, menopause_status: $meno_status, tissue_type: $tissue_type, composition: $composition, association: $association, file_type: $file_type, age_at_index: $age_at_index, first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    subject_id\n    program\n    program_id\n    study_acronym\n    study_short_description\n    study_info\n    diagnosis\n    recurrence_score\n    tumor_size\n    tumor_grade\n    er_status\n    pr_status\n    chemotherapy\n    endocrine_therapy\n    menopause_status\n    age_at_index\n    survival_time\n    survival_time_unit\n    files\n    lab_procedures\n    samples\n    __typename\n  }\n}\n"
+    }
+  - name: Table Sample Overview
+    request: {
+      "operationName": "sampleOverview",
+      "variables": {
+        "programs": [],
+        "studies": [],
+        "diagnoses": [],
+        "rc_scores": [],
+        "tumor_sizes": [],
+        "chemo_regimen": [],
+        "tumor_grades": [],
+        "er_status": [],
+        "pr_status": [],
+        "endo_therapies": [],
+        "meno_status": [],
+        "tissue_type": [],
+        "composition": [],
+        "association": [],
+        "file_type": [],
+        "age_at_index": [],
+        "subject_ids": [],
+        "sample_ids": [],
+        "order_by": "sample_id",
+        "sort_direction": "asc"
+      },
+      "query": "query sampleOverview($subject_ids: [String], $sample_ids: [String], $programs: [String], $studies: [String], $diagnoses: [String], $rc_scores: [String], $tumor_sizes: [String], $chemo_regimen: [String], $tumor_grades: [String], $er_status: [String], $pr_status: [String], $endo_therapies: [String], $meno_status: [String], $tissue_type: [String], $composition: [String], $association: [String], $file_type: [String], $age_at_index: [Float], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  sampleOverview(subject_id: $subject_ids, sample_id: $sample_ids, program: $programs, study_info: $studies, diagnosis: $diagnoses, recurrence_score: $rc_scores, tumor_size: $tumor_sizes, chemotherapy: $chemo_regimen, tumor_grade: $tumor_grades, er_status: $er_status, pr_status: $pr_status, endocrine_therapy: $endo_therapies, menopause_status: $meno_status, tissue_type: $tissue_type, composition: $composition, association: $association, file_type: $file_type, age_at_index: $age_at_index, first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    sample_id\n    subject_id\n    program\n    program_id\n    arm\n    diagnosis\n    tissue_type\n    tissue_composition\n    sample_anatomic_site\n    sample_procurement_method\n    platform\n    files\n    __typename\n  }\n}\n"
+    }
+  - name: Table File Overview
+    request: {
+      "operationName": "fileOverview",
+      "variables": {
+        "programs": [],
+        "studies": [],
+        "diagnoses": [],
+        "rc_scores": [],
+        "tumor_sizes": [],
+        "chemo_regimen": [],
+        "tumor_grades": [],
+        "er_status": [],
+        "pr_status": [],
+        "endo_therapies": [],
+        "meno_status": [],
+        "tissue_type": [],
+        "composition": [],
+        "association": [],
+        "file_type": [],
+        "age_at_index": [],
+        "subject_ids": [],
+        "file_ids": [],
+        "order_by": "file_name",
+        "sort_direction": "asc"
+      },
+      "query": "query fileOverview($subject_ids: [String], $file_ids: [String], $programs: [String], $studies: [String], $diagnoses: [String], $rc_scores: [String], $tumor_sizes: [String], $chemo_regimen: [String], $tumor_grades: [String], $er_status: [String], $pr_status: [String], $endo_therapies: [String], $meno_status: [String], $tissue_type: [String], $composition: [String], $association: [String], $file_type: [String], $age_at_index: [Float], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  fileOverview(subject_id: $subject_ids, file_id: $file_ids, program: $programs, study_info: $studies, diagnosis: $diagnoses, recurrence_score: $rc_scores, tumor_size: $tumor_sizes, chemotherapy: $chemo_regimen, tumor_grade: $tumor_grades, er_status: $er_status, pr_status: $pr_status, endocrine_therapy: $endo_therapies, menopause_status: $meno_status, tissue_type: $tissue_type, composition: $composition, association: $association, file_type: $file_type, age_at_index: $age_at_index, first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    file_id\n    program_id\n    file_name\n    association\n    file_description\n    file_format\n    file_size\n    program\n    arm\n    subject_id\n    sample_id\n    diagnosis\n    __typename\n  }\n}\n"
+    }
+  - name: File ID Search
+    request: {
+      "operationName": "search",
+      "variables": {
+        "subject_ids": [
+          "BENTO-CASE-16495", "BENTO-CASE-67043"
+        ]
+      },
+      "query": "query search($subject_ids: [String]) {\n  findSubjectIdsInList(subject_id: $subject_ids) {\n    subject_id\n    program_id\n    __typename\n  }\n}\n"
+    }
+  - name: Multi Global Search By IDs
+    request: {
+      "operationName": "search",
+      "variables": {
+        "subject_ids": [
+          "BENTO-CASE-99932", "BENTO-CASE-67043"
+        ]
+      },
+      "query": "query search($subject_ids: [String]) {\n  fileIDsFromList(subject_id: $subject_ids)\n}\n"
+    }

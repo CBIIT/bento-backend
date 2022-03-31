@@ -4,4 +4,4 @@ tests:
     response: "{\"data\":{\"schemaVersion\":\"1.4.5\"}}"
   - name: "Numbers of Stuff"
     request: "{\"query\":\"{\\n    numberOfPrograms\\n    numberOfStudies\\n    numberOfSubjects\\n    numberOfSamples\\n    numberOfLabProcedures\\n    numberOfFiles\\n}\",\"variables\":{}}"
-    response: "{\"data\":{\"numberOfLabProcedures\":1,\"numberOfFiles\":4012,\"numberOfSubjects\":1000,\"numberOfPrograms\":1,\"numberOfStudies\":4,\"numberOfSamples\":2000}}"
+    response: "{\"data\":{\"numberOfLabProcedures\":1,\"numberOfFiles\":1004,\"numberOfSubjects\":1000,\"numberOfPrograms\":1,\"numberOfStudies\":4,\"numberOfSamples\":1000}}"

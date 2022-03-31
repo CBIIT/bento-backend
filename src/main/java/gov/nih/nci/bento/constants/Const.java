@@ -14,6 +14,7 @@ public class Const {
             public static final String SINGLE = "yaml/single_query.yml";
             public static final String GROUP = "yaml/group_query.yml";
             public static final String GLOBAL = "yaml/global_query.yml";
+            public static final String TEST = "yaml/test_es_query.yml";
 
         }
 

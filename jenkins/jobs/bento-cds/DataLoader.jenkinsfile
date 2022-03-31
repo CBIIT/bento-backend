@@ -78,10 +78,10 @@ pipeline {
   				git branch: 'master',
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
-        dir('bento-model'){
-          git branch: 'master',
-          url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
-        }
+            dir('cds-model'){
+              git branch: 'master',
+              url: 'https://github.com/CBIIT/cds-model.git'
+            }
   		}
  
   	}

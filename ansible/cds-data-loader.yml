@@ -16,8 +16,8 @@
         name: common
         tasks_from: data-loader
       vars:
-        model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
-        model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
-        property_file: "config/props-bento-ext.yml"
-        bucket: bento-metadata-dev
+        model_file1: "{{workspace}}/cds-model/model-desc/cds-model.yml"
+        model_file2: "{{workspace}}/cds-model/model-desc/cds-model-props.yml"
+        property_file: "config/props-cds.yml"
+        bucket: bento-metadata
         ansible_python_interpreter: /usr/bin/python2.7

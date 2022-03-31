@@ -37,16 +37,16 @@ type SearchResult {
     armCountByTrial: [GroupCountES]
     trialsAndArms: [TrialArm]
 
-    caseCountByClinicalTrialId: [GroupCountES]
-    caseCountByClinicalTrialDesignation: [GroupCountES]
-    caseCountByPubmedId: [GroupCountES]
-    caseCountByGender: [GroupCountES]
-    caseCountByRace: [GroupCountES]
-    caseCountByEthnicity: [GroupCountES]
-    caseCountByDisease: [GroupCountES]
-    caseCountByFileType: [GroupCountES]
-    caseCountByFileFormat: [GroupCountES]
-    caseCountByTrialArm: [GroupCountES]
+    casesCountBaseOnTrialId: [GroupCountES]
+    casesCountBaseOnTrialCode: [GroupCountES]
+    casesCountBaseOnPubMedID: [GroupCountES]
+    casesCountBaseOnGender: [GroupCountES]
+    casesCountBaseOnRace: [GroupCountES]
+    casesCountBaseOnEthnicity: [GroupCountES]
+    casesCountBaseOnDiagnoses: [GroupCountES]
+    casesCountBaseOnFileType: [GroupCountES]
+    casesCountBaseOnFileFormat: [GroupCountES]
+    casesCountBaseOnTrialArm: [GroupCountES]
 }
 
 type ArmDiagnosisCount{

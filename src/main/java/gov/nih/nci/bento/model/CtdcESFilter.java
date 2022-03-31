@@ -22,9 +22,8 @@ import java.util.Set;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-@Service
-public class CtdcESFilterDataFetcher {
-    private static final Logger logger = LogManager.getLogger(CtdcESFilterDataFetcher.class);
+public class CtdcESFilter implements DataFetcher {
+    private static final Logger logger = LogManager.getLogger(CtdcESFilter.class);
 
     // parameters used in queries
     final String PAGE_SIZE = "first";
@@ -167,16 +166,16 @@ public class CtdcESFilterDataFetcher {
         data.put("armCountByTrial", armCountByTrial(params));
         data.put("trialsAndArms", trialsAndArms(params));
 
-        data.put("caseCountByClinicalTrialId", trialsGroupCountData);
-        data.put("caseCountByClinicalTrialDesignation", getGroupCount("trial_code", CASES_END_POINT, params));
-        data.put("caseCountByPubmedId", getGroupCount("pubmed_id", CASES_END_POINT, params));
-        data.put("caseCountByGender", getGroupCount("gender", CASES_END_POINT, params));
-        data.put("caseCountByRace", getGroupCount("race", CASES_END_POINT, params));
-        data.put("caseCountByEthnicity", getGroupCount("ethnicity", CASES_END_POINT, params));
-        data.put("caseCountByDisease",diagnosisGroupCountData);
-        data.put("caseCountByFileType", fileTypeGroupCountData);
-        data.put("caseCountByFileFormat", getGroupCount("file_format", FILES_END_POINT, params));
-        data.put("caseCountByTrialArm", trialArmGroupCountData);
+        data.put("casesCountBaseOnTrialId", trialsGroupCountData);
+        data.put("casesCountBaseOnTrialCode", getGroupCount("trial_code", CASES_END_POINT, params));
+        data.put("casesCountBaseOnPubMedID", getGroupCount("pubmed_id", CASES_END_POINT, params));
+        data.put("casesCountBaseOnGender", getGroupCount("gender", CASES_END_POINT, params));
+        data.put("casesCountBaseOnRace", getGroupCount("race", CASES_END_POINT, params));
+        data.put("casesCountBaseOnEthnicity", getGroupCount("ethnicity", CASES_END_POINT, params));
+        data.put("casesCountBaseOnDiagnoses",diagnosisGroupCountData);
+        data.put("casesCountBaseOnFileType", fileTypeGroupCountData);
+        data.put("casesCountBaseOnFileFormat", getGroupCount("file_format", FILES_END_POINT, params));
+        data.put("casesCountBaseOnTrialArm", trialArmGroupCountData);
 
         return data;
     }

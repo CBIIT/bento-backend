@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.DataFetcher;
-import gov.nih.nci.bento.model.CtdcESFilterDataFetcher;
 import gov.nih.nci.bento.model.Neo4jDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;

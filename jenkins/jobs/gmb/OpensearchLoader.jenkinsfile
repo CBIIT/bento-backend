@@ -67,10 +67,10 @@ pipeline {
 				branches: [[name: "${params.Frontend_Branch}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-frontend']],
+				relativeTargetDir: 'gmb-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-gmb-frontend']]])
 			
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
@@ -91,11 +91,8 @@ pipeline {
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops']]])
-			
-			dir('bento-model'){
-                git branch: 'master',
-                url: 'https://github.com/CBIIT/BENTO-TAILORx-model'
-            }
+
+
 
   		}
   	}
@@ -108,7 +105,7 @@ pipeline {
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 			ansiblePlaybook( 
-            	playbook: '${WORKSPACE}/icdc-devops/ansible/cds-opensearch-loader.yml',
+            	playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-opensearch-loader.yml',
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
             		colorized: true) 
  			}

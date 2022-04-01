@@ -1,0 +1,25 @@
+---
+- name: load data to neo4j db
+  hosts: loader
+  connection: local
+  gather_facts: yes
+  become: yes
+
+  tasks:
+
+    - name: get db ip
+      include_role:
+        name: common
+        tasks_from: neo4j-ip
+
+    - name: seed opensearch
+      include_role:
+        name: common
+        tasks_from: opensearch-loader
+      vars:
+        model_file1: "{{workspace}}/gmb-model/model-desc/000048_Model.yml"
+        model_file2: "{{workspace}}/gmb-model/model-desc/000048_Model_Props.yml"
+        property_file: "config/props-gmb-mock.yml"
+        about_file: "{{ workspace }}/gmb-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+        indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_gmb.yml"
+        ansible_python_interpreter: /usr/bin/python2.7

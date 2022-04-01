@@ -43,7 +43,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/bento-gmb-frontend'')
+        useRepository: 'https://github.com/CBIIT/bento-gmb-frontend')
     }
   // options {
   // 	ansiColor('xterm')

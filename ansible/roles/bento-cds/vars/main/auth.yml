@@ -9,4 +9,8 @@ auth_container_port: 8082
 auth_container_memory: 512
 auth_container_cpu: 256
 auth_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
-auth_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"
+app_name: "{{project_name}}-{{platform}}-{{tier}}"
+idp_provider: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/google.idp_provider', nested=true, region='us-east-1' ) }}"
+idp_client_id: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/google.idp_client_id', nested=true, region='us-east-1' ) }}"
+idp_client_secret: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/google.idp_client_secret', nested=true, region='us-east-1' ) }}"
+cookie_secret: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/google.cookie_secret', nested=true, region='us-east-1' ) }}"

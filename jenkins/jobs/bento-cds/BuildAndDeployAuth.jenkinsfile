@@ -43,11 +43,11 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,perf,icdc,prod' )
     extendedChoice( 
-        name: 'Project', 
-        defaultValue: 'bento', 
+        name: 'ProjectName',
+        defaultValue: 'cds',
         description: 'Choose project to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'bento,gmb,icdc,ctdc,c3dc' )
+        value: 'cds' )
    	gitParameter(branchFilter: 'origin/(.*)',
        defaultValue: 'master', 
        name: 'Auth_Tag',
@@ -98,16 +98,17 @@ pipeline {
   	stage('build'){
       environment {
        FILES_SLACK_URL = "${FILES_SLACK_URL}"
-       AUTH_VERSION = "${params.Auth_Tag}-${BUILD_NUMBER}"
+       AUTH_VERSION = "${params.Auth_Tag}"
+       PROJECT_NAME = "${params.ProjectName}"
       }
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-auth.yml',
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/cds-build-auth.yml',
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 						extraVars: [
                        		tier: "${params.Environment}",
-                            project: "${params.Project}"
+                            project_name: "${params.ProjectName}"
                         ],
 						colorized: true)
  			}
@@ -134,27 +135,17 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-			
-			withCredentials([string(credentialsId: 'idp_google_client_secret', variable: 'IDP_CLIENT_SECRET'),
-				string(credentialsId: 'idp_google_client_id', variable: 'IDP_CLIENT_ID'),
-				string(credentialsId: 'cookie_secret', variable: 'COOKIE_SECRET')
-				]){
+
 				wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-auth.yml',
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/cds-deploy-auth.yml',
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                      tier: "${params.Environment}",
-                     project: "${params.Project}",
-                     idp_client_id: "${IDP_CLIENT_ID}",
-					 idp_client_secret: "${IDP_CLIENT_SECRET}",
-					 cookie_secret: "${COOKIE_SECRET}",
-					 idp_provider: "google"
+                     project_name: "${params.ProjectName}",
                     ],
 					colorized: true)
   			}
-
-			}
 		  }
   		}
   	}

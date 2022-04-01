@@ -33,6 +33,10 @@
       - "-c"
       - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
     container_env:
+      - name: ES_SCHEMA
+        value: "{{es_schema}}"
+      - name: PROJECT
+        value: "{{project_name}}"
       - name: NEO4J_URL
         value: bolt://{{ neo4j_ip }}:7687
       - name: NEO4J_USER

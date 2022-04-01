@@ -1,0 +1,55 @@
+---
+#install aws collection
+- name: install ansible collections
+  include_role:
+    name: common
+    tasks_from: collections
+
+#docker login
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: get db ip
+  include_role:
+    name: common
+    tasks_from: neo4j-ip
+
+- name: deploy ecs
+  include_role:
+    name: common
+    tasks_from: ecs
+  vars:
+    container_name: "{{ auth_container_name }}"
+    image_version: "{{ auth_image_version }}"
+    container_image_url: "{{ auth_container_image_url }}"
+    container_port: "{{ auth_container_port }}"
+    container_memory: "{{ auth_container_memory }}"
+    container_cpu: "{{  auth_container_cpu  }}"
+    ecs_cluster_name: "{{ auth_ecs_cluster_name }}"
+    container_env:
+      - name: VERSION
+        value: "{{auth_version}}"
+      - name: COOKIE_SECRET
+        value: "{{cookie_secret}}"
+      - name: SESSION_TIMEOUT
+        value: 1800
+      - name: IDP
+        value: "{{idp_provider}}"
+      - name: CLIENT_ID
+        value: "{{idp_client_id}}"
+      - name: CLIENT_SECRET
+        value: "{{idp_client_secret}}"
+      - name: DATE
+        value: "{{ansible_date_time.date}}"
+      - name: PROJECT
+        value: "{{project_name}}"
+      - name: REDIRECT_URL
+        value: "{% if tier == 'prod' %}https://cds.bento-tools.org{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org{% endif %}"
+      - name: NEW_RELIC_LICENSE_KEY
+        value: "{{ newrelic_license_key }}"
+      - name: NEW_RELIC_APP_NAME
+        value: "{{ project_name }}-{{tier}}-auth"
+      - name: NEW_RELIC_LABELS
+        value: "Project:{{ project_name }};Environment:{{ tier }}"

@@ -5,7 +5,7 @@
   gather_facts: no
     
   tasks:
-    - name: deploy backend
+    - name: deploy auth
       include_role:
         name: bento-cds
         tasks_from: deploy-auth

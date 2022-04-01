@@ -8,6 +8,7 @@ auth_container_image: "{{ecr_repo}}/{{project_name}}-{{container_name}}:{{auth_v
 auth_container_port: 8082
 auth_container_memory: 512
 auth_container_cpu: 256
+auth_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"
 auth_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
 app_name: "{{project_name}}-{{platform}}-{{tier}}"
 idp_provider: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/google.idp_provider', nested=true, region='us-east-1' ) }}"

@@ -1,0 +1,292 @@
+# Indices settings
+Indices:
+  # First index
+  # Name of the index to be created, existing index with same name will be deleted
+  - index_name: subjects
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      studies:
+        type: keyword
+      accesses:
+        type: keyword
+      experimental_strategies:
+        type: keyword
+      subject_ids:
+        type: keyword
+      genders:
+        type: keyword
+      is_tumor:
+        type: keyword
+      file_types:
+        type: keyword
+
+      study_gs:
+        type: search_as_you_type
+      subject_id_gs:
+        type: search_as_you_type
+      site_gs:
+        type: search_as_you_type
+
+      analyte_type:
+        type: keyword
+      site:
+        type: keyword
+
+      samples:
+        type: keyword
+      files:
+        type: keyword
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (s:study)<--(p:participant)
+      OPTIONAL MATCH (p)<--(samp:sample)
+      OPTIONAL MATCH (samp)<--(f:file)
+      RETURN
+          s.study_acronym AS studies,
+          s.acl AS accesses,
+          s.experimental_strategy_and_data_subtype AS experimental_strategies,
+          s.phs_accession AS phs_accession,
+          p.participant_id AS subject_ids,
+          p.gender AS genders,
+          COLLECT(DISTINCT samp.sample_tumor_status) AS is_tumor,
+          COLLECT(DISTINCT f.file_type) AS file_types,
+
+          p.participant_id AS subject_id_gs,
+          s.study_acronym AS study_gs,
+          COLLECT(DISTINCT samp.sample_anatomic_site) AS site_gs,
+
+          COLLECT(DISTINCT samp.sample_type) AS analyte_type,
+          COLLECT(DISTINCT samp.sample_anatomic_site) AS site,
+
+          COLLECT(DISTINCT samp.sample_id) AS samples,
+          COLLECT(DISTINCT f.file_id) AS files
+    "
+
+  - index_name: samples
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      studies:
+        type: keyword
+      accesses:
+        type: keyword
+      experimental_strategies:
+        type: keyword
+      subject_ids:
+        type: keyword
+      genders:
+        type: keyword
+      is_tumor:
+        type: keyword
+      file_types:
+        type: keyword
+
+      sample_id_gs:
+        type: search_as_you_type
+      is_tumor_gs:
+        type: search_as_you_type
+      analyte_type_gs:
+        type: search_as_you_type
+
+      sample_id:
+        type: keyword
+      analyte_type:
+        type: keyword
+      files:
+        type: keyword
+
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (s:study)<--(p:participant)
+      OPTIONAL MATCH (p)<--(samp:sample)
+      OPTIONAL MATCH (samp)<--(f:file)
+      RETURN
+          s.study_acronym AS studies,
+          s.acl AS accesses,
+          s.experimental_strategy_and_data_subtype AS experimental_strategies,
+          p.participant_id AS subject_ids,
+          p.gender AS genders,
+          samp.sample_tumor_status AS is_tumor,
+          COLLECT(DISTINCT f.file_type) AS file_types,
+
+          samp.sample_id AS sample_id_gs,
+          samp.sample_tumor_status AS is_tumor_gs,
+          samp.sample_type AS analyte_type_gs,
+
+          samp.sample_id AS sample_id,
+          samp.sample_type AS analyte_type,
+          COLLECT(DISTINCT f.file_id) AS files
+    "
+
+
+  - index_name: files
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      studies:
+        type: keyword
+      accesses:
+        type: keyword
+      experimental_strategies:
+        type: keyword
+      subject_ids:
+        type: keyword
+      genders:
+        type: keyword
+      is_tumor:
+        type: keyword
+      file_types:
+        type: keyword
+
+      sample_id:
+        type: keyword
+      sample_ids:
+        type: keyword
+      file_names:
+        type: keyword
+
+      file_id:
+        type: keyword
+      file_name:
+        type: keyword
+      file_type:
+        type: keyword
+      file_size:
+        type: double
+
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (s:study)<--(p:participant)
+      OPTIONAL MATCH (p)<--(samp:sample)
+      OPTIONAL MATCH (samp)<--(f:file)
+      RETURN
+          s.study_acronym AS studies,
+          s.acl AS accesses,
+          s.experimental_strategy_and_data_subtype AS experimental_strategies,
+          p.participant_id AS subject_ids,
+          p.gender AS genders,
+          samp.sample_tumor_status AS is_tumor,
+          f.file_type AS file_types,
+
+          samp.sample_id AS sample_id,
+          samp.sample_id AS sample_ids,
+          f.file_name AS file_names,
+
+          f.file_id AS file_id,
+          f.file_name AS file_name,
+          f.file_type AS file_type,
+          f.file_size AS file_size
+    "
+
+  - index_name: studies
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      study_code:
+        type: search_as_you_type
+      phs_accession:
+        type: search_as_you_type
+      phs_accession_kw:
+        type: keyword
+      study_name:
+        type: search_as_you_type
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (s:study)
+      RETURN
+        s.study_acronym AS study_code,
+        s.phs_accession AS phs_accession,
+        s.phs_accession AS phs_accession_kw,
+        s.study_title AS study_name
+
+    "
+
+  - index_name: subject_ids
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      phs_accession:
+        type: keyword
+      subject_id:
+        type: keyword
+      subject_ids:
+        type: keyword
+
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (p:participant)-->(s:study)
+      RETURN
+        s.phs_accession AS phs_accession,
+        p.participant_id AS subject_id,
+        p.participant_id AS subject_ids
+
+    "
+
+
+  - index_name: about_page
+    type: about_file
+    # type mapping for each property of the index
+    mapping:
+      page:
+        type: search_as_you_type
+      title:
+        type: search_as_you_type
+      primaryContentImage:
+        type: text
+      content:
+        type: object
+
+  - index_name: model_nodes
+    type: model
+    subtype: node
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      node_kw:
+        type: keyword
+
+  - index_name: model_properties
+    type: model
+    subtype: property
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_kw:
+        type: keyword
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+
+  - index_name: model_values
+    type: model
+    subtype: value
+    # type mapping for each property of the index
+    mapping:
+      node:
+        type: search_as_you_type
+      property:
+        type: search_as_you_type
+      property_description:
+        type: search_as_you_type
+      property_required:
+        type: search_as_you_type
+      property_type:
+        type: search_as_you_type
+      value:
+        type: search_as_you_type
+      value_kw:
+        type: keyword

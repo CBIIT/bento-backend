@@ -1,0 +1,217 @@
+type SubjectOverview {
+    subject_id: String
+    study_acronym: String
+    phs_accession: String
+    gender: String
+    site: [String]
+
+    samples: [String]
+    files: [String]
+}
+
+type SampleOverview {
+    study_acronym: String
+    phs_accession: String
+    subject_id: String
+    sample_id: String
+
+    is_tumor: String
+    analyte_type: String
+
+    files: [String]
+}
+
+type FileOverview {
+    study_acronym: String
+    phs_accession: String
+    subject_id: String
+    sample_id: String
+
+    file_name: String
+    file_type: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
+type SearchResult {
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfFiles: Int
+    numberOfDiseaseSites: Int
+
+    subjectCountByExperimentalStrategy: [GroupCount]
+    subjectCountByGender: [GroupCount]
+    subjectCountByIsTumor: [GroupCount]
+    subjectCountByAnalyteType: [GroupCount]
+
+    filterSubjectCountByStudy: [GroupCount]
+    filterSubjectCountByExperimentalStrategy: [GroupCount]
+    filterSubjectCountByAccess: [GroupCount]
+    filterSubjectCountByGender: [GroupCount]
+    filterSubjectCountByIsTumor: [GroupCount]
+    filterSubjectCountByFileType: [GroupCount]
+}
+
+type GroupCount {
+    group: String
+    subjects: Int
+}
+
+type GS_Study {
+    type: String
+    phs_accession: String
+    study_name: String
+    study_code: String
+}
+
+type GS_Subject {
+    type: String
+    study: String
+    subject_id: String
+    site: String
+}
+
+type GS_Sample {
+    type: String
+    subject_id: String
+    sample_id: String
+    is_tumor: String
+    analyte_type: String
+}
+
+type GS_File {
+    type: String
+    subject_id: String
+    sample_id: String
+    file_id: String
+    file_name: String
+    file_type: String
+}
+
+type GS_Model {
+    type: String
+    node_name: String
+    property_name: String
+    property_description: String
+    property_required: String
+    property_type: String
+    value: String
+    highlight: String
+}
+
+type GS_About {
+    page: String
+    title: String
+    type: String
+    text: String
+}
+
+type GlobalSearchResult {
+    study_count: Int
+    studies: [GS_Study]
+
+    subject_count: Int
+    subjects: [GS_Subject]
+
+    sample_count: Int
+    samples: [GS_Sample]
+
+    file_count: Int
+    files: [GS_File]
+
+    about_count: Int
+    about_page: [GS_About]
+
+    model_count: Int
+    model: [GS_Model]
+}
+
+type SubjectResult {
+    subject_id: String
+    phs_accession: String
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+    searchSubjects (
+        subject_ids: [String] = [],
+        studies: [String] = [],
+        file_types: [String] = [],
+        genders: [String] = [],
+        experimental_strategies: [String] = [],
+        is_tumor: [String] = [],
+        accesses: [String] = [],
+    ): SearchResult
+
+    subjectOverview (
+        subject_ids: [String] = [],
+        studies: [String] = [],
+        file_types: [String] = [],
+        genders: [String] = [],
+        experimental_strategies: [String] = [],
+        is_tumor: [String] = [],
+        accesses: [String] = [],
+
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectOverview]
+
+    sampleOverview (
+        subject_ids: [String] = [],
+        sample_ids: [String] = [],
+        studies: [String] = [],
+        file_types: [String] = [],
+        genders: [String] = [],
+        experimental_strategies: [String] = [],
+        is_tumor: [String] = [],
+        accesses: [String] = [],
+
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SampleOverview]
+
+    fileOverview (
+        subject_ids: [String] = [],
+        sample_ids: [String] = [],
+        file_ids: [String] = [],
+        studies: [String] = [],
+        file_types: [String] = [],
+        genders: [String] = [],
+        experimental_strategies: [String] = [],
+        is_tumor: [String] = [],
+        accesses: [String] = [],
+
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverview]
+
+    fileIDsFromList(
+        subject_ids: [String] = [""],
+        sample_ids: [String] = [""],
+        file_names: [String] = [""]
+    ): [String]
+
+    filesInList(
+        file_ids: [String],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverview]
+
+    findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
+
+    globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
+
+}

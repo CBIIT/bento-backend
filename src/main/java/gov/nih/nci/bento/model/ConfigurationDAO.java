@@ -24,6 +24,8 @@ public class ConfigurationDAO {
 	public DataFetcher dataFetcher() {
 	    String project = env.getProperty("project", "bento").toLowerCase();
 	    switch (project) {
+			case "cds":
+				return new CdsEsFilter();
 			case "icdc":
 				return new IcdcEsFilter();
 			case "bento":

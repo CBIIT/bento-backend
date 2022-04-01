@@ -89,7 +89,7 @@ pipeline {
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-backend']]])
-            dir('bento-model'){
+            dir('gmb-model'){
                             git branch: "${params.Model_Branch}",
                             url: 'https://github.com/CBIIT/gmb-model'
                         }

@@ -8,6 +8,6 @@
     - name: build stage for cds backend
       include_role:
         name: bento-cds
-        tasks_from: build-backend
+        tasks_from: build-auth
       vars:
         ansible_python_interpreter: /bin/python3

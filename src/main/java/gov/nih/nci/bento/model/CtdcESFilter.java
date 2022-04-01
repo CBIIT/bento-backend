@@ -588,7 +588,7 @@ public class CtdcESFilter implements DataFetcher {
                         "caseSize", size
                 ));
             }
-            data.add(Map.of("trial", group.getAsJsonObject().get("key").getAsString(),
+            data.add(Map.of("trials", group.getAsJsonObject().get("key").getAsString(),
                     "caseSize", group.getAsJsonObject().get("doc_count").getAsInt(),
                     "arms", arms
             ));

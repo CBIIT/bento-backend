@@ -55,7 +55,7 @@ type ArmDiagnosisCount{
 }
 
 type TrialArm {
-    trial: String
+    trials: String
     caseSize: Int
     arms: [ArmCaseSize]
 }

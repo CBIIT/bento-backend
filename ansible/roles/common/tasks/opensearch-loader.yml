@@ -7,7 +7,7 @@
 
 - name: update server config file
   template:
-    dest: "{{workspace}}/config/es_loader_bento.yml"
+    dest: "{{workspace}}/config/es_loader.yml"
     src: "{{workspace}}/config/es_loader.yml.j2"
 
 - name: install python3
@@ -24,7 +24,7 @@
 - name: load data
   shell:
     cmd: >
-      python3 es_loader.py config/es_indices_bento.yml config/es_loader_bento.yml
+      python3 es_loader.py config/{{indices_file}} config/es_loader.yml
     chdir: "{{workspace}}"
   register: data_loader
 

@@ -42,7 +42,7 @@
       - name: CLIENT_SECRET
         value: "{{idp_client_secret}}"
       - name: DATE
-        value: "{{ansible_date_time.date}}"
+        value: "{{date}}"
       - name: PROJECT
         value: "{{project_name}}"
       - name: REDIRECT_URL

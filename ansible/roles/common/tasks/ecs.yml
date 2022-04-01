@@ -28,10 +28,10 @@
         logConfiguration:
           logDriver: awslogs
           options:
-            awslogs-group: "/ecs/{{project_name}}/{{container_name}}/logs"
+            awslogs-group: "/ecs/{{project_name}}/{{tier}}/logs"
             awslogs-region: "{{region}}"
             awslogs-create-group: "true"
-            awslogs-stream-prefix: "{{tier}}"
+            awslogs-stream-prefix: "{{container_name}}"
 #          logDriver: awsfirelens
 #          options:
 #            Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"

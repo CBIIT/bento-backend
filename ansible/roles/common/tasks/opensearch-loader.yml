@@ -24,7 +24,7 @@
 - name: load data
   shell:
     cmd: >
-      python3 es_loader.py config/{{indices_file}} config/es_loader.yml
+      python3 es_loader.py {{indices_file}} config/es_loader.yml
     chdir: "{{workspace}}"
   register: data_loader
 

@@ -10,13 +10,13 @@ pipeline {
             defaultValue: 'gmb',
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
-            value: 'cds' )
+            value: 'gmb' )
 	extendedChoice(
             name: 'Environment',
             defaultValue: 'dev',
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
-            value: 'dev,qa,perf,ctdc' )
+            value: 'dev,qa,stage,prod' )
     gitParameter(branchFilter: 'origin/(.*)', 
         defaultValue: 'master',
         name: 'Dataloader_Branch', 

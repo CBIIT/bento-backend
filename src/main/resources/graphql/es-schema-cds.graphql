@@ -202,14 +202,6 @@ type QueryType {
         file_names: [String] = [""]
     ): [String]
 
-    filesInList(
-        file_ids: [String],
-        order_by: String = "",
-        sort_direction: String = "ASC",
-        first: Int = 10,
-        offset: Int = 0
-    ): [FileOverview]
-
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult

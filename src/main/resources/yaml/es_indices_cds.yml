@@ -28,6 +28,8 @@ Indices:
       site_gs:
         type: search_as_you_type
 
+      phs_accession:
+        type: keyword
       analyte_type:
         type: keyword
       site:
@@ -91,6 +93,8 @@ Indices:
       analyte_type_gs:
         type: search_as_you_type
 
+      phs_accession:
+        type: keyword
       sample_id:
         type: keyword
       analyte_type:
@@ -119,6 +123,7 @@ Indices:
           samp.sample_type AS analyte_type_gs,
 
           samp.sample_id AS sample_id,
+          s.phs_accession AS phs_accession,
           samp.sample_type AS analyte_type,
           COLLECT(DISTINCT f.file_id) AS files
     "
@@ -150,6 +155,8 @@ Indices:
       file_names:
         type: keyword
 
+      phs_accession:
+        type: keyword
       file_id:
         type: keyword
       file_name:
@@ -178,6 +185,7 @@ Indices:
           samp.sample_id AS sample_ids,
           f.file_name AS file_names,
 
+          s.phs_accession AS phs_accession,
           f.file_id AS file_id,
           f.file_name AS file_name,
           f.file_type AS file_type,

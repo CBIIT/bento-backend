@@ -87,10 +87,6 @@ public class CdsEsFilter implements DataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return fileIDsFromList(args);
                         })
-                        .dataFetcher("filesInList", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return filesInList(args);
-                        })
                         .dataFetcher("findSubjectIdsInList", env -> {
                             Map<String, Object> args = env.getArguments();
                             return findSubjectIdsInList(args);
@@ -709,7 +705,7 @@ public class CdsEsFilter implements DataFetcher {
 
     private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException {
         final String[][] properties = new String[][]{
-                new String[]{"study_acronym", "study_acronym"},
+                new String[]{"study_acronym", "studies"},
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"sample_id", "sample_id"},
                 new String[]{"file_name", "file_name"},
@@ -720,7 +716,7 @@ public class CdsEsFilter implements DataFetcher {
         String defaultSort = "file_name"; // Default sort order
 
         Map<String, String> sortFieldMapping = Map.ofEntries(
-                Map.entry("study_acronym", "study_acronym"),
+                Map.entry("study_acronym", "studies"),
                 Map.entry("subject_id", "subject_ids"),
                 Map.entry("sample_id", "sample_id"),
                 Map.entry("file_name", "file_name"),

@@ -44,6 +44,15 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/bento-gmb-frontend')
+    gitParameter(branchFilter: 'origin/(.*)',
+            defaultValue: 'main',
+            name: 'Model_Branch',
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false,
+            selectedValue: 'DEFAULT',
+            sortMode: 'ASCENDING_SMART',
+            tagFilter: '*',
+            useRepository: 'https://github.com/CBIIT/gmb-model')
     }
   // options {
   // 	ansiColor('xterm')
@@ -80,7 +89,10 @@ pipeline {
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-backend']]])
-            
+            dir('bento-model'){
+                            git branch: "${params.Model_Branch}",
+                            url: 'https://github.com/CBIIT/gmb-model'
+                        }
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',

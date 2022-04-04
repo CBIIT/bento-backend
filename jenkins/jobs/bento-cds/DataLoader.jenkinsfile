@@ -79,7 +79,7 @@ pipeline {
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
             dir('cds-model'){
-              git branch: 'master',
+              git branch: 'main',
               url: 'https://github.com/CBIIT/cds-model.git'
             }
   		}

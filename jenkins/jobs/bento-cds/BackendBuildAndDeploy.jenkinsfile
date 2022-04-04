@@ -106,7 +106,7 @@ pipeline {
               playbook: '${WORKSPACE}/icdc-devops/ansible/cds-build-backend.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
               extraVars: [
-                            project_name: "${params.Project}"
+                            project_name: "${params.ProjectName}"
                           ],
               colorized: true)
           }

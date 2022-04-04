@@ -101,7 +101,7 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops']]])
 			
-			dir('model-model'){
+			dir('cds-model'){
                 git branch: "${params.Model_Tag}",
                 url: 'https://github.com/CBIIT/cds-model'
             }

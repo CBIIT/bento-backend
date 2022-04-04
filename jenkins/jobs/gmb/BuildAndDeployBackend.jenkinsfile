@@ -34,7 +34,8 @@ pipeline {
 		node {
 			//label 'commons-docker-ncias-p2236-v'
       		// label 'docker-maven'
-      		label 'cicd_microservice'
+//       		label 'cicd_microservice'
+        label 'ansible-10-test'
 		}
 	}
 	parameters {

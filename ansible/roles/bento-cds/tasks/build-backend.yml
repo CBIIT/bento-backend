@@ -16,7 +16,7 @@
     name: common
     tasks_from: neo4j-ip
 
-- name: build frontend
+- name: build backend
   include_role:
     name: common
     tasks_from: build-backend

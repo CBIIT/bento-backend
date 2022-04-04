@@ -1,0 +1,13 @@
+---
+- name: cds backend deploy pipeline
+  hosts: bento
+  connection: local
+  gather_facts: no
+    
+  tasks:
+    - name: deploy backend
+      include_role:
+        name: bento-cds
+        tasks_from: deploy-backend
+      vars:
+        ansible_python_interpreter: /usr/bin/python3

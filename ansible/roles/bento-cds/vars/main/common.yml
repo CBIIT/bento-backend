@@ -3,13 +3,13 @@
 
 date: "{{ansible_date_time.date}}"
 #db
-project_name: cds
+project_name: "{{project_name}}"
 database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 #auth
 app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
 
 #build
-stack_name: cds
+stack_name: "{{project_name}}"
 platform: aws
 tier: "{{ lookup('env','TIER') }}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

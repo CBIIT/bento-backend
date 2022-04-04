@@ -5,7 +5,7 @@ bento_api_version: "{{ backend_version }}"
 es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
 
 # build
-backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version }}/src/content/{{ tier }}/aboutPagesContent.yaml
+backend_content_url: https://raw.githubusercontent.com/CBIIT/bento-gmb-frontend/{{ frontend_version }}/src/content/{{ tier }}/aboutPagesContent.yaml
 
 
 # db
@@ -14,7 +14,7 @@ neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier
 # elasticsearch
 enable_es_filter: true
 #es_schema_file:
-es_schema: es-schema-cds.graphql
+es_schema: es-schema-{{project_name}}.graphql
 
 #graphql
 schema_file: "bento-extended.graphql"

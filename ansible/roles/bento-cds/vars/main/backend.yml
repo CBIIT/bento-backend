@@ -19,7 +19,7 @@ es_schema_file: es-schema-{{project_name}}.graphql
 es_schema: es-schema-{{project_name}}.graphql
 test_queries_file: "not_needed.txt"
 #graphql
-schema_file: "bento-extended.graphql"
+schema_file: "{{project_name}}.graphql"
 backend_container_name: "backend"
 backend_image_version: "{{ backend_version }}"
 backend_container_build_path: "{{workspace}}/{{project_name}}-backend"

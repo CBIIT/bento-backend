@@ -11,4 +11,4 @@
         tasks_from: build-backend
       vars:
         schema_file: bento-gmb.graphql
-        ansible_python_interpreter: /bin/python3
+        ansible_python_interpreter: /usr/bin/python3

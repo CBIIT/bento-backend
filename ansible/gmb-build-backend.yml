@@ -10,4 +10,5 @@
         name: bento-cds
         tasks_from: build-backend
       vars:
+        schema_file: bento-gmb.graphql
         ansible_python_interpreter: /bin/python3

@@ -39,7 +39,7 @@ pipeline {
 	}
 	parameters {
 	extendedChoice(
-            name: 'Project',
+            name: 'ProjectName',
             defaultValue: 'cds',
             description: 'Choose the project to build',
             type: 'PT_SINGLE_SELECT',
@@ -106,7 +106,6 @@ pipeline {
               playbook: '${WORKSPACE}/icdc-devops/ansible/cds-build-backend.yml', 
               inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
               extraVars: [
-                            test_queries_file: "${params.Test_Queries_File}",
                             project_name: "${params.Project}"
                           ],
               colorized: true)
@@ -127,7 +126,7 @@ pipeline {
             playbook: '${WORKSPACE}/icdc-devops/ansible/cds-deploy-backend.yml', 
             inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
             extraVars: [
-					            enable_es_filter: "${params.Enable_ES_Filter}",
+
 					            project_name: "${params.Project}"
                         ],
 					colorized: true)

@@ -43,7 +43,7 @@ pipeline {
         selectedValue: 'DEFAULT', 
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/bento-frontend')
+        useRepository: 'https://github.com/CBIIT/bento-cds-frontend')
     }
   // options {
   // 	ansiColor('xterm')
@@ -67,10 +67,10 @@ pipeline {
 				branches: [[name: "${params.Frontend_Branch}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-frontend']],
+				relativeTargetDir: 'cds-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-frontend']]])
+				[[url: 'https://github.com/CBIIT/bento-cds-frontend']]])
 			
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],

@@ -68,7 +68,7 @@ pipeline {
           relativeTargetDir: 'cds-frontend']],
           submoduleCfg: [],
           userRemoteConfigs: 
-          [[url: 'https://github.com/CBIIT/bento-frontend']]])
+          [[url: 'https://github.com/CBIIT/bento-cds-frontend']]])
   		 checkout( poll: false, 
 				changelog:false,
 				scm: [$class: 'GitSCM', 

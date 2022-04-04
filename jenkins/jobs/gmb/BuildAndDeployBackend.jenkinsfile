@@ -39,17 +39,25 @@ pipeline {
 	}
 	parameters {
 	extendedChoice(
-            name: 'ProjectName',
-            defaultValue: 'gmb',
-            description: 'Choose the project to build',
-            type: 'PT_SINGLE_SELECT',
-            value: 'cds,bento,gmb,icdc')
+         name: 'ProjectName',
+         defaultValue: 'gmb',
+         description: 'Choose the project to build',
+         type: 'PT_SINGLE_SELECT',
+         value: 'cds,bento,gmb,icdc')
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod')
+    booleanParam(
+    	defaultValue: true,
+    	description: 'Enable the Elasticsearch filter',
+    	name: 'Enable_ES_Filter')
+    booleanParam(
+    	defaultValue: true,
+    	description: 'Reload Elasticsearch data',
+    	name: 'Reload_ES_Data')
 	string(
 	    defaultValue: 'test-queries.1k.bento.yaml',
 		description: 'The file to use when loading test queries',

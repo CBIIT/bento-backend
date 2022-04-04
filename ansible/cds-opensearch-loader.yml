@@ -17,6 +17,7 @@
         name: common
         tasks_from: opensearch-loader
       vars:
+        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
         model_file1: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_file.yaml"
         model_file2: "{{workspace}}/bento-model/model-desc/bento_tailorx_model_properties.yaml"
         property_file: "config/props-bento-ext.yml"

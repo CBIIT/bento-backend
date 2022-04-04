@@ -40,7 +40,7 @@ pipeline {
 	parameters {
 	extendedChoice(
             name: 'ProjectName',
-            defaultValue: 'cds',
+            defaultValue: 'gmb',
             description: 'Choose the project to build',
             type: 'PT_SINGLE_SELECT',
             value: 'cds,bento,gmb,icdc')
@@ -81,7 +81,7 @@ pipeline {
           branches: [[name: "${params.Frontend_Tag}"]],
           doGenerateSubmoduleConfigurations: false,
           extensions: [[$class: 'RelativeTargetDirectory',
-          relativeTargetDir: 'cds-frontend']],
+          relativeTargetDir: 'gmb-frontend']],
           submoduleCfg: [],
           userRemoteConfigs: 
           [[url: 'https://github.com/CBIIT/bento-gmb-frontend']]])

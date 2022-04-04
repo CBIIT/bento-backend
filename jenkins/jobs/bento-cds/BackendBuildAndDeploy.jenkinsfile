@@ -50,14 +50,6 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod')
-	string(
-	    defaultValue: 'test-queries.1k.bento.yaml',
-		description: 'The file to use when loading test queries',
-		name: 'Test_Queries_File')
-	string(
-	    defaultValue: '',
-		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
-		name: 'Test_Params')
   }
   options {
   	ansiColor('xterm')

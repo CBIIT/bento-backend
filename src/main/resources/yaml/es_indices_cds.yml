@@ -165,6 +165,8 @@ Indices:
         type: keyword
       file_size:
         type: double
+      md5sum:
+        type: keyword
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
@@ -189,7 +191,8 @@ Indices:
           f.file_id AS file_id,
           f.file_name AS file_name,
           f.file_type AS file_type,
-          f.file_size AS file_size
+          f.file_size AS file_size,
+          f.md5sum AS md5sum
     "
 
   - index_name: studies

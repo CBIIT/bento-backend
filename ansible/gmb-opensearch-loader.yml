@@ -17,6 +17,7 @@
         name: common
         tasks_from: opensearch-loader
       vars:
+        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
         model_file1: "{{workspace}}/gmb-model/model-desc/000048_Model.yml"
         model_file2: "{{workspace}}/gmb-model/model-desc/000048_Model_Props.yml"
         property_file: "config/props-gmb-mock.yml"

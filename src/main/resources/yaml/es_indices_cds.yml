@@ -48,8 +48,8 @@ Indices:
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
           s.study_acronym AS studies,
-          s.acl AS accesses,
-          s.experimental_strategy_and_data_subtype AS experimental_strategies,
+          s.data_access_level AS accesses,
+          s.experimental_strategy_and_data_subtypes AS experimental_strategies,
           s.phs_accession AS phs_accession,
           p.participant_id AS subject_ids,
           p.gender AS genders,
@@ -111,8 +111,8 @@ Indices:
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
           s.study_acronym AS studies,
-          s.acl AS accesses,
-          s.experimental_strategy_and_data_subtype AS experimental_strategies,
+          s.data_access_level AS accesses,
+          s.experimental_strategy_and_data_subtypes AS experimental_strategies,
           p.participant_id AS subject_ids,
           p.gender AS genders,
           samp.sample_tumor_status AS is_tumor,
@@ -174,8 +174,8 @@ Indices:
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
           s.study_acronym AS studies,
-          s.acl AS accesses,
-          s.experimental_strategy_and_data_subtype AS experimental_strategies,
+          s.data_access_level AS accesses,
+          s.experimental_strategy_and_data_subtypes AS experimental_strategies,
           p.participant_id AS subject_ids,
           p.gender AS genders,
           samp.sample_tumor_status AS is_tumor,
@@ -212,7 +212,7 @@ Indices:
         s.study_acronym AS study_code,
         s.phs_accession AS phs_accession,
         s.phs_accession AS phs_accession_kw,
-        s.study_title AS study_name
+        s.study_name AS study_name
 
     "
 

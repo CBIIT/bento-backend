@@ -29,7 +29,7 @@ type FileOverview {
 
     file_name: String
     file_type: String
-    file_size: Float
+    file_size: Int
     file_id: String
     md5sum: String
 }

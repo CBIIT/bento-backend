@@ -164,7 +164,7 @@ Indices:
       file_type:
         type: keyword
       file_size:
-        type: double
+        type: integer
       md5sum:
         type: keyword
 

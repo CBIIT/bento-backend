@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 public class YamlFilterType {
@@ -11,6 +12,8 @@ public class YamlFilterType {
     private String defaultSortField;
     private String selectedField;
     private String subAggSelectedField;
+    private String nestedPath;
+    private Set<String> nestedFields;
     private boolean filter;
     private Map<String, String> alternativeSort;
 

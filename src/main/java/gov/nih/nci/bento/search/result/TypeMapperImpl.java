@@ -10,6 +10,9 @@ import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.filter.ParsedFilter;
+import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
+import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.ParsedMax;
 import org.elasticsearch.search.aggregations.metrics.ParsedMin;
@@ -18,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class TypeMapperImpl implements TypeMapperService {
@@ -195,6 +199,42 @@ public class TypeMapperImpl implements TypeMapperService {
         return returnTypes.stream()
                 .filter(source::containsKey)
                 .collect(HashMap::new, (k,v)->k.put(v, source.get(v)), HashMap::putAll);
+    }
+
+
+    public TypeMapper<QueryResult> getNestedAggregate() {
+        return (response) -> getNestedAggregate(response);
+    }
+
+    public TypeMapper<List<Map<String, Object>>> getNestedAggregateList() {
+        return (response) -> getNestedAggregate(response).getSearchHits();
+    }
+
+    public TypeMapper<Integer> getIntTotalNestedAggregate() {
+        return (response) -> getNestedAggregate(response).getTotalHits();
+    }
+
+    private QueryResult getNestedAggregate(SearchResponse response) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        Aggregations aggregate = response.getAggregations();
+        ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
+        // Get Nested Subaggregation
+        ParsedFilter aggFilters = aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+        ParsedStringTerms aggTerms = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
+        List<Terms.Bucket> buckets = (List<Terms.Bucket>) aggTerms.getBuckets();
+
+        AtomicLong totalCount = new AtomicLong();
+        buckets.forEach((b)-> {
+            totalCount.addAndGet(b.getDocCount());
+            result.add(Map.of(
+                    BENTO_FIELDS.GROUP, b.getKey(),
+                    BENTO_FIELDS.SUBJECTS, b.getDocCount()
+            ));
+        });
+        return QueryResult.builder()
+                .searchHits(result)
+                .totalHits(aggTerms.getSumOfOtherDocCounts() + totalCount.longValue())
+                .build();
     }
 
     @SuppressWarnings("unchecked")

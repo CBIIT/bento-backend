@@ -152,6 +152,14 @@ public class BentoAutoConfiguration {
             case YAML_QUERY.FILTER.DEFAULT:
                 return new DefaultFilter(FilterParam.builder()
                         .args(param.getArgs()).build()).getSourceFilter();
+            case YAML_QUERY.FILTER.NESTED:
+                return new NestedFilter(
+                        FilterParam.builder()
+                                .args(param.getArgs())
+                                .selectedField(filterType.getSelectedField())
+                                .nestedPath(filterType.getNestedPath())
+                                .build())
+                        .getSourceFilter();
             case YAML_QUERY.FILTER.GLOBAL:
                 return createGlobalQuery(param,query);
             default:
@@ -293,6 +301,8 @@ public class BentoAutoConfiguration {
                                 Const.BENTO_FIELDS.TEXT, text));
             case YAML_QUERY.RESULT_TYPE.GLOBAL:
                 return typeMapper.getQueryResult(param.getGlobalSearchResultTypes());
+            case YAML_QUERY.RESULT_TYPE.NESTED:
+                return typeMapper.getNestedAggregate();
             case YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
             default:

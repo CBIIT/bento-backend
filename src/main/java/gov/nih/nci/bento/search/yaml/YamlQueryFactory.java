@@ -106,6 +106,12 @@ public class YamlQueryFactory {
                                 Const.BENTO_FIELDS.TEXT, text));
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL:
                 return typeMapper.getQueryResult(param.getGlobalSearchResultTypes());
+            case Const.YAML_QUERY.RESULT_TYPE.NESTED:
+                return typeMapper.getNestedAggregate();
+            case Const.YAML_QUERY.RESULT_TYPE.NESTED_LIST:
+                return typeMapper.getNestedAggregateList();
+            case Const.YAML_QUERY.RESULT_TYPE.NESTED_TOTAL:
+                return typeMapper.getIntTotalNestedAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
             default:
@@ -194,6 +200,16 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.FILTER.DEFAULT:
                 return new DefaultFilter(FilterParam.builder()
                         .args(param.getArgs()).build()).getSourceFilter();
+            case Const.YAML_QUERY.FILTER.NESTED:
+                return new NestedFilter(
+                        FilterParam.builder()
+                                .args(param.getArgs())
+                                .isNestedFilter(true)
+                                .selectedField(filterType.getSelectedField())
+                                .nestedPath(filterType.getNestedPath())
+                                .nestedFields(filterType.getNestedFields())
+                                .build())
+                        .getSourceFilter();
             case Const.YAML_QUERY.FILTER.GLOBAL:
                 return createGlobalQuery(param,query);
             default:

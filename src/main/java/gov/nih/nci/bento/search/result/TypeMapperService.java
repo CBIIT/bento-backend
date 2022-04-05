@@ -18,5 +18,7 @@ public interface TypeMapperService {
     TypeMapper<QueryResult> getHighLightFragments(String field, HighLightMapper mapper);
     TypeMapper<QueryResult> getMapWithHighlightedFields(Set<String> returnTypes);
     TypeMapper<List<Map<String, Object>>> getArmProgram();
-
+    TypeMapper<QueryResult> getNestedAggregate();
+    TypeMapper<List<Map<String, Object>>> getNestedAggregateList();
+    TypeMapper<Integer> getIntTotalNestedAggregate();
 }

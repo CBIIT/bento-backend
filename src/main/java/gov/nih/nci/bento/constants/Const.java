@@ -35,6 +35,7 @@ public class Const {
             public static final String SUB_AGGREAGATION = "sub_aggregation";
             public static final String DEFAULT = "default";
             public static final String GLOBAL = "global";
+            public static final String NESTED = "nested";
         }
 
         public static class RESULT_TYPE {
@@ -49,6 +50,9 @@ public class Const {
             public static final String GLOBAL_ABOUT = "global_about";
             public static final String GLOBAL = "global";
             public static final String GLOBAL_MULTIPLE_MODEL = "global_multi_models";
+            public static final String NESTED = "nested";
+            public static final String NESTED_TOTAL = "nested_total";
+            public static final String NESTED_LIST = "nested_list";
         }
 
 
@@ -59,7 +63,6 @@ public class Const {
         public static final int DEFAULT_SIZE = 10;
         public static final int MAX_SIZE = 10000;
         public static final String GS_HIGHLIGHT_DELIMITER = "$";
-//        public static final String KEYWORD = "";
     }
 
     public static class ES_PARAMS {
@@ -67,10 +70,13 @@ public class Const {
         public static final String OFFSET = "offset";
         public static final String ORDER_BY = "order_by";
         public static final String TERMS_AGGS = "terms_aggs";
+        public static final String NESTED_SEARCH = "nested_search";
+
         public static final String SORT_DIRECTION = "sort_direction";
         public static final String CASE_IDS = "case_ids";
         public static final int AGGS_SIZE = 1000;
         public static final String INPUT = "input";
+        public static final String NESTED_FILTER = "FILTER_INFO";
     }
 
     public static class ICDC_FIELDS {

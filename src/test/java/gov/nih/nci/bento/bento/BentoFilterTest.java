@@ -2,11 +2,13 @@ package gov.nih.nci.bento.bento;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
+import gov.nih.nci.bento.search.query.filter.NestedFilter;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
@@ -42,6 +44,38 @@ public class BentoFilterTest {
 
     @Autowired
     ConfigurationDAO config;
+
+
+    @Test
+    public void nestedSearch_Test() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
+        args.put("file_type", List.of("bai","bam"));
+        args.put("study_info", List.of("B: RS 11-25, randomized to endocrine therapy alone"));
+
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField("file_id")
+                                                .nestedPath("file_info")
+                                                // List filter fields
+                                                .nestedFields(Set.of("file_type"))
+                                                .isNestedFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getNestedAggregate()).build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        QueryResult queryResult = (QueryResult) result.get("TEST01");
+        assertThat(queryResult.getSearchHits().size(), greaterThan(0));
+        assertThat(queryResult.getTotalHits(), greaterThan(0));
+    }
 
     @Test
     public void searchAggregationStudiesCnt_Test() throws IOException {

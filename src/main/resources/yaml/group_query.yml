@@ -24,11 +24,15 @@ groups:
       resultType: int_total_count
     - name: numberOfSamples
       index:
-        - samples
+        - subjects
       filterType:
-        # Get total number of documents in ES index
-        type: number_of_docs
-      resultType: int_total_count
+        type: nested
+        selectedField: sample_id
+        nestedPath: sample_info
+#      filterType:
+#        # Get total number of documents in ES index
+#        type: number_of_docs
+      resultType: nested_total
     - name: numberOfLabProcedures
       index:
         - subjects
@@ -38,10 +42,14 @@ groups:
       resultType: int_total_aggregation
     - name: numberOfFiles
       index:
-        - files
+        - subjects
       filterType:
-        type: number_of_docs
-      resultType: int_total_count
+        type: nested
+        selectedField: file_id
+        nestedFields:
+          - file_type
+        nestedPath: file_info
+      resultType: nested_total
     - name: subjectCountByProgram
       index:
         - subjects
@@ -260,11 +268,12 @@ groups:
       resultType: aggregation
     - name: subjectCountByFileType
       index:
-        - files
+        - subjects
       filterType:
-        type: aggregation
+        type: nested
         selectedField: file_type
-      resultType: aggregation
+        nestedPath: file_info
+      resultType: nested_list
     - name: filterSubjectCountByFileType
       index:
         - files

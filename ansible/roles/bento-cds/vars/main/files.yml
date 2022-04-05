@@ -1,0 +1,16 @@
+files_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
+files_container_name: "files"
+files_image_version: "{{ files_version }}"
+files_container_build_path: "{{workspace}}/bento-files"
+files_dockerfile_path: "{{workspace}}/icdc-devops/docker/dockerfiles/filedownload-dockerfile"
+files_container_image: "{{ecr_repo}}/{{project_name}}-{{container_name}}:{{files_version}}-{{build_number}}"
+files_container_port: 8081
+files_container_memory: 512
+files_container_cpu: 256
+files_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"
+files_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
+url_src: CLOUD_FRONT
+cloudfront_origin_id: "{{project_name}}_files_origin_id"
+cloudfront_key_group_name: "{{project_name}}-{{tier}}-pub-key"
+cloudfront_private_key: "{{ lookup('aws_ssm', 'bento_files_cloudfront_private_key', region='us-east-1' ) }}"
+auth_enabled: false

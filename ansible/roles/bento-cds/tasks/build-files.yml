@@ -1,0 +1,16 @@
+#install aws collection
+- name: install ansible collections
+  include_role:
+    name: common
+    tasks_from: collections
+
+- name: build files
+  include_role:
+    name: common
+    tasks_from: build-files
+  vars:
+    container_name: "{{ files_container_name }}"
+    image_version: "{{ files_image_version }}"
+    container_build_path: "{{ files_container_build_path }}"
+    dockerfile_path: "{{ files_dockerfile_path }}"
+    container_registry_url: "{{ ecr_repo }}"

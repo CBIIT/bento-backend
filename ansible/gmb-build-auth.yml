@@ -1,0 +1,13 @@
+- name: cds backend pipeline
+  hosts: bento
+  connection: local
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: build stage for cds auth
+      include_role:
+        name: bento-cds
+        tasks_from: build-auth
+      vars:
+        ansible_python_interpreter: /bin/python3

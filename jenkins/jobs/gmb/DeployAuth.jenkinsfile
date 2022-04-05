@@ -1,0 +1,111 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${FILES_SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,test,qa,prod')
+    extendedChoice(
+        name: 'ProjectName',
+        defaultValue: 'gmb',
+        description: 'Choose project to build',
+        type: 'PT_SINGLE_SELECT',
+        value: 'gmb,cds,bento' )
+
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('deploy'){
+	  environment {
+	   FILES_SLACK_URL = "${FILES_SLACK_URL}"
+       TIER = "${params.Environment}"
+	   AUTH_VERSION = "${params.Auth_Tag}"
+      }
+  		steps{
+		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+          ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy-auth.yml',
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                extraVars: [
+                     tier: "${params.Environment}",
+                     project_name: "${params.ProjectName}",
+                    ],
+          colorized: true)
+        }
+		  }
+  		}
+  	}
+
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+
+    }
+	
+	cleanup {
+	
+		cleanWs()
+    
+	}
+  }
+}

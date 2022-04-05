@@ -1,9 +1,9 @@
 FROM jenkins/inbound-agent:latest-jdk11 as jnlp
 
-FROM debian:bullseye-slim
+#FROM debian:bullseye-slim
 
-COPY --from=jnlp /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-agent
-COPY --from=jnlp /usr/share/jenkins/agent.jar /usr/share/jenkins/agent.jar
+#COPY --from=jnlp /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-agent
+#COPY --from=jnlp /usr/share/jenkins/agent.jar /usr/share/jenkins/agent.jar
 
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV MAVEN_HOME /usr/local/maven

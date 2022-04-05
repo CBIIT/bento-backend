@@ -1,19 +1,24 @@
-FROM jenkins/inbound-agent:latest-jdk11 as jnlp
+FROM jenkins/inbound-agent:latest-jdk11 #as jnlp
 
 #FROM debian:bullseye-slim
 
 #COPY --from=jnlp /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-agent
 #COPY --from=jnlp /usr/share/jenkins/agent.jar /usr/share/jenkins/agent.jar
 
-ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
-ENV MAVEN_HOME /usr/local/maven
-ENV PATH $JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
-ENV NODE_VERSION=15.13.0
-ARG MAVEN_VERSION=3.6.3
+#ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+#ENV MAVEN_HOME /usr/local/maven
+#ENV PATH $JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
+#ENV NODE_VERSION=15.13.0
+#ARG MAVEN_VERSION=3.6.3
 USER root
 RUN apt-get update \
   && apt-get -y install openjdk-11-jdk wget lvm2 redis \
   && apt-get clean
+
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV MAVEN_HOME /usr/local/maven
+ENV PATH $JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
+ARG MAVEN_VERSION=3.6.3
 
 RUN wget https://downloads.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz -P /tmp \
   && tar xf /tmp/apache-maven-$MAVEN_VERSION-bin.tar.gz -C /usr/local \
@@ -28,6 +33,7 @@ RUN apt-get update \
   && apt-get install -y docker-ce docker-ce-cli containerd.io \
   && apt-get clean
 
+ARG NODE_VERSION=15.13.0
 RUN curl -sL https://deb.nodesource.com/setup_15.x | bash - \
   && apt-get update \
   && apt-get install -y nodejs \

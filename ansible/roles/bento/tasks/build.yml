@@ -36,6 +36,14 @@
   debug:
     msg: "{{ frontend_id.stdout_lines }}"
 
+- name: get JAVA_HOME
+  shell: echo $JAVA_HOME
+  register: java_home
+
+- name: echo java_home
+  debug:
+    msg: "{{ java_home.stdout_lines }}"
+
 - name: Get the current caller identity information
   aws_caller_info:
   register: caller_info

@@ -164,7 +164,6 @@ pipeline {
   }
   options {
   	ansiColor('xterm')
-	timestamps ()
   }
   tools {
   	maven 'Default' 

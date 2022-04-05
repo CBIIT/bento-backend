@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -107,6 +106,7 @@ public class CtdcESFilter implements DataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return filesOfCase(args);
                         })
+                        .dataFetcher("idsLists", env -> idsLists())
                 )
                 .build();
     }
@@ -405,6 +405,20 @@ public class CtdcESFilter implements DataFetcher {
         );
 
         return listQuery(params, PROPERTIES, mapping, defaultSort, FILES_END_POINT);
+    }
+
+    private Map<String, Object> idsLists() throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"case_id", "case_id"}
+        };
+        Request request = new Request("GET", CASES_END_POINT);
+        List<Map<String, Object>> response = esService.collectPage(request, new HashMap<String, Object>(), PROPERTIES, ESService.MAX_ES_SIZE, 0);
+        ArrayList<String> case_ids = new ArrayList<>();
+        response.forEach(x -> case_ids.add((String) x.get("case_id")));
+        Map<String, Object> result = Map.of(
+            "case_ids", case_ids
+        );
+        return result;
     }
 
 

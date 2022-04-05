@@ -9,6 +9,10 @@ type CaseOverview {
     ethnicity: String
 }
 
+type CaseIds{
+    case_ids: [String]
+}
+
 type FileOverview {
     file_name: String
     association: String
@@ -238,4 +242,5 @@ type QueryType {
         offset: Int = 0
     ): [FileOfCase]
 
+    idsLists: CaseIds
 }

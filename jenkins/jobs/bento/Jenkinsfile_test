@@ -165,10 +165,10 @@ pipeline {
   options {
   	ansiColor('xterm')
   }
-  tools {
-  	maven 'Default' 
-    jdk 'Default' 
-  }
+//  tools {
+//    maven 'Default' 
+//    jdk 'Default' 
+//  }
   stages{
   	stage('checkout'){
   		steps {

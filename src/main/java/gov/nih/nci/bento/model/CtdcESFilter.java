@@ -549,7 +549,7 @@ public class CtdcESFilter implements DataFetcher {
     }
 
     private List<Map<String, Object>> armCountByTrial(Map<String, Object> params) throws IOException {
-        final String category = "trial_id";
+        final String category = "clinical_trial_id";
         final String subCategory = "trial_arm";
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
         String[] AGG_NAMES = new String[] {category};
@@ -576,7 +576,7 @@ public class CtdcESFilter implements DataFetcher {
     }
 
     private List<Map<String, Object>> trialsAndArms(Map<String, Object> params) throws IOException {
-        final String category = "trial_id";
+        final String category = "clinical_trial_id";
         final String subCategory = "arm_id";
 
         String[] subCategories = new String[] { subCategory };

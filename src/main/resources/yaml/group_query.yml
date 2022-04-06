@@ -28,6 +28,9 @@ groups:
       filterType:
         type: nested
         selectedField: sample_id
+        nestedFields:
+          - composition
+          - tissue_type
         nestedPath: sample_info
 #      filterType:
 #        # Get total number of documents in ES index
@@ -255,17 +258,23 @@ groups:
       index:
         - subjects
       filterType:
-        type: aggregation
+        type: nested
         selectedField: association
-      resultType: aggregation
+        nestedPath: file_info
+        nestedFields:
+          - file_type
+      resultType: nested_list
     - name: filterSubjectCountByFileAssociation
       index:
         - subjects
       filterType:
-        type: aggregation
+        type: nested
         selectedField: association
         filter: true
-      resultType: aggregation
+        nestedPath: file_info
+        nestedFields:
+          - file_type
+      resultType: nested_list
     - name: subjectCountByFileType
       index:
         - subjects

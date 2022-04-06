@@ -185,7 +185,6 @@ public class YamlQueryFactory {
                         FilterParam.builder()
                                 .args(param.getArgs())
                                 .selectedField(filterType.getSelectedField())
-                                .isExcludeFilter(true)
                                 .isRangeFilter(true)
                                 .build())
                         .getSourceFilter();

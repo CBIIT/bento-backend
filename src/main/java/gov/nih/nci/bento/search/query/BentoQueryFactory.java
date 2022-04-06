@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class BentoQueryFactory extends QueryFactory {
 
-    public BentoQueryFactory(Map<String, Object> args, FilterParam param) {
-        super(args, param);
+    public BentoQueryFactory(Map<String, Object> args, FilterParam param, String... ranges) {
+        super(args, param, ranges);
     }
 
     @Override

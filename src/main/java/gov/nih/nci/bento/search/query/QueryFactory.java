@@ -12,11 +12,10 @@ public abstract class QueryFactory {
     private final Set<String> rangeFields;
     private Map<String, Object> args;
     private final FilterParam filterParam;
-
-    public QueryFactory(Map<String, Object> args, FilterParam param) {
-        this.filterParam = param;
+    public QueryFactory(Map<String, Object> args, FilterParam param, String... ranges) {
         this.args = args;
-        this.rangeFields = param.isRangeFilter() ? Set.of(param.getSelectedField()) : new HashSet<>();
+        this.rangeFields = Set.of(ranges);
+        this.filterParam = param;
     }
 
     public QueryBuilder getQuery() {
@@ -33,27 +32,6 @@ public abstract class QueryFactory {
 //            args.remove(nestedField);
 //        });
         return createQuery(args, boolBuilder);
-    }
-    // TODO
-    public QueryBuilder getNestedQuery() {
-
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        if (filterParam.isNestedFilter()) {
-            // Get Arguments
-            // Check if nested fields included
-            Set<String> nestedFields = filterParam.getNestedFields() !=null ? filterParam.getNestedFields() : new HashSet<>();
-            filterParam.getArgs().forEach((k,v)->{
-                if (nestedFields.contains(k)) {
-                    List<String> list = filterParam.getArgs().containsKey(k) ? (List<String>) filterParam.getArgs().get(k) : new ArrayList<>();
-                    if (list.size() > 0) {
-                        list.forEach(l->{
-                            boolQueryBuilder.should(QueryBuilders.termQuery(filterParam.getNestedPath() + "." + k, l));
-                        });
-                    }
-                }
-            });
-        }
-        return boolQueryBuilder;
     }
 
     private QueryBuilder getRangeType(String field, List<String> strList) {

@@ -78,6 +78,36 @@ public class BentoFilterTest {
     }
 
     @Test
+    public void nestedListSearch_Test() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.SUBJECT_ID, List.of());
+        args.put("file_type", List.of("bai"));
+        args.put("study_info", List.of("B: RS 11-25, randomized to endocrine therapy alone"));
+
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField("association")
+                                                .nestedPath("file_info")
+                                                // List filter fields
+                                                .nestedFields(Set.of("file_type"))
+                                                .isNestedFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getNestedAggregateList()).build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        List<Map<String,Object>> queryResult = (List<Map<String,Object>>) result.get("TEST01");
+        assertThat(queryResult.size(), greaterThan(0));
+    }
+
+    @Test
     public void searchAggregationStudiesCnt_Test() throws IOException {
 
         Map<String, Object> args = new HashMap<>();

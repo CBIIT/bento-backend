@@ -1,0 +1,14 @@
+---
+- name: get backend image vulnerabilities
+    command: "trivy image {{ dockerhub_path }}/{{ project }}-backend:release"
+    register: backend_vuln
+
+- name: get frontend image vulnerabilities
+    command: "trivy image {{ dockerhub_path }}/{{ project }}-frontend:release"
+    register: frontend_vuln
+
+- name: test backend image
+    command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ dockerhub_path }}/{{ project }}-backend:release"
+
+- name: test frontend image
+    command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ dockerhub_path }}/{{ project }}-frontend:release"

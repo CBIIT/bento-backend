@@ -10,5 +10,4 @@
       include_role:
         name: build-image-bento
         tasks_from: bento-scan
-        handlers_from: bento-scan
         vars_from: bento

@@ -88,7 +88,7 @@ pipeline {
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
             dir('gmb-model'){
-              git branch: "${params.Model_Tag}",
+              git branch: "${params.Model_Tag }",
               url: 'https://github.com/CBIIT/gmb-model.git'
             }
   		}

@@ -77,7 +77,6 @@ pipeline {
                         dockerhub_path: "cbiitssrepo",
 						project: "bento",
 						],
-				    extras: '-vvv',
             		colorized: true)
  				}
  			}

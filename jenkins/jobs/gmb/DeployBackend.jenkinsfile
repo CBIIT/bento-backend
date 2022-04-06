@@ -38,7 +38,7 @@ pipeline {
 	parameters {
 	extendedChoice(
         name: 'Project',
-        defaultValue: 'cds',
+        defaultValue: 'gmb',
         description: 'Choose the project to build',
         type: 'PT_SINGLE_SELECT',
         value: 'cds,bento,gmb,icdc')
@@ -47,7 +47,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'sandbox,dev,test,qa,perf,icdc,prod' )
+        value: 'dev,qa,stage,prod' )
 
   }
   options {
@@ -84,7 +84,7 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/cds-deploy-backend.yml',
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy-backend.yml',
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     project_name: "${params.Project}"

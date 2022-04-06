@@ -45,7 +45,7 @@
     msg: "{{ java_home.stdout_lines }}"
 
 - name: get JAVA_HOME cmd
-  cmd: echo $JAVA_HOME
+  command: echo $JAVA_HOME
   register: java_home_cmd
 
 - name: echo java_home_cmd

@@ -14,15 +14,6 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/icdc-dataloader')
-    gitParameter(branchFilter: 'origin/(.*)',
-            defaultValue: 'main',
-            name: 'Model_Tag',
-            type: 'PT_BRANCH_TAG',
-            quickFilterEnabled: false,
-            selectedValue: 'DEFAULT',
-            sortMode: 'ASCENDING_SMART',
-            tagFilter: '*',
-            useRepository: 'https://github.com/CBIIT/gmb-model')
      extendedChoice(
             name: 'ProjectName',
             defaultValue: 'gmb',

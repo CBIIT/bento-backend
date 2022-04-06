@@ -1,0 +1,135 @@
+
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_microservice'
+		}
+	}
+	parameters {
+	extendedChoice(
+        name: 'Project',
+        defaultValue: 'cds',
+        description: 'Choose the project to build',
+        type: 'PT_SINGLE_SELECT',
+        value: 'cds,bento,gmb,icdc')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'sandbox,dev,test,qa,perf,icdc,prod' )
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+  	stage('deploy'){
+	  environment {
+	   SLACK_URL = "${SLACK_URL}"
+       TIER = "${params.Environment}"
+       BE_VERSION = "${params.Backend_Image}"
+	   SLACK_CHANNEL = "#system-alerts"
+	   URL_DOMAIN = "bento-tools.org"
+      }
+  		steps{
+		  node('cicd_microservice') {
+		    checkout( changelog:false,
+				poll: false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
+				])
+  			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/cds-deploy-backend.yml',
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		extraVars: [
+                    project_name: "${params.Project}"
+                    ],
+					colorized: true)
+ 			}
+		  }
+ 		}
+  	}
+
+  }
+  post {
+    always {
+      
+      sendSlackMessage()
+
+    }
+
+	success {
+
+		script {
+		    if (env.Tier == 'prod') {
+			    withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+				    sh label: 'GIT-Set Releases', script: '''#!/bin/bash
+
+					data={\\"tag_name\\":\\"${Frontend_Image}\\"}
+					curl_cmd='curl -i -u michael-fleming:'${git_token}' POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-frontend/releases -d {"tag_name":"${Frontend_Image}"}'
+					$curl_cmd
+					
+					bento_tag=$(echo "${Backend_Image}" | sed 's/-/-bento-/g')
+					data={\\"tag_name\\":\\"$bento_tag\\"}
+					curl_cmd='curl -i -u michael-fleming:'${git_token}' POST -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/CBIIT/bento-backend/releases -d '$data''
+					$curl_cmd
+
+				    '''
+
+				    }
+			    }
+			}
+
+	}
+
+	cleanup {
+		cleanWs()
+    
+	}
+  }
+}

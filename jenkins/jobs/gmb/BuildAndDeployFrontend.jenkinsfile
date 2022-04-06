@@ -88,6 +88,7 @@ pipeline {
     stage('build'){
       environment {
        FE_VERSION = "${params.Frontend_Tag}"
+       BE_VERSION = "${params.Backend_Tag}"
 	   TIER = "${params.Environment}"
       }
       steps {
@@ -105,6 +106,7 @@ pipeline {
   	stage('deploy'){
       environment {
         FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+        BE_VERSION = "${params.Backend_Tag}"
         SLACK_CHANNEL = "#system-alerts"
         URL_DOMAIN = "bento-tools.org"
 		TIER = "${params.Environment}"

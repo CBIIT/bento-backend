@@ -10,13 +10,5 @@
       include_role:
         name: build-image-bento
         tasks_from: bento-scan
+        handlers_from: bento-scan
         vars_from: bento
-
-  handlers:
-    - name: echo backend vulnerabilities
-      debug:
-        msg: "{{ backend_vuln.stdout_lines }}"
-
-    - name: echo frontend vulnerabilities
-      debug:
-        msg: "{{ frontend_vuln.stdout_lines }}"

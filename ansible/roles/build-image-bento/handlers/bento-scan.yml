@@ -1,0 +1,8 @@
+---
+- name: echo backend vulnerabilities
+  debug:
+    msg: "{{ backend_vuln.stdout_lines }}"
+
+- name: echo frontend vulnerabilities
+  debug:
+    msg: "{{ frontend_vuln.stdout_lines }}"

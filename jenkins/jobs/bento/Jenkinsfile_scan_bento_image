@@ -84,11 +84,11 @@ pipeline {
   	}
   }
   post {
-    always {
-      
-      sendSlackMessage()
-
-    }
+//    always {
+//      
+//      sendSlackMessage()
+//
+//    }
 
 	cleanup {
 	

@@ -14,12 +14,21 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    gitParameter(branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'Model_Tag',
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false,
+            selectedValue: 'DEFAULT',
+            sortMode: 'ASCENDING_SMART',
+            tagFilter: '*',
+            useRepository: 'https://github.com/CBIIT/gmb-model')
      extendedChoice(
             name: 'ProjectName',
-            defaultValue: 'cds',
+            defaultValue: 'gmb',
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
-            value: 'cds' )
+            value: 'gmb,cds,ctdc,bento' )
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
@@ -79,7 +88,7 @@ pipeline {
     				url: 'https://github.com/CBIIT/icdc-devops.git'
   			}
             dir('gmb-model'){
-              git branch: 'main',
+              git branch: "${params.Model_Tag}",
               url: 'https://github.com/CBIIT/gmb-model.git'
             }
   		}

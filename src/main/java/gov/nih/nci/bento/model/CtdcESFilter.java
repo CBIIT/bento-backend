@@ -148,8 +148,8 @@ public class CtdcESFilter implements DataFetcher {
         int numberOfFiles = sendCountRequest(query, FILES_COUNT_END_POINT);
 
         //Group count data used multiple times
-        List<Map<String, Object>> trialsGroupCountData = getGroupCount("trial_id", CASES_END_POINT, params);
-        List<Map<String, Object>> diagnosisGroupCountData = getGroupCount("diagnosis", CASES_END_POINT, params);
+        List<Map<String, Object>> trialsGroupCountData = getGroupCount("clinical_trial_id", CASES_END_POINT, params);
+        List<Map<String, Object>> diagnosisGroupCountData = getGroupCount("disease", CASES_END_POINT, params);
         List<Map<String, Object>> fileTypeGroupCountData = getGroupCount("file_type", FILES_END_POINT, params);
         List<Map<String, Object>> trialArmGroupCountData = getGroupCount("trial_arm", CASES_END_POINT, params);
 
@@ -167,7 +167,7 @@ public class CtdcESFilter implements DataFetcher {
         data.put("trialsAndArms", trialsAndArms(params));
 
         data.put("casesCountBaseOnTrialId", trialsGroupCountData);
-        data.put("casesCountBaseOnTrialCode", getGroupCount("trial_code", CASES_END_POINT, params));
+        data.put("casesCountBaseOnTrialCode", getGroupCount("clinical_trial_designation", CASES_END_POINT, params));
         data.put("casesCountBaseOnPubMedID", getGroupCount("pubmed_id", CASES_END_POINT, params));
         data.put("casesCountBaseOnGender", getGroupCount("gender", CASES_END_POINT, params));
         data.put("casesCountBaseOnRace", getGroupCount("race", CASES_END_POINT, params));

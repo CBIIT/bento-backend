@@ -75,6 +75,7 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 					extraVars: [
                         dockerhub_path: "cbiitssrepo",
+						project: "bento",
 						],
 				    extras: '-vvv',
             		colorized: true)

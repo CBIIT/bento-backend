@@ -44,6 +44,14 @@
   debug:
     msg: "{{ java_home.stdout_lines }}"
 
+- name: get JAVA_HOME cmd
+  cmd: echo $JAVA_HOME
+  register: java_home_cmd
+
+- name: echo java_home_cmd
+  debug:
+    msg: "{{ java_home_cmd.stdout_lines }}"
+
 - name: Get the current caller identity information
   aws_caller_info:
   register: caller_info

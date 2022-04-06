@@ -7,10 +7,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BentoQueryFactory extends QueryFactory {
 
-    public BentoQueryFactory(Map<String, Object> args, FilterParam param, String... ranges) {
+    public BentoQueryFactory(Map<String, Object> args, FilterParam param, Set<String> ranges) {
         super(args, param, ranges);
     }
 

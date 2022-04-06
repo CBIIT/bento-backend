@@ -27,7 +27,7 @@ public abstract class AbstractFilter {
             String key = param.getSelectedField();
             if (map.containsKey(key)) map.remove(key);
         }
-        bentoParam = new BentoQueryFactory(map, param, "age_at_index");
+        bentoParam = new BentoQueryFactory(map, param, rangeParam);
     }
 
     private void removeSortParams(Map<String, Object> map) {

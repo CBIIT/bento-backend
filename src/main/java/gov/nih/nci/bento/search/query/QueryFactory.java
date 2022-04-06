@@ -11,11 +11,9 @@ public abstract class QueryFactory {
     // Range Query Has Different Query Option
     private final Set<String> rangeFields;
     private Map<String, Object> args;
-    private final FilterParam filterParam;
-    public QueryFactory(Map<String, Object> args, FilterParam param, String... ranges) {
+    public QueryFactory(Map<String, Object> args, FilterParam param, Set<String> ranges) {
         this.args = args;
-        this.rangeFields = Set.of(ranges);
-        this.filterParam = param;
+        this.rangeFields = ranges;
     }
 
     public QueryBuilder getQuery() {
@@ -27,10 +25,6 @@ public abstract class QueryFactory {
             if (list.size() > 0) boolBuilder.filter(getRangeType(range, list));
             args.remove(range);
         });
-        // TODO
-//        filterParam.getNestedFields().forEach((nestedField)->{
-//            args.remove(nestedField);
-//        });
         return createQuery(args, boolBuilder);
     }
 

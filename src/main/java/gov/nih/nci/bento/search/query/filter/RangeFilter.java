@@ -5,10 +5,19 @@ import gov.nih.nci.bento.search.query.QueryFactory;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-public class RangeFilter extends AbstractFilter {
+import java.util.HashSet;
+import java.util.Set;
 
+public class RangeFilter extends AbstractFilter {
+    // Range Fields Globally Used to filter
+    private static Set<String> rangeFields = new HashSet<>();
     public RangeFilter(FilterParam param) {
         super(param);
+        rangeFields.add(param.getSelectedField());
+    }
+
+    public static Set<String> getRangeFields() {
+        return new HashSet<>(rangeFields);
     }
 
     @Override

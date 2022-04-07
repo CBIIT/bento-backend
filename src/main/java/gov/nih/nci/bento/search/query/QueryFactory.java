@@ -1,25 +1,25 @@
 package gov.nih.nci.bento.search.query;
 
-import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class QueryFactory {
     // Range Query Has Different Query Option
-    private final Set<String> rangeFields;
     private Map<String, Object> args;
-    public QueryFactory(Map<String, Object> args, FilterParam param, Set<String> ranges) {
+    public QueryFactory(Map<String, Object> args) {
         this.args = args;
-        this.rangeFields = ranges;
     }
 
     public QueryBuilder getQuery() {
         BoolQueryBuilder boolBuilder = new BoolQueryBuilder();
         // Create Range Query
-        rangeFields.forEach(range->{
+        RangeFilter.getRangeFields().forEach(range->{
             @SuppressWarnings("unchecked")
             List<String> list = args.containsKey(range) ? (List<String>) args.get(range) : new ArrayList<>();
             if (list.size() > 0) boolBuilder.filter(getRangeType(range, list));

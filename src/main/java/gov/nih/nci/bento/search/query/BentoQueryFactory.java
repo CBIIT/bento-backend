@@ -1,18 +1,16 @@
 package gov.nih.nci.bento.search.query;
 
-import gov.nih.nci.bento.classes.FilterParam;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class BentoQueryFactory extends QueryFactory {
 
-    public BentoQueryFactory(Map<String, Object> args, FilterParam param, Set<String> ranges) {
-        super(args, param, ranges);
+    public BentoQueryFactory(Map<String, Object> args) {
+        super(args);
     }
 
     @Override

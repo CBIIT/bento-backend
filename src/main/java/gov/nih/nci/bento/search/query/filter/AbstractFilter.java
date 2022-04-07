@@ -13,7 +13,6 @@ import java.util.Set;
 public abstract class AbstractFilter {
     // Parameters Exceptions
     private final Set<String> sortParams = Set.of(Const.ES_PARAMS.ORDER_BY, Const.ES_PARAMS.SORT_DIRECTION, Const.ES_PARAMS.OFFSET, Const.ES_PARAMS.PAGE_SIZE);
-    private final Set<String> rangeParam = Set.of("age_at_index");
     private final QueryFactory bentoParam;
     private final FilterParam param;
 
@@ -27,7 +26,7 @@ public abstract class AbstractFilter {
             String key = param.getSelectedField();
             if (map.containsKey(key)) map.remove(key);
         }
-        bentoParam = new BentoQueryFactory(map, param, rangeParam);
+        bentoParam = new BentoQueryFactory(map);
     }
 
     private void removeSortParams(Map<String, Object> map) {

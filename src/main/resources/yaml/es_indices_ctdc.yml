@@ -48,8 +48,8 @@ Indices:
         a.arm_id+'_'+a.arm_drug AS trial_arm,
         a.arm_id AS arm_id,
         a.arm_drug AS arm_treatment,
-        f.file_type AS file_type,
-        f.file_format AS file_format
+        COLLECT(DISTINCT f.file_type) AS file_type,
+        COLLECT(DISTINCT f.file_format) AS file_format
     "
   - index_name: files
     type: neo4j

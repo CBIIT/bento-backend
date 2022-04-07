@@ -204,6 +204,7 @@ type QueryType {
     ): [FileOverview]
 
     searchCases (
+        case_id: [String] = [],
         clinical_trial_id: [String] = [], 
         clinical_trial_designation: [String] = [],
         pubmed_id: [String] = [],

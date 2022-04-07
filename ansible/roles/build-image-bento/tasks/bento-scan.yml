@@ -22,7 +22,8 @@
   block:
     - name: get frontend image vulnerabilities
       #command: "trivy image {{ dockerhub_path }}/{{ project }}-frontend:release"
-      command: "trivy image {{ ecr_repo }}/{{ project }}-frontend:release"
+      #command: "trivy image {{ ecr_repo }}/{{ project }}-frontend:release"
+      command: "trivy image nginx:alpine"
       register: frontend_vuln
   always:
     - name: echo frontend vulnerabilities
@@ -35,4 +36,5 @@
 
 - name: test frontend image
   #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ dockerhub_path }}/{{ project }}-frontend:release"
-  command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-frontend:release"
+  #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-frontend:release"
+  command: "trivy image --exit-code 1 --severity HIGH,CRITICAL nginx:alpine"

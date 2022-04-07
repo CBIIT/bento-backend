@@ -18,23 +18,21 @@
       debug:
         msg: "{{ backend_vuln.stdout_lines }}"
 
-- name: frontend image
-  block:
-    - name: get frontend image vulnerabilities
-      #command: "trivy image {{ dockerhub_path }}/{{ project }}-frontend:release"
-      #command: "trivy image {{ ecr_repo }}/{{ project }}-frontend:release"
-      command: "trivy image nginx:alpine"
-      register: frontend_vuln
-  always:
-    - name: echo frontend vulnerabilities
-      debug:
-        msg: "{{ frontend_vuln.stdout_lines }}"
+#- name: frontend image
+#  block:
+#    - name: get frontend image vulnerabilities
+#      #command: "trivy image {{ dockerhub_path }}/{{ project }}-frontend:release"
+#      command: "trivy image {{ ecr_repo }}/{{ project }}-frontend:release"
+#      register: frontend_vuln
+#  always:
+#    - name: echo frontend vulnerabilities
+#      debug:
+#        msg: "{{ frontend_vuln.stdout_lines }}"
 
 - name: test backend image
   #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ dockerhub_path }}/{{ project }}-backend:release"
   command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-backend:release"
 
-- name: test frontend image
-  #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ dockerhub_path }}/{{ project }}-frontend:release"
-  #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-frontend:release"
-  command: "trivy image --exit-code 1 --severity HIGH,CRITICAL nginx:alpine"
+#- name: test frontend image
+#  #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ dockerhub_path }}/{{ project }}-frontend:release"
+#  command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-frontend:release"

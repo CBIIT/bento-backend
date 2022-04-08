@@ -85,6 +85,8 @@ Indices:
         type: keyword
       file_types:
         type: keyword
+      sample_ids:
+        type: keyword
 
       sample_id_gs:
         type: search_as_you_type
@@ -117,6 +119,7 @@ Indices:
           p.gender AS genders,
           samp.sample_tumor_status AS is_tumor,
           COLLECT(DISTINCT f.file_type) AS file_types,
+          samp.sample_id AS sample_ids,
 
           samp.sample_id AS sample_id_gs,
           samp.sample_tumor_status AS is_tumor_gs,
@@ -147,10 +150,12 @@ Indices:
         type: keyword
       file_types:
         type: keyword
+      sample_ids:
+        type: keyword
+      file_ids:
+        type: keyword
 
       sample_id:
-        type: keyword
-      sample_ids:
         type: keyword
       file_names:
         type: keyword
@@ -182,9 +187,10 @@ Indices:
           p.gender AS genders,
           samp.sample_tumor_status AS is_tumor,
           f.file_type AS file_types,
+          samp.sample_id AS sample_ids,
+          f.file_id AS file_ids,
 
           samp.sample_id AS sample_id,
-          samp.sample_id AS sample_ids,
           f.file_name AS file_names,
 
           s.phs_accession AS phs_accession,
@@ -227,6 +233,7 @@ Indices:
         type: keyword
       subject_id:
         type: keyword
+      # subject_ids must be converted into lower case
       subject_ids:
         type: keyword
 
@@ -236,7 +243,7 @@ Indices:
       RETURN
         s.phs_accession AS phs_accession,
         p.participant_id AS subject_id,
-        p.participant_id AS subject_ids
+        toLower(p.participant_id) AS subject_ids
 
     "
 

@@ -51,6 +51,17 @@ type SearchResult {
     casesCountBaseOnFileType: [GroupCountES]
     casesCountBaseOnFileFormat: [GroupCountES]
     casesCountBaseOnTrialArm: [GroupCountES]
+
+    filterCasesCountBaseOnTrialId: [GroupCountES]
+    filterCasesCountBaseOnTrialCode: [GroupCountES]
+    filterCasesCountBaseOnPubMedID: [GroupCountES]
+    filterCasesCountBaseOnGender: [GroupCountES]
+    filterCasesCountBaseOnRace: [GroupCountES]
+    filterCasesCountBaseOnEthnicity: [GroupCountES]
+    filterCasesCountBaseOnDiagnoses: [GroupCountES]
+    filterCasesCountBaseOnFileType: [GroupCountES]
+    filterCasesCountBaseOnFileFormat: [GroupCountES]
+    filterCasesCountBaseOnTrialArm: [GroupCountES]
 }
 
 type ArmDiagnosisCount{

@@ -148,10 +148,10 @@ public class CtdcESFilter implements DataFetcher {
         int numberOfFiles = sendCountRequest(query, FILES_COUNT_END_POINT);
 
         //Group count data used multiple times
-        List<Map<String, Object>> trialsGroupCountData = getGroupCount("clinical_trial_id", CASES_END_POINT, params);
-        List<Map<String, Object>> diagnosisGroupCountData = getGroupCount("disease", CASES_END_POINT, params);
-        List<Map<String, Object>> fileTypeGroupCountData = getGroupCount("file_type", FILES_END_POINT, params);
-        List<Map<String, Object>> trialArmGroupCountData = getGroupCount("trial_arm", CASES_END_POINT, params);
+        List<Map<String, Object>> trialsGroupCountData = getSubjectCount("clinical_trial_id", CASES_END_POINT, params);
+        List<Map<String, Object>> diagnosisGroupCountData = getSubjectCount("disease", CASES_END_POINT, params);
+        List<Map<String, Object>> fileTypeGroupCountData = getSubjectCount("file_type", FILES_END_POINT, params);
+        List<Map<String, Object>> trialArmGroupCountData = getSubjectCount("trial_arm", CASES_END_POINT, params);
 
 
         Map<String, Object> data = new HashMap<>();
@@ -167,15 +167,27 @@ public class CtdcESFilter implements DataFetcher {
         data.put("trialsAndArms", trialsAndArms(params));
 
         data.put("casesCountBaseOnTrialId", trialsGroupCountData);
-        data.put("casesCountBaseOnTrialCode", getGroupCount("clinical_trial_designation", CASES_END_POINT, params));
-        data.put("casesCountBaseOnPubMedID", getGroupCount("pubmed_id", CASES_END_POINT, params));
-        data.put("casesCountBaseOnGender", getGroupCount("gender", CASES_END_POINT, params));
-        data.put("casesCountBaseOnRace", getGroupCount("race", CASES_END_POINT, params));
-        data.put("casesCountBaseOnEthnicity", getGroupCount("ethnicity", CASES_END_POINT, params));
-        data.put("casesCountBaseOnDiagnoses",diagnosisGroupCountData);
+        data.put("casesCountBaseOnTrialCode", getSubjectCount("clinical_trial_designation", CASES_END_POINT, params));
+        data.put("casesCountBaseOnPubMedID", getSubjectCount("pubmed_id", CASES_END_POINT, params));
+        data.put("casesCountBaseOnGender", getSubjectCount("gender", CASES_END_POINT, params));
+        data.put("casesCountBaseOnRace", getSubjectCount("race", CASES_END_POINT, params));
+        data.put("casesCountBaseOnEthnicity", getSubjectCount("ethnicity", CASES_END_POINT, params));
+        data.put("casesCountBaseOnDiagnoses", diagnosisGroupCountData);
         data.put("casesCountBaseOnFileType", fileTypeGroupCountData);
-        data.put("casesCountBaseOnFileFormat", getGroupCount("file_format", FILES_END_POINT, params));
+        data.put("casesCountBaseOnFileFormat", getSubjectCount("file_format", FILES_END_POINT, params));
         data.put("casesCountBaseOnTrialArm", trialArmGroupCountData);
+
+
+        data.put("filterCasesCountBaseOnTrialId", getFilterSubjectCount("clinical_trial_id", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnTrialCode", getFilterSubjectCount("clinical_trial_designation", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnPubMedID", getFilterSubjectCount("pubmed_id", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnGender", getFilterSubjectCount("gender", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnRace", getFilterSubjectCount("race", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnEthnicity", getFilterSubjectCount("ethnicity", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnDiagnoses", getFilterSubjectCount("disease", CASES_END_POINT, params));
+        data.put("filterCasesCountBaseOnFileType", getFilterSubjectCount("file_type", FILES_END_POINT, params));
+        data.put("filterCasesCountBaseOnFileFormat", getFilterSubjectCount("file_format", FILES_END_POINT, params));
+        data.put("filterCasesCountBaseOnTrialArm", getFilterSubjectCount("trial_arm", CASES_END_POINT, params));
 
         return data;
     }
@@ -224,34 +236,34 @@ public class CtdcESFilter implements DataFetcher {
         ));
         //Cases Search Category Map
         searchCategories.add(Map.of(
-            GS_END_POINT, CASES_END_POINT,
-            GS_COUNT_ENDPOINT, CASES_COUNT_END_POINT,
-            GS_COUNT_RESULT_FIELD, "case_count",
-            GS_RESULT_FIELD, "cases",
-            GS_SEARCH_FIELD, List.of(
-                    "case_id_gs"
-            ),
-            GS_SORT_FIELD, "case_id",
-            GS_COLLECT_FIELDS, new String[][]{
-                    new String[]{"case_id", "case_id_gs"}
-            },
-            GS_CATEGORY_TYPE, "case"
+                GS_END_POINT, CASES_END_POINT,
+                GS_COUNT_ENDPOINT, CASES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "case_count",
+                GS_RESULT_FIELD, "cases",
+                GS_SEARCH_FIELD, List.of(
+                        "case_id_gs"
+                ),
+                GS_SORT_FIELD, "case_id",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"case_id", "case_id_gs"}
+                },
+                GS_CATEGORY_TYPE, "case"
         ));
         //Files Search Category Map
         searchCategories.add(Map.of(
-            GS_END_POINT, FILES_END_POINT,
-            GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
-            GS_COUNT_RESULT_FIELD, "file_count",
-            GS_RESULT_FIELD, "files",
-            GS_SEARCH_FIELD, List.of(
-                    "file_name_gs", "file_description_gs"
-            ),
-            GS_SORT_FIELD, "file_name",
-            GS_COLLECT_FIELDS, new String[][]{
-                    new String[]{"file_name", "file_name_gs"},
-                    new String[]{"file_description", "file_description_gs"}
-            },
-            GS_CATEGORY_TYPE, "file"
+                GS_END_POINT, FILES_END_POINT,
+                GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "file_count",
+                GS_RESULT_FIELD, "files",
+                GS_SEARCH_FIELD, List.of(
+                        "file_name_gs", "file_description_gs"
+                ),
+                GS_SORT_FIELD, "file_name",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"file_name", "file_name_gs"},
+                        new String[]{"file_description", "file_description_gs"}
+                },
+                GS_CATEGORY_TYPE, "file"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,
@@ -263,16 +275,16 @@ public class CtdcESFilter implements DataFetcher {
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"node_name", "node"}
                 },
-                GS_HIGHLIGHT_FIELDS, new String[][] {
+                GS_HIGHLIGHT_FIELDS, new String[][]{
                         new String[]{"highlight", "node"}
                 },
                 GS_CATEGORY_TYPE, "node"
         ));
 
-        Set<String> combinedCategories = Set.of("model") ;
+        Set<String> combinedCategories = Set.of("model");
 
         Map<String, Object> result = new HashMap<>();
-        for (Map<String, Object> category: searchCategories) {
+        for (Map<String, Object> category : searchCategories) {
             String countResultFieldName = (String) category.get(GS_COUNT_RESULT_FIELD);
             String resultFieldName = (String) category.get(GS_RESULT_FIELD);
             String[][] properties = (String[][]) category.get(GS_COLLECT_FIELDS);
@@ -283,12 +295,12 @@ public class CtdcESFilter implements DataFetcher {
             Request countRequest = new Request("GET", (String) category.get(GS_COUNT_ENDPOINT));
             countRequest.setJsonEntity(gson.toJson(query));
             JsonObject countResult = esService.send(countRequest);
-            int oldCount = (int)result.getOrDefault(countResultFieldName, 0);
+            int oldCount = (int) result.getOrDefault(countResultFieldName, 0);
             result.put(countResultFieldName, countResult.get("count").getAsInt() + oldCount);
 
             // Get results
-            Request request = new Request("GET", (String)category.get(GS_END_POINT));
-            String sortFieldName = (String)category.get(GS_SORT_FIELD);
+            Request request = new Request("GET", (String) category.get(GS_END_POINT));
+            String sortFieldName = (String) category.get(GS_SORT_FIELD);
             query.put("sort", Map.of(sortFieldName, "asc"));
             query = addHighlight(query, category);
 
@@ -301,13 +313,13 @@ public class CtdcESFilter implements DataFetcher {
             }
             request.setJsonEntity(gson.toJson(query));
             JsonObject jsonObject = esService.send(request);
-            List<Map<String, Object>> objects = esService.collectPage(jsonObject, properties, highlights, (int)query.get("size"), 0);
+            List<Map<String, Object>> objects = esService.collectPage(jsonObject, properties, highlights, (int) query.get("size"), 0);
 
-            for (var object: objects) {
+            for (var object : objects) {
                 object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
             }
 
-            List<Map<String, Object>> existingObjects = (List<Map<String, Object>>)result.getOrDefault(resultFieldName, null);
+            List<Map<String, Object>> existingObjects = (List<Map<String, Object>>) result.getOrDefault(resultFieldName, null);
             if (existingObjects != null) {
                 existingObjects.addAll(objects);
                 result.put(resultFieldName, existingObjects);
@@ -322,15 +334,15 @@ public class CtdcESFilter implements DataFetcher {
         result.put("about_count", about_count);
         result.put("about_page", paginate(about_results, size, offset));
 
-        for (String category: combinedCategories) {
-            List<Object> pagedCategory = paginate((List)result.get(category), size, offset);
+        for (String category : combinedCategories) {
+            List<Object> pagedCategory = paginate((List) result.get(category), size, offset);
             result.put(category, pagedCategory);
         }
 
         return result;
     }
 
-    private List<Map<String, Object>> fileIdsFromFileName(Map<String, Object> params) throws IOException  {
+    private List<Map<String, Object>> fileIdsFromFileName(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name"},
                 new String[]{"uuid", "uuid"}
@@ -346,7 +358,7 @@ public class CtdcESFilter implements DataFetcher {
         return listQuery(params, PROPERTIES, mapping, defaultSort, FILES_END_POINT);
     }
 
-    private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException  {
+    private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"clinical_trial_code", "trial_code"},
                 new String[]{"case_id", "case_id"},
@@ -381,7 +393,7 @@ public class CtdcESFilter implements DataFetcher {
         return listQuery(params, PROPERTIES, mapping, defaultSort, FILES_END_POINT);
     }
 
-    private List<Map<String, Object>> filesOfCase(Map<String, Object> params) throws IOException  {
+    private List<Map<String, Object>> filesOfCase(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"parent", "association"},
                 new String[]{"file_name", "file_name"},
@@ -416,7 +428,7 @@ public class CtdcESFilter implements DataFetcher {
         ArrayList<String> case_ids = new ArrayList<>();
         response.forEach(x -> case_ids.add((String) x.get("case_id")));
         Map<String, Object> result = Map.of(
-            "case_ids", case_ids
+                "case_ids", case_ids
         );
         return result;
     }
@@ -430,8 +442,8 @@ public class CtdcESFilter implements DataFetcher {
             String endpoint
     ) throws IOException {
         Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
-        String order_by = (String)params.get(ORDER_BY);
-        String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
+        String order_by = (String) params.get(ORDER_BY);
+        String direction = ((String) params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
         int pageSize = (int) params.get(PAGE_SIZE);
         int offset = (int) params.get(OFFSET);
@@ -442,7 +454,7 @@ public class CtdcESFilter implements DataFetcher {
     private List paginate(List org, int pageSize, int offset) {
         List<Object> result = new ArrayList<>();
         int size = org.size();
-        if (offset <= size -1) {
+        if (offset <= size - 1) {
             int end_index = offset + pageSize;
             if (end_index > size) {
                 end_index = size;
@@ -469,8 +481,8 @@ public class CtdcESFilter implements DataFetcher {
 
         List<Map<String, String>> result = new ArrayList<>();
 
-        for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
-            for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
+        for (JsonElement hit : jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
+            for (JsonElement highlight : hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
                 String page = hit.getAsJsonObject().get("_source").getAsJsonObject().get("page").getAsString();
                 String title = hit.getAsJsonObject().get("_source").getAsJsonObject().get("title").getAsString();
                 result.add(Map.of(
@@ -486,9 +498,9 @@ public class CtdcESFilter implements DataFetcher {
     }
 
     private Map<String, Object> getGlobalSearchQuery(String input, Map<String, Object> category) {
-        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
+        List<String> searchFields = (List<String>) category.get(GS_SEARCH_FIELD);
         List<Object> searchClauses = new ArrayList<>();
-        for (String searchFieldName: searchFields) {
+        for (String searchFieldName : searchFields) {
             searchClauses.add(Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
         }
         Map<String, Object> query = new HashMap<>();
@@ -498,17 +510,17 @@ public class CtdcESFilter implements DataFetcher {
 
     private Map<String, Object> addHighlight(Map<String, Object> query, Map<String, Object> category) {
         Map<String, Object> result = new HashMap<>(query);
-        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
+        List<String> searchFields = (List<String>) category.get(GS_SEARCH_FIELD);
         Map<String, Object> highlightClauses = new HashMap<>();
-        for (String searchFieldName: searchFields) {
+        for (String searchFieldName : searchFields) {
             highlightClauses.put(searchFieldName, Map.of());
         }
 
         result.put("highlight", Map.of(
-                        "fields", highlightClauses,
-                        "pre_tags", "",
-                        "post_tags", "",
-                        "fragment_size", 1
+                "fields", highlightClauses,
+                "pre_tags", "",
+                "post_tags", "",
+                "fragment_size", 1
                 )
         );
         return result;
@@ -523,11 +535,11 @@ public class CtdcESFilter implements DataFetcher {
 
     private List<Map<String, Object>> diagnosisCountByArm(Map<String, Object> params) throws IOException {
         final String category = "arm_id";
-        final String subCategory = "diagnosis";
+        final String subCategory = "disease";
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
-        String[] AGG_NAMES = new String[] {category};
+        String[] AGG_NAMES = new String[]{category};
         query = esService.addAggregations(query, AGG_NAMES);
-        String[] subCategories = new String[] { subCategory };
+        String[] subCategories = new String[]{subCategory};
         esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", CASES_END_POINT);
         request.setJsonEntity(gson.toJson(query));
@@ -536,13 +548,13 @@ public class CtdcESFilter implements DataFetcher {
         JsonArray arms = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
-        for (JsonElement arm: arms) {
+        for (JsonElement arm : arms) {
             String armId = arm.getAsJsonObject().get("key").getAsString();
             int diagnosesCount =
                     arm.getAsJsonObject().getAsJsonObject(subCategory).getAsJsonArray("buckets").size();
             data.add(Map.of(
-            "arm_id", armId,
-            "diagnoses", diagnosesCount
+                    "arm_id", armId,
+                    "diagnoses", diagnosesCount
             ));
         }
         return data;
@@ -552,9 +564,9 @@ public class CtdcESFilter implements DataFetcher {
         final String category = "clinical_trial_id";
         final String subCategory = "trial_arm";
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
-        String[] AGG_NAMES = new String[] {category};
+        String[] AGG_NAMES = new String[]{category};
         query = esService.addAggregations(query, AGG_NAMES);
-        String[] subCategories = new String[] { subCategory };
+        String[] subCategories = new String[]{subCategory};
         esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", CASES_END_POINT);
         request.setJsonEntity(gson.toJson(query));
@@ -563,7 +575,7 @@ public class CtdcESFilter implements DataFetcher {
         JsonArray arms = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
-        for (JsonElement arm: arms) {
+        for (JsonElement arm : arms) {
             String group = arm.getAsJsonObject().get("key").getAsString();
             int subjects =
                     arm.getAsJsonObject().getAsJsonObject(subCategory).getAsJsonArray("buckets").size();
@@ -579,9 +591,9 @@ public class CtdcESFilter implements DataFetcher {
         final String category = "clinical_trial_id";
         final String subCategory = "arm_id";
 
-        String[] subCategories = new String[] { subCategory };
+        String[] subCategories = new String[]{subCategory};
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
-        String[] AGG_NAMES = new String[] {category};
+        String[] AGG_NAMES = new String[]{category};
         query = esService.addAggregations(query, AGG_NAMES);
         esService.addSubAggregations(query, category, subCategories);
         Request request = new Request("GET", CASES_END_POINT);
@@ -591,10 +603,10 @@ public class CtdcESFilter implements DataFetcher {
         JsonArray buckets = aggs.get(category);
 
         List<Map<String, Object>> data = new ArrayList<>();
-        for (JsonElement group: buckets) {
+        for (JsonElement group : buckets) {
             List<Map<String, Object>> arms = new ArrayList<>();
 
-            for (JsonElement studyElement: group.getAsJsonObject().get(subCategory).getAsJsonObject().get("buckets").getAsJsonArray()) {
+            for (JsonElement studyElement : group.getAsJsonObject().get(subCategory).getAsJsonObject().get("buckets").getAsJsonArray()) {
                 JsonObject study = studyElement.getAsJsonObject();
                 int size = study.get("doc_count").getAsInt();
                 arms.add(Map.of(
@@ -611,9 +623,29 @@ public class CtdcESFilter implements DataFetcher {
         return data;
     }
 
-    private List<Map<String, Object>> getGroupCount(String category, String endpoint, Map<String, Object> params)
-            throws IOException {
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category));
+    private List<Map<String, Object>> getSubjectCount(
+            String category,
+            String endpoint,
+            Map<String, Object> params
+    ) throws IOException {
+        return getGroupCount(category, endpoint, params, Set.of(PAGE_SIZE));
+    }
+
+    private List<Map<String, Object>> getFilterSubjectCount(
+            String category,
+            String endpoint,
+            Map<String, Object> params
+    ) throws IOException {
+        return getGroupCount(category, endpoint, params, Set.of(PAGE_SIZE, category));
+    }
+
+    private List<Map<String, Object>> getGroupCount(
+            String category,
+            String endpoint,
+            Map<String, Object> params,
+            Set<String> excludeParams
+    ) throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, excludeParams);
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
         Request request = new Request("GET", endpoint);

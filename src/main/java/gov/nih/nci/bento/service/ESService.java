@@ -184,6 +184,13 @@ public class ESService {
         return result;
     }
 
+    public Map<String, Object> addSumAggregation(Map<String, Object> query, String sumAggName) {
+        Map<String, Object> newQuery = new HashMap<>(query);
+        newQuery.put("size", 0);
+        newQuery.put("aggregations", Map.of(sumAggName, getSumAggregation(sumAggName)));
+        return newQuery;
+    }
+
     public Map<String, Object> addAggregations(Map<String, Object> query, String[] termAggNames) {
         return addAggregations(query, termAggNames, new String[]{});
     }
@@ -229,6 +236,17 @@ public class ESService {
         Map<String, Object> agg = new HashMap<>();
         agg.put("stats", Map.of("field", aggName));
         return agg;
+    }
+
+    private Map<String, Object> getSumAggregation(String aggName) {
+        Map<String, Object> agg = new HashMap<>();
+        agg.put("sum", Map.of("field", aggName));
+        return agg;
+    }
+
+    public double retrieveSumAgg(JsonObject jsonObject, String sumAggName) {
+        JsonObject aggs = jsonObject.getAsJsonObject("aggregations");
+        return aggs.get("file_size").getAsJsonObject().get("value").getAsDouble();
     }
 
     public Map<String, JsonArray> collectTermAggs(JsonObject jsonObject, String[] termAggNames) {

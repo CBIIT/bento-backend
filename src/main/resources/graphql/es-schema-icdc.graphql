@@ -113,7 +113,7 @@ type FileOverviewES {
     other_cases: [String]
 }
 
-type CaseOverview2 {
+type CaseOverviewES2 {
     case_id: String
     study_code: String
     study_type: String
@@ -142,6 +142,22 @@ type CaseOverview2 {
     arm: String
 }
 
+type GroupCountES {
+    group: String
+    count: Int
+}
+
+type ProgramStudies {
+    program: String
+    caseSize: Int
+    studies: [StudyInfo]
+}
+
+type StudyInfo {
+    study: String
+    caseSize: Int
+}
+
 type SearchResult {
     numberOfPrograms: Int
     numberOfStudies: Int
@@ -151,11 +167,39 @@ type SearchResult {
     numberOfStudyFiles: Int
     numberOfAliquots: Int
     volumeOfData: Float
-    caseIds: [String]
-    studyFileIds: [String]
-    sampleIds: [String]
-    fileIds: [String]
-    firstPage: [CaseOverview2]
+
+    caseCountByProgram: [GroupCountES]
+    caseCountByStudyCode: [GroupCountES]
+    caseCountByStudyType: [GroupCountES]
+    caseCountByBiobank: [GroupCountES]
+    caseCountByStudyParticipation: [GroupCountES]
+    caseCountByBreed: [GroupCountES]
+    caseCountByDiagnosis: [GroupCountES]
+    caseCountByDiseaseSite: [GroupCountES]
+    caseCountByStageOfDisease: [GroupCountES]
+    caseCountByGender: [GroupCountES]
+    caseCountByNeuteredStatus: [GroupCountES]
+    caseCountByFileFormat: [GroupCountES]
+    programsAndStudies: [ProgramStudies]
+
+    filterCaseCountByProgram: [GroupCountES]
+    filterCaseCountByStudyCode: [GroupCountES]
+    filterCaseCountByStudyType: [GroupCountES]
+    filterCaseCountByBiobank: [GroupCountES]
+    filterCaseCountByStudyParticipation: [GroupCountES]
+    filterCaseCountByBreed: [GroupCountES]
+    filterCaseCountByDiagnosis: [GroupCountES]
+    filterCaseCountByDiseaseSite: [GroupCountES]
+    filterCaseCountByStageOfDisease: [GroupCountES]
+    filterCaseCountByResponseToTreatment: [GroupCountES]
+    filterCaseCountBySex: [GroupCountES]
+    filterCaseCountByNeuteredStatus: [GroupCountES]
+    filterCaseCountBySampleSite: [GroupCountES]
+    filterCaseCountBySampleType: [GroupCountES]
+    filterCaseCountBySamplePathology: [GroupCountES]
+    filterCaseCountByFileAssociation: [GroupCountES]
+    filterCaseCountByFileType: [GroupCountES]
+    filterCaseCountByFileFormat: [GroupCountES]
 }
 
 
@@ -168,6 +212,8 @@ type QueryType {
         program: [String] = [],
         study: [String] = [],
         study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
         breed: [String] = [],
         diagnosis: [String] = [],
         disease_site: [String] = [],
@@ -175,21 +221,94 @@ type QueryType {
         response_to_treatment: [String] = [],
         sex: [String] = [],
         neutered_status: [String] = [],
+
+        sample_site: [String] = [],
         sample_type: [String] = [],
         sample_pathology: [String] = [],
+
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = []
+    ): SearchResult
+
+    caseOverview (
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+
         sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+
         file_association: [String] = [],
         file_type: [String] = [],
         file_format: [String] = [],
+        order_by: String = "case_ids",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [CaseOverviewES]
+
+    sampleOverview(
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
         biobank: [String] = [],
         study_participation: [String] = [],
-        first: Int = 100
-    ): SearchResult
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
 
-    caseOverviewPaged (case_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
-    caseOverviewPagedDesc (case_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
-    sampleOverview(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
-    sampleOverviewDesc(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
-    fileOverview(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
-    fileOverviewDesc(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
+        sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = [],
+        order_by: String = "sample_ids",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SampleOverviewES]
+
+    fileOverview(
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+
+        sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = [],
+        order_by: String = "file_name",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverviewES]
 }

@@ -199,9 +199,9 @@ pipeline {
 
 					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
 
-					apt-get update && apt-get install -y apt-transport-https
+					//apt-get update && apt-get install -y apt-transport-https
 					
-					apt-get update && apt-get install -y zip
+					//apt-get update && apt-get install -y zip
 					
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)

@@ -113,28 +113,17 @@
       nocache: yes
     name: "{{ ecr_repo }}/{{ project }}-backend"
     tag: "{{bento_api_version}}-{{build_number}}"
-    push: no
+    push: yes
     force_source: yes
     source: build
 
-- name: test image for vulnerabilities
-  block:
-    - name: run trivy scanner
-      command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-      #command: "trivy image --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-      register: backend_vuln
-  always:
-    - name: echo backend vulnerabilities
-      debug:
-        msg: "{{ backend_vuln.stdout_lines }}"
-
-#- name: Add tag latest to {{ project }}-backend image
-#  docker_image:
-#    name: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-#    repository: "{{ ecr_repo }}/{{ project }}-backend:latest"
-#    force_tag: yes
-#    push: yes
-#    source: local
+- name: Add tag latest to {{ project }}-backend image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project }}-backend:latest"
+    force_tag: yes
+    push: yes
+    source: local
 
 ############################################################################################################################
 
@@ -184,25 +173,14 @@
       nocache: yes
     name: "{{ ecr_repo }}/{{ project }}-frontend"
     tag: "{{frontend_version}}-{{build_number}}"
-    push: no
+    push: yes
     force_source: yes
     source: build
 
-- name: test image for vulnerabilities
-  block:
-    - name: run trivy scanner
-      command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-      #command: "trivy image --severity HIGH,CRITICAL {{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}-{{build_number}}"
-      register: frontend_vuln
-  always:
-    - name: echo frontend vulnerabilities
-      debug:
-        msg: "{{ frontend_vuln.stdout_lines }}"
-
-#- name: Add tag latest to {{ project }}-frontend image
-#  docker_image:
-#    name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
-#    repository: "{{ ecr_repo }}/{{ project }}-frontend:latest"
-#    force_tag: yes
-#    push: yes
-#    source: local
+- name: Add tag latest to {{ project }}-frontend image
+  docker_image:
+    name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
+    repository: "{{ ecr_repo }}/{{ project }}-frontend:latest"
+    force_tag: yes
+    push: yes
+    source: local

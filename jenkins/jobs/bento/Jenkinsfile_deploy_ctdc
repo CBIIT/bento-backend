@@ -262,7 +262,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-					project_name: "ctdc2"
+					project_name: "ctdc2",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true)

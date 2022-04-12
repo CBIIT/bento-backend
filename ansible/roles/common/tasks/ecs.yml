@@ -1,6 +1,6 @@
 ---
 - name: create task definition for {{project_name}}-{{container_name}}
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
       - name: sumologic-firelens
         essential: true

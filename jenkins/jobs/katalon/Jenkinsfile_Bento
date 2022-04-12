@@ -93,6 +93,8 @@ pipeline {
 			steps {
                 script {
                     switch("${params.Profile}") {
+					
+					// BENTO
                     case "QA_PROD":
 						WIKI_PAGE="442632045"
 						PROJECT="Bento"
@@ -119,6 +121,8 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
+					
+					// BENTO_ICDC
 					case "BENTO_ICDC":
 						WIKI_PAGE="442632045"
 						PROJECT="Bento"
@@ -195,7 +199,9 @@ pipeline {
 
 					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
 
-					apt-get update && apt-get install -y zip
+					//apt-get update && apt-get install -y apt-transport-https
+					
+					//apt-get update && apt-get install -y zip
 					
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)

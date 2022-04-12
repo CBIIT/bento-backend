@@ -170,10 +170,7 @@ pipeline {
   options {
   	ansiColor('xterm')
   }
-  tools {
-  	maven 'Default' 
-    jdk 'Default' 
-  }
+
   stages{
 //  	stage('checkout'){
 //  		steps {

@@ -49,14 +49,6 @@ pipeline {
         type: 'PT_SINGLE_SELECT',
         value: 'us-east-1' )
 	booleanParam(
-		defaultValue: false,
-		description: 'Use the Redis cache',
-		name: 'Use_Redis')
-	booleanParam(
-		defaultValue: false,
-		description: 'Flush the Redis cache',
-		name: 'Flush_Redis')
-	booleanParam(
 		defaultValue: true,
 		description: 'Enable the Elasticsearch filter',
 		name: 'Enable_ES_Filter')
@@ -270,6 +262,7 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
+					project_name: "ctdc2"
                     enable_redis: "${params.Use_Redis}",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],

@@ -10,4 +10,4 @@
         name: bento-cds
         tasks_from: build-backend
       vars:
-        ansible_python_interpreter: /bin/python3
+        ansible_python_interpreter: /usr/bin/python3

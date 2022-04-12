@@ -114,7 +114,7 @@ pipeline {
 	  steps{
 		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            playbook: '${WORKSPACE}/icdc-devops/ansible/cds-deploy-frontend.yml',
+            playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy-frontend.yml',
             inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
             extraVars: [
 					       project_name: "${params.ProjectName}",

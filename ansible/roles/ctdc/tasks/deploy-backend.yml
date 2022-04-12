@@ -1,0 +1,77 @@
+---
+#install aws collection
+- name: install ansible collections
+  include_role:
+    name: common
+    tasks_from: collections
+
+#docker login
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: get db ip
+  include_role:
+    name: common
+    tasks_from: neo4j-ip
+
+- name: deploy ecs
+  include_role:
+    name: common
+    tasks_from: ecs
+  vars:
+    container_name: "{{ backend_container_name }}"
+    image_version: "{{ backend_image_version }}"
+    container_image_url: "{{ backend_container_image_url }}"
+    container_port: "{{ backend_container_port }}"
+    container_memory: "{{ backend_container_memory }}"
+    container_cpu: "{{  backend_container_cpu  }}"
+    ecs_cluster_name: "{{ backend_ecs_cluster_name }}"
+    container_entrypoint:
+      - "/bin/ash"
+      - "-c"
+      - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
+    container_env:
+      - name: ES_SCHEMA
+        value: "{{es_schema}}"
+      - name: PROJECT
+        value: "{{project_name}}"
+      - name: NEO4J_URL
+        value: bolt://{{ neo4j_ip }}:7687
+      - name: NEO4J_USER
+        value: "{{ neo4j_user }}"
+      - name: NEO4J_PASSWORD
+        value: "{{ neo4j_password }}"
+      - name: NEO4J_GRAPHQL_ENDPOINT
+        value: http://{{ neo4j_ip }}:7474/graphql/
+      - name: BENTO_API_VERSION
+        value: "{{image_version}}"
+      - name: ES_HOST
+        value: "{{es_host}}"
+      - name: ES_FILTER_ENABLED
+        value: "{{ enable_es_filter }}"
+      - name: NEW_RELIC_LICENSE_KEY
+        value: "{{ newrelic_license_key }}"
+      - name: NEW_RELIC_APP_NAME
+        value: "{{ app_name }}-{{container_name}}"
+      - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+        value: true
+      - name: NEW_RELIC_HOST
+        value: "gov-collector.newrelic.com"
+      - name: NEW_RELIC_LOG_FILE_NAME
+        value: "STDOUT"
+      - name: NEW_RELIC_LABELS
+        value: "Project:{{ project_name }};Environment:{{ tier }}"
+      - name: JAVA_OPTS
+        value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+      - name: REDIS_ENABLE
+        value: "{{ enable_redis }}"
+      - name: REDIS_USE_CLUSTER
+        value: "{{ use_cluster }}"
+      - name: REDIS_HOST
+        value: "{{ redis_host }}"
+      - name: REDIS_PORT
+        value: "{{ redis_port }}"
+      - name: REDIS_FILTER_ENABLE
+        value: false

@@ -1,13 +1,13 @@
-- name: cds backend pipeline
+- name: ctdc deploy pipeline
   hosts: bento
   connection: local
   gather_facts: no
   become: yes
 
   tasks:
-    - name: build stage for gmb frontend
+    - name: deploy stage for ctdc frontend
       include_role:
-        name: bento-cds
+        name: bento-ctdc
         tasks_from: deploy-frontend
       vars:
         frontend_ecs_cluster_name: ctdc2-dev

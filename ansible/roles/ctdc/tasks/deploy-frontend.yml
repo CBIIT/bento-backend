@@ -1,0 +1,53 @@
+---
+#install aws collection
+- name: install ansible collections
+  include_role:
+    name: bento-ctdc
+    tasks_from: collections
+
+#docker login
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: deploy ecs
+  include_role:
+    name: common
+    tasks_from: ecs
+  vars:
+    container_name: "{{ frontend_container_name }}"
+    image_version: "{{ frontend_image_version }}"
+    container_image_url: "{{ frontend_container_image_url }}"
+    container_port: "{{ frontend_container_port }}"
+    container_memory: "{{ frontend_container_memory }}"
+    container_cpu: "{{  frontend_container_cpu  }}"
+    ecs_cluster_name: "{{frontend_ecs_cluster_name}}"
+    container_env:
+      - name: REACT_APP_BACKEND_API
+        value: "{% if tier == 'prod' %}https://bento-tools.org/v1/graphql/{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
+      - name: REACT_APP_FILE_SERVICE_API
+        value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
+      - name: REACT_APP_BE_VERSION
+        value: "{{ backend_version }}"
+      - name: REACT_APP_FE_VERSION
+        value: "{{frontend_version}}"
+      - name: REACT_APP_ABOUT_CONTENT_URL
+        value: "{{about_content_url}}"
+      - name: NEW_RELIC_LICENSE_KEY
+        value: "{{ newrelic_license_key }}"
+      - name: NEW_RELIC_APP_NAME
+        value: "{{ app_name }}-{{container_name}}"
+      - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+        value: true
+      - name: NEW_RELIC_HOST
+        value: "gov-collector.newrelic.com"
+      - name: NEW_RELIC_NO_CONFIG_FILE
+        value: true
+      - name: NEW_RELIC_LABELS
+        value: "Project:{{ project_name }};Environment:{{ tier }}"
+      - name: REACT_APP_GOOGLE_CLIENT_ID
+        value: "{{ app_google_client_id }}"
+      - name: REACT_APP_AUTH_API
+        value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{project_name}}-{{ tier }}.bento-tools.org{% endif %}"
+

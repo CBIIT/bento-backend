@@ -1,0 +1,6 @@
+---
+- name: install aws collection
+  command: ansible-galaxy collection install {{item}}
+  loop:
+    -  amazon.aws
+    -  community.aws

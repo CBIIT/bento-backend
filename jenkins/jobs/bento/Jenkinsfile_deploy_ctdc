@@ -254,7 +254,7 @@ pipeline {
 				poll: false,
 				scm: [$class: 'GitSCM', 
 				//branches: [[name: '*/master']], 
-				branches: [[name: '*/bento_fargate']], 
+				branches: [[name: '*/ctdc_fargate']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 

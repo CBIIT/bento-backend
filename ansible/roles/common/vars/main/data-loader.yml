@@ -1,8 +1,6 @@
 # vars file for data loading
 #project_name:  "{{lookup('env','PROJECT_NAME')}}"
-project_name:  "ctdc"
-#database_name: "{{ project_name }}-{{tier}}-neo4j-4"
-database_name: "ctdc-{{tier}}-neo4j-4"
+database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 tier: "{{ lookup('env','TIER') }}"
 stack_name: "{{project_name}}"
 workspace: "{{ lookup('env','WORKSPACE') }}"

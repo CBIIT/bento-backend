@@ -12,3 +12,11 @@
       vars:
         frontend_ecs_cluster_name: ctdc2-dev
         ansible_python_interpreter: /usr/bin/python3
+
+    - name: deploy stage for ctdc backend
+      include_role:
+        name: ctdc
+        tasks_from: deploy-backend
+      vars:
+        backend_ecs_cluster_name: ctdc2-dev
+        ansible_python_interpreter: /usr/bin/python3

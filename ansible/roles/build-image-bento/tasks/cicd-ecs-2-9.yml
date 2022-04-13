@@ -1,0 +1,31 @@
+---
+# tasks file for build-image-bento
+- name: list all dockerfiles in katalon_agent directory
+  find: 
+    path: ../docker/dockerfiles
+    patterns: 'jenkins-agent-microservices-ecs-2.9'
+    file_type: file
+  register: cicd_dockerfile
+
+- name: set name of cicd dockerfile
+  set_fact:
+    dockerfiles: "{{ cicd_dockerfile.files | json_query('[*].path')}}"
+
+- name: log into DockerHub
+  docker_login:
+    username: "{{docker_user}}"
+    password: "{{docker_password}}"
+
+- name: build all the docker images
+  docker_image:
+    build:
+      path: "{{ item | dirname }}"
+      dockerfile: "jenkins-agent-microservices-ecs-2.9"
+      pull: yes
+      nocache: yes
+    name: "{{ dockerhub_path }}/cicd-ansible_2.9"
+    tag: "latest"
+    push: yes
+    force_source: yes
+    source: build
+  loop: "{{ dockerfiles }}"

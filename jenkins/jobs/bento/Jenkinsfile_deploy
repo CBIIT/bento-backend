@@ -32,7 +32,7 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-			label 'cicd_microservice'
+			label 'cicd_ansible_2.9'
 		}
 	}
 	parameters {
@@ -365,7 +365,8 @@ pipeline {
                     enable_redis: "${params.Use_Redis}",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
-					colorized: true)
+					colorized: true,
+					extras: '-vvv')
  			}
 			
 			script {

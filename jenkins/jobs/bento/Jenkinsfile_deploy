@@ -342,7 +342,7 @@ pipeline {
 	   URL_DOMAIN = "bento-tools.org"
       }
   		steps{
-		  node('cicd_microservice') {
+		  node('cicd_ansible_2.9') {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 

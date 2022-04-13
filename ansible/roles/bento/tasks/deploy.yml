@@ -22,7 +22,7 @@
 ############################################################################################################################
 
 - name: create task definition - {{ project }}-backend
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
     - name: backend
       essential: true
@@ -88,7 +88,7 @@
   register: task_output
 
 - name: create task definition - {{ project }}-frontend
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
     - name: frontend
       essential: true
@@ -138,7 +138,7 @@
   register: task_output
 
 - name: create task definition - sumo syslog
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
     - name: sumologic-syslog
       essential: true
@@ -166,7 +166,7 @@
   register: task_output
 
 - name: create task definition - sumo docker
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
     - name: sumologic-docker
       essential: true
@@ -199,7 +199,7 @@
   register: task_output
 
 - name: create task definition - newrelic docker
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
     - name: newrelic-docker
       essential: true

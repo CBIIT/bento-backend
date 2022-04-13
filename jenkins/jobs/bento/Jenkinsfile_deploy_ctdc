@@ -265,7 +265,8 @@ pipeline {
 					project_name: "ctdc2",
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
-					colorized: true)
+					colorized: true,
+					extras: -vvv)
  			}
 
 		  }

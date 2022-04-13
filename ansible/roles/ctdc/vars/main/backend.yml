@@ -14,9 +14,8 @@ neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.n
 neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
 # elasticsearch
 enable_es_filter: true
-es_schema_file: es-schema-{{project_name}}.graphql
-
 es_schema: es-schema-{{project_name}}.graphql
+
 test_queries_file: "not_needed.txt"
 #graphql
 schema_file: "{{project_name}}.graphql"

@@ -1,9 +1,11 @@
 ---
 #install aws collection
-- name: install ansible collections
-  include_role:
-    name: common
-    tasks_from: collections
+#- name: install ansible collections
+#  include_role:
+#    name: common
+#    tasks_from: collections
+- name: install aws collection
+  command: ansible-galaxy collection install 'community.aws:>=1.3.0'
 
 - name: get db ip
   include_tasks: neo4j-ip.yml

@@ -15,7 +15,10 @@ public class YamlFilterType {
     private String nestedPath;
     private Set<String> nestedFields;
     private boolean filter;
+    private boolean caseInSensitive;
+    private int size;
     private Map<String, String> alternativeSort;
+    private Set<String> returnAllFields;
 
     // Global Query Sets
     private List<YamlGlobalFilterType.GlobalQuerySet> query;

@@ -198,6 +198,9 @@ public class YamlQueryFactory {
                         .getSourceFilter();
             case Const.YAML_QUERY.FILTER.DEFAULT:
                 return new DefaultFilter(FilterParam.builder()
+                        .size(filterType.getSize())
+                        .returnAllFields(filterType.getReturnAllFields())
+                        .caseInSensitive(filterType.isCaseInSensitive())
                         .args(param.getArgs()).build()).getSourceFilter();
             case Const.YAML_QUERY.FILTER.NESTED:
                 return new NestedFilter(

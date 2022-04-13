@@ -210,8 +210,43 @@ public class TypeMapperImpl implements TypeMapperService {
         return (response) -> getNestedAggregate(response).getSearchHits();
     }
 
+    // TODO To Be DELETED
+    public TypeMapper<QueryResult> getICDCNestedAggregate() {
+        return (response) -> getICDCNestedAggregate(response);
+    }
+    // TODO To Be DELETED
+    public TypeMapper<List<Map<String, Object>>> getICDCNestedAggregateList() {
+        return (response) -> getICDCNestedAggregate(response).getSearchHits();
+    }
+
+
     public TypeMapper<Integer> getIntTotalNestedAggregate() {
         return (response) -> getNestedAggregate(response).getTotalHits();
+    }
+
+
+    // TODO TO BE DELETED
+    private QueryResult getICDCNestedAggregate(SearchResponse response) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        Aggregations aggregate = response.getAggregations();
+        ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
+        // Get Nested Subaggregation
+        ParsedFilter aggFilters = aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+        ParsedStringTerms aggTerms = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
+        List<Terms.Bucket> buckets = (List<Terms.Bucket>) aggTerms.getBuckets();
+
+        AtomicLong totalCount = new AtomicLong();
+        buckets.forEach((b)-> {
+            totalCount.addAndGet(b.getDocCount());
+            result.add(Map.of(
+                    BENTO_FIELDS.GROUP, b.getKey(),
+                    BENTO_FIELDS.COUNT, b.getDocCount()
+            ));
+        });
+        return QueryResult.builder()
+                .searchHits(result)
+                .totalHits(aggTerms.getSumOfOtherDocCounts() + totalCount.longValue())
+                .build();
     }
 
     private QueryResult getNestedAggregate(SearchResponse response) {

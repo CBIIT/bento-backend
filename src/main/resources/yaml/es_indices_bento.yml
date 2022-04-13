@@ -10,7 +10,15 @@ Indices:
         type: keyword
       program:
         type: keyword
+      programs:
+        type: keyword
+      program_code:
+        type: keyword
       program_id:
+        type: keyword
+      study:
+        type: keyword
+      studies:
         type: keyword
       study_info:
         type: keyword
@@ -22,21 +30,33 @@ Indices:
         type: keyword
       subject_id:
         type: keyword
+      subject_ids:
+        type: keyword
       subject_id_num:
         type: long
       subject_id_gs:
         type: keyword
       diagnosis:
         type: keyword
+      diagnoses:
+        type: keyword
       diagnosis_gs:
         type: keyword
       recurrence_score:
         type: keyword
+      rc_scores:
+        type: keyword
       tumor_size:
+        type: keyword
+      tumor_sizes:
         type: keyword
       chemotherapy:
         type: keyword
+      chemo_regimen:
+        type: keyword
       tumor_grade:
+        type: keyword
+      tumor_grades:
         type: keyword
       er_status:
         type: keyword
@@ -44,7 +64,11 @@ Indices:
         type: keyword
       endocrine_therapy:
         type: keyword
+      endo_therapies:
+        type: keyword
       menopause_status:
+        type: keyword
+      meno_status:
         type: keyword
       age:
         type: long
@@ -68,8 +92,32 @@ Indices:
         type: keyword
       files:
         type: keyword
-
-
+      file_info:
+        type: nested
+        properties:
+          file_id:
+            type: keyword
+          file_ids:
+            type: keyword
+          file_type:
+            type: keyword
+          file_name:
+            type: keyword
+          file_names:
+            type: keyword
+          association:
+            type: keyword
+      sample_info:
+        type: nested
+        properties:
+          sample_id:
+            type: keyword
+          sample_ids:
+            type: keyword
+          composition:
+            type: keyword
+          tissue_type:
+            type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
@@ -82,28 +130,42 @@ Indices:
       RETURN DISTINCT
       'subject' AS type,
       p.program_acronym AS program,
+      p.program_acronym AS programs,
+      p.program_acronym AS program_code,
       p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS study_info,
       s.study_acronym AS study_acronym,
+      s.study_acronym AS study,
+      (s.study_acronym + ': ' + s.study_short_description) AS studies,
       s.study_short_description AS study_short_description,
       COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
       ss.study_subject_id AS subject_id,
+      ss.study_subject_id AS subject_ids,
       ss.study_subject_id AS subject_id_gs,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       ss.disease_subtype AS diagnosis,
+      ss.disease_subtype AS diagnoses,
       ss.disease_subtype AS diagnosis_gs,
       sf.grouped_recurrence_score AS recurrence_score,
+      sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_size,
+      d.tumor_size_group AS tumor_sizes,
       tp.chemotherapy_regimen AS chemotherapy,
+      tp.chemotherapy_regimen AS chemo_regimen,
       d.tumor_grade AS tumor_grade,
+      d.tumor_grade AS tumor_grades,
       d.er_status AS er_status,
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endocrine_therapy,
+      tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  menopause_status,
+      demo.menopause_status AS meno_status,
       demo.age_at_index AS age,
       demo.age_at_index AS age_at_index,
       demo.age_at_index AS age_at_index_gs,
       demo.survival_time AS survival_time,
+      COLLECT(DISTINCT {file_id: f.file_id, file_ids: f.file_id, file_name: f.file_name, file_names: f.file_name, file_type: f.file_type, association: head(labels(parent))}) as file_info,
+      COLLECT(DISTINCT {sample_id: samp.sample_id, sample_ids: samp.sample_id, composition: samp.composition, tissue_type: samp.tissue_type}) AS sample_info,
       demo.survival_time_unit AS survival_time_unit,
       COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
       COLLECT(DISTINCT samp.composition) AS composition,
@@ -145,7 +207,11 @@ Indices:
         type: keyword
       program:
         type: keyword
+      programs:
+        type: keyword
       program_id:
+        type: keyword
+      studies:
         type: keyword
       arm:
         type: keyword
@@ -153,9 +219,13 @@ Indices:
         type: keyword
       subject_id:
         type: keyword
+      subject_ids:
+        type: keyword
       subject_id_num:
         type: integer
       sample_id:
+        type: keyword
+      sample_ids:
         type: keyword
       sample_id_gs:
         type: keyword
@@ -163,13 +233,23 @@ Indices:
         type: integer
       diagnosis:
         type: keyword
+      diagnoses:
+        type: keyword
       recurrence_score:
         type: keyword
+      rc_scores:
+        type: keyword
       tumor_size:
+        type: keyword
+      tumor_sizes:
+        type: keyword
+      chemo_regimen:
         type: keyword
       chemotherapy:
         type: keyword
       tumor_grade:
+        type: keyword
+      tumor_grades:
         type: keyword
       er_status:
         type: keyword
@@ -177,7 +257,11 @@ Indices:
         type: keyword
       endocrine_therapy:
         type: keyword
+      endo_therapies:
+        type: keyword
       menopause_status:
+        type: keyword
+      meno_status:
         type: keyword
       tissue_type:
         type: keyword
@@ -216,10 +300,13 @@ Indices:
       RETURN DISTINCT
       'sample' as type,
       p.program_acronym AS program,
+      p.program_acronym AS programs,
       p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS study_info,
       s.study_acronym AS arm,
+      s.study_acronym AS studies,
       samp.sample_id AS sample_id,
+      samp.sample_id AS sample_ids,
       samp.sample_id AS sample_id_gs,
       samp.sample_anatomic_site AS sample_anatomic_site,
       samp.sample_anatomic_site AS sample_anatomic_site_gs,
@@ -227,16 +314,24 @@ Indices:
       lp.test_name AS platform,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       ss.study_subject_id AS subject_id,
+      ss.study_subject_id AS subject_ids,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       ss.disease_subtype AS diagnosis,
+      ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS recurrence_score,
+      sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_size,
+      d.tumor_size_group AS tumor_sizes,
       tp.chemotherapy_regimen AS chemotherapy,
+      tp.chemotherapy_regimen AS chemo_regimen,
       d.tumor_grade AS tumor_grade,
+      d.tumor_grade AS tumor_grades,
       d.er_status AS er_status,
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endocrine_therapy,
+      tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  menopause_status,
+      demo.menopause_status AS meno_status,
       demo.age_at_index AS age_at_index,
       samp.tissue_type AS tissue_type,
       samp.tissue_type AS tissue_type_gs,
@@ -253,9 +348,13 @@ Indices:
         type: keyword
       program:
         type: keyword
+      programs:
+        type: keyword
       program_id:
         type: keyword
       study_info:
+        type: keyword
+      studies:
         type: keyword
       study_code:
         type: keyword
@@ -263,19 +362,27 @@ Indices:
         type: keyword
       subject_id:
         type: keyword
+      subject_ids:
+        type: keyword
       subject_id_num:
         type: integer
       sample_id:
         type: keyword
+      sample_ids:
+        type: keyword
       sample_id_num:
         type: integer
       file_id:
+        type: keyword
+      file_ids:
         type: keyword
       file_id_num:
         type: integer
       file_id_gs:
         type: keyword
       file_name:
+        type: keyword
+      file_names:
         type: keyword
       file_name_gs:
         type: keyword
@@ -291,19 +398,33 @@ Indices:
         type: keyword
       diagnosis:
         type: keyword
+      diagnoses:
+        type: keyword
       recurrence_score:
+        type: keyword
+      rc_scores:
         type: keyword
       tumor_size:
         type: keyword
+      tumor_sizes:
+        type: keyword
       chemotherapy:
         type: keyword
+      chemo_regimen:
+        type: keyword
       tumor_grade:
+        type: keyword
+      tumor_grades:
         type: keyword
       er_status:
         type: keyword
       pr_status:
         type: keyword
+      endo_therapies:
+        type: keyword
       endocrine_therapy:
+        type: keyword
+      meno_status:
         type: keyword
       menopause_status:
         type: keyword
@@ -329,15 +450,20 @@ Indices:
       RETURN DISTINCT
       'file' AS type,
       p.program_acronym AS program,
+      p.program_acronym AS programs,
       p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS study_info,
       s.study_acronym AS study_code,
+      s.study_acronym AS studies,
       s.study_acronym AS arm,
       ss.study_subject_id AS subject_id,
+      ss.study_subject_id AS subject_ids,
       toInteger(split(ss.study_subject_id,'-')[2]) AS subject_id_num,
       f.file_id AS file_id,
+      f.file_id AS file_ids,
       f.file_id AS file_id_gs,
       f.file_name AS file_name,
+      f.file_name AS file_names,
       f.file_name AS file_name_gs,
       f.file_description AS file_description,
       f.file_format AS file_format,
@@ -346,16 +472,24 @@ Indices:
       f.md5sum AS md5sum,
       toInteger(split(f.file_id,'-')[2]) AS file_id_num,
       ss.disease_subtype AS diagnosis,
+      ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS recurrence_score,
+      sf.grouped_recurrence_score AS rc_scores,
       d.tumor_size_group AS tumor_size,
+      d.tumor_size_group AS tumor_sizes,
       tp.chemotherapy_regimen AS chemotherapy,
+      tp.chemotherapy_regimen AS chemo_regimen,
       d.tumor_grade AS tumor_grade,
+      d.tumor_grade AS tumor_grades,
       d.er_status AS er_status,
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endocrine_therapy,
+      tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  menopause_status,
+      demo.menopause_status AS meno_status,
       demo.age_at_index AS age_at_index,
       samp.sample_id AS sample_id,
+      samp.sample_id AS sample_ids,
       toInteger(split(samp.sample_id,'-')[2]) AS sample_id_num,
       samp.tissue_type AS tissue_type,
       samp.composition AS composition,

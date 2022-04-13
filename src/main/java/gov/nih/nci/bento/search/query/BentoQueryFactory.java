@@ -1,5 +1,6 @@
 package gov.nih.nci.bento.search.query;
 
+import gov.nih.nci.bento.classes.FilterParam;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -9,8 +10,11 @@ import java.util.Map;
 
 public class BentoQueryFactory extends QueryFactory {
 
-    public BentoQueryFactory(Map<String, Object> args) {
+    private FilterParam filterParam;
+
+    public BentoQueryFactory(Map<String, Object> args, FilterParam filterParam) {
         super(args);
+        this.filterParam = filterParam;
     }
 
     @Override
@@ -19,10 +23,21 @@ public class BentoQueryFactory extends QueryFactory {
         args.forEach((key,v)->{
             List<String> list = (List<String>) args.get(key);
             if (list.size() > 0) {
-                QueryBuilder builder = QueryBuilders.termsQuery(key, (List<String>) args.get(key));
+                QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
                 boolBuilder.filter(builder);
             }
         });
         return boolBuilder.filter().size() > 0 ? boolBuilder : QueryBuilders.matchAllQuery();
     }
+
+    private QueryBuilder getCaseInsensitiveQuery(List<String> list, String key) {
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+        list.forEach(value->{
+            bool.should(
+                    QueryBuilders.wildcardQuery(key, value).caseInsensitive(true)
+            );
+        });
+        return bool;
+    }
+
 }

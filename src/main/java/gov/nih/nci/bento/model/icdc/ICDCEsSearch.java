@@ -1,13 +1,18 @@
 package gov.nih.nci.bento.model.icdc;
 
 import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.classes.MultipleRequests;
 import gov.nih.nci.bento.classes.QueryParam;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.ES_PARAMS;
 import gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import gov.nih.nci.bento.constants.Const.ICDC_INDEX;
 import gov.nih.nci.bento.search.datafetcher.DataFetcher;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
+import gov.nih.nci.bento.search.query.filter.NestedFilter;
 import gov.nih.nci.bento.search.result.TypeMapperService;
+import gov.nih.nci.bento.search.yaml.YamlQueryFactory;
+import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
 import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.DataFetchingEnvironment;
@@ -15,16 +20,21 @@ import graphql.schema.idl.RuntimeWiring;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
@@ -35,11 +45,20 @@ public class ICDCEsSearch implements DataFetcher {
     private final EsSearch esService;
 
     public final TypeMapperService typeMapper;
+//    private BentoQuery bentoQuery;
+    private YamlQueryFactory yamlQueryFactory;
+
+    @PostConstruct
+    public void init() {
+//        bentoQuery = new BentoQueryImpl(typeMapper);
+        yamlQueryFactory = new YamlQueryFactory(esService, typeMapper);
+    }
 
     @Override
-    public RuntimeWiring buildRuntimeWiring() {
+    public RuntimeWiring buildRuntimeWiring() throws IOException {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                                .dataFetchers(yamlQueryFactory.createYamlQueries())
                                 .dataFetcher("caseOverviewPaged", env ->
                                         caseOverview(CreateQueryParam(env),"asc"))
                                 .dataFetcher("caseOverviewPagedDesc", env ->
@@ -64,11 +83,178 @@ public class ICDCEsSearch implements DataFetcher {
                                         caseCountByStageOfDisease(CreateQueryParam(env)))
                                 .dataFetcher("caseCountByDiseaseSite", env ->
                                         caseCountByDiseaseSite(CreateQueryParam(env)))
+                                .dataFetcher("filterCaseCountByProgram_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"program_acronym"))
+                                .dataFetcher("filterCaseCountByStudyType_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"study_type"))
+                                .dataFetcher("filterCaseCountByBreed_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"breed"))
+                                .dataFetcher("filterCaseCountByDiagnosis_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"diagnosis"))
+                                .dataFetcher("filterCaseCountByDiseaseSite_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"disease_site"))
+                                .dataFetcher("filterCaseCountByStageOfDisease_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"stage_of_disease"))
+                                .dataFetcher("filterCaseCountByResponseToTreatment_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"response_to_treatment"))
+                                .dataFetcher("filterCaseCountBySex_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"sex"))
+                                .dataFetcher("filterCaseCountByNeuteredStatus", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"neutered_status"))
+                                // TODO SAMPLE_INFO FILE_INFO
+                                .dataFetcher("filterCaseCountBySampleType_Test", env -> {
+                                            YamlFilterType yamlFilterType = new YamlFilterType();
+                                            yamlFilterType.setNestedFields(Set.of("sample_type", "sample_site", "sample_pathology"));
+                                            yamlFilterType.setNestedPath("samples_info");
+                                            yamlFilterType.setSelectedField("sample_type");
+                                            return filterNestedCount_Test(CreateQueryParam(env),yamlFilterType);
+                                })
+                                .dataFetcher("filterCaseCountBySamplePathology_Test", env -> {
+                                    YamlFilterType yamlFilterType = new YamlFilterType();
+                                    yamlFilterType.setNestedFields(Set.of("sample_type", "sample_site", "sample_pathology"));
+                                    yamlFilterType.setNestedPath("samples_info");
+                                    yamlFilterType.setSelectedField("sample_pathology");
+                                    return filterNestedCount_Test(CreateQueryParam(env),yamlFilterType);
+                                })
+                                .dataFetcher("filterCaseCountBySampleSite_Test", env -> {
+                                    YamlFilterType yamlFilterType = new YamlFilterType();
+                                    yamlFilterType.setNestedFields(Set.of("sample_type", "sample_site", "sample_pathology"));
+                                    yamlFilterType.setNestedPath("samples_info");
+                                    yamlFilterType.setSelectedField("sample_site");
+                                    return filterNestedCount_Test(CreateQueryParam(env),yamlFilterType);
+                                })
+                                .dataFetcher("filterCaseCountByFileAssociation_Test", env -> {
+                                    YamlFilterType yamlFilterType = new YamlFilterType();
+                                    yamlFilterType.setNestedFields(Set.of("association", "file_type", "file_format"));
+                                    yamlFilterType.setNestedPath("files_info");
+                                    yamlFilterType.setSelectedField("association");
+                                    return filterNestedCount_Test(CreateQueryParam(env),yamlFilterType);
+                                })
+                                .dataFetcher("filterCaseCountByFileType_Test", env -> {
+                                    YamlFilterType yamlFilterType = new YamlFilterType();
+                                    yamlFilterType.setNestedFields(Set.of("association", "file_type", "file_format"));
+                                    yamlFilterType.setNestedPath("files_info");
+                                    yamlFilterType.setSelectedField("file_type");
+                                    return filterNestedCount_Test(CreateQueryParam(env),yamlFilterType);
+                                })
+                                .dataFetcher("filterCaseCountByFileFormat_Test", env -> {
+                                    YamlFilterType yamlFilterType = new YamlFilterType();
+                                    yamlFilterType.setNestedFields(Set.of("association", "file_type", "file_format"));
+                                    yamlFilterType.setNestedPath("files_info");
+                                    yamlFilterType.setSelectedField("file_format");
+                                    return filterNestedCount_Test(CreateQueryParam(env),yamlFilterType);
+                                })
+                                // TODO BIOBANK
+
+
+                                .dataFetcher("filterCaseCountByStudyParticipation_Test", env ->
+                                        filterCaseCount_Test(CreateQueryParam(env),"canine_individual"))
+//                                .dataFetcher("numberOfStudies", env ->
+//                                        numberOfStudies(CreateQueryParam(env)))
 //                                .dataFetcher("caseCountByStudyCode", env ->
 //                                        caseCountByStudyCode(CreateQueryParam(env)))
                 )
                 .build();
     }
+
+
+    private static final Map<String, String> getMapper() {
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("program", "program_acronym");
+        paramMap.put("study", "clinical_study_designation");
+        paramMap.put("study_type", "study_type");
+//        paramMap.put("biobank", "biobank");
+        paramMap.put("study_participation", "canine_individual");
+        paramMap.put("breed", "breed");
+        paramMap.put("diagnosis", "diagnosis");
+        paramMap.put("disease_site", "disease_site");
+        paramMap.put("stage_of_disease", "stage_of_disease");
+        paramMap.put("response_to_treatment", "response_to_treatment");
+        paramMap.put("sex", "sex");
+        paramMap.put("neutered_status", "neutered_status");
+        paramMap.put("sample_site", "samples_info.sample_site");
+        paramMap.put("sample_type", "samples_info.sample_type");
+        paramMap.put("sample_pathology", "samples_info.sample_pathology");
+        paramMap.put("file_association", "files_info.association");
+        paramMap.put("file_type", "files_info.file_type");
+        paramMap.put("file_format", "files_info.file_format");
+        return paramMap;
+    }
+
+
+    private List<Map<String, Object>> filterNestedCount_Test(QueryParam params, YamlFilterType filterType) throws IOException {
+
+        Map<String, Object> args = params.getArgs();
+        // TODO
+        Map<String, Object> newArgs= new HashMap<>();
+        Map<String, String> paramMap = getMapper();
+        args.forEach((k,v)->{
+            if (paramMap.containsKey(k)) {
+                List<String> list = (List<String>) args.get(k);
+                if (list.size() > 0) {
+                    newArgs.put(paramMap.get(k), list);
+                }
+            }
+        });
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.ICDC_INDEX.CASES)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(newArgs)
+                                                .isNestedFilter(true)
+                                                .selectedField(filterType.getSelectedField())
+                                                .nestedPath(filterType.getNestedPath())
+                                                .nestedFields(filterType.getNestedFields())
+                                                .build())
+                                        .getSourceFilter()))
+                        .typeMapper(typeMapper.getICDCNestedAggregateList()).build()
+        );
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        return (List<Map<String, Object>>) result.get("TEST01");
+    }
+
+    private List<Map<String, Object>> filterCaseCount_Test(QueryParam params, String selectedField) throws IOException {
+        Map<String, String> paramMap = getMapper();
+        // Get Params
+        BoolQueryBuilder bool = new BoolQueryBuilder();
+
+        Map<String, Object> args = params.getArgs();
+        args.forEach((key, v)->{
+            if (paramMap.containsKey(key)) {
+                List<String> list = (List<String>) args.get(key);
+                if (list.size() > 0) {
+                    // Check nested filter
+                    String nestedKey = paramMap.get(key);
+                    if (nestedKey.contains(".")) {
+
+                        String[] splitKeys= nestedKey.split("\\.");
+                        bool.filter(QueryBuilders.nestedQuery(splitKeys[0],
+                                QueryBuilders.termsQuery(nestedKey, (List<String>) args.get(key)),
+                                ScoreMode.None));
+                    } else {
+                        bool.filter(
+                                QueryBuilders.termsQuery(paramMap.get(key), (List<String>) args.get(key)));
+                    }
+                }
+            }
+        });
+        SearchRequest request = new SearchRequest();
+        request.indices(ICDC_INDEX.CASES);
+        request.source(new SearchSourceBuilder()
+                .size(0)
+                .query(bool)
+                .aggregation(AggregationBuilders
+                        .terms(Const.ES_PARAMS.TERMS_AGGS)
+                        .size(Const.ES_PARAMS.AGGS_SIZE)
+                        .field(selectedField).minDocCount(0)));
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
+    }
+
 
     private List<Map<String, Object>> caseCountByDiseaseSite(QueryParam params) throws IOException {
         Map<String, Object> args = params.getArgs();
@@ -85,7 +271,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .selectedField(ICDC_FIELDS.PRIMARY_DISEASE_SITE)
                 .build())
                 .getSourceFilter());
-        return esService.elasticSend(request, typeMapper.getAggregate());
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
     }
 
     private List<Map<String, Object>> caseCountByStageOfDisease(QueryParam param) throws IOException {
@@ -109,7 +295,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .build())
                 .getSourceFilter());
 
-        return esService.elasticSend(request, typeMapper.getAggregate());
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
     }
 //
 //
@@ -136,7 +322,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .getSourceFilter());
         request.source(builder);
 
-        return esService.elasticSend(request, typeMapper.getAggregate());
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
     }
 
     private List<Map<String, Object>> caseCountByBreed(QueryParam param) throws IOException {
@@ -160,7 +346,7 @@ public class ICDCEsSearch implements DataFetcher {
                 .build())
                 .getSourceFilter());
 
-        return esService.elasticSend(request, typeMapper.getAggregate());
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
     }
 
     // case ids exists -> show all types of aggregation
@@ -185,7 +371,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DEMOGRAPHIC);
         request.source(builder);
 
-        return esService.elasticSend(request, typeMapper.getAggregate());
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
     }
 //
     private QueryParam CreateQueryParam(DataFetchingEnvironment env) {
@@ -264,7 +450,7 @@ public class ICDCEsSearch implements DataFetcher {
         request.indices(ICDC_INDEX.DIAGNOSIS);
         request.source(searchSourceBuilder);
 
-        return esService.elasticSend(request, typeMapper.getAggregate());
+        return esService.elasticSend(request, typeMapper.getICDCAggregate());
     }
 
     private List<Map<String, Object>> fileOverview(QueryParam param, String sortDirection) throws IOException {
@@ -281,7 +467,7 @@ public class ICDCEsSearch implements DataFetcher {
                 // Get Default Sort Type or Pre-defined Sort Field
                 args.get(ES_PARAMS.ORDER_BY).equals("") ? ICDC_FIELDS.FILE_NAME : (String) args.get(ES_PARAMS.ORDER_BY),
                 ElasticUtil.getSortType(sortDirection));
-        searchSourceBuilder.size(param.getTableParam().getPageSize());
+        searchSourceBuilder.size(10);
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
         request.indices(ICDC_INDEX.FILES);

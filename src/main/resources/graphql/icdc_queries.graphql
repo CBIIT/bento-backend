@@ -1,0 +1,3921 @@
+type adverse_event {
+  ae_dose: Float
+  ae_dose_unit: String
+  ae_dose_original: Float
+  ae_dose_original_unit: String
+  ae_agent_name: String
+  day_in_cycle: Int
+  date_resolved: String
+  adverse_event_term: String
+  adverse_event_description: String
+  adverse_event_grade: String
+  adverse_event_grade_description: String
+  attribution_to_research: String
+  attribution_to_ind: String
+  attribution_to_disease: String
+  attribution_to_commercial: String
+  attribution_to_other: String
+  ae_other: String
+  dose_limiting_toxicity: String
+  unexpected_adverse_event: String
+  case: case @relation(name:"of_case", direction:OUT)
+  agent: agent @relation(name:"of_agent", direction:OUT)
+  cases: [case] @relation(name:"had_adverse_event", direction:IN)
+  next_adverse_event: adverse_event @relation(name:"next", direction:OUT)
+  prior_adverse_event: adverse_event @relation(name:"next", direction:IN)
+}
+
+type agent {
+  medication: String
+  document_number: String
+  study_arms: [study_arm] @relation(name:"of_study_arm", direction:OUT)
+  agent_administrations: [agent_administration] @relation(name:"of_agent", direction:IN)
+  adverse_events: [adverse_event] @relation(name:"of_agent", direction:IN)
+}
+
+type agent_administration {
+  document_number: String
+  medication: String
+  route_of_administration: String
+  medication_lot_number: String
+  medication_vial_id: String
+  medication_actual_units_of_measure: String
+  medication_duration: Float
+  medication_duration_unit: String
+  medication_duration_original: Float
+  medication_duration_original_unit: String
+  medication_units_of_measure: String
+  medication_actual_dose: Float
+  medication_actual_dose_unit: String
+  medication_actual_dose_original: Float
+  medication_actual_dose_original_unit: String
+  phase: String
+  start_time: String
+  stop_time: String
+  dose_level: Float
+  dose_level_unit: String
+  dose_level_original: Float
+  dose_level_original_unit: String
+  dose_units_of_measure: String
+  date_of_missed_dose: String
+  medication_missed_dose: String
+  missed_dose_amount: Float
+  missed_dose_amount_unit: String
+  missed_dose_amount_original: Float
+  missed_dose_amount_original_unit: String
+  missed_dose_units_of_measure: String
+  medication_course_number: String
+  comment: String
+  agent: agent @relation(name:"of_agent", direction:OUT)
+  visit: visit @relation(name:"on_visit", direction:OUT)
+}
+
+type assay {
+  sample: sample @relation(name:"of_sample", direction:OUT)
+  files: [file] @relation(name:"of_assay", direction:IN)
+  images: [image] @relation(name:"of_assay", direction:IN)
+}
+
+type biospecimen_source {
+  biospecimen_repository_acronym: String
+  biospecimen_repository_full_name: String
+}
+
+type canine_individual {
+  canine_individual_id: String
+  cases: [case] @relation(name:"represents", direction:IN)
+}
+
+type case {
+  case_id: String
+  patient_id: String
+  patient_first_name: String
+  cohort: cohort @relation(name:"member_of", direction:OUT)
+  study: study @relation(name:"member_of", direction:OUT)
+  enrollment: enrollment @relation(name:"of_case", direction:IN)
+  demographic: demographic @relation(name:"of_case", direction:IN)
+  diagnoses: [diagnosis] @relation(name:"of_case", direction:IN)
+  cycles: [cycle] @relation(name:"of_case", direction:IN)
+  follow_ups: [follow_up] @relation(name:"of_case", direction:IN)
+  samples: [sample] @relation(name:"of_case", direction:IN)
+  files: [file] @relation(name:"of_case", direction:IN)
+  visits: [visit] @relation(name:"of_case", direction:IN)
+  adverse_events: [adverse_event] @relation(name:"of_case", direction:IN)
+  registrations: [registration] @relation(name:"of_case", direction:IN)
+  study_arm: study_arm @relation(name:"of_study_arm", direction:OUT)
+  adverse_event: adverse_event @relation(name:"had_adverse_event", direction:OUT)
+  off_study: off_study @relation(name:"went_off_study", direction:OUT)
+  off_treatment: off_treatment @relation(name:"went_off_treatment", direction:OUT)
+  canine_individual: canine_individual @relation(name:"represents", direction:OUT)
+}
+
+type cohort {
+  cohort_description: String
+  cohort_dose: String
+  cohort_id: String
+  cases: [case] @relation(name:"member_of", direction:IN)
+  study_arm: study_arm @relation(name:"member_of", direction:OUT)
+  study: study @relation(name:"member_of", direction:OUT)
+}
+
+type cycle {
+  cycle_number: Int
+  date_of_cycle_start: String
+  date_of_cycle_end: String
+  case: case @relation(name:"of_case", direction:OUT)
+  visits: [visit] @relation(name:"of_cycle", direction:IN)
+}
+
+type demographic {
+  breed: String
+  patient_age_at_enrollment: Float
+  patient_age_at_enrollment_unit: String
+  patient_age_at_enrollment_original: Float
+  patient_age_at_enrollment_original_unit: String
+  date_of_birth: String
+  sex: String
+  weight: Float
+  weight_unit: String
+  weight_original: Float
+  weight_original_unit: String
+  neutered_indicator: String
+  case: case @relation(name:"of_case", direction:OUT)
+}
+
+type diagnosis {
+  disease_term: String
+  primary_disease_site: String
+  stage_of_disease: String
+  date_of_diagnosis: String
+  histology_cytopathology: String
+  date_of_histology_confirmation: String
+  histological_grade: String
+  best_response: String
+  pathology_report: String
+  treatment_data: String
+  follow_up_data: String
+  concurrent_disease: String
+  concurrent_disease_type: String
+  case: case @relation(name:"of_case", direction:OUT)
+  files: [file] @relation(name:"from_diagnosis", direction:IN)
+}
+
+type disease_extent {
+  lesion_number: String
+  lesion_site: String
+  lesion_description: String
+  previously_irradiated: String
+  previously_treated: String
+  measurable_lesion: String
+  target_lesion: String
+  date_of_evaluation: String
+  measured_how: String
+  longest_measurement: String
+  evaluation_number: String
+  evaluation_code: String
+  visit: visit @relation(name:"on_visit", direction:OUT)
+}
+
+type enrollment {
+  date_of_registration: String
+  registering_institution: String
+  initials: String
+  date_of_informed_consent: String
+  site_short_name: String
+  veterinary_medical_center: String
+  cohort_description: String
+  patient_subgroup: String
+  case: case @relation(name:"of_case", direction:OUT)
+  prior_therapies: [prior_therapy] @relation(name:"at_enrollment", direction:IN)
+  prior_surgeries: [prior_surgery] @relation(name:"at_enrollment", direction:IN)
+  physical_exams: [physical_exam] @relation(name:"at_enrollment", direction:IN)
+}
+
+type file {
+  file_name: String
+  file_type: String
+  file_description: String
+  file_format: String
+  file_size: Float
+  md5sum: String
+  file_status: String
+  uuid: String
+  file_location: String
+  case: case @relation(name:"of_case", direction:OUT)
+  study: study @relation(name:"of_study", direction:OUT)
+  sample: sample @relation(name:"of_sample", direction:OUT)
+  assay: assay @relation(name:"of_assay", direction:OUT)
+  diagnosis: diagnosis @relation(name:"from_diagnosis", direction:OUT)
+}
+
+type follow_up {
+  document_number: String
+  date_of_last_contact: String
+  patient_status: String
+  explain_unknown_status: String
+  contact_type: String
+  treatment_since_last_contact: Boolean
+  physical_exam_performed: Boolean
+  physical_exam_changes: String
+  case: case @relation(name:"of_case", direction:OUT)
+}
+
+type image {
+  assay: assay @relation(name:"of_assay", direction:OUT)
+}
+
+type image_collection {
+  image_collection_name: String
+  image_type_included: String
+  image_collection_url: String
+  repository_name: String
+  collection_access: String
+  study: study @relation(name:"of_study", direction:OUT)
+}
+
+type lab_exam {
+  visit: visit @relation(name:"on_visit", direction:OUT)
+}
+
+type off_study {
+  document_number: String
+  date_off_study: String
+  reason_off_study: String
+  date_of_disease_progression: String
+  date_off_treatment: String
+  best_resp_vet_tx_tp_secondary_response: String
+  date_last_medication_administration: String
+  best_resp_vet_tx_tp_best_response: String
+  date_of_best_response: String
+  case: case @relation(name:"went_off_study", direction:IN)
+}
+
+type off_treatment {
+  document_number: String
+  date_off_treatment: String
+  reason_off_treatment: String
+  date_of_disease_progression: String
+  best_resp_vet_tx_tp_secondary_response: String
+  date_last_medication_administration: String
+  best_resp_vet_tx_tp_best_response: String
+  date_of_best_response: String
+  case: case @relation(name:"went_off_treatment", direction:IN)
+}
+
+type physical_exam {
+  date_of_examination: String
+  day_in_cycle: Int
+  body_system: String
+  pe_finding: String
+  pe_comment: String
+  phase_pe: String
+  assessment_timepoint: Int
+  enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
+  visit: visit @relation(name:"on_visit", direction:OUT)
+}
+
+type principal_investigator {
+  pi_first_name: String
+  pi_last_name: String
+  pi_middle_initial: String
+  studies: [study] @relation(name:"of_study", direction:OUT)
+}
+
+type prior_surgery {
+  date_of_surgery: String
+  procedure: String
+  anatomical_site_of_surgery: String
+  surgical_finding: String
+  residual_disease: String
+  therapeutic_indicator: String
+  enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
+  next_prior_surgery: prior_surgery @relation(name:"next", direction:OUT)
+  prior_prior_surgery: prior_surgery @relation(name:"next", direction:IN)
+}
+
+type prior_therapy {
+  date_of_first_dose: String
+  date_of_last_dose: String
+  agent_name: String
+  dose_schedule: String
+  total_dose: Float
+  total_dose_unit: String
+  total_dose_original: Float
+  total_dose_original_unit: String
+  agent_units_of_measure: String
+  best_response: String
+  nonresponse_therapy_type: String
+  prior_therapy_type: String
+  prior_steroid_exposure: Boolean
+  number_of_prior_regimens_steroid: Int
+  total_number_of_doses_steroid: Int
+  date_of_last_dose_steroid: String
+  prior_nsaid_exposure: Boolean
+  number_of_prior_regimens_nsaid: Int
+  total_number_of_doses_nsaid: Int
+  date_of_last_dose_nsaid: String
+  tx_loc_geo_loc_ind_nsaid: String
+  min_rsdl_dz_tx_ind_nsaids_treatment_pe: String
+  therapy_type: String
+  any_therapy: Boolean
+  number_of_prior_regimens_any_therapy: Int
+  total_number_of_doses_any_therapy: Int
+  date_of_last_dose_any_therapy: String
+  treatment_performed_at_site: Boolean
+  treatment_performed_in_minimal_residual: Boolean
+  enrollment: enrollment @relation(name:"at_enrollment", direction:OUT)
+  next_prior_therapy: prior_therapy @relation(name:"next", direction:OUT)
+  prior_prior_therapy: prior_therapy @relation(name:"next", direction:IN)
+}
+
+type program {
+  program_name: String
+  program_acronym: String
+  program_short_description: String
+  program_full_description: String
+  program_external_url: String
+  program_sort_order: Int
+  studies: [study] @relation(name:"member_of", direction:IN)
+}
+
+type publication {
+  publication_title: String
+  authorship: String
+  year_of_publication: Float
+  journal_citation: String
+  digital_object_id: String
+  pubmed_id: Float
+  study: study @relation(name:"of_study", direction:OUT)
+}
+
+type registration {
+  registration_origin: String
+  registration_id: String
+  cases: [case] @relation(name:"of_case", direction:OUT)
+}
+
+type sample {
+  sample_id: String
+  sample_site: String
+  physical_sample_type: String
+  general_sample_pathology: String
+  tumor_sample_origin: String
+  summarized_sample_type: String
+  molecular_subtype: String
+  specific_sample_pathology: String
+  date_of_sample_collection: String
+  sample_chronology: String
+  necropsy_sample: String
+  tumor_grade: String
+  length_of_tumor: Float
+  length_of_tumor_unit: String
+  length_of_tumor_original: Float
+  length_of_tumor_original_unit: String
+  width_of_tumor: Float
+  width_of_tumor_unit: String
+  width_of_tumor_original: Float
+  width_of_tumor_original_unit: String
+  volume_of_tumor: Float
+  volume_of_tumor_unit: String
+  volume_of_tumor_original: Float
+  volume_of_tumor_original_unit: String
+  percentage_tumor: String
+  sample_preservation: String
+  comment: String
+  case: case @relation(name:"of_case", direction:OUT)
+  visit: visit @relation(name:"on_visit", direction:OUT)
+  assays: [assay] @relation(name:"of_sample", direction:IN)
+  files: [file] @relation(name:"of_sample", direction:IN)
+  next_sample: sample @relation(name:"next", direction:OUT)
+  prior_sample: sample @relation(name:"next", direction:IN)
+}
+
+type study {
+  clinical_study_id: String
+  clinical_study_designation: String
+  clinical_study_name: String
+  clinical_study_description: String
+  clinical_study_type: String
+  date_of_iacuc_approval: String
+  dates_of_conduct: String
+  accession_id: String
+  study_disposition: String
+  study_arms: [study_arm] @relation(name:"member_of", direction:IN)
+  program: program @relation(name:"member_of", direction:OUT)
+  cases: [case] @relation(name:"member_of", direction:IN)
+  cohorts: [cohort] @relation(name:"member_of", direction:IN)
+  study_sites: [study_site] @relation(name:"of_study", direction:IN)
+  principal_investigators: [principal_investigator] @relation(name:"of_study", direction:IN)
+  files: [file] @relation(name:"of_study", direction:IN)
+  image_collections: [image_collection] @relation(name:"of_study", direction:IN)
+  publications: [publication] @relation(name:"of_study", direction:IN)
+}
+
+type study_arm {
+  arm: String
+  ctep_treatment_assignment_code: String
+  arm_description: String
+  arm_id: String
+  cohorts: [cohort] @relation(name:"member_of", direction:IN)
+  study: study @relation(name:"member_of", direction:OUT)
+  agents: [agent] @relation(name:"of_study_arm", direction:IN)
+  cases: [case] @relation(name:"of_study_arm", direction:IN)
+}
+
+type study_site {
+  site_short_name: String
+  veterinary_medical_center: String
+  registering_institution: String
+  studies: [study] @relation(name:"of_study", direction:OUT)
+}
+
+type visit {
+  visit_date: String
+  visit_number: String
+  case: case @relation(name:"of_case", direction:OUT)
+  cycle: cycle @relation(name:"of_cycle", direction:OUT)
+  agent_administrations: [agent_administration] @relation(name:"on_visit", direction:IN)
+  samples: [sample] @relation(name:"on_visit", direction:IN)
+  physical_exams: [physical_exam] @relation(name:"on_visit", direction:IN)
+  lab_exams: [lab_exam] @relation(name:"on_visit", direction:IN)
+  disease_extents: [disease_extent] @relation(name:"on_visit", direction:IN)
+  vital_signs: [vital_signs] @relation(name:"on_visit", direction:IN)
+  next_visit: visit @relation(name:"next", direction:OUT)
+  prior_visit: visit @relation(name:"next", direction:IN)
+}
+
+type vital_signs {
+  date_of_vital_signs: String
+  body_temperature: Float
+  body_temperature_unit: String
+  body_temperature_original: Float
+  body_temperature_original_unit: String
+  pulse: Int
+  pulse_unit: String
+  pulse_original: Int
+  pulse_original_unit: String
+  respiration_rate: Int
+  respiration_rate_unit: String
+  respiration_rate_original: Int
+  respiration_rate_original_unit: String
+  respiration_pattern: String
+  systolic_bp: Int
+  systolic_bp_unit: String
+  systolic_bp_original: Int
+  systolic_bp_original_unit: String
+  pulse_ox: Float
+  pulse_ox_unit: String
+  pulse_ox_original: Float
+  pulse_ox_original_unit: String
+  patient_weight: Float
+  patient_weight_unit: String
+  patient_weight_original: Float
+  patient_weight_original_unit: String
+  body_surface_area: Float
+  body_surface_area_unit: String
+  body_surface_area_original: Float
+  body_surface_area_original_unit: String
+  modified_ecog: String
+  ecg: Boolean
+  assessment_timepoint: Int
+  phase: String
+  visit: visit @relation(name:"on_visit", direction:OUT)
+}
+
+schema {
+ query: QueryType
+}
+
+type BreedCaseCount {
+  breed: String
+  cases: Int
+}
+
+type CaseDetail {
+  program_acronym: String
+  clinical_study_name: String
+  clinical_study_designation: String
+  arm: String
+  ctep_treatment_assignment_code: String
+  cohort_description: String
+  case_id: String
+  patient_id: String
+  patient_first_name: String
+  breed: String
+  sex: String
+  patient_age_at_enrollment: Float
+  neutered_indicator: String
+  weight: Float
+  site_short_name: String
+  date_of_registration: String
+  patient_subgroup: String
+  date_of_informed_consent: String
+  initials: String
+  disease_term: String
+  stage_of_disease: String
+  best_response: String
+  date_of_diagnosis: String
+  primary_disease_site: String
+  histological_grade: String
+  histology_cytopathology: String
+}
+
+type Link {
+  text: String
+  url: String
+}
+
+type StudyOfProgram {
+  program_id: String
+  clinical_study_id: String
+  clinical_study_designation: String
+  clinical_study_name: String
+  clinical_study_description: String
+  clinical_study_type: String
+  accession_id: String
+  study_disposition: String
+  date_of_iacuc_approval: String
+  dates_of_conduct: String
+  numberOfCases: Int
+  numberOfStudyFiles: Int,
+  numberOfCaseFiles: Int,
+  numberOfImageCollections: Int,
+  numberOfPublications: Int,
+  numberOfCRDCNodes: Int
+  CRDCLinks: [Link]
+}
+
+type FileOverview2 {
+  parent:String
+  file_name: String
+  file_type: String
+  file_description: String
+  file_format: String
+  file_size: Float
+  md5sum: String
+  file_status: String
+  uuid: String
+  file_location: String
+}
+
+type CaseOverview {
+  case_id: String
+  program: String
+  study_code: String
+  study_type: String
+  breed: String
+  diagnosis: String
+  stage_of_disease: String
+  age: Float
+  sex: String
+  neutered_status: String
+  data_types: [String]
+  disease_site: String
+  samples: [String]
+  sample_list: [sample]
+  files: [FileOverview2]
+  file_formats: [String]
+  demographic: demographic
+  diagnosis_obj: diagnosis
+}
+
+
+type FilesOfCase{
+  case_id: String
+  parent:String
+  file_name: String
+  file_type: String
+  file_description: String
+  file_format: String
+  file_size: Float
+  md5sum: String
+  file_status: String
+  uuid: String
+  file_location: String
+}
+
+type StudyDetail {
+  study_code: String
+  file_name: String
+  file_type: String
+  association: String
+  description: String
+  format: String
+  size: Float
+  MD5: String
+}
+
+type FileDetail {
+  clinical_study_designation: String
+  clinical_study_name: String
+  arm: String
+  cohort_description: String
+  cohort_dose: String
+  case_id: String
+  breed: String
+  weight: Float
+  sex: String
+  neutered_indicator: String
+  patient_age_at_enrollment: Float
+  disease_term: String
+  stage_of_disease: String
+  primary_disease_site: String
+  concurrent_disease: Boolean
+  concurrent_disease_type: String
+  visit_date: String
+  visit_number: String
+  day_in_cycle: Int
+  sample_id: String
+  sample_type: String
+  general_sample_pathology: String
+  specific_sample_pathology: String
+  sample_site: String
+  date_of_sample_collection: String
+  necropsy_sample: Boolean
+  percentage_tumor: String
+  percentage_stroma: Float
+  comment: String
+  file_name: String
+  file_type: String
+  file_description: String
+  file_format: String
+  file_size: Float
+  md5sum: String
+  file_location: String
+  uuid: String
+  acl: String
+  GUID: String
+  md5: String
+  size: Float
+  url: String
+}
+
+type FileInfo {
+  GUID: String
+  md5: String
+  size: Float
+  acl: String
+  url: String
+}
+
+type StudyStat {
+  study_code: String
+  files: Int
+  total_size_MB: Float
+  cases: Int
+  samples: Int
+}
+
+type FileInList {
+  file_name: String
+  file_type: String
+  association: String
+  file_description: String
+  file_format: String
+  file_size: Float
+  case_id: String
+  breed: String
+  diagnosis: String
+  study_code: String
+  file_uuid: String
+  md5sum: String
+  sample_id: String
+  individual_id: String
+  sample_site: String
+  physical_sample_type: String
+  general_sample_pathology: String
+  tumor_sample_origin: String
+  summarized_sample_type: String
+  specific_sample_pathology: String
+  date_of_sample_collection: String
+  tumor_grade: String
+  sample_chronology: String
+  percentage_tumor: String
+  necropsy_sample: String
+  sample_preservation: String
+  comment: String
+  patient_age_at_enrollment: String
+  sex: String
+  neutered_indicator: String
+  weight: String
+  weight_unit: String
+  disease_term: String
+  primary_disease_site: String
+  stage_of_disease: String
+  date_of_diagnosis: String
+  histology_cytopathology: String
+  histological_grade: String
+  best_response: String
+  pathology_report: String
+  treatment_data: String
+  follow_up_data: String
+  concurrent_disease: String
+  concurrent_disease_type: String
+  cohort_description: String
+  arm: String
+  other_cases: [String]
+}
+
+type FileOverview {
+  file_name: String
+  file_type: String
+  association: String
+  file_description: String
+  file_format: String
+  file_size: Float
+  case_id: String
+  breed: String
+  diagnosis: String
+  study_code: String
+  file_uuid: String
+  sample_id: String
+  sample_site: String
+  physical_sample_type: String
+  general_sample_pathology: String
+  tumor_sample_origin: String
+  summarized_sample_type: String
+  specific_sample_pathology: String
+  date_of_sample_collection: String
+  tumor_grade: String
+  sample_chronology: String
+  percentage_tumor: String
+  necropsy_sample: String
+  sample_preservation: String
+  comment: String
+  individual_id: String
+  patient_age_at_enrollment: String
+  sex: String
+  neutered_indicator: String
+  weight: String
+  primary_disease_site: String
+  stage_of_disease: String
+  date_of_diagnosis: String
+  histology_cytopathology: String
+  histological_grade: String
+  best_response: String
+  pathology_report: String
+  treatment_data: String
+  follow_up_data: String
+  concurrent_disease: String
+  concurrent_disease_type: String
+  cohort_description: String
+  arm: String
+  other_cases: [String]
+}
+
+type SampleOverview {
+  sample_id: String
+  case_id: String
+  breed: String
+  diagnosis: String
+  sample_site: String
+  sample_type: String
+  sample_pathology: String
+  tumor_grade: String
+  sample_chronology: String
+  percentage_tumor: String
+  necropsy_sample: String
+  sample_preservation: String
+  files: [String]
+  physical_sample_type: String
+  general_sample_pathology: String
+  tumor_sample_origin: String
+  comment: String
+  individual_id: String
+  other_cases: [String]
+  patient_age_at_enrollment: String
+  sex: String
+  neutered_indicator: String
+  weight: String
+  primary_disease_site: String
+  stage_of_disease: String
+  date_of_diagnosis: String
+  histology_cytopathology: String
+  histological_grade: String
+  best_response: String
+  pathology_report: String
+  treatment_data: String
+  follow_up_data: String
+  concurrent_disease: String
+  concurrent_disease_type: String
+  cohort_description: String
+  arm: String
+}
+
+type CaseOverview2 {
+  case_id: String
+  study_code: String
+  study_type: String
+  cohort: String
+  breed: String
+  diagnosis: String
+  stage_of_disease: String
+  age: Float
+  sex: String
+  neutered_status: String
+  weight: Float
+  response_to_treatment: String
+  disease_site: String
+  files: [String]
+  other_cases: [String]
+  individual_id: String
+  primary_disease_site: String
+  date_of_diagnosis: String
+  histology_cytopathology: String
+  histological_grade: String
+  pathology_report: String
+  treatment_data: String
+  follow_up_data: String
+  concurrent_disease: String
+  concurrent_disease_type: String
+  arm: String
+}
+
+type SearchResult {
+  numberOfStudies: Int
+  numberOfCases: Int
+  numberOfSamples: Int
+  numberOfFiles: Int
+  numberOfAliquots: Int
+  volumeOfData: Float
+  numberOfStudyFiles: Int
+  numberOfPrograms: Int
+  caseIds: [String]
+  studyFileIds: [String]
+  sampleIds: [String]
+  fileIds: [String]
+  firstPage: [CaseOverview2]
+}
+
+type GroupCount {
+  group: String
+  count: Int
+  code: String
+}
+
+type StudyInfo {
+  study: String
+  caseSize: Int
+}
+
+type ProgramStudies {
+  program: String
+  caseSize: Int
+  studies: [StudyInfo]
+}
+
+type MultiStudyCases {
+    individualId: String
+    caseIds: [String]
+    sampleIds: [String]
+    fileIds: [String]
+    studyFileIds: [String]
+}
+
+type UnifiedCounts{
+  numberOfStudies: Int
+  numberOfCases: Int
+  numberOfFiles: Int
+  numberOfSamples: Int
+  numberOfStudyFiles: Int
+  numberOfPrograms: Int
+  numberOfAliquots: Int
+  volumeOfData: Float
+}
+
+type QueryType {
+  "Version"
+  schemaVersion: String @cypher(statement: "RETURN '1.1.3'")
+
+  "Simple count"
+  numberOfStudies: Int @cypher(statement: "MATCH (n:study) WHERE n.study_disposition = 'Unrestricted' RETURN  count (n)")
+  numberOfCases: Int @cypher(statement: "MATCH (n:case) RETURN  count (n)")
+  numberOfSamples:Int @cypher(statement: "MATCH (n:sample) RETURN  count (n)")
+  numberOfFiles: Int @cypher(statement: "MATCH (n:file) RETURN  count (n)")
+  numberOfStudyFiles: Int @cypher(statement: "MATCH (n:file)-->(sd:study) RETURN count (n)")
+  numberOfPrograms: Int @cypher(statement: "MATCH (n:program) RETURN count (n)")
+  numberOfAliquots: Int @cypher(statement: "MATCH (n:aliquot) return count(n)")
+ volumeOfData: Float @cypher(statement: "MATCH (f:file) WITH DISTINCT f return sum(f.file_size)")
+
+  "Count with parameter"
+  sampleCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (s:sample)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(DISTINCT(s))")
+  fileCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(f))")
+  fileCountOfStudyFiles(study_code: String!): Int @cypher(statement: "MATCH (f:file)-->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(f))")
+  aliquotCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code  return count(DISTINCT(a))")
+  caseCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (c:case)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code return count(distinct(c))")
+  fileCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(c:case {case_id: $case_id}) return count(DISTINCT(f))")
+  studyFileCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)<--(f:file) return count(DISTINCT(f))")
+  aliquotCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(c:case {case_id: $case_id}) return count(DISTINCT(a))")
+  sampleCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:sample)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(s))")
+  fileCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (f:file)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(f))")
+  studyFileCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:study)-[*]->(:program {program_acronym: $program_id}) OPTIONAL MATCH (s) <-- (f:file) return count(DISTINCT(f))")
+  aliquotCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (a:aliquot)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(a))")
+  studyCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (s:study)-[*]->(:program {program_acronym: $program_id}) WHERE s.study_disposition = 'Unrestricted' return count(DISTINCT(s))")
+  caseCountOfProgram(program_id: String!): Int @cypher(statement: "MATCH (c:case)-[*]->(:program {program_acronym: $program_id}) return count(DISTINCT(c))")
+  sampleCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id})<-[*]-(s:sample) RETURN count(distinct(s))")
+
+  programCountOfStudy(study_code: String!): Int @cypher(statement: "MATCH (s:study {clinical_study_designation: $study_code}) OPTIONAL MATCH (s)-[:member_of]->(p: program)  return count(DISTINCT(p))")
+  programsCountOfCase(case_id: String!): Int @cypher(statement: "MATCH (c:case {case_id: $case_id}) OPTIONAL MATCH (c)-[:member_of]->(s:study) OPTIONAL MATCH (s)-[:member_of]->(p:program) return count(DISTINCT(p))")
+
+  volumeOfDataOfProgram(program_id: String!): Float @cypher(statement: "MATCH (f:file)-[*]->(:program {program_acronym: $program_id}) WITH DISTINCT f return sum(f.file_size)")
+  volumeOfDataOfStudy(study_code: String!): Float @cypher(statement: "MATCH (f:file)-[*]->(:study {clinical_study_designation: $study_code}) WITH DISTINCT f return sum(f.file_size)")
+  volumeOfDataOfCase(case_id: String!): Float @cypher(statement: "MATCH (c:case{case_id: $case_id})-->(s:study) WITH s OPTIONAL MATCH (s)<--(f:file) WITH SUM(f.file_size) AS study_file_size OPTIONAL MATCH (c:case{case_id: $case_id})<-[*]-(f:file) with DISTINCT f, study_file_size RETURN SUM(f.file_size) + study_file_size")
+
+  "Count by group"
+  caseCountByStudyCode(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (s:study)<-[:member_of]-(c:case)
+      WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN {
+      group: s.clinical_study_designation,
+      count: count(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByDiagnosis(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (d:diagnosis)-[:of_case]->(c:case)
+      WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.disease_term,
+      count: count(c)
+    }
+  """, passThrough: true)
+
+  caseCountByGender(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (d:demographic)-[:of_case]->(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.sex,
+      count: count(c)
+    }
+  """, passThrough: true)
+
+  caseCountByBreed(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (c:case)<-[:of_case]-(d:demographic)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.breed,
+      count: count(c)
+    }
+  """, passThrough: true)
+
+  caseCountByNeuteredStatus(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (c:case)<-[:of_case]-(d:demographic)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.neutered_indicator,
+      count: count(c)
+    }
+  """, passThrough: true)
+
+  caseCountByStageOfDisease(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (d:diagnosis)-[:of_case]->(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.stage_of_disease,
+      count: count(c)
+    }
+  """, passThrough: true)
+
+  caseCountByDiseaseSite(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (d:diagnosis)-[:of_case]->(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.primary_disease_site,
+      count: count(c)
+    }
+  """, passThrough: true)
+
+  caseCountByStudyType(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (s:study)<-[:member_of]-(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: s.clinical_study_type,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByAge(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (d:demographic)-[:of_case]->(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: d.patient_age_at_enrollment,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByDataType(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (f:file)-[*]->(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: f.file_type,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByFileFormat(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (f:file)-[*]->(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: f.file_format,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByProgram(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    Match (p:program)<-[:member_of]-(s)<-[:member_of]-(c:case)
+    WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    RETURN{
+      group: p.program_acronym,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByBiobank(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (c:case)-->(s:study)
+    OPTIONAL MATCH (r:registration)-->(c)
+    WHERE
+      (NOT c.case_id IN biobank_cases
+        OR NOT r.registration_origin = s.clinical_study_designation)
+      AND (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    WITH c,r,
+      CASE c.case_id IN biobank_cases
+          WHEN TRUE THEN r.registration_origin
+          ELSE 'Not Applicable'
+      END AS group
+    RETURN{
+      group: group,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  caseCountByStudyParticipation(case_ids: [String] = []): [GroupCount] @cypher(statement: """
+    MATCH (c:case)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+      WHERE size($case_ids) = 0 OR c.case_id IN $case_ids
+    WITH c,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS group
+    RETURN{
+      group: group,
+      count: COUNT(DISTINCT(c))
+    }
+  """, passThrough: true)
+
+  filesInList(uuids: [String], order_by: String = ""): [FileInList] @cypher(statement: """
+    MATCH (f:file)
+      WHERE f.uuid in $uuids
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (f)-[*]->(samp:sample)
+    OPTIONAL MATCH (f:file)-[*]->(c:case)
+    OPTIONAL MATCH (diag:diagnosis)-[:of_case]->(c)
+    OPTIONAL MATCH (demo:demographic)-[:of_case]->(c)
+    OPTIONAL MATCH (enroll:enrollment)-[:of_case]->(c)
+    OPTIONAL MATCH (samp:sample)-[:of_case]->(c)
+    OPTIONAL MATCH (s:study)<-[:member_of]-(c)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (co)-->(a:study_arm)
+    WITH
+      f.file_name AS file_name,
+      f.file_type AS file_type,
+      head(labels(parent)) AS association,
+      f.file_description AS file_description,
+      f.file_format AS file_format,
+      f.file_size AS file_size,
+      c.case_id as case_id,
+      demo.breed as breed,
+      diag.disease_term as diagnosis,
+      CASE WHEN s.clinical_study_designation IS NULL
+      THEN parent.clinical_study_designation
+      ELSE s.clinical_study_designation END AS study_code,
+      f.uuid as file_uuid,
+      f.md5sum AS md5sum,
+      samp.sample_id AS sample_id,
+      i.canine_individual_id AS individual_id,
+      samp.sample_site as sample_site,
+      samp.physical_sample_type as physical_sample_type,
+      samp.general_sample_pathology as general_sample_pathology,
+      samp.tumor_sample_origin as tumor_sample_origin,
+      samp.summarized_sample_type as summarized_sample_type,
+      samp.specific_sample_pathology as specific_sample_pathology,
+      samp.date_of_sample_collection as date_of_sample_collection,
+      samp.tumor_grade as tumor_grade,
+      samp.sample_chronology as sample_chronology,
+      samp.percentage_tumor as percentage_tumor,
+      samp.necropsy_sample as necropsy_sample,
+      samp.sample_preservation as sample_preservation,
+      samp.comment as comment,
+      demo.patient_age_at_enrollment as patient_age_at_enrollment,
+      demo.sex as sex,
+      demo.neutered_indicator as neutered_indicator,
+      demo.weight as weight,
+      demo.weight_unit as weight_unit,
+      diag.disease_term as disease_term,
+      diag.primary_disease_site as primary_disease_site,
+      diag.stage_of_disease as stage_of_disease,
+      diag.date_of_diagnosis as date_of_diagnosis,
+      diag.histology_cytopathology as histology_cytopathology,
+      diag.histological_grade as histological_grade,
+      diag.best_response as best_response,
+      diag.pathology_report as pathology_report,
+      diag.treatment_data as treatment_data,
+      diag.follow_up_data as follow_up_data,
+      diag.concurrent_disease as concurrent_disease,
+      diag.concurrent_disease_type as concurrent_disease_type,
+      co.cohort_description as cohort_description,
+      a.arm as arm,
+      collect(DISTINCT o.case_id) AS other_cases
+    RETURN{
+      file_name: file_name,
+      file_type: file_type,
+      association: association,
+      file_description: file_description,
+      file_format: file_format,
+      file_size: file_size,
+      case_id: case_id,
+      breed: breed,
+      diagnosis: diagnosis,
+      study_code: study_code,
+      file_uuid: file_uuid,
+      md5sum: md5sum,
+      sample_id: sample_id,
+      individual_id: individual_id,
+      sample_site: sample_site,
+      physical_sample_type: physical_sample_type,
+      general_sample_pathology: general_sample_pathology,
+      tumor_sample_origin: tumor_sample_origin,
+      summarized_sample_type: summarized_sample_type,
+      specific_sample_pathology: specific_sample_pathology,
+      date_of_sample_collection: date_of_sample_collection,
+      tumor_grade: tumor_grade,
+      sample_chronology: sample_chronology,
+      percentage_tumor: percentage_tumor,
+      necropsy_sample: necropsy_sample,
+      sample_preservation: sample_preservation,
+      comment: comment,
+      patient_age_at_enrollment: patient_age_at_enrollment,
+      sex: sex,
+      neutered_indicator: neutered_indicator,
+      weight: weight,
+      weight_unit: weight_unit,
+      disease_term: disease_term,
+      primary_disease_site: primary_disease_site,
+      stage_of_disease: stage_of_disease,
+      date_of_diagnosis: date_of_diagnosis,
+      histology_cytopathology: histology_cytopathology,
+      histological_grade: histological_grade,
+      best_response: best_response,
+      pathology_report: pathology_report,
+      treatment_data: treatment_data,
+      follow_up_data: follow_up_data,
+      concurrent_disease: concurrent_disease,
+      concurrent_disease_type: concurrent_disease_type,
+      cohort_description: cohort_description,
+      arm: arm,
+      other_cases: other_cases
+    }
+    ORDER BY CASE $order_by
+      WHEN 'file_name' THEN file_name
+      WHEN 'file_type' THEN file_type
+      WHEN 'association' THEN association
+      WHEN 'file_description' THEN file_description
+      WHEN 'file_format' THEN file_format
+      WHEN 'file_size' THEN file_size
+      WHEN 'case_id' THEN case_id
+      WHEN 'breed' THEN breed
+      WHEN 'diagnosis' THEN diagnosis
+      WHEN 'study_code' THEN study_code
+      WHEN 'file_uuid' THEN file_uuid
+      WHEN 'md5sum' THEN md5sum
+      WHEN 'individual_id' THEN individual_id
+      WHEN 'access_file' THEN (CASE file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END)
+      ELSE file_uuid END
+  """, passThrough: true)
+
+  filesInListDesc(uuids: [String], order_by: String = ""): [FileInList] @cypher(statement: """
+    MATCH (f:file)
+      WHERE f.uuid in $uuids
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (f)-[*]->(samp:sample)
+    OPTIONAL MATCH (f:file)-[*]->(c:case)
+    OPTIONAL MATCH (diag:diagnosis)-[:of_case]->(c)
+    OPTIONAL MATCH (demo:demographic)-[:of_case]->(c)
+    OPTIONAL MATCH (enroll:enrollment)-[:of_case]->(c)
+    OPTIONAL MATCH (samp:sample)-[:of_case]->(c)
+    OPTIONAL MATCH (s:study)<-[:member_of]-(c)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (co)-->(a:study_arm)
+    WITH
+      f.file_name AS file_name,
+      f.file_type AS file_type,
+      head(labels(parent)) AS association,
+      f.file_description AS file_description,
+      f.file_format AS file_format,
+      f.file_size AS file_size,
+      c.case_id as case_id,
+      demo.breed as breed,
+      diag.disease_term as diagnosis,
+      CASE WHEN s.clinical_study_designation IS NULL
+      THEN parent.clinical_study_designation
+      ELSE s.clinical_study_designation END AS study_code,
+      f.uuid as file_uuid,
+      f.md5sum AS md5sum,
+      samp.sample_id AS sample_id,
+      i.canine_individual_id AS individual_id,
+      samp.sample_site as sample_site,
+      samp.physical_sample_type as physical_sample_type,
+      samp.general_sample_pathology as general_sample_pathology,
+      samp.tumor_sample_origin as tumor_sample_origin,
+      samp.summarized_sample_type as summarized_sample_type,
+      samp.specific_sample_pathology as specific_sample_pathology,
+      samp.date_of_sample_collection as date_of_sample_collection,
+      samp.tumor_grade as tumor_grade,
+      samp.sample_chronology as sample_chronology,
+      samp.percentage_tumor as percentage_tumor,
+      samp.necropsy_sample as necropsy_sample,
+      samp.sample_preservation as sample_preservation,
+      samp.comment as comment,
+      demo.patient_age_at_enrollment as patient_age_at_enrollment,
+      demo.sex as sex,
+      demo.neutered_indicator as neutered_indicator,
+      demo.weight as weight,
+      demo.weight_unit as weight_unit,
+      diag.disease_term as disease_term,
+      diag.primary_disease_site as primary_disease_site,
+      diag.stage_of_disease as stage_of_disease,
+      diag.date_of_diagnosis as date_of_diagnosis,
+      diag.histology_cytopathology as histology_cytopathology,
+      diag.histological_grade as histological_grade,
+      diag.best_response as best_response,
+      diag.pathology_report as pathology_report,
+      diag.treatment_data as treatment_data,
+      diag.follow_up_data as follow_up_data,
+      diag.concurrent_disease as concurrent_disease,
+      diag.concurrent_disease_type as concurrent_disease_type,
+      co.cohort_description as cohort_description,
+      a.arm as arm,
+      collect(DISTINCT o.case_id) AS other_cases
+    RETURN{
+      file_name: file_name,
+      file_type: file_type,
+      association: association,
+      file_description: file_description,
+      file_format: file_format,
+      file_size: file_size,
+      case_id: case_id,
+      breed: breed,
+      diagnosis: diagnosis,
+      study_code: study_code,
+      file_uuid: file_uuid,
+      md5sum: md5sum,
+      sample_id: sample_id,
+      individual_id: individual_id,
+      sample_site: sample_site,
+      physical_sample_type: physical_sample_type,
+      general_sample_pathology: general_sample_pathology,
+      tumor_sample_origin: tumor_sample_origin,
+      summarized_sample_type: summarized_sample_type,
+      specific_sample_pathology: specific_sample_pathology,
+      date_of_sample_collection: date_of_sample_collection,
+      tumor_grade: tumor_grade,
+      sample_chronology: sample_chronology,
+      percentage_tumor: percentage_tumor,
+      necropsy_sample: necropsy_sample,
+      sample_preservation: sample_preservation,
+      comment: comment,
+      patient_age_at_enrollment: patient_age_at_enrollment,
+      sex: sex,
+      neutered_indicator: neutered_indicator,
+      weight: weight,
+      weight_unit: weight_unit,
+      disease_term: disease_term,
+      primary_disease_site: primary_disease_site,
+      stage_of_disease: stage_of_disease,
+      date_of_diagnosis: date_of_diagnosis,
+      histology_cytopathology: histology_cytopathology,
+      histological_grade: histological_grade,
+      best_response: best_response,
+      pathology_report: pathology_report,
+      treatment_data: treatment_data,
+      follow_up_data: follow_up_data,
+      concurrent_disease: concurrent_disease,
+      concurrent_disease_type: concurrent_disease_type,
+      cohort_description: cohort_description,
+      arm: arm,
+      other_cases: other_cases
+    }
+    ORDER BY CASE $order_by
+      WHEN 'file_name' THEN file_name
+      WHEN 'file_type' THEN file_type
+      WHEN 'association' THEN association
+      WHEN 'file_description' THEN file_description
+      WHEN 'file_format' THEN file_format
+      WHEN 'file_size' THEN file_size
+      WHEN 'case_id' THEN case_id
+      WHEN 'breed' THEN breed
+      WHEN 'diagnosis' THEN diagnosis
+      WHEN 'study_code' THEN study_code
+      WHEN 'file_uuid' THEN file_uuid
+      WHEN 'md5sum' THEN md5sum
+      WHEN 'individual_id' THEN individual_id
+      WHEN 'access_file' THEN (CASE file_size > 12000000 WHEN TRUE THEN 1 ELSE 0 END)
+      ELSE file_uuid END DESC
+  """, passThrough: true)
+
+  "Facet search counts"
+    filterCaseCountByProgram(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (p:program)
+    WITH collect(DISTINCT p) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s ,c , demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+    WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+      //AND (size($program) = 0 OR p.program_acronym in $program)
+      AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+      AND (size($breed) = 0 OR demo.breed IN $breed)
+      AND (size($sex) = 0 OR demo.sex IN $sex)
+      AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+      AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+      AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+      AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+      AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+      AND (
+        (c.case_id IN biobank_cases AND
+        NOT r.registration_origin = s.clinical_study_designation AND
+        r.registration_origin IN $biobank) OR
+        (NOT c.case_id IN biobank_cases AND
+        'Not Applicable' IN $biobank) OR
+        (NOT c.case_id IN biobank_cases AND
+        size($biobank) = 0) OR
+        (NOT r.registration_origin = s.clinical_study_designation AND
+        size($biobank) = 0)
+      )
+      AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, p, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, p, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, p, groups
+    WITH p AS count_group,
+         count(c) AS count,
+         groups
+    UNWIND groups AS group
+    RETURN{
+      group: group.program_acronym,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByStudyCode(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (s:study)
+    WHERE s.study_disposition = 'Unrestricted'
+    WITH collect(DISTINCT s) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+    WHERE //(size($study) = 0 OR s.clinical_study_designation IN $study)
+       (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+      AND (size($program) = 0 OR p.program_acronym in $program)
+      AND (size($breed) = 0 OR demo.breed IN $breed)
+      AND (size($sex) = 0 OR demo.sex IN $sex)
+      AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+      AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+      AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+      AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+      AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+      AND (
+        (c.case_id IN biobank_cases AND
+        NOT r.registration_origin = s.clinical_study_designation AND
+        r.registration_origin IN $biobank) OR
+        (NOT c.case_id IN biobank_cases AND
+        'Not Applicable' IN $biobank) OR
+        (NOT c.case_id IN biobank_cases AND
+        size($biobank) = 0) OR
+        (NOT r.registration_origin = s.clinical_study_designation AND
+        size($biobank) = 0)
+      )
+      AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, s, groups
+    WITH s AS count_group,
+         count(c) AS count,
+         groups
+    UNWIND groups AS group
+    RETURN{
+      group: group.clinical_study_designation,
+      code: group.accession_id,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByStudyType(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (s:study)
+    WITH collect(DISTINCT s.clinical_study_type) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        //AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (s.study_disposition = 'Unrestricted')
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, s, groups
+    WITH s.clinical_study_type AS count_group,
+         count(c) AS count,
+         groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByBreed(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (demo:demographic)
+    WITH collect(DISTINCT demo.breed) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        //AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, demo, groups
+    WITH demo.breed AS count_group,
+         count(c) AS count,
+         groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByDiagnosis(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (diag:diagnosis)
+    WITH collect(DISTINCT diag.disease_term) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        //AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, diag, groups
+    WITH diag.disease_term AS count_group,
+           count(c) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByDiseaseSite(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (diag:diagnosis)
+    WITH collect(DISTINCT diag.primary_disease_site) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        //AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, diag, groups
+    WITH diag.primary_disease_site AS count_group,
+           count(c) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByStageOfDisease(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (diag:diagnosis)
+    WITH collect(DISTINCT diag.stage_of_disease) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        //AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, diag, groups
+    WITH diag.stage_of_disease AS count_group,
+           count(c) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByResponseToTreatment(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (diag:diagnosis)
+    WITH collect(DISTINCT COALESCE(diag.best_response, "")) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        //AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, diag, groups
+    WITH COALESCE(diag.best_response, "") AS count_group,
+           count(c) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+        group: CASE group WHEN "" THEN null ELSE group END,
+        count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountBySex(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (demo:demographic)
+    WITH collect(DISTINCT demo.sex) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        //AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, demo, groups
+    WITH demo.sex AS count_group,
+           count(c) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByNeuteredStatus(
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (demo:demographic)
+    WITH collect(DISTINCT demo.neutered_indicator) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        //AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT c, demo, groups
+    WITH demo.neutered_indicator AS count_group,
+           count(c) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountBySampleType (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (samp:sample)
+    WITH collect(DISTINCT samp.summarized_sample_type) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE //(size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT samp, groups
+    WITH samp.summarized_sample_type AS count_group,
+           count(samp) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountBySamplePathology (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (samp:sample)
+    WITH collect(DISTINCT samp.specific_sample_pathology) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        //AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT samp, groups
+    WITH samp.specific_sample_pathology AS count_group,
+           count(samp) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountBySampleSite (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (samp:sample)
+    WITH collect(DISTINCT samp.sample_site) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        //AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT samp, groups
+    WITH samp.sample_site AS count_group,
+           count(samp) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByFileAssociation (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (:file)-->(parent)
+    WITH collect(DISTINCT head(labels(parent))) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        //AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT f, parent, groups
+    WITH head(labels(parent)) AS count_group,
+           count(f) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByFileType (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (f:file)
+    WITH collect(DISTINCT f.file_type) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        //AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT f, groups
+    WITH f.file_type AS count_group,
+           count(f) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByFileFormat (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (f:file)
+    WITH collect(DISTINCT f.file_format) AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        //AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH DISTINCT f, groups
+    WITH f.file_format AS count_group,
+           count(f) AS count,
+           groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByBiobank (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (s:study)
+    WITH COLLECT(DISTINCT s.clinical_study_designation) AS clinical_study_designations, biobank_cases
+    MATCH (r:registration)
+      WHERE NOT r.registration_origin IN clinical_study_designations
+    WITH COLLECT(DISTINCT r.registration_origin) + 'Not Applicable' AS groups, biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, groups, biobank_cases, ci,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, groups, r, biobank_cases
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, groups, r, biobank_cases
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH
+        c, groups, r,
+        NOT c.case_id IN biobank_cases AS not_applicable
+    WITH
+        CASE not_applicable
+            WHEN true THEN 'Not Applicable'
+            ELSE r.registration_origin
+        END AS count_group,
+       count(DISTINCT c) AS count,
+       groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+  filterCaseCountByStudyParticipation (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = []
+  ): [GroupCount] @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p, s, c, demo, diag, r, biobank_cases, ci
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, s, c, diag, demo, ci
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    WITH DISTINCT c AS c, s, demo, diag, f, parent, samp, ci
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH
+      DISTINCT c,
+      ['Single Study', 'Multiple Study'] AS groups,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+    WITH
+      participation AS count_group,
+      count(c) AS count,
+      groups
+    UNWIND groups AS group
+    RETURN{
+      group: group,
+      count: SUM(CASE count_group WHEN group THEN count ELSE 0 END)
+    }
+  """, passThrough: true)
+
+
+  "Combined info"
+  studiesByProgramId(program_id: String!): [StudyOfProgram] @cypher(statement: """
+    MATCH (p:program {program_acronym: $program_id})<-[*]-(s:study)
+    OPTIONAL MATCH (s)<-[*]-(c:case)
+    OPTIONAL MATCH (s)<--(sf:file)
+    OPTIONAL MATCH (s)<--(ic:image_collection)
+    OPTIONAL MATCH (s)<--(pub:publication)
+    OPTIONAL MATCH (c)<-[*]-(cf:file)
+    WITH p, s,
+      COUNT(DISTINCT sf) AS numberOfStudyFiles,
+      COUNT(DISTINCT cf) AS numberOfCaseFiles,
+      COUNT(DISTINCT ic) AS numberOfImageCollections,
+      COUNT(DISTINCT ic.repository_name) AS numberOfCRDCNodes,
+      COUNT(DISTINCT pub) AS numberOfPublications,
+      COUNT(DISTINCT(c)) AS numberOfCases,
+      COLLECT(DISTINCT ic{text: ic.image_collection_name + ' - ' + ic.repository_name,
+                         url: ic.image_collection_url}) AS CRDCLinks
+    RETURN{
+      program_id: p.program_acronym,
+      clinical_study_id: s.clinical_study_id,
+      clinical_study_designation: s.clinical_study_designation,
+      clinical_study_name: s.clinical_study_name,
+      clinical_study_description: s.clinical_study_description,
+      clinical_study_type: s.clinical_study_type,
+      accession_id: s.accession_id,
+      study_disposition: s.study_disposition,
+      date_of_iacuc_approval: s.date_of_iacuc_approval,
+      dates_of_conduct: s.dates_of_conduct,
+      numberOfCases: numberOfCases,
+      numberOfStudyFiles: numberOfStudyFiles,
+      numberOfCaseFiles: numberOfCaseFiles,
+      numberOfImageCollections: numberOfImageCollections,
+      numberOfPublications: numberOfPublications,
+      numberOfCRDCNodes: numberOfCRDCNodes,
+      CRDCLinks: CRDCLinks
+    }
+    ORDER BY s.clinical_study_designation
+  """, passThrough: true)
+
+  studiesByProgram: [StudyOfProgram] @cypher(statement:"""
+    MATCH (s:study)
+    OPTIONAL MATCH (p:program)<-[*]-(s)
+    OPTIONAL MATCH (s)<-[*]-(c:case)
+    OPTIONAL MATCH (s)<--(sf:file)
+    OPTIONAL MATCH (s)<--(ic:image_collection)
+    OPTIONAL MATCH (s)<--(pub:publication)
+    OPTIONAL MATCH (c)<-[*]-(cf:file)
+    WITH p, s,
+      COUNT(DISTINCT sf) AS numberOfStudyFiles,
+      COUNT(DISTINCT cf) AS numberOfCaseFiles,
+      COUNT(DISTINCT ic) AS numberOfImageCollections,
+      COUNT(DISTINCT ic.repository_name) AS numberOfCRDCNodes,
+      COUNT(DISTINCT pub) AS numberOfPublications,
+      COUNT(DISTINCT(c)) AS numberOfCases,
+      COLLECT(DISTINCT ic{text: ic.image_collection_name + ' - ' + ic.repository_name,
+                         url: ic.image_collection_url}) AS CRDCLinks
+    RETURN{
+      program_id: p.program_acronym,
+      clinical_study_id: s.clinical_study_id,
+      clinical_study_designation: s.clinical_study_designation,
+      clinical_study_name: s.clinical_study_name,
+      clinical_study_description: s.clinical_study_description,
+      clinical_study_type: s.clinical_study_type,
+      accession_id: s.accession_id,
+      study_disposition: s.study_disposition,
+      date_of_iacuc_approval: s.date_of_iacuc_approval,
+      dates_of_conduct: s.dates_of_conduct,
+      numberOfCases: numberOfCases,
+      numberOfStudyFiles: numberOfStudyFiles,
+      numberOfCaseFiles: numberOfCaseFiles,
+      numberOfImageCollections: numberOfImageCollections,
+      numberOfPublications: numberOfPublications,
+      numberOfCRDCNodes: numberOfCRDCNodes,
+      CRDCLinks: CRDCLinks
+    }
+    ORDER BY s.clinical_study_designation
+  """, passThrough: true)
+
+  filesOfCase(case_id: String!): [FilesOfCase] @cypher(statement: """
+    MATCH (f:file)-[*]->(c:case{case_id: $case_id})
+    WITH DISTINCT(f) AS f
+    MATCH (f)-->(parent)
+    RETURN{
+      file_status: f.file_status,
+      file_name: f.file_name,
+      file_type: f.file_type,
+      file_description: f.file_description,
+      file_format: f.file_format,
+      file_size: f.file_size,
+      md5sum: f.md5sum,
+      uuid: f.uuid,
+      file_location: f.file_location,
+      parent: head(labels(parent)),
+      case_id: $case_id
+    }
+  """, passThrough: true)
+
+  filesOfCases(case_ids: [String!]!): [FilesOfCase] @cypher(statement: """
+    MATCH (f:file)-[*]->(c:case)
+    WITH
+      DISTINCT(f) AS f,
+      c MATCH (f)-->(parent)
+    WHERE c.case_id IN $case_ids
+    RETURN{
+      file_status: f.file_status,
+      file_name: f.file_name,
+      file_type: f.file_type,
+      file_description: f.file_description,
+      file_format: f.file_format,
+      file_size: f.file_size,
+      md5sum: f.md5sum,
+      uuid: f.uuid,
+      file_location: f.file_location,
+      parent: head(labels(parent)),
+      case_id: c.case_id
+    }
+  """, passThrough: true)
+
+  programsAndStudies(case_ids: [String] = []): [ProgramStudies] @cypher(statement: """
+    MATCH (p:program)
+    OPTIONAL MATCH (p)<-[*]-(c:case)
+    WITH DISTINCT c, p
+      WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+    WITH p, COUNT(DISTINCT(c)) as caseSize
+    MATCH (p)<-[:member_of]-(s:study)<-[*]-(c:case)
+      WHERE (size($case_ids) = 0 OR c.case_id IN $case_ids)
+      AND s.study_disposition = 'Unrestricted'
+    WITH p, caseSize,
+      {study: s.clinical_study_designation, caseSize: COUNT(DISTINCT(c))} as s
+    RETURN{
+      program: p.program_acronym,
+      caseSize: caseSize,
+      studies: collect(s)
+    }
+  """, passThrough: true)
+
+  multiStudyCases(case_id: String): MultiStudyCases @cypher(statement: """
+      MATCH (:case {case_id: $case_id})-->(i:canine_individual)
+      MATCH (i)<--(c:case)
+      OPTIONAL MATCH (c)<--(samp:sample)
+      OPTIONAL MATCH (c)<-[*]-(f:file)
+      OPTIONAL MATCH (c) -[:member_of]->(s:study)
+      OPTIONAL MATCH (sf:file)-->(s)
+      WITH i, c, f, samp, sf
+      RETURN{
+        individualId: i.canine_individual_id,
+        caseIds: collect(DISTINCT c.case_id),
+        sampleIds: collect(DISTINCT samp.sample_id),
+        fileIds: collect(DISTINCT f.uuid),
+        studyFileIds: collect(DISTINCT sf.uuid)
+      }
+  """, passThrough: true)
+
+  caseDetail(case_id: String): CaseDetail @cypher(statement: """
+    MATCH (c:case {case_id: $case_id})-->(s:study)-->(p:program)
+    OPTIONAL MATCH (c)-->(co:cohort)-->(a:study_arm)
+    OPTIONAL MATCH (c)<--(demo:demographic)
+    OPTIONAL MATCH (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(e:enrollment)
+    RETURN{
+      program_acronym: p.program_acronym,
+      clinical_study_name: s.clinical_study_name,
+      clinical_study_designation: s.clinical_study_designation,
+      arm: a.arm,
+      ctep_treatment_assignment_code: a.ctep_treatment_assignment_code,
+      cohort_description: co.cohort_description,
+      case_id: c.case_id,
+      patient_id: c.patient_id,
+      patient_first_name: c.patient_first_name,
+      breed: demo.breed,
+      sex: demo.sex,
+      patient_age_at_enrollment: demo.patient_age_at_enrollment,
+      neutered_indicator: demo.neutered_indicator,
+      weight: demo.weight,
+      site_short_name: e.site_short_name,
+      date_of_registration: e.date_of_registration,
+      patient_subgroup: e.patient_subgroup,
+      date_of_informed_consent: e.date_of_informed_consent,
+      initials: e.initials,
+      disease_term: diag.disease_term,
+      stage_of_disease: diag.stage_of_disease,
+      best_response: diag.best_response,
+      date_of_diagnosis: diag.date_of_diagnosis,
+      primary_disease_site: diag.primary_disease_site,
+      histological_grade: diag.histological_grade,
+      histology_cytopathology: diag.histology_cytopathology
+    }
+  """, passThrough: true)
+
+  caseOverview(study_codes: [String] = [""], breeds: [String] = [""], diagnoses: [String] = [""], sexes: [String] = [""]): [CaseOverview] @cypher(statement: """
+      MATCH (s:study)
+      WITH collect(DISTINCT(s.clinical_study_designation)) AS all_studies
+      MATCH (d:demographic)
+      WITH collect(DISTINCT(d.breed)) AS all_breeds, collect(DISTINCT(d.sex)) AS all_sexes, all_studies
+      MATCH (d:diagnosis)
+      WITH collect(DISTINCT(d.disease_term)) AS all_diseases, all_breeds, all_sexes, all_studies
+      MATCH (p:program)<-[*]-(s:study)<-[*]-(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+        WHERE
+          s.clinical_study_designation IN
+            CASE
+              WHEN ($study_codes = [""] OR $study_codes IS NULL)
+              THEN all_studies
+              ELSE $study_codes
+            END
+        AND
+          demo.breed IN
+          CASE
+            WHEN ($breeds = [""] OR $breeds IS NULL)
+            THEN all_breeds
+            ELSE $breeds
+          END
+        AND
+          diag.disease_term IN
+            CASE
+              WHEN ($diagnoses = [""] OR $diagnoses IS NULL)
+              THEN all_diseases
+              ELSE $diagnoses
+            END
+        AND
+          demo.sex IN
+            CASE
+              WHEN ($sexes = [""] OR $sexes IS NULL)
+              THEN all_sexes
+              ELSE $sexes
+            END
+      OPTIONAL MATCH (f:file)-[*]->(c)
+      OPTIONAL MATCH (f)-->(prt)
+      OPTIONAL MATCH (samp:sample)-[*]->(c)
+      WITH DISTINCT c AS c, p, s, demo, diag, f, samp, prt
+      RETURN{
+        case_id: c.case_id,
+        study_code: s.clinical_study_designation,
+        program: p.program_acronym,
+        study_type: s.clinical_study_type,
+        breed: demo.breed,
+        diagnosis: diag.disease_term,
+        stage_of_disease: diag.stage_of_disease,
+        disease_site: diag.primary_disease_site,
+        age: demo.patient_age_at_enrollment,
+        sex: demo.sex,
+        neutered_status: demo.neutered_indicator,
+        data_types: collect(DISTINCT(f.file_type)),
+        file_formats: collect(DISTINCT(f.file_format)),
+        files: collect(DISTINCT(f {parent:labels(prt)[0], .file_name, .file_name, .file_type, .file_description, .file_format, .file_size, .md5sum, .file_status, .uuid, .file_location})),
+        samples: collect(DISTINCT(samp.sample_id)),
+        sample_list: collect(DISTINCT(samp{.*})),
+        demographic: demo,
+        diagnosis_obj: diag
+      }
+  """, passThrough:true)
+
+  caseOverviewPaged (case_ids: [String] = [""], order_by: String = ""): [CaseOverview2] @cypher(statement: """
+    MATCH (c:case)
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (s:study)<--(c)
+    OPTIONAL MATCH (c)<--(demo:demographic)
+    OPTIONAL MATCH (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (f:file)-[*]->(c)
+    OPTIONAL MATCH (co)-->(a:study_arm)
+    WITH
+      DISTINCT c.case_id as case_id,
+      s.clinical_study_designation AS study_code,
+      s.clinical_study_type AS study_type,
+      co.cohort_description AS cohort,
+      demo.breed AS breed,
+      diag.disease_term AS diagnosis,
+      diag.stage_of_disease AS stage_of_disease,
+      diag.primary_disease_site AS disease_site,
+      demo.patient_age_at_enrollment AS age,
+      demo.sex AS sex,
+      demo.neutered_indicator AS neutered_status,
+      demo.weight AS weight,
+      diag.best_response AS response_to_treatment,
+      collect(DISTINCT(f.uuid)) AS files,
+      collect(DISTINCT o.case_id) AS other_cases,
+      i.canine_individual_id as individual_id,
+      diag.primary_disease_site as primary_disease_site,
+      diag.date_of_diagnosis as date_of_diagnosis,
+      diag.histology_cytopathology as histology_cytopathology,
+      diag.histological_grade as histological_grade,
+      diag.pathology_report as pathology_report,
+      diag.treatment_data as treatment_data,
+      diag.follow_up_data as follow_up_data,
+      diag.concurrent_disease as concurrent_disease,
+      diag.concurrent_disease_type as concurrent_disease_type,
+      a.arm as arm
+    RETURN{
+      case_id: case_id,
+      study_code: study_code,
+      study_type: study_type,
+      cohort: cohort,
+      breed: breed,
+      diagnosis: diagnosis,
+      stage_of_disease: stage_of_disease,
+      disease_site: disease_site,
+      age: age,
+      sex: sex,
+      neutered_status: neutered_status,
+      weight: weight,
+      response_to_treatment: response_to_treatment,
+      files: files,
+      other_cases: other_cases,
+      individual_id: individual_id,
+      primary_disease_site: primary_disease_site,
+      date_of_diagnosis : date_of_diagnosis,
+      histology_cytopathology: histology_cytopathology,
+      histological_grade : histological_grade,
+      pathology_report : pathology_report,
+      treatment_data : treatment_data,
+      follow_up_data : follow_up_data,
+      concurrent_disease : concurrent_disease,
+      concurrent_disease_type : concurrent_disease_type,
+      arm : arm
+    }
+    ORDER BY
+      CASE $order_by
+        WHEN "study_code" THEN study_code
+        WHEN "study_type" THEN study_type
+        WHEN "cohort" THEN cohort
+        WHEN "breed" THEN breed
+        WHEN "diagnosis" THEN diagnosis
+        WHEN "stage_of_disease" THEN stage_of_disease
+        WHEN "disease_site" THEN disease_site
+        WHEN "age" THEN age
+        WHEN "sex" THEN sex
+        WHEN "neutered_status" THEN neutered_status
+        WHEN "weight" THEN weight
+        WHEN "response_to_treatment" THEN response_to_treatment
+        WHEN "other_cases" THEN other_cases
+        ELSE case_id
+      END
+  """, passThrough: true)
+
+  caseOverviewPagedDesc (case_ids: [String] = [""], order_by: String = ""): [CaseOverview2] @cypher(statement: """
+    MATCH (c:case)
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (s:study)<--(c)
+    OPTIONAL MATCH (c)<--(demo:demographic)
+    OPTIONAL MATCH (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (f:file)-[*]->(c)
+    WITH
+      DISTINCT c.case_id as case_id,
+      s.clinical_study_designation AS study_code,
+      s.clinical_study_type AS study_type,
+      co.cohort_description AS cohort,
+      demo.breed AS breed,
+      diag.disease_term AS diagnosis,
+      diag.stage_of_disease AS stage_of_disease,
+      diag.primary_disease_site AS disease_site,
+      demo.patient_age_at_enrollment AS age,
+      demo.sex AS sex,
+      demo.neutered_indicator AS neutered_status,
+      demo.weight AS weight,
+      diag.best_response AS response_to_treatment,
+      collect(DISTINCT(f.uuid)) AS files,
+      collect(DISTINCT o.case_id) AS other_cases
+    RETURN{
+      case_id: case_id,
+      study_code: study_code,
+      study_type: study_type,
+      cohort: cohort,
+      breed: breed,
+      diagnosis: diagnosis,
+      stage_of_disease: stage_of_disease,
+      disease_site: disease_site,
+      age: age,
+      sex: sex,
+      neutered_status: neutered_status,
+      weight: weight,
+      response_to_treatment: response_to_treatment,
+      files: files,
+      other_cases: other_cases
+    }
+    ORDER BY
+      CASE $order_by
+        WHEN "study_code" THEN study_code
+        WHEN "study_type" THEN study_type
+        WHEN "cohort" THEN cohort
+        WHEN "breed" THEN breed
+        WHEN "diagnosis" THEN diagnosis
+        WHEN "stage_of_disease" THEN stage_of_disease
+        WHEN "disease_site" THEN disease_site
+        WHEN "age" THEN age
+        WHEN "sex" THEN sex
+        WHEN "neutered_status" THEN neutered_status
+        WHEN "weight" THEN weight
+        WHEN "response_to_treatment" THEN response_to_treatment
+        WHEN "other_cases" THEN other_cases
+        ELSE case_id
+      END DESC
+  """, passThrough: true)
+
+  searchCases (
+    program: [String] = [],
+    study: [String] = [],
+    study_type: [String] = [],
+    breed: [String] = [],
+    diagnosis: [String] = [],
+    disease_site: [String] = [],
+    stage_of_disease: [String] = [],
+    response_to_treatment: [String] = [],
+    sex: [String] = [],
+    neutered_status: [String] = [],
+    sample_type: [String] = [],
+    sample_pathology: [String] = [],
+    sample_site: [String] = [],
+    file_association: [String] = [],
+    file_type: [String] = [],
+    file_format: [String] = [],
+    biobank: [String] = [],
+    study_participation: [String] = [],
+    first: Int = 100
+  ): SearchResult @cypher(statement: """
+    MATCH (r:registration)-->(c:case)-->(s:study)
+    WHERE NOT r.registration_origin = s.clinical_study_designation
+    WITH COLLECT(DISTINCT c.case_id) as biobank_cases
+    MATCH (p:program)<--(s:study)<--(c:case)<--(demo:demographic), (c)<--(diag:diagnosis)
+    OPTIONAL MATCH (c)<--(r:registration)
+    OPTIONAL MATCH (c)-->(ci:canine_individual)
+    WITH p,s,c,demo,diag,r,biobank_cases,
+      CASE ci IS NULL
+        WHEN True THEN 'Single Study'
+        ELSE 'Multiple Study'
+      END AS participation
+      WHERE (size($study) = 0 OR s.clinical_study_designation IN $study)
+        AND (size($program) = 0 OR p.program_acronym in $program)
+        AND (s.study_disposition = 'Unrestricted')
+        AND (size($study_type) = 0 OR s.clinical_study_type IN $study_type)
+        AND (size($breed) = 0 OR demo.breed IN $breed)
+        AND (size($sex) = 0 OR demo.sex IN $sex)
+        AND (size($neutered_status) = 0 OR demo.neutered_indicator IN $neutered_status)
+        AND (size($diagnosis) = 0 OR diag.disease_term IN $diagnosis)
+        AND (size($disease_site) = 0 OR diag.primary_disease_site IN $disease_site)
+        AND (size($stage_of_disease) = 0 OR diag.stage_of_disease IN $stage_of_disease)
+        AND (size($response_to_treatment) = 0 OR diag.best_response IN $response_to_treatment)
+        AND (
+          (c.case_id IN biobank_cases AND
+          NOT r.registration_origin = s.clinical_study_designation AND
+          r.registration_origin IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          'Not Applicable' IN $biobank) OR
+          (NOT c.case_id IN biobank_cases AND
+          size($biobank) = 0) OR
+          (NOT r.registration_origin = s.clinical_study_designation AND
+          size($biobank) = 0)
+        )
+        AND (size($study_participation) = 0 OR participation IN $study_participation)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (f1:file)-[*]->(c)
+    OPTIONAL MATCH (f2:file)-->(s)
+    WITH COLLECT(DISTINCT f1) + COLLECT(DISTINCT f2) AS files, p, s, co, c, diag, demo
+    UNWIND CASE files WHEN [] THEN [null] ELSE files END AS f
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    OPTIONAL MATCH (samp)<--(al:aliquot)
+    WITH DISTINCT c AS c, p, s, co, demo, diag, f, parent, samp, al
+      WHERE (size($sample_type) = 0 OR samp.summarized_sample_type IN $sample_type)
+        AND (size($sample_pathology) = 0 OR samp.specific_sample_pathology IN $sample_pathology)
+        AND (size($sample_site) = 0 OR samp.sample_site IN $sample_site)
+        AND (size($file_association) = 0 OR head(labels(parent)) IN $file_association)
+        AND (size($file_type) = 0 OR f.file_type IN $file_type)
+        AND (size($file_format) = 0 OR f.file_format IN $file_format)
+    WITH c, p, s, co, demo, diag, f, parent, samp, al, CASE head(labels(parent)) WHEN 'study' THEN f ELSE null END AS sf
+    RETURN{
+         numberOfStudies: COUNT(DISTINCT s),
+         numberOfCases: COUNT(DISTINCT c),
+         numberOfSamples: COUNT(DISTINCT samp),
+         numberOfFiles: COUNT(DISTINCT f),
+         volumeOfData: SUM(DISTINCT f.file_size),
+         numberOfStudyFiles: COUNT(DISTINCT sf),
+         numberOfPrograms: COUNT(DISTINCT p),
+         numberOfAliquots: COUNT(DISTINCT al),
+         caseIds: COLLECT(DISTINCT c.case_id),
+         sampleIds: COLLECT(DISTINCT samp.sample_id),
+         fileIds: COLLECT(DISTINCT f.uuid),
+         studyFileIds: COLLECT(DISTINCT sf.uuid),
+         firstPage: COLLECT(DISTINCT ({
+           case_id: c.case_id,
+           study_code: s.clinical_study_designation,
+           study_type: s.clinical_study_type,
+           cohort: co.cohort_description,
+           breed: demo.breed,
+           diagnosis: diag.disease_term,
+           stage_of_disease: diag.stage_of_disease,
+           age: demo.patient_age_at_enrollment,
+           sex: demo.sex,
+           neutered_status: demo.neutered_indicator,
+           weight: demo.weight,
+           response_to_treatment: diag.best_response,
+           disease_site: diag.primary_disease_site
+         }))[0..$first]
+    }
+  """, passThrough:true)
+
+  casesInList(case_ids: [String!]!): [CaseOverview] @cypher(statement: """
+    MATCH
+      (p:program)<-[*]-(s:study)<-[*]-(c:case)<--(demo:demographic),
+      (c)<--(diag:diagnosis)
+    WHERE c.case_id IN $case_ids
+    OPTIONAL MATCH (f:file)-[*]->(c)
+    OPTIONAL MATCH (samp:sample)-[*]->(c)
+    WITH DISTINCT c AS c, p, s, demo, diag, f, samp
+    RETURN{
+      case_id: c.case_id,
+      study_code: s.clinical_study_designation,
+      program: p.program_acronym,
+      study_type: s.clinical_study_type,
+      breed: demo.breed,
+      diagnosis: diag.disease_term,
+      stage_of_disease: diag.stage_of_disease,
+      disease_site: diag.primary_disease_site,
+      age: demo.patient_age_at_enrollment,
+      sex: demo.sex,
+      neutered_status: demo.neutered_indicator,
+      data_types: collect(DISTINCT(f.file_type)),
+      file_formats: collect(DISTINCT(f.file_format)),
+      files: collect(DISTINCT(f{.*})),
+      samples: collect(DISTINCT(samp.sample_id)),
+      sample_list: collect(DISTINCT(samp{.*}))
+    }
+  """, passThrough:true)
+
+  studyDetail(study_code: String!): [StudyDetail] @cypher(statement: """
+    MATCH (s:study {clinical_study_designation: $study_code})<-[*]-(p)<--(f:file)
+    WITH DISTINCT(f), s, p
+    RETURN{
+      study_code: s.clinical_study_designation,
+      file_name: f.file_name,
+      file_type: f.file_type,
+      association: head(labels(p)),
+      description: f.file_description,
+      format: f.file_format,
+      size: f.file_size,
+      MD5: f.md5sum
+    }
+  """, passThrough: true)
+
+  "Find nodes with parameters"
+  casesByStudyId(study_id: String!): [case] @cypher(statement: """
+    MATCH (s:study {clinical_study_designation: $study_id})<-[*]-(c:case)
+    RETURN DISTINCT(c)
+  """)
+
+  samplesByCaseId(case_id: String!): [sample] @cypher(statement: """
+    MATCH (c:case {case_id: $case_id})<-[*]-(s:sample)
+    RETURN s
+  """)
+
+  filesBySampleId(sample_id: String!): [file] @cypher(statement: """
+    MATCH (s:sample {sample_id: $sample_id})<-[*]-(f:file)
+    RETURN f
+  """)
+
+  filesOfStudy(study_code: String!): [file] @cypher(statement: """
+    MATCH (f:file)-[*]->(sd:study) WHERE sd.clinical_study_designation = $study_code OR sd.accession_id = $study_code
+    RETURN DISTINCT(f)
+  """)
+
+  studyFiles(study_codes: [String!]): [file] @cypher(statement: """
+    MATCH (s:study)<--(f:file)
+    WHERE s.clinical_study_designation IN $study_codes OR s.accession_id IN $study_codes
+    RETURN f{.*}
+  """, passThrough: true)
+
+  "For SBG to replace manifest"
+  fileDetail(file_ids: [String] = []): [FileDetail] @cypher(statement: """
+    MATCH (f:file)
+    WITH collect(f.uuid) AS all_files
+    MATCH (f:file)-[*]->(s:study)
+      WHERE f.uuid IN CASE $file_ids WHEN [] THEN all_files
+        ELSE $file_ids
+        END
+    OPTIONAL MATCH (f)-[*]->(c:case)
+    OPTIONAL MATCH (f)-[*]->(co:cohort)
+    OPTIONAL MATCH (f)-[*]->(arm:study_arm)
+    OPTIONAL MATCH (demo:demographic)-->(c)
+    OPTIONAL MATCH (diag:diagnosis)-->(c)
+    OPTIONAL MATCH (f)-[*]->(v:visit)
+    OPTIONAL MATCH (f)-->(samp:sample)
+    WITH DISTINCT (f) AS f, s, c, co, arm, demo, diag, v, samp,
+      f.file_type as file_type,
+      c.case_id as case_id
+    RETURN{
+      clinical_study_designation: s.clinical_study_designation,
+      clinical_study_name: s.clinical_study_name,
+      arm: arm.arm,
+      cohort_description: co.cohort_description,
+      cohort_dose: co.cohort_dose,
+      case_id: case_id,
+      breed: demo.breed,
+      weight: demo.weight,
+      sex: demo.sex,
+      neutered_indicator: demo.neutered_indicator,
+      patient_age_at_enrollment: demo.patient_age_at_enrollment,
+      disease_term: diag.disease_term,
+      stage_of_disease: diag.stage_of_disease,
+      primary_disease_site: diag.primary_disease_site,
+      concurrent_disease: diag.concurrent_disease,
+      concurrent_disease_type: diag.concurrent_disease_type,
+      visit_date: v.visit_date,
+      visit_number: v.visit_number,
+      day_in_cycle: v.day_in_cycle,
+      sample_id: samp.sample_id,
+      sample_type: samp.physical_sample_type,
+      general_sample_pathology: samp.general_sample_pathology,
+      specific_sample_pathology: samp.specific_sample_pathology,
+      sample_site: samp.sample_site,
+      date_of_sample_collection: samp.date_of_sample_collection,
+      necropsy_sample: samp.necropsy_sample,
+      percentage_tumor: samp.percentage_tumor,
+      percentage_stroma: samp.percentage_stroma,
+      comment: samp.comment,
+      file_name: f.file_name,
+      file_type: file_type,
+      file_description: f.file_description,
+      file_format: f.file_format,
+      file_size: f.file_size,
+      md5sum: f.md5sum,
+      file_location: f.file_location,
+      uuid: f.uuid,
+      acl: f.acl,
+      GUID: 'dg.4DFC/' + f.uuid,
+      md5: f.md5sum,
+      size: f.file_size,
+      url: f.file_location
+    }
+    ORDER BY file_type, case_id
+  """, passThrough: true)
+
+  "For IndexD to replace manifest"
+  fileInfo(file_ids: [String] = []): [FileInfo] @cypher(statement: """
+    MATCH (f:file)
+    WITH collect(f.uuid) as all_files
+    MATCH (f:file)
+      WHERE f.uuid IN CASE $file_ids WHEN [] THEN all_files ELSE $file_ids END
+    WITH f, f.file_location as url
+    RETURN{
+      GUID: 'dg.4DFC/' + f.uuid,
+      md5: f.md5sum,
+      size: f.file_size,
+      acl: f.acl,
+      url: f.file_location
+    }
+    ORDER BY url
+  """, passThrough: true)
+
+  studyStats: [StudyStat] @cypher(statement: """
+      MATCH (s:study)
+      OPTIONAL MATCH (s)<-[*]-(c:case)
+      WITH s, COUNT(DISTINCT c) AS cases
+      OPTIONAL MATCH (s)<-[*]-(samp:sample)
+      WITH s, cases, COUNT(DISTINCT samp) AS samples
+      OPTIONAL MATCH (s)<-[*]-(f:file)
+      WITH DISTINCT f, s, cases, samples
+      RETURN{
+        study_code: s.clinical_study_designation,
+        files: COUNT(f),
+        total_size_MB: SUM(f.file_size)/1000000,
+        cases: cases,
+        samples: samples
+      }
+  """, passThrough: true)
+
+  fileOverview(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String): [FileOverview] @cypher(statement: """
+    MATCH (f:file)
+      WHERE ($file_uuids = [""] OR $file_uuids IS NULL OR f.uuid IN $file_uuids)
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (parent)-[:of_case]->(cf:case)
+    WITH f, parent, CASE cf WHEN NULL THEN parent ELSE cf END AS c,
+    CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END AS association
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids) AND association = $file_association
+    OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
+    OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
+    OPTIONAL MATCH (c)-[:member_of]->(s:study)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (f)-[*]->(samp:sample)
+    OPTIONAL MATCH (enroll:enrollment)-[:of_case]->(c)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (co)-->(a:study_arm)
+    WITH
+      f.file_name as file_name,
+      f.file_type as file_type,
+      head(labels(parent)) as association,
+      f.file_description as file_description,
+      f.file_format as file_format,
+      f.file_size as file_size,
+      c.case_id as case_id,
+      demo.breed as breed,
+      diag.disease_term as diagnosis,
+      CASE WHEN s.clinical_study_designation IS NULL
+      THEN parent.clinical_study_designation
+      ELSE s.clinical_study_designation END AS study_code,
+      f.uuid as file_uuid,
+      samp.sample_id AS sample_id,
+      samp.sample_site as sample_site,
+      samp.physical_sample_type as physical_sample_type,
+      samp.general_sample_pathology as general_sample_pathology,
+      samp.tumor_sample_origin as tumor_sample_origin,
+      samp.summarized_sample_type as summarized_sample_type,
+      samp.specific_sample_pathology as specific_sample_pathology,
+      samp.date_of_sample_collection as date_of_sample_collection,
+      samp.tumor_grade as tumor_grade,
+      samp.sample_chronology as sample_chronology,
+      samp.percentage_tumor as percentage_tumor,
+      samp.necropsy_sample as necropsy_sample,
+      samp.sample_preservation as sample_preservation,
+      samp.comment as comment,
+      i.canine_individual_id AS individual_id,
+      demo.patient_age_at_enrollment as patient_age_at_enrollment,
+      demo.sex as sex,
+      demo.neutered_indicator as neutered_indicator,
+      demo.weight as weight,
+      diag.primary_disease_site as primary_disease_site,
+      diag.stage_of_disease as stage_of_disease,
+      diag.date_of_diagnosis as date_of_diagnosis,
+      diag.histology_cytopathology as histology_cytopathology,
+      diag.histological_grade as histological_grade,
+      diag.best_response as best_response,
+      diag.pathology_report as pathology_report,
+      diag.treatment_data as treatment_data,
+      diag.follow_up_data as follow_up_data,
+      diag.concurrent_disease as concurrent_disease,
+      diag.concurrent_disease_type as concurrent_disease_type,
+      co.cohort_description as cohort_description,
+      a.arm as arm,
+      collect(DISTINCT o.case_id) AS other_cases
+    RETURN{
+      file_name: file_name,
+      file_type: file_type,
+      association: association,
+      file_description: file_description,
+      file_format: file_format,
+      file_size: file_size,
+      case_id: case_id,
+      breed: breed,
+      diagnosis: diagnosis,
+      study_code: study_code,
+      file_uuid: file_uuid,
+      sample_id: sample_id,
+      sample_site: sample_site,
+      physical_sample_type: physical_sample_type,
+      general_sample_pathology: general_sample_pathology,
+      tumor_sample_origin: tumor_sample_origin,
+      summarized_sample_type: summarized_sample_type,
+      specific_sample_pathology: specific_sample_pathology,
+      date_of_sample_collection: date_of_sample_collection,
+      tumor_grade: tumor_grade,
+      sample_chronology: sample_chronology,
+      percentage_tumor: percentage_tumor,
+      necropsy_sample: necropsy_sample,
+      sample_preservation: sample_preservation,
+      comment: comment,
+      individual_id: individual_id,
+      patient_age_at_enrollment: patient_age_at_enrollment,
+      sex: sex,
+      neutered_indicator: neutered_indicator,
+      weight: weight,
+      primary_disease_site: primary_disease_site,
+      stage_of_disease: stage_of_disease,
+      date_of_diagnosis: date_of_diagnosis,
+      histology_cytopathology: histology_cytopathology,
+      histological_grade: histological_grade,
+      best_response: best_response,
+      pathology_report: pathology_report,
+      treatment_data: treatment_data,
+      follow_up_data: follow_up_data,
+      concurrent_disease: concurrent_disease,
+      concurrent_disease_type: concurrent_disease_type,
+      cohort_description: cohort_description,
+      arm: arm,
+      other_cases: other_cases
+    }
+    ORDER BY CASE $order_by
+      WHEN 'file_name' THEN file_name
+      WHEN 'file_type' THEN file_type
+      WHEN 'association' THEN association
+      WHEN 'file_description' THEN file_description
+      WHEN 'file_format' THEN file_format
+      WHEN 'file_size' THEN file_size
+      WHEN 'case_id' THEN case_id
+      WHEN 'breed' THEN breed
+      WHEN 'diagnosis' THEN diagnosis
+      WHEN 'study_code' THEN study_code
+      WHEN 'file_uuid' THEN file_uuid
+      WHEN 'access_file' THEN (CASE file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END)
+    ELSE file_name END
+  """, passThrough: true)
+
+  fileOverviewDesc(case_ids: [String] = [""], file_uuids: [String] = [""], order_by: String = "", file_association: String): [FileOverview] @cypher(statement: """
+    MATCH (f:file)
+      WHERE ($file_uuids = [""] OR $file_uuids IS NULL OR f.uuid IN $file_uuids)
+    OPTIONAL MATCH (f)-->(parent)
+    OPTIONAL MATCH (parent)-[:of_case]->(cf :case)
+    WITH f, parent, CASE cf WHEN NULL THEN parent ELSE cf END AS c,
+    CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END AS association
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids) AND association = $file_association
+    OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
+    OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
+    OPTIONAL MATCH (c)-[:member_of]->(s:study)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (f)-[*]->(samp:sample)
+    OPTIONAL MATCH (enroll:enrollment)-[:of_case]->(c)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (co)-->(a:study_arm)
+    WITH
+      f.file_name as file_name,
+      f.file_type as file_type,
+      head(labels(parent)) as association,
+      f.file_description as file_description,
+      f.file_format as file_format,
+      f.file_size as file_size,
+      c.case_id as case_id,
+      demo.breed as breed,
+      diag.disease_term as diagnosis,
+      CASE WHEN s.clinical_study_designation IS NULL
+      THEN parent.clinical_study_designation
+      ELSE s.clinical_study_designation END AS study_code,
+      f.uuid as file_uuid,
+      samp.sample_id AS sample_id,
+      samp.sample_site as sample_site,
+      samp.physical_sample_type as physical_sample_type,
+      samp.general_sample_pathology as general_sample_pathology,
+      samp.tumor_sample_origin as tumor_sample_origin,
+      samp.summarized_sample_type as summarized_sample_type,
+      samp.specific_sample_pathology as specific_sample_pathology,
+      samp.date_of_sample_collection as date_of_sample_collection,
+      samp.tumor_grade as tumor_grade,
+      samp.sample_chronology as sample_chronology,
+      samp.percentage_tumor as percentage_tumor,
+      samp.necropsy_sample as necropsy_sample,
+      samp.sample_preservation as sample_preservation,
+      samp.comment as comment,
+      i.canine_individual_id AS individual_id,
+      demo.patient_age_at_enrollment as patient_age_at_enrollment,
+      demo.sex as sex,
+      demo.neutered_indicator as neutered_indicator,
+      demo.weight as weight,
+      diag.primary_disease_site as primary_disease_site,
+      diag.stage_of_disease as stage_of_disease,
+      diag.date_of_diagnosis as date_of_diagnosis,
+      diag.histology_cytopathology as histology_cytopathology,
+      diag.histological_grade as histological_grade,
+      diag.best_response as best_response,
+      diag.pathology_report as pathology_report,
+      diag.treatment_data as treatment_data,
+      diag.follow_up_data as follow_up_data,
+      diag.concurrent_disease as concurrent_disease,
+      diag.concurrent_disease_type as concurrent_disease_type,
+      co.cohort_description as cohort_description,
+      a.arm as arm,
+      collect(DISTINCT o.case_id) AS other_cases
+    RETURN{
+      file_name: file_name,
+      file_type: file_type,
+      association: association,
+      file_description: file_description,
+      file_format: file_format,
+      file_size: file_size,
+      case_id: case_id,
+      breed: breed,
+      diagnosis: diagnosis,
+      study_code: study_code,
+      file_uuid: file_uuid,
+      sample_id: sample_id,
+      sample_site: sample_site,
+      physical_sample_type: physical_sample_type,
+      general_sample_pathology: general_sample_pathology,
+      tumor_sample_origin: tumor_sample_origin,
+      summarized_sample_type: summarized_sample_type,
+      specific_sample_pathology: specific_sample_pathology,
+      date_of_sample_collection: date_of_sample_collection,
+      tumor_grade: tumor_grade,
+      sample_chronology: sample_chronology,
+      percentage_tumor: percentage_tumor,
+      necropsy_sample: necropsy_sample,
+      sample_preservation: sample_preservation,
+      comment: comment,
+      individual_id: individual_id,
+      patient_age_at_enrollment: patient_age_at_enrollment,
+      sex: sex,
+      neutered_indicator: neutered_indicator,
+      weight: weight,
+      primary_disease_site: primary_disease_site,
+      stage_of_disease: stage_of_disease,
+      date_of_diagnosis: date_of_diagnosis,
+      histology_cytopathology: histology_cytopathology,
+      histological_grade: histological_grade,
+      best_response: best_response,
+      pathology_report: pathology_report,
+      treatment_data: treatment_data,
+      follow_up_data: follow_up_data,
+      concurrent_disease: concurrent_disease,
+      concurrent_disease_type: concurrent_disease_type,
+      cohort_description: cohort_description,
+      arm: arm,
+      other_cases: other_cases
+    }
+    ORDER BY CASE $order_by
+      WHEN 'file_name' THEN file_name
+      WHEN 'file_type' THEN file_type
+      WHEN 'association' THEN association
+      WHEN 'file_description' THEN file_description
+      WHEN 'file_format' THEN file_format
+      WHEN 'file_size' THEN file_size
+      WHEN 'case_id' THEN case_id
+      WHEN 'breed' THEN breed
+      WHEN 'diagnosis' THEN diagnosis
+      WHEN 'study_code' THEN study_code
+      WHEN 'file_uuid' THEN file_uuid
+      WHEN 'access_file' THEN (CASE file_size > 12000000 WHEN TRUE THEN 1 ELSE 0 END)
+    ELSE file_name END DESC
+  """, passThrough: true)
+
+  sampleOverview(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = ""): [SampleOverview] @cypher(statement: """
+    MATCH (s:sample)
+      WHERE ($sample_ids = [""] OR $sample_ids IS NULL OR s.sample_id IN $sample_ids)
+    OPTIONAL MATCH (s)-[:of_case]->(c:case)
+    WITH s, c
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
+    OPTIONAL MATCH (c)<-[:of_case]-(d:diagnosis)
+    OPTIONAL MATCH (f:file)-[:of_sample]->(s)
+    OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+    OPTIONAL MATCH (c)-->(co:cohort)
+    OPTIONAL MATCH (co)-->(a:study_arm)
+    WITH
+      s.sample_id as sample_id,
+      c.case_id as case_id,
+      demo.breed as breed,
+      d.disease_term as diagnosis,
+      s.sample_site as sample_site,
+      s.summarized_sample_type as sample_type,
+      s.specific_sample_pathology as sample_pathology,
+      s.tumor_grade as tumor_grade,
+      s.sample_chronology as sample_chronology,
+      s.percentage_tumor as percentage_tumor,
+      s.necropsy_sample as necropsy_sample,
+      s.sample_preservation as sample_preservation,
+      collect(DISTINCT(f.uuid)) AS files,
+      s.physical_sample_type as physical_sample_type,
+      s.general_sample_pathology as general_sample_pathology,
+      s.tumor_sample_origin as tumor_sample_origin,
+      s.comment as comment,
+      collect(DISTINCT o.case_id) AS other_cases,
+      demo.patient_age_at_enrollment AS patient_age_at_enrollment,
+      demo.sex AS sex,
+      demo.neutered_indicator AS neutered_indicator,
+      demo.weight as weight,
+      d.primary_disease_site as primary_disease_site,
+      d.stage_of_disease as stage_of_disease,
+      d.date_of_diagnosis as date_of_diagnosis,
+      d.histology_cytopathology as histology_cytopathology,
+      d.histological_grade as histological_grade,
+      d.best_response as best_response,
+      d.pathology_report as pathology_report,
+      d.treatment_data as treatment_data,
+      d.follow_up_data as follow_up_data,
+      d.concurrent_disease as concurrent_disease,
+      d.concurrent_disease_type as concurrent_disease_type,
+      co.cohort_description as cohort_description,
+      a.arm as arm
+    RETURN{
+      sample_id: sample_id,
+      case_id: case_id,
+      breed: breed,
+      diagnosis: diagnosis,
+      sample_site: sample_site,
+      sample_type: sample_type,
+      sample_pathology: sample_pathology,
+      tumor_grade: tumor_grade,
+      sample_chronology: sample_chronology,
+      percentage_tumor: percentage_tumor,
+      necropsy_sample: necropsy_sample,
+      sample_preservation: sample_preservation,
+      files: files,
+      physical_sample_type: physical_sample_type,
+      general_sample_pathology: general_sample_pathology,
+      tumor_sample_origin: tumor_sample_origin,
+      comment: comment,
+      other_cases: other_cases,
+      patient_age_at_enrollment: patient_age_at_enrollment,
+      sex: sex,
+      neutered_indicator: neutered_indicator,
+      weight: weight,
+      primary_disease_site: primary_disease_site,
+      stage_of_disease: stage_of_disease,
+      date_of_diagnosis: date_of_diagnosis,
+      histology_cytopathology: histology_cytopathology,
+      histological_grade: histological_grade,
+      best_response: best_response,
+      pathology_report: pathology_report,
+      treatment_data: treatment_data,
+      follow_up_data: follow_up_data,
+      concurrent_disease: concurrent_disease,
+      concurrent_disease_type: concurrent_disease_type,
+      cohort_description: cohort_description,
+      arm: arm
+    }
+    ORDER BY CASE $order_by
+        WHEN 'sample_id' THEN sample_id
+        WHEN 'case_id' THEN case_id
+        WHEN 'breed' THEN breed
+        WHEN 'diagnosis' THEN diagnosis
+        WHEN 'sample_site' THEN sample_site
+        WHEN 'sample_type' THEN sample_type
+        WHEN 'sample_pathology' THEN sample_pathology
+        WHEN 'tumor_grade' THEN tumor_grade
+        WHEN 'sample_chronology' THEN sample_chronology
+        WHEN 'percentage_tumor' THEN percentage_tumor
+        WHEN 'necropsy_sample' THEN necropsy_sample
+        WHEN 'sample_preservation' THEN sample_preservation
+        ELSE sample_id END
+  """, passThrough: true)
+
+  sampleOverviewDesc(case_ids: [String] = [""], sample_ids: [String] = [""], order_by: String = ""): [SampleOverview] @cypher(statement: """
+    MATCH (s:sample)
+      WHERE ($sample_ids = [""] OR $sample_ids IS NULL OR s.sample_id IN $sample_ids)
+    OPTIONAL MATCH (s)-[:of_case]->(c:case)
+    WITH s, c
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
+    OPTIONAL MATCH (c)<-[:of_case]-(d:diagnosis)
+    OPTIONAL MATCH (f:file)-[:of_sample]->(s)
+    WITH
+      s.sample_id as sample_id,
+      c.case_id as case_id,
+      demo.breed as breed,
+      d.disease_term as diagnosis,
+      s.sample_site as sample_site,
+      s.summarized_sample_type as sample_type,
+      s.specific_sample_pathology as sample_pathology,
+      s.tumor_grade as tumor_grade,
+      s.sample_chronology as sample_chronology,
+      s.percentage_tumor as percentage_tumor,
+      s.necropsy_sample as necropsy_sample,
+      s.sample_preservation as sample_preservation,
+      collect(DISTINCT(f.uuid)) AS files
+    RETURN{
+      sample_id: sample_id,
+      case_id: case_id,
+      breed: breed,
+      diagnosis: diagnosis,
+      sample_site: sample_site,
+      sample_type: sample_type,
+      sample_pathology: sample_pathology,
+      tumor_grade: tumor_grade,
+      sample_chronology: sample_chronology,
+      percentage_tumor: percentage_tumor,
+      necropsy_sample: necropsy_sample,
+      sample_preservation: sample_preservation,
+      files: files
+    }
+    ORDER BY CASE $order_by
+        WHEN 'sample_id' THEN sample_id
+        WHEN 'case_id' THEN case_id
+        WHEN 'breed' THEN breed
+        WHEN 'diagnosis' THEN diagnosis
+        WHEN 'sample_site' THEN sample_site
+        WHEN 'sample_type' THEN sample_type
+        WHEN 'sample_pathology' THEN sample_pathology
+        WHEN 'tumor_grade' THEN tumor_grade
+        WHEN 'sample_chronology' THEN sample_chronology
+        WHEN 'percentage_tumor' THEN percentage_tumor
+        WHEN 'necropsy_sample' THEN necropsy_sample
+        WHEN 'sample_preservation' THEN sample_preservation
+        ELSE sample_id END DESC
+  """, passThrough: true)
+
+  fileIdsFromFileName(file_name: [String] = [""], order_by: String ="file_name"): [FileOverview] @cypher(statement: """
+    MATCH (f:file)
+      WHERE ($file_name = [""] OR $file_name IS NULL OR f.file_name IN $file_name)
+    WITH
+      f.file_name AS file_name,
+      f.uuid AS file_uuid
+    RETURN{
+      file_name: file_name,
+      file_uuid: file_uuid
+    }
+    ORDER BY CASE $order_by
+      WHEN 'file_name' THEN file_name
+      WHEN 'file_uuid' THEN file_uuid
+      ELSE file_name END
+  """, passThrough: true)
+
+  fileIdsFromFileNameDesc(file_name: [String] = [""], order_by: String ="file_name"): [FileOverview] @cypher(statement: """
+    MATCH (f:file)
+      WHERE ($file_name = [""] OR $file_name IS NULL OR f.file_name IN $file_name)
+    WITH
+      f.file_name AS file_name,
+      f.uuid AS file_uuid
+    RETURN{
+      file_name: file_name,
+      file_uuid: file_uuid
+    }
+    ORDER BY CASE $order_by
+      WHEN 'file_name' THEN file_name
+      WHEN 'file_uuid' THEN file_uuid
+      ELSE file_name END DESC
+  """, passThrough: true)
+
+  unifiedViewData(case_ids: [String] = [""]): UnifiedCounts @cypher(statement: """
+    MATCH (c:case)
+      WHERE ($case_ids = [""] OR $case_ids IS NULL OR c.case_id IN $case_ids)
+    OPTIONAL MATCH (s:study)<--(c)
+    OPTIONAL MATCH (f:file)-[*]->(c)
+    OPTIONAL MATCH (samp:sample)-->(c)
+    OPTIONAL MATCH (a:aliquot)-[*]->(c)
+    OPTIONAL MATCH (c)-[:member_of]->(sd:study)
+    OPTIONAL MATCH (sf:file)-->(sd)
+    OPTIONAL MATCH (s)-[:member_of]->(p: program)
+    WITH a, s, c, f, samp, sf, p
+    RETURN{
+      numberOfStudies: COUNT(DISTINCT s),
+      numberOfCases: COUNT(DISTINCT c),
+      numberOfFiles: COUNT(DISTINCT f) + COUNT(DISTINCT sf),
+      numberOfSamples: COUNT(DISTINCT samp),
+      numberOfAliquots: COUNT(DISTINCT a),
+      numberOfStudyFiles: COUNT(DISTINCT sf),
+      numberOfPrograms: COUNT(DISTINCT p),
+      volumeOfData: SUM(f.file_size)
+    }
+  """, passThrough: true)
+
+  studySampleSiteCount(study_codes: [String]): [GroupCount] @cypher(statement: """
+    MATCH (s:study)
+      WHERE s.clinical_study_designation in $study_codes OR s.accession_id in $study_codes
+    OPTIONAL MATCH (c:case) --> (s)
+    OPTIONAL MATCH (c) <-- (samp: sample)
+    WITH DISTINCT(samp.sample_site) AS group, COUNT(DISTINCT samp) AS counts where counts > 0
+    RETURN {
+      group: group,
+      count: counts
+   }
+   ORDER BY group
+  """, passThrough: true)
+
+  studySampleTypeCount(study_codes: [String]): [GroupCount] @cypher(statement: """
+    MATCH (s:study)
+      WHERE s.clinical_study_designation in $study_codes OR s.accession_id in $study_codes
+    OPTIONAL MATCH (c:case) --> (s)
+    OPTIONAL MATCH (c) <-- (samp: sample)
+    WITH DISTINCT(samp.summarized_sample_type) AS group, COUNT(DISTINCT samp) AS counts where counts > 0
+    RETURN {
+      group: group,
+      count: counts
+   }
+   ORDER BY group
+  """, passThrough: true)
+
+  studySamplePathologyCount(study_codes: [String]): [GroupCount] @cypher(statement: """
+    MATCH (s:study)
+      WHERE s.clinical_study_designation in $study_codes OR s.accession_id in $study_codes
+    OPTIONAL MATCH (c:case) --> (s)
+    OPTIONAL MATCH (c) <-- (samp: sample)
+    WITH DISTINCT(samp.specific_sample_pathology) AS group, COUNT(DISTINCT samp) AS counts where counts > 0
+    RETURN {
+      group: group,
+      count: counts
+   }
+   ORDER BY group
+  """, passThrough: true)
+}

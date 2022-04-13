@@ -7,10 +7,7 @@ import gov.nih.nci.bento.config.ConfigurationDAO;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.constants.Const.BENTO_FIELDS;
 import gov.nih.nci.bento.constants.Const.BENTO_INDEX;
-import gov.nih.nci.bento.search.query.filter.AggregationFilter;
-import gov.nih.nci.bento.search.query.filter.NestedFilter;
-import gov.nih.nci.bento.search.query.filter.RangeFilter;
-import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
+import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.service.ESServiceImpl;
 import org.elasticsearch.action.search.MultiSearchRequest;
@@ -182,6 +179,7 @@ public class BentoFilterTest {
     }
 
     @Test
+    // TODO null or empty string
     public void findSubjectIdsInList_Test() throws IOException {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         builder.query(QueryBuilders.matchAllQuery());
@@ -190,7 +188,10 @@ public class BentoFilterTest {
         // Set Filter
         BoolQueryBuilder bool = new BoolQueryBuilder();
         bool.should(
-                QueryBuilders.termsQuery(BENTO_FIELDS.SUBJECT_ID, List.of("BENTO-CASE-9971167", "BENTO-CASE-7356713"))
+                QueryBuilders.wildcardQuery(BENTO_FIELDS.SUBJECT_ID, "BenTO-CASE-9971167").caseInsensitive(true)
+        );
+        bool.should(
+                QueryBuilders.wildcardQuery(BENTO_FIELDS.SUBJECT_ID, "bENTO-CASE-7356713").caseInsensitive(true)
         );
         builder.query(bool);
 
@@ -207,6 +208,35 @@ public class BentoFilterTest {
         assertThat(result.get(0), hasKey(BENTO_FIELDS.SUBJECT_ID));
         // Check Result as expected size
         assertThat(result.size(), equalTo(2));
+    }
+
+    @Test
+    // Exception cases; If all fields are empty Strings, return all values
+    public void getAllDataCases() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put(BENTO_FIELDS.FILE_NAME, List.of(""));
+        args.put(BENTO_FIELDS.SUBJECT_ID, List.of(""));
+        args.put(BENTO_FIELDS.SAMPLE_ID, List.of(""));
+        Set<String> conditionFieldSet = Set.of(BENTO_FIELDS.SUBJECT_ID, BENTO_FIELDS.FILE_NAME, BENTO_FIELDS.SAMPLE_ID);
+
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(BENTO_INDEX.SUBJECTS)
+                                .source(new DefaultFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .returnAllFields(conditionFieldSet)
+                                                .build())
+                                        .getSourceFilter()))
+                        .typeMapper(typeMapper.getQueryResult(Set.of(BENTO_FIELDS.SUBJECT_ID))).build()
+        );
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        QueryResult test01Result = (QueryResult) result.get("TEST01");
+        assertThat(test01Result.getTotalHits(), greaterThan(0));
+        assertThat(test01Result.getSearchHits().size(), equalTo(test01Result.getTotalHits()));
+
     }
 
     @Test

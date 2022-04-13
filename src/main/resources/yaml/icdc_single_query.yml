@@ -62,60 +62,64 @@
 # Detailed Explanation
   # alternativeSort: sort desired field alternatively, especially sorting texts containing number
 query:
-  - name: subjectOverview
+  - name: numberOfStudies
+#    todo needs filter
     index:
-      - subjects
+      - studies
     filterType:
-      type: table
-      defaultSortField: subject_id_num
-      # Declare alternative sort: key, value
-      alternativeSort:
-        subject_id: subject_id_num
-    resultType: default
-  - name: sampleOverview
+      # Get total number of documents in ES index
+      selectedField: clinical_study_designation
+      type: number_of_docs
+    resultType: int_total_count
+  - name: numberOfCases
+    #    todo needs filter
+    index:
+      - cases
+    filterType:
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count
+  - name: numberOfSamples
+    #    todo needs filter
     index:
       - samples
     filterType:
-      type: table
-      defaultSortField: sample_id_num
-      # Declare alternative sort: key, value
-      alternativeSort:
-        sample_id: sample_id_num
-        subject_id: subject_id_num
-    resultType: default
-  - name: fileOverview
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count
+  - name: numberOfFiles
     index:
       - files
     filterType:
-      type: table
-      defaultSortField: file_name
-    resultType: default
-  - name: fileIDsFromList
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count
+#    TODO SKIP
+  - name: numberOfStudyFiles
     index:
       - files
     filterType:
-      type: default
-#      selectedField: file_id
-      selectedField: file_ids
-      # Return All Documents If Fields Below Contain Empty String
-      returnAllFields:
-        - subject_ids
-        - sample_ids
-        - file_names
-    # Return as List<String>
-    resultType: str_list
-  - name: filesInList
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count
+  - name: numberOfPrograms
     index:
-      - files
+      - program
     filterType:
-      type: table
-      defaultSortField: file_name
-    resultType: default
-  - name: findSubjectIdsInList
-    index:
-      - subjects
-    filterType:
-      type: default
-      caseInSensitive: true
-      size: 10000
-    resultType: default
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count
+#  - name: numberOfAliquots
+#    index:
+#      - aliquot
+#    filterType:
+#      # Get total number of documents in ES index
+#      type: number_of_docs
+#    resultType: int_total_count
+#  - name: volumeOfData
+#    index:
+#      - aliquot
+#    filterType:
+#      # Get total number of documents in ES index
+#      type: number_of_docs
+#    resultType: int_total_count

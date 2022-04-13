@@ -92,12 +92,19 @@ public class Const {
         public static final String COUNT = "count";
         public static final String GROUP = "group";
         public static final String SEX = "sex";
-        public static final String SAMPLE_ID = "sample_id";
+        public static final String SAMPLE_ID = "sample_ids";
         public static final String DISEASE_TERM = "disease_term";
         public static final String BREED = "breed";
         public static final String NEUTERED_INDICATOR = "neutered_indicator";
         public static final String STAGE_OF_DISEASE = "stage_of_disease";
         public static final String PRIMARY_DISEASE_SITE = "primary_disease_site";
+        public static final String PROGRAM_ACRONYM = "program_acronym";
+        public static final String NEUTERED_STATUS = "neutered_status";
+        public static final String DIAGNOSIS = "diagnosis";
+        public static final String DISEASE_SITE = "disease_site";
+        public static final String RESPONSE_TO_TREATMENT = "response_to_treatment";
+        public static final String CANINE_INDIVIDUAL = "canine_individual";
+        public static final String FILTER_REGISTER_CLINICAL_MATCH = "filter_register_clinical_match";
     }
 
     public static class ICDC_INDEX {

@@ -1,9 +1,9 @@
 ---
-- name: install aws collection
-  command: ansible-galaxy collection install {{item}}
-  loop:
-    -  amazon.aws
-    -  community.aws
+#install aws collection
+- name: install ansible collections
+  include_role:
+    name: common
+    tasks_from: collections
 
 - name: get db ip
   include_tasks: neo4j-ip.yml

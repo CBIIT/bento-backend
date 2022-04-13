@@ -10,7 +10,7 @@
         name: ctdc
         tasks_from: deploy-frontend
       vars:
-        frontend_ecs_cluster_name: ctdc2-dev
+        project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3
 
     - name: deploy stage for ctdc backend
@@ -18,5 +18,5 @@
         name: ctdc
         tasks_from: deploy-backend
       vars:
-        backend_ecs_cluster_name: ctdc2-dev
+        project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3

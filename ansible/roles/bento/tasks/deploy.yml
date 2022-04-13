@@ -1,11 +1,9 @@
 ---
 #install aws collection
-#- name: install ansible collections
-#  include_role:
-#    name: common
-#    tasks_from: collections
-- name: install aws collection
-  command: ansible-galaxy collection install 'community.aws:>=1.3.0'
+- name: install ansible collections
+  include_role:
+    name: common
+    tasks_from: collections
 
 - name: get db ip
   include_tasks: neo4j-ip.yml
@@ -36,43 +34,43 @@
       essential: true
       image: "{{ ecr_repo }}/{{ project }}-backend:{{bento_api_version}}"
       environment:
-        - name: NEO4J_URL
+        - name: "NEO4J_URL"
           value: bolt://{{ neo4j_ip }}:7687
-        - name: NEO4J_USER
+        - name: "NEO4J_USER"
           value: "{{ neo4j_user }}"
-        - name: NEO4J_PASSWORD
+        - name: "NEO4J_PASSWORD"
           value: "{{ neo4j_password }}"
-        - name: NEO4J_GRAPHQL_ENDPOINT
-          value: http://{{ neo4j_ip }}:7474/graphql/
-        - name: BENTO_API_VERSION
+        - name: "NEO4J_GRAPHQL_ENDPOINT"
+          value: "http://{{ neo4j_ip }}:7474/graphql/"
+        - name: "BENTO_API_VERSION"
           value: "{{bento_api_version}}"
-        - name: ES_HOST
+        - name: "ES_HOST"
           value: "{{es_host}}"
-        - name: REDIS_ENABLE
+        - name: "REDIS_ENABLE"
           value: "{{ enable_redis }}"
-        - name: REDIS_USE_CLUSTER
+        - name: "REDIS_USE_CLUSTER"
           value: "{{ use_cluster }}"
-        - name: REDIS_HOST
+        - name: "REDIS_HOST"
           value: "{{ redis_host[tier] }}"
-        - name: REDIS_PORT
+        - name: "REDIS_PORT"
           value: "{{ redis_port }}"
-        - name: REDIS_FILTER_ENABLE
+        - name: "REDIS_FILTER_ENABLE"
           value: "false"
-        - name: ES_FILTER_ENABLED
+        - name: "ES_FILTER_ENABLED"
           value: "{{ enable_es_filter }}"
-        - name: NEW_RELIC_LICENSE_KEY
+        - name: "NEW_RELIC_LICENSE_KEY"
           value: "{{ newrelic_license_key }}"
-        - name: NEW_RELIC_APP_NAME
+        - name: "NEW_RELIC_APP_NAME"
           value: "{{ app_name }}-backend"
-        - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+        - name: "NEW_RELIC_DISTRIBUTED_TRACING_ENABLED"
           value: "true"
-        - name: NEW_RELIC_HOST
+        - name: "NEW_RELIC_HOST"
           value: "gov-collector.newrelic.com"
-        - name: NEW_RELIC_LOG_FILE_NAME
+        - name: "NEW_RELIC_LOG_FILE_NAME"
           value: "STDOUT"
-        - name: NEW_RELIC_LABELS
+        - name: "NEW_RELIC_LABELS"
           value: "Project:{{ project }};Environment:{{ tier }}"
-        - name: JAVA_OPTS
+        - name: "JAVA_OPTS"
           value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
       entryPoint:
         - "/bin/ash"
@@ -84,7 +82,7 @@
       logConfiguration:
         logDriver: syslog
         options:
-          syslog-address: tcp://{{ syslog_host }}:514
+          syslog-address: "tcp://{{ syslog_host }}:514"
           tag: "{{ app_name }}-backend"
           syslog-format: "rfc5424micro"
     network_mode: bridge

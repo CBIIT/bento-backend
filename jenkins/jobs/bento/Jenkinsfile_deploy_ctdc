@@ -266,7 +266,7 @@ pipeline {
 					enable_es_filter: "${params.Enable_ES_Filter}",
                     ],
 					colorized: true,
-					extras: -vvv)
+					extras: '-vvv')
  			}
 
 		  }

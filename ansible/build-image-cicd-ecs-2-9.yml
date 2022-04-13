@@ -1,0 +1,13 @@
+---
+- name: build cicd jenkins agent image
+  hosts: all
+  connection: local
+  #become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: build cicd image
+      include_role:
+        name: build-image-bento
+        tasks_from: cicd-ecs-2-9
+        vars_from: bento

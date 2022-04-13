@@ -12,3 +12,4 @@
         vars_from: bento
       vars:
         data_bucket: nci-cbiit-ctdc-{{tier}}
+        ansible_python_interpreter: /usr/bin/python3

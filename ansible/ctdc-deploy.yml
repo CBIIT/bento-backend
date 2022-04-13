@@ -20,4 +20,4 @@
       vars:
         project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3
-        database_name: "{{ project_name }}-{{tier}}-neo4j"
+        #database_name: "{{ project_name }}-{{tier}}-neo4j"

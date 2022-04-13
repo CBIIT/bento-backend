@@ -9,4 +9,4 @@ frontend_container_port: 80
 frontend_container_memory: 512
 frontend_container_cpu: 256
 frontend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
-frontend_ecs_cluster_name: "{{ project_name }}-{{tier}}-ecs"
+frontend_ecs_cluster_name: "{{ project_name }}-{{tier}}"

@@ -28,7 +28,7 @@ backend_container_port: 8080
 backend_container_memory: 1024
 backend_container_cpu: 512
 backend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
-backend_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"
+backend_ecs_cluster_name: "{{project_name}}-{{tier}}"
 
 # redis
 enable_redis: false

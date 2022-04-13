@@ -20,7 +20,7 @@
   docker_image:
     build:
       path: "{{ item | dirname }}"
-      dockerfile: "jenkins-agent-microservices-ecs"
+      dockerfile: "jenkins-agent-microservices-ecs-2.9"
       pull: yes
       nocache: yes
     name: "{{ dockerhub_path }}/cicd-ansible_2.9"

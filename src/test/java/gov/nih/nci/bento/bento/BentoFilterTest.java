@@ -44,9 +44,9 @@ public class BentoFilterTest {
 
     // Nested File Type
     @Test
-    public void nestedFileTypeSearch_Test() throws IOException {
+    public void nestedFilterFileTypeSearch_Test() throws IOException {
         Map<String, Object> args = new HashMap<>();
-        args.put("studies", List.of("B: RS 11-25, randomized to endocrine therapy alone"));
+        args.put("file_type", List.of("text"));
         List<MultipleRequests> requests = List.of(
                 MultipleRequests.builder()
                         .name("TEST01")
@@ -57,6 +57,7 @@ public class BentoFilterTest {
                                                 .args(args)
                                                 .selectedField("file_type")
                                                 .nestedPath("file_info")
+                                                .isExcludeFilter(true)
                                                 // List filter fields
                                                 .nestedFields(Set.of("file_type"))
                                                 .isNestedFilter(true)

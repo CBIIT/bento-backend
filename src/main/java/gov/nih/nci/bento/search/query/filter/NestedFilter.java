@@ -10,7 +10,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ public class NestedFilter extends AbstractFilter {
     private QueryBuilder getNestedQuery(FilterParam filterParam) {
 
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        if (filterParam.isNestedFilter()) {
+        if (filterParam.isNestedFilter() && !filterParam.isExcludeFilter()) {
             // Check if nested fields included
             // Nested Filter Fields Can be Multiple For Total Aggregation
             Set<String> nestedFields = filterParam.getNestedFields();

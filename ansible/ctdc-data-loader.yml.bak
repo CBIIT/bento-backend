@@ -1,9 +1,9 @@
 ---
 - name: load data to neo4j db
-  hosts: all
+  hosts: loader
   connection: local
-  become: yes
   gather_facts: yes
+  become: yes
     
   tasks:
     - name: perform data loading
@@ -11,5 +11,6 @@
         name: data-processing
         tasks_from: ctdc-data-loader
       vars:
-        data_bucket: bento-ctdc-metadata
+        # data_bucket: nci-cbiit-ctdc-{{tier}}
+        data_bucket: nci-cbiit-ctdc-dev
         ansible_python_interpreter: /usr/bin/python2.7

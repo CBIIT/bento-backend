@@ -1,0 +1,135 @@
+pipeline {
+	agent {
+		node {
+			label 'data-loader'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'Neo4j-v4', 
+        name: 'Tag', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa')
+    string(defaultValue: "", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
+    extendedChoice( 
+        defaultValue: 'no', 
+        name: 'WipeDB', 
+        description: 'Choose yes to wipe DB',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'no,yes',
+        type: 'PT_RADIO')
+    extendedChoice( 
+        defaultValue: 'no', 
+        name: 'CheatMode', 
+        description: 'Bypass Data Validation',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'no,yes',
+        type: 'PT_RADIO')
+    extendedChoice( 
+        defaultValue: 'false', 
+        name: 'SplitTransactions', 
+        description: 'Choose true to the Split Transactions',
+        quoteValue: false,
+        multiSelectDelimiter: ',',
+        value: 'false,true',
+        type: 'PT_SINGLE_SELECT')   
+  }
+  
+  options {
+    ansiColor('xterm')
+  }
+  
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  
+  stages{
+
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Tag}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+  				recursiveSubmodules: true,
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+  				sh 'git submodule update --init'
+  			
+			dir('icdc-devops'){
+  				//git branch: 'master',
+                git branch: 'ctdc_fargate',
+   				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+        
+  			dir('ctdc-model'){
+				git branch: 'master',
+				url: 'https://github.com/CBIIT/ctdc-model'
+  			}
+  		}
+  	}
+    
+	stage('set-environment'){
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: 'ctdc_neo4j_user', passwordVariable: 'NEO4J_PASS', usernameVariable: 'NEO4J_USER')]) {
+                  env.NEO4J_IP        = "${NEO4J_CTDC_QA_IP}"
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${NEO4J_PASS}"
+				  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "ctdc"
+                  env.SPLIT           = "${params.SplitTransactions}"
+                }
+              break
+              default:
+                println "Select valid option"
+              break
+              }
+          }
+        }
+    }
+	
+  	stage('load-data'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 					ansiblePlaybook( 
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-data-loader.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            			colorized: true) 
+ 			}
+ 		}
+    }
+
+  }
+
+  post {
+
+    cleanup {
+	  cleanWs()
+    }
+
+  }
+
+}

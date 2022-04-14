@@ -10,6 +10,7 @@
       include_role:
         name: data-processing
         tasks_from: ctdc-data-loader
+        vars_from: ctdc
       vars:
         data_bucket: bento-ctdc-metadata
         ansible_python_interpreter: /usr/bin/python2.7

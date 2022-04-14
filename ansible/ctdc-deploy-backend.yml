@@ -12,11 +12,3 @@
       vars:
         project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3
-
-    - name: deploy stage for ctdc frontend
-      include_role:
-        name: ctdc
-        tasks_from: deploy-frontend
-      vars:
-        project_name: ctdc
-        ansible_python_interpreter: /usr/bin/python3

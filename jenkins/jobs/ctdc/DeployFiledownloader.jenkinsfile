@@ -42,10 +42,6 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa' )
-	booleanParam(
-		defaultValue: false,
-		description: 'Reload Elasticsearch data',
-		name: 'Reload_ES_Data')
 
 //	gitParameter(branchFilter: 'origin/(.*)', 
 //        defaultValue: 'integration', 
@@ -155,10 +151,8 @@ pipeline {
 	  environment {
 	   SLACK_URL = "${SLACK_URL}"
        TIER = "${params.Environment}"
-       FE_VERSION = "${params.Frontend_Image}"
-       BE_VERSION = "${params.Backend_Image}"
+       DOWNLOADER_VERSION = "${params.Filedownloader_Image}"
 	   SLACK_CHANNEL = "#system-alerts"
-	   URL_DOMAIN = "bento-tools.org"
       }
   		steps{
 		  node('cicd_microservice') {
@@ -179,7 +173,7 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-filedownloader.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					colorized: true,
 					extras: '-vvv')

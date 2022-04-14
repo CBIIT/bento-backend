@@ -44,6 +44,37 @@ public class BentoFilterTest {
 
     // Nested File Type
     @Test
+    // TODO better way to test filter in nested search
+    public void nestedFilterAssociationSearch_Test() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put("file_type", List.of("bai"));
+//        args.put("file_type", List.of("text"));
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField("association")
+                                                .nestedPath("file_info")
+                                                .isExcludeFilter(true)
+                                                // List filter fields
+                                                .nestedFields(Set.of("association", "file_type"))
+                                                .isNestedFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getNestedAggregate()).build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        QueryResult queryResult = (QueryResult) result.get("TEST01");
+        assertThat(queryResult.getSearchHits().size(), greaterThan(0));
+        assertThat(queryResult.getTotalHits(), greaterThan(0));
+    }
+
+    @Test
     public void nestedFilterFileTypeSearch_Test() throws IOException {
         Map<String, Object> args = new HashMap<>();
         args.put("file_type", List.of("text"));

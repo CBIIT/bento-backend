@@ -263,6 +263,7 @@ groups:
         selectedField: tissue_type
         nestedPath: sample_info
         nestedFields:
+          - composition
           - tissue_type
       resultType: nested_list
     - name: subjectCountByTissueComposition
@@ -283,6 +284,7 @@ groups:
         nestedPath: sample_info
         nestedFields:
           - composition
+          - tissue_type
       resultType: nested_list
     - name: subjectCountByFileAssociation
       index:
@@ -291,8 +293,6 @@ groups:
         type: nested
         selectedField: association
         nestedPath: file_info
-        nestedFields:
-          - file_type
       resultType: nested_list
     - name: filterSubjectCountByFileAssociation
       index:
@@ -304,6 +304,7 @@ groups:
         nestedPath: file_info
         nestedFields:
           - file_type
+          - association
       resultType: nested_list
     - name: subjectCountByFileType
       index:
@@ -323,6 +324,7 @@ groups:
         nestedPath: file_info
         nestedFields:
           - file_type
+          - association
       resultType: nested_list
     - name: armsByPrograms
       index:

@@ -1,11 +1,15 @@
 ---
+- name: show project
+  debug:
+    msg: "{{ project }}-{{ tier }}-{{ s3_folder }}-{{ wipe_db }}-{{ cheat_mode }}"
+
 - name: gather instance facts
   ec2_instance_facts:
     region: us-east-1
     filters:
-      "tag:Name": "{{project}}-{{tier}}-neo4j-4"
+      "tag:Name": "{{ project }}-{{ tier }}-neo4j-4"
       "instance-state-name": running
-      "tag:Environment": "{{tier}}"
+      "tag:Environment": "{{ tier }}"
   register: neo4j
 
 - name: set instance name
@@ -14,11 +18,7 @@
 
 - name: show db 
   debug:
-    msg: "{{neo4j_ip}}"
-
-- name: show project
-  debug:
-    msg: "{{project}}{{s3_folder}}{{wipe_db}}{{cheat_mode}}"
+    msg: "{{ neo4j_ip }}"
 
 - name: set model files location for ctdc
   set_fact:

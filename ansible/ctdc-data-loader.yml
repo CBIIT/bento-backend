@@ -10,7 +10,6 @@
       include_role:
         name: ctdc
         tasks_from: dataloader-ip
-        vars_from: dataloader
 
     - name: perform data loading
       include_role:

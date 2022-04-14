@@ -42,6 +42,35 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
+    // Nested File Type
+    @Test
+    public void nestedFileTypeSearch_Test() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put("studies", List.of("B: RS 11-25, randomized to endocrine therapy alone"));
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField("file_type")
+                                                .nestedPath("file_info")
+                                                // List filter fields
+                                                .nestedFields(Set.of("file_type"))
+                                                .isNestedFilter(true)
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getNestedAggregate()).build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        QueryResult queryResult = (QueryResult) result.get("TEST01");
+        assertThat(queryResult.getSearchHits().size(), greaterThan(0));
+        assertThat(queryResult.getTotalHits(), greaterThan(0));
+    }
+
 
     @Test
     public void nestedSearch_Test() throws IOException {
@@ -208,6 +237,11 @@ public class BentoFilterTest {
         assertThat(result.get(0), hasKey(BENTO_FIELDS.SUBJECT_ID));
         // Check Result as expected size
         assertThat(result.size(), equalTo(2));
+
+
+
+
+
     }
 
     @Test

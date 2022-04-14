@@ -53,9 +53,9 @@ groups:
         type: nested
         selectedField: file_ids
 #        selectedField: file_id
+        nestedPath: file_info
         nestedFields:
           - file_type
-        nestedPath: file_info
       resultType: nested_total
     - name: subjectCountByProgram
       index:
@@ -307,12 +307,14 @@ groups:
       resultType: nested_list
     - name: filterSubjectCountByFileType
       index:
-        - files
+        - subjects
       filterType:
-        type: aggregation
+        type: nested
         selectedField: file_type
-        filter: true
-      resultType: aggregation
+        nestedPath: file_info
+        nestedFields:
+          - file_type
+      resultType: nested_list
     - name: armsByPrograms
       index:
         - subjects

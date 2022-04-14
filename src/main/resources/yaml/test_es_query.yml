@@ -156,7 +156,7 @@ query:
           "BENTO-CASE-16495", "BENTO-CASE-67043"
         ]
       },
-      "query": "query search($subject_ids: [String]) {\n  findSubjectIdsInList(subject_id: $subject_ids) {\n    subject_id\n    program_id\n    __typename\n  }\n}\n"
+      "query": "query search($subject_ids: [String]) {\n  findSubjectIdsInList(subject_ids: $subject_ids) {\n    subject_id\n    program_id\n    __typename\n  }\n}\n"
     }
   - name: Multi Global Search By IDs
     request: {
@@ -166,7 +166,17 @@ query:
           "BENTO-CASE-99932", "BENTO-CASE-67043"
         ]
       },
-      "query": "query search($subject_ids: [String]) {\n  fileIDsFromList(subject_id: $subject_ids)\n}\n"
+      "query": "query search($subject_ids: [String]) {\n  fileIDsFromList(subject_ids: $subject_ids)\n}\n"
+    }
+  - name: Get All Files
+    request: {
+      "operationName": "search",
+      "variables": {
+        "subject_ids": [ "" ],
+        "sample_ids": [ "" ],
+                     "file_names" = [ "" ]
+      },
+      "query": "query search($subject_ids: [String],$sample_ids: [String],$file_names: [String]) {\n  fileIDsFromList(subject_ids: $subject_ids,sample_ids: $sample_ids,file_names: $file_names)\n}\n"
     }
   - name: Global Search Program
     request: {

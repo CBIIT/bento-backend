@@ -41,9 +41,9 @@ public class NestedFilter extends AbstractFilter {
 
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
         if (filterParam.isNestedFilter()) {
-            // Get Arguments
             // Check if nested fields included
-            Set<String> nestedFields = filterParam.getNestedFields() !=null ? filterParam.getNestedFields() : new HashSet<>();
+            // Nested Filter Fields Can be Multiple For Total Aggregation
+            Set<String> nestedFields = filterParam.getNestedFields();
             filterParam.getArgs().forEach((k,v)->{
                 if (nestedFields.contains(k)) {
                     List<String> list = filterParam.getArgs().containsKey(k) ? (List<String>) filterParam.getArgs().get(k) : new ArrayList<>();

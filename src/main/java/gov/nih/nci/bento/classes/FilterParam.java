@@ -3,6 +3,7 @@ package gov.nih.nci.bento.classes;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class FilterParam {
         this.isRangeFilter = isRangeFilter;
         this.isNestedFilter = isNestedFilter;
         this.nestedPath = nestedPath;
-        this.nestedFields = nestedFields;
+        this.nestedFields = nestedFields != null ? nestedFields : new HashSet<>();
         this.caseInSensitive = caseInSensitive;
         this.size = size;
         this.returnAllFields = returnAllFields;

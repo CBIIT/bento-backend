@@ -27,6 +27,15 @@
           # type includes elements with term, match, and wildcard
     # Optional: optionalQuery
       # query: same rules applied as required above
+  # - nested
+    # Required: defaultSortField, query
+      # query
+        # Required: type, selectedField, nestedPath
+          # selectedField: declare a target field in aggregation search
+          # nestedPath: declare a root path in nested document
+    # Optional: nestedFields
+      # nestedFields: declare number of fields to search. Multiple fields
+      # on the purpose of total number of documents filtering multiple nested fields
 
 # Return Type
   # - default @return List<Map<String, Object>>
@@ -41,8 +50,11 @@
     # ex) {type: about, page: XXXX, title: XXXX, text, XXXX}
   # - global @return Map<String, Object>
     # ex) {result: {A: XX, B: X...}, count: 9999}
-  # - global_multi_models @Map<String, Object>
+  # - global_multi_models @return Map<String, Object>
     #  ex) {result: {A: XX, B: X...}, count: 9999}
+  # - global_multi_models @return Map<String, Object>
+  # - nested_list @return List<Map<String, Object>>
+  # - nested_total @return Integer
 
 # Highlight
   # Pre-requisite: Global Filter Type
@@ -58,6 +70,8 @@
   # aggregation <-> aggregation, int_total_aggregation, int_total_count
   # range <-> range
   # global <-> global, global_multi_models
+  # nested <-> nested_list, nested_total
+
 
 # Detailed Explanation
   # alternativeSort: sort desired field alternatively, especially sorting texts containing number

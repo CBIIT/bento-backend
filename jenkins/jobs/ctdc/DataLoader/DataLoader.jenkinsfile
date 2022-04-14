@@ -117,7 +117,8 @@ pipeline {
  					ansiblePlaybook( 
             			playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-data-loader.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            			colorized: true) 
+            			colorized: true,
+						extras: '-vvv') 
  			}
  		}
     }

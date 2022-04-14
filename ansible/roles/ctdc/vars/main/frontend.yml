@@ -10,3 +10,7 @@ frontend_container_memory: 512
 frontend_container_cpu: 256
 frontend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
 frontend_ecs_cluster_name: "{{ project_name }}-{{tier}}"
+
+# logging
+sumo_collector_endpoint: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.sumo_collector_endpoint', nested=true, region='us-east-1' ) }}"
+sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.sumo_collector_token_fe', nested=true, region='us-east-1' ) }}"

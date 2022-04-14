@@ -14,7 +14,7 @@
 - name: deploy ecs
   include_role:
     name: common
-    tasks_from: ecs
+    tasks_from: ecs-fluentbit
   vars:
     container_name: "{{ frontend_container_name }}"
     image_version: "{{ frontend_image_version }}"

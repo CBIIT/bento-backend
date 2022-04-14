@@ -6,6 +6,12 @@
   become: yes
 
   tasks:
+    #install aws collection
+    - name: install ansible collections
+      include_role:
+        name: ctdc
+        tasks_from: collections
+
     - name: get db ip
       include_role:
         name: common

@@ -14,12 +14,6 @@ pipeline {
         sortMode: 'ASCENDING_SMART', 
         tagFilter: '*', 
         useRepository: 'https://github.com/CBIIT/icdc-dataloader')
-     extendedChoice(
-            name: 'ProjectName',
-            defaultValue: 'ctdc',
-            description: 'Choose the environment to build',
-            type: 'PT_SINGLE_SELECT',
-            value: 'ctdc' )
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
@@ -95,7 +89,7 @@ pipeline {
             CHEAT_MODE = "${params.CheatMode}"
             SPLIT  = "${params.SplitTransactions}"
  			SLACK_URL = "${SLACK_URL}"
-            PROJECT_NAME = "${params.ProjectName}"
+            PROJECT_NAME = "ctdc"
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

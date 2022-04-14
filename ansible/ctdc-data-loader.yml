@@ -1,16 +1,23 @@
 ---
 - name: load data to neo4j db
-  hosts: all
+  hosts: loader
   connection: local
-  become: yes
   gather_facts: yes
-    
+  become: yes
+
   tasks:
+    - name: get db ip
+      include_role:
+        name: common
+        tasks_from: neo4j-ip
+
     - name: perform data loading
       include_role:
-        name: data-processing
-        tasks_from: ctdc-data-loader
-        vars_from: ctdc
+        name: common
+        tasks_from: data-loader
       vars:
-        data_bucket: bento-ctdc-metadata
+        model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
+        model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
+        property_file: "config/props-ctdc.yml"
+        bucket: bento-ctdc-metadata
         ansible_python_interpreter: /usr/bin/python2.7

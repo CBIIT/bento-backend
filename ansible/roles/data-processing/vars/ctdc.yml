@@ -8,5 +8,6 @@ s3_folder: "{{ lookup('env','S3_FOLDER') }}"
 wipe_db:  "{{ lookup('env','WIPE_DB') }}"
 cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
 split_transactions:  "{{ lookup('env','SPLIT')}}"
-project:  ctdc
+project: ctdc
+project_name: "{{ project }}"
 region: us-east-1

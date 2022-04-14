@@ -204,6 +204,7 @@ public class YamlQueryFactory {
                         FilterParam.builder()
                                 .args(param.getArgs())
                                 .isNestedFilter(true)
+                                .isExcludeFilter(filterType.isFilter())
                                 .selectedField(filterType.getSelectedField())
                                 .nestedPath(filterType.getNestedPath())
                                 .nestedFields(filterType.getNestedFields())

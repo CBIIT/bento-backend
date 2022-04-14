@@ -168,9 +168,9 @@ public class BentoAutoConfiguration {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilterType().getAlternativeSort() == null) return orderKey;
-        Map<String, String> alternativeSortMap = query.getFilterType().getAlternativeSort();
-        return alternativeSortMap.getOrDefault(orderKey, "");
+        if (query.getFilterType().getPrioritySort() == null) return orderKey;
+        Map<String, String> prioritySortMap = query.getFilterType().getPrioritySort();
+        return prioritySortMap.getOrDefault(orderKey, "");
     }
 
     private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {

@@ -9,7 +9,7 @@
     # Required: selectedField
   # - table
     # Required: none
-    # Optional: defaultSortField, alternativeSort
+    # Optional: defaultSortField, prioritySort
   # - aggregation
     # Required: selectedField
     # Optional: filter
@@ -60,7 +60,7 @@
   # global <-> global, global_multi_models
 
 # Detailed Explanation
-  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
+  # prioritySort: sort desired field alternatively, especially sorting texts containing number
 query:
   - name: numberOfStudies
 #    todo needs filter

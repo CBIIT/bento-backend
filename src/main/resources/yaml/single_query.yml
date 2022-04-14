@@ -9,7 +9,7 @@
     # Required: selectedField
   # - table
     # Required: none
-    # Optional: defaultSortField, alternativeSort
+    # Optional: defaultSortField, prioritySort
   # - aggregation
     # Required: selectedField
     # Optional: filter
@@ -74,7 +74,7 @@
 
 
 # Detailed Explanation
-  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
+  # prioritySort: sort desired field alternatively, especially sorting texts containing number
 query:
   - name: subjectOverview
     index:
@@ -83,7 +83,7 @@ query:
       type: table
       defaultSortField: subject_id_num
       # Declare alternative sort: key, value
-      alternativeSort:
+      prioritySort:
         subject_id: subject_id_num
     resultType: default
   - name: sampleOverview
@@ -93,7 +93,7 @@ query:
       type: table
       defaultSortField: sample_id_num
       # Declare alternative sort: key, value
-      alternativeSort:
+      prioritySort:
         sample_id: sample_id_num
         subject_id: subject_id_num
     resultType: default
@@ -103,6 +103,9 @@ query:
     filterType:
       type: table
       defaultSortField: file_name
+      prioritySort:
+        sample_id: sample_id_num
+        subject_id: subject_id_num
     resultType: default
   - name: fileIDsFromList
     index:

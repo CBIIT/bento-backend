@@ -18,7 +18,7 @@ public class YamlFilterType {
     private boolean filter;
     private boolean caseInSensitive;
     private int size;
-    private Map<String, String> alternativeSort;
+    private Map<String, String> prioritySort;
     private Set<String> returnAllFields = new HashSet<>();
 
     // Global Query Sets

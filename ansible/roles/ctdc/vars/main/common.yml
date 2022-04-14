@@ -3,7 +3,7 @@
 
 date: "{{ansible_date_time.date}}"
 #db
-project_name: "{{project_name}}"
+project_name: "{{ lookup('env','PROJECT_NAME') }}"
 project: "{{project_name}}"
 database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 #auth

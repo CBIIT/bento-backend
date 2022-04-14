@@ -1,2 +1,3 @@
 project_name: "{{project_name}}"
 tier: "{{ lookup('env','TIER') }}"
+database_name: "{{ project_name }}-{{tier}}-neo4j-4"

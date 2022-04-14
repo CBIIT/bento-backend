@@ -6,16 +6,18 @@
   become: yes
 
   tasks:
-    #install aws collection
-    - name: install ansible collections
-      include_role:
-        name: ctdc
-        tasks_from: collections
+    - name: gather instance facts
+      ec2_instance_facts:
+        region: us-east-1
+        filters:
+          "tag:Name": "{{ project }}-{{ tier }}-neo4j-4"
+          "instance-state-name": running
+          "tag:Environment": "{{ tier }}"
+      register: neo4j
 
-    - name: get db ip
-      include_role:
-        name: common
-        tasks_from: neo4j-ip
+    - name: set instance name
+      set_fact:
+        neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
 
     - name: perform data loading
       include_role:

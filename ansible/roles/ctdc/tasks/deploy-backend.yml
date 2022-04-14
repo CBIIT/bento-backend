@@ -38,13 +38,13 @@
       - name: PROJECT
         value: "{{project_name}}"
       - name: NEO4J_URL
-        value: bolt://{{ neo4j_ip }}:7687
+        value: "bolt://{{ neo4j_ip }}:7687"
       - name: NEO4J_USER
         value: "{{ neo4j_user }}"
       - name: NEO4J_PASSWORD
         value: "{{ neo4j_password }}"
       - name: NEO4J_GRAPHQL_ENDPOINT
-        value: http://{{ neo4j_ip }}:7474/graphql/
+        value: "http://{{ neo4j_ip }}:7474/graphql/"
       - name: BENTO_API_VERSION
         value: "{{image_version}}"
       - name: ES_HOST

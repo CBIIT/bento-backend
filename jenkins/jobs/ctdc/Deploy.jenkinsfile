@@ -183,6 +183,7 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					colorized: true,
 					extras: '-vvv')
+				}
 					
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
@@ -191,7 +192,7 @@ pipeline {
 					colorized: true,
 					extras: '-vvv')
 					
- 			}
+				}
 
 		  }
  		}

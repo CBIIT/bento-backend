@@ -7,10 +7,15 @@
 
   tasks:
 
+    - name: update collections
+      include_role:
+        name: common
+        tasks_from: collections
+    
     - name: get db ip
       include_role:
-        name: ctdc
-        tasks_from: dataloader-ip
+        name: common
+        tasks_from: neo4j-ip
 
     - name: seed opensearch
       include_role:
@@ -18,7 +23,6 @@
         tasks_from: opensearch-loader
       vars:
         es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
-        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}-nbGV1D.neo4j_password', nested=true, region='us-east-1' ) }}"
         model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
         model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
         property_file: "config/props-ctdc.yml"

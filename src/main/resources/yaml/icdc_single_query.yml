@@ -62,6 +62,10 @@
 # Detailed Explanation
   # prioritySort: sort desired field alternatively, especially sorting texts containing number
 query:
+  #  numberOfStudyFiles: Int @cypher(statement: "MATCH (n:file)-->(sd:study) RETURN count (n)")
+  # TODO
+  #  volumeOfData: Float @cypher(statement: "MATCH (f:file) WITH DISTINCT f return sum(f.file_size)")
+
   - name: numberOfStudies
 #    todo needs filter
     index:
@@ -109,9 +113,18 @@ query:
       # Get total number of documents in ES index
       type: number_of_docs
     resultType: int_total_count
-#  - name: numberOfPrograms
+#    TODO
+#  - name: numberOfAliquots
 #    index:
-#      - program
+#      - aliquot
+#    filterType:
+#      # Get total number of documents in ES index
+#      type: number_of_docs
+#    resultType: int_total_count
+# TODO
+#  - name: volumeOfData
+#    index:
+#      - aliquot
 #    filterType:
 #      # Get total number of documents in ES index
 #      type: number_of_docs
@@ -164,7 +177,7 @@ query:
       - cases
     filterType:
       type: nested
-      selectedField: program_acronym
+      selectedField: program
       filter: true
       nestedPath: program_info
       nestedFields:
@@ -306,17 +319,5 @@ query:
     resultType: icdc_nested_list
 
 
-  - name: numberOfAliquots
-    index:
-      - aliquot
-    filterType:
-      # Get total number of documents in ES index
-      type: number_of_docs
-    resultType: int_total_count
-  - name: volumeOfData
-    index:
-      - aliquot
-    filterType:
-      # Get total number of documents in ES index
-      type: number_of_docs
-    resultType: int_total_count
+
+

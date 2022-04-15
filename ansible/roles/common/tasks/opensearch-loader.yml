@@ -17,12 +17,12 @@
     msg: "{{neo4j_password}}"
 
 - name: Lookup secret
-   debug:
-     msg: "{{ query('aws_secret', 'bento/ctdc/qa.neo4j_password', region='us-east-1') }} "
+  debug:
+    msg: "{{ query('aws_secret', 'bento/ctdc/qa.neo4j_password', region='us-east-1') }} "
 
- - name: Lookup secret
-   debug:
-     msg: "{{ query('aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_password', region='us-east-1') }} "
+- name: Lookup secret
+  debug:
+    msg: "{{ query('aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_password', region='us-east-1') }} "
 
 - name: update indices file
   template:

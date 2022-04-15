@@ -1,7 +1,8 @@
 pipeline {
 	agent {
 		node {
-			label 'data-loader'
+			//label 'data-loader'
+			label 'docker-dataloader'
 		}
 	}
 	parameters {

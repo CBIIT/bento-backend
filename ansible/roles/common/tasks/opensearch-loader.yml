@@ -8,10 +8,6 @@
   debug:
     msg: "{{tier}}"
 
-- name: show vars
-  debug:
-    msg: "{{secret_name}}"
-
 - name: Lookup secret
   debug:
     msg: "{{ query('aws_secret', 'bento/ctdc/qa.neo4j_password', bypath=true, nested=true, region='us-east-1') }} "

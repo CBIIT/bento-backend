@@ -39,6 +39,8 @@ Indices:
         type: keyword
       clinical_trial_id:
         type: keyword
+      files:
+        type: keyword
     cypher_query: "
       MATCH (s:SUBJECT)-->(ct:CLINICALTRIAL)
       OPTIONAL MATCH (e:ENROLLMENT)-->(s)
@@ -66,7 +68,8 @@ Indices:
         ct.CLINICAL_TRIAL_ID AS clinical_trial_id,
         gv.GRMLN_VAR_PTHGNC_CAT AS germline_pathogenicity,
         sv.SOMATIC_VAR_PTHGNC_CAT AS somatic_pathogenicity,
-        f.FILE_TYPE AS file_type
+        f.FILE_TYPE AS file_type,
+        COLLECT(DISTINCT f.UUID) AS files
     "
   # Files Index
   - index_name: files

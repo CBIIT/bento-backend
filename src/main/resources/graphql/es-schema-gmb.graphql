@@ -57,6 +57,7 @@ type SubjectOverviewES {
     systemOrganClass: String
     serious: String
     outcome: String
+    files: [String]
 }
 
 type FileOverviewES {

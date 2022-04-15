@@ -162,7 +162,8 @@ public class GmbEsFilter implements DataFetcher{
                 new String[]{"labTest", "lab_test"},
                 new String[]{"systemOrganClass", "system_organ_class"},
                 new String[]{"serious", "serious"},
-                new String[]{"outcome", "outcome"}
+                new String[]{"outcome", "outcome"},
+                new String[]{"files", "files"}
         };
 
         String defaultSort = "subject_id"; // Default sort order
@@ -178,7 +179,8 @@ public class GmbEsFilter implements DataFetcher{
                 Map.entry("labTest", "lab_test"),
                 Map.entry("systemOrganClass", "system_organ_class"),
                 Map.entry("serious", "serious"),
-                Map.entry("outcome", "outcome")
+                Map.entry("outcome", "outcome"),
+                Map.entry("files", "files")
         );
 
         return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);

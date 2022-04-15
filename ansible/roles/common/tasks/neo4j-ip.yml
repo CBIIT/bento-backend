@@ -1,6 +1,6 @@
 
 - name: gather instance facts
-  ec2_instance_facts:
+  community.aws.ec2_instance_info:
     region: us-east-1
     filters:
       "tag:Name": "{{ database_name }}"

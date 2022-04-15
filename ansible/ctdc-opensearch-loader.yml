@@ -6,6 +6,10 @@
   become: yes
 
   tasks:
+    - name: install ansible collections
+      include_role:
+        name: common
+        tasks_from: collections
 
     - name: get db ip
       include_role:

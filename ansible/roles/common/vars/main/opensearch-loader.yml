@@ -1,9 +1,0 @@
-# vars file for data loading
-project_name:  "{{lookup('env','PROJECT_NAME')}}"
-database_name: "{{ project_name }}-{{tier}}-neo4j-4"
-tier: "{{ lookup('env','TIER') }}"
-workspace: "{{ lookup('env','WORKSPACE') }}"
-es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
-neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_user', nested=true, region='us-east-1' ) }}"
-neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
-region: us-east-1

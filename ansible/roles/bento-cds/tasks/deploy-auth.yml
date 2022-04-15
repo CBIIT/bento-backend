@@ -34,7 +34,7 @@
       - name: COOKIE_SECRET
         value: "{{cookie_secret}}"
       - name: SESSION_TIMEOUT
-        value: 1800
+        value: "1800"
       - name: IDP
         value: "{{idp_provider}}"
       - name: CLIENT_ID

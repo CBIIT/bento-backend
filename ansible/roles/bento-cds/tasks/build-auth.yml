@@ -14,5 +14,4 @@
     image_version: "{{ auth_image_version }}"
     container_build_path: "{{ auth_container_build_path }}"
     dockerfile_path: "{{ auth_dockerfile_path }}"
-#    container_image: "{{ auth_container_image }}"
     container_registry_url: "{{ ecr_repo }}"

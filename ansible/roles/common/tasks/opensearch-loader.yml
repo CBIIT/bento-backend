@@ -11,10 +11,10 @@
     dest: "{{workspace}}/config/es_loader.yml"
     src: "{{workspace}}/config/es_loader.yml.j2"
 
-- name: install python3
-  yum:
-    name: python3
-    state: installed
+# - name: install python3
+#   yum:
+#     name: python3
+#     state: installed
 
 - name: pip install requirements
   pip:

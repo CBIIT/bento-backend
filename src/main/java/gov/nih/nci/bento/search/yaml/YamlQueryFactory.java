@@ -203,7 +203,6 @@ public class YamlQueryFactory {
                 return new NestedFilter(
                         FilterParam.builder()
                                 .args(param.getArgs())
-                                .isNestedFilter(true)
                                 .isExcludeFilter(filterType.isFilter())
                                 .selectedField(filterType.getSelectedField())
                                 .nestedPath(filterType.getNestedPath())

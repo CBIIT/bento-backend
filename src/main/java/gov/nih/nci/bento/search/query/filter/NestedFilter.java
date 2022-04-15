@@ -40,22 +40,20 @@ public class NestedFilter extends AbstractFilter {
     private QueryBuilder getNestedQuery(FilterParam filterParam) {
 
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        if (filterParam.isNestedFilter()) {
-            // Multiple nested fields
-            // for the purpose of total number of aggregation & filter inner fields
-            Set<String> nestedFields = new HashSet<>(filterParam.getNestedFields());
-            removeFilterField(filterParam, nestedFields);
-            filterParam.getArgs().forEach((k,v)->{
-                if (nestedFields.contains(k)) {
-                    List<String> list = filterParam.getArgs().containsKey(k) ? (List<String>) filterParam.getArgs().get(k) : new ArrayList<>();
-                    if (list.size() > 0) {
-                        list.forEach(l->{
-                            boolQueryBuilder.should(QueryBuilders.termQuery(filterParam.getNestedPath() + "." + k, l));
-                        });
-                    }
+        // Multiple nested fields
+        // for the purpose of total number of aggregation & filter inner fields
+        Set<String> nestedFields = new HashSet<>(filterParam.getNestedFields());
+        removeFilterField(filterParam, nestedFields);
+        filterParam.getArgs().forEach((k,v)->{
+            if (nestedFields.contains(k)) {
+                List<String> list = filterParam.getArgs().containsKey(k) ? (List<String>) filterParam.getArgs().get(k) : new ArrayList<>();
+                if (list.size() > 0) {
+                    list.forEach(l->
+                        boolQueryBuilder.should(QueryBuilders.termQuery(filterParam.getNestedPath() + "." + k, l))
+                    );
                 }
-            });
-        }
+            }
+        });
         return boolQueryBuilder;
     }
 

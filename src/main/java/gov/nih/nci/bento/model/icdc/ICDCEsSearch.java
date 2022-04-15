@@ -205,7 +205,6 @@ public class ICDCEsSearch implements DataFetcher {
                                 .source(new NestedFilter(
                                         FilterParam.builder()
                                                 .args(newArgs)
-                                                .isNestedFilter(true)
                                                 .selectedField(filterType.getSelectedField())
                                                 .nestedPath(filterType.getNestedPath())
                                                 .nestedFields(filterType.getNestedFields())

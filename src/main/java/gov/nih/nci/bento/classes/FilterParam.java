@@ -18,7 +18,6 @@ public class FilterParam {
     private final String defaultSortField;
     private final String customOrderBy;
     private final boolean isRangeFilter;
-    private final boolean isNestedFilter;
     private final boolean caseInSensitive;
     private final int size;
     private TableParam tableParam;
@@ -30,7 +29,7 @@ public class FilterParam {
     @Builder
     public FilterParam(Map<String, Object> args, String selectedField, String subAggSelectedField,
                        boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy,
-                       boolean isRangeFilter, String nestedPath, boolean isNestedFilter, Set<String> nestedFields,
+                       boolean isRangeFilter, String nestedPath, Set<String> nestedFields,
                        boolean caseInSensitive, int size, Set<String> returnAllFields) {
         this.args = args;
         this.selectedField = selectedField;
@@ -40,7 +39,6 @@ public class FilterParam {
         this.defaultSortField = defaultSortField;
         this.customOrderBy = customOrderBy;
         this.isRangeFilter = isRangeFilter;
-        this.isNestedFilter = isNestedFilter;
         this.nestedPath = nestedPath;
         this.nestedFields = nestedFields != null ? nestedFields : new HashSet<>();
         this.caseInSensitive = caseInSensitive;

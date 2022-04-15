@@ -62,7 +62,6 @@ public class BentoFilterTest {
                                                 .isExcludeFilter(true)
                                                 // List filter fields
                                                 .nestedFields(Set.of("association", "file_type"))
-                                                .isNestedFilter(true)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -91,7 +90,6 @@ public class BentoFilterTest {
                                                 .isExcludeFilter(true)
                                                 // List filter fields
                                                 .nestedFields(Set.of("file_type"))
-                                                .isNestedFilter(true)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -123,7 +121,6 @@ public class BentoFilterTest {
                                                 .nestedPath("file_info")
                                                 // List filter fields
                                                 .nestedFields(Set.of("file_type"))
-                                                .isNestedFilter(true)
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -154,7 +151,6 @@ public class BentoFilterTest {
                                                 .nestedPath("file_info")
                                                 // List filter fields
                                                 .nestedFields(Set.of("file_type"))
-                                                .isNestedFilter(true)
                                                 .build())
                                         .getSourceFilter()
                                 ))

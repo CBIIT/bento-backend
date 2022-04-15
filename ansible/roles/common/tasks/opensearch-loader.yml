@@ -18,6 +18,10 @@
 
 - name: show vars
   debug:
+    msg: "{{es_host}}"
+    
+- name: show vars
+  debug:
     msg: "{{neo4j_password}}"
 
 - name: update indices file

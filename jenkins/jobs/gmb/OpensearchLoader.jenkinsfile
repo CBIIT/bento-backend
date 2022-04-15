@@ -1,7 +1,7 @@
 pipeline {
 	agent {
 		node {
-			label 'data-loader'
+			label 'cicd_microservice'
 		}
 	}
 	parameters {
@@ -119,10 +119,6 @@ pipeline {
 			ansiblePlaybook( 
             	playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-opensearch-loader.yml',
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-                    extraVars: [
-                        project_name: "${params.ProjectName}",
-                        tier: "${params.Environment}"
-                    ],
             		colorized: true) 
  			}
  		}

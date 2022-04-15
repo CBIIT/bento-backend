@@ -5,8 +5,6 @@
     dest: "{{workspace}}/config/es_indices_bento.yml"
     src: "{{ indices_file }}"
 
-- debug:
-    msg: "bento/{{project_name}}/{{tier}}.neo4j_password"
 
 - name: update server config file
   template:

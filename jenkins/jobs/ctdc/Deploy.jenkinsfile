@@ -179,10 +179,18 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-backend.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+					colorized: true,
+					extras: '-vvv')
+					
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-frontend.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					colorized: true,
 					extras: '-vvv')
+					
  			}
 
 		  }

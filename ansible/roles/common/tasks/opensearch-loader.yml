@@ -1,4 +1,16 @@
 ---
+# DEBUG
+- name: show vars
+  debug:
+    msg: "{{project_name}}"
+
+- name: show vars
+  debug:
+    msg: "{{tier}}"
+
+- name: show vars
+  debug:
+    msg: "{{neo4j_password}}"
 
 - name: update indices file
   template:

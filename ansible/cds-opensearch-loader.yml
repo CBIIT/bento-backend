@@ -7,6 +7,10 @@
 
   tasks:
 
+    - name: install collection
+      include_role:
+        name: common
+        tasks_from: collections 
     - name: get db ip
       include_role:
         name: common

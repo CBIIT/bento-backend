@@ -2,7 +2,7 @@
 localhost
 
 [loader]
-localhost ansible_python_interpreter=bin/python3
+localhost ansible_python_interpreter=/bin/python3
 
 [bento]
 localhost

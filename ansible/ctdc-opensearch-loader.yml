@@ -28,4 +28,5 @@
         property_file: "config/props-ctdc.yml"
         about_file: "{{ workspace }}/ctdc-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
         indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_ctdc.yml"
-        ansible_python_interpreter: /usr/bin/python2.7
+        #ansible_python_interpreter: /usr/bin/python2.7
+        ansible_python_interpreter: /usr/bin/python3.6

@@ -11,7 +11,8 @@
       include_role:
         name: common
         tasks_from: neo4j-ip
-
+    - debug:
+        msg: "bento/{{project_name}}/{{tier}}.neo4j_password"
     - name: seed opensearch
       include_role:
         name: common

@@ -19,7 +19,7 @@
       vars:
         es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
         secret_name: "bento/{{project_name}}/{{tier}}.neo4j_password"
-        neo4j_password: "{{ lookup('amazon.aws.aws_secret', {{ secret_name }}, nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'secret_name', nested=true, region='us-east-1' ) }}"
         model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
         model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
         property_file: "config/props-ctdc.yml"

@@ -50,6 +50,9 @@ Indices:
       # properties used in list search, could also used in return data
       case_id:
         type: keyword
+      # TODO To Be DELETED
+      case_ids:
+        type: keyword
       # properties used in return data, name can be different from GraphQL property name
       cohort:
         type: keyword
@@ -87,7 +90,60 @@ Indices:
         type: keyword
       clinical_study_designation:
         type: keyword
-
+      program_info:
+        type: nested
+        properties:
+          program_acronym:
+            type: keyword
+      sample_info:
+        type: nested
+        properties:
+          sample_id:
+            type: keyword
+          #          TODO TO BE DELETED
+          sample_ids:
+            type: keyword
+          sample_site:
+            type: keyword
+          sample_type:
+            type: keyword
+          sample_pathology:
+            type: keyword
+          tumor_grade:
+            type: keyword
+          sample_chronology:
+            type: keyword
+          percentage_tumor:
+            type: keyword
+          necropsy_sample:
+            type: keyword
+          sample_preservation:
+            type: keyword
+          physical_sample_type:
+            type: keyword
+          general_sample_pathology:
+            type: keyword
+          tumor_sample_origin:
+            type: keyword
+          comment:
+            type: keyword
+      file_info:
+        type: nested
+        properties:
+          file_uuid:
+            type: keyword
+          file_uuids:
+            type: keyword
+          file_size:
+            type: double
+          file_format:
+            type: keyword
+          file_description:
+            type: keyword
+          file_name:
+            type: keyword
+          file_type:
+            type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (c:case)
@@ -99,10 +155,13 @@ Indices:
       OPTIONAL MATCH (f:file)-[*]->(c)
       OPTIONAL MATCH (co)-->(a:study_arm)
       OPTIONAL MATCH (c)-->(ci:canine_individual)
-      OPTIONAL MATCH (ss:study)<-[:member_of]-(c)      
-      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci
+      OPTIONAL MATCH (ss:study)<-[:member_of]-(c)  
+      OPTIONAL MATCH (p:program)<--(s:study)<--(c)
+      OPTIONAL MATCH (c)<--(samp:sample)
+      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci,p,samp
       return
         c.case_id AS case_id,
+        c.case_id AS case_ids,
         s.clinical_study_designation AS study_code,
         s.clinical_study_type AS study_type,
         co.cohort_description AS cohort,
@@ -129,7 +188,29 @@ Indices:
         diag.concurrent_disease_type as concurrent_disease_type,
         a.arm as arm,
         CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS canine_individual,
-        s.clinical_study_designation as clinical_study_designation
+        s.clinical_study_designation as clinical_study_designation,
+        COLLECT(DISTINCT {program_acronym: p.program_acronym}) AS program_info,
+        COLLECT(DISTINCT {sample_id: samp.sample_id,
+                          sample_ids: samp.sample_id,
+                          sample_site: samp.sample_site,
+                          sample_type: samp.summarized_sample_type,
+                          sample_pathology:samp.specific_sample_pathology,
+                          tumor_grade: samp.tumor_grade,
+                          sample_chronology: samp.sample_chronology,
+                          percentage_tumor: samp.percentage_tumor,
+                          necropsy_sample: samp.necropsy_sample,
+                          sample_preservation: samp.sample_preservation,
+                          physical_sample_type: samp.physical_sample_type,
+                          general_sample_pathology:samp.general_sample_pathology,
+                          tumor_sample_origin:samp.tumor_sample_origin,
+                          comment:samp.comment}) AS sample_info,
+        COLLECT(DISTINCT {file_uuid: f.uuid,
+                  file_uuids: f.uuid,
+                  file_size: f.file_size,
+                  file_format: f.file_format,
+                  file_description: f.file_description,
+                  file_name: f.file_name,
+                  file_type: f.file_type}) AS file_info
       "
   - index_name: samples
     type: neo4j
@@ -137,7 +218,13 @@ Indices:
 
     mapping:
       # properties used in list search, could also used in return data
+      # TODO To Be Deleted
+      case_id:
+        type: keyword
       case_ids:
+        type: keyword
+      # TODO To Be Deleted
+      sample_id:
         type: keyword
       sample_ids:
         type: keyword
@@ -222,7 +309,9 @@ Indices:
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (co)-->(a:study_arm)
       RETURN DISTINCT
+        s.sample_id as sample_id,
         s.sample_id as sample_ids,
+        c.case_id as case_id,
         c.case_id as case_ids,
         demo.breed as breed,
         d.disease_term as diagnosis,
@@ -269,7 +358,16 @@ Indices:
         type: keyword
       sample_ids:
         type: keyword
+      #      TODO Added
+      sample_id:
+        type: keyword
       file_uuids:
+        type: keyword
+      #      TODO Added
+      file_uuid:
+        type: keyword
+      #      TODO Added
+      association:
         type: keyword
       file_association:
         type: keyword
@@ -379,6 +477,7 @@ Indices:
       RETURN DISTINCT
         f.file_name as file_name,
         f.file_type as file_type,
+        association as association,
         association as file_association,
         head(labels(parent)) as parent_type,
         f.file_description as file_description,
@@ -391,7 +490,9 @@ Indices:
         THEN parent.clinical_study_designation
         ELSE s.clinical_study_designation END AS study_code,
         f.uuid as file_uuids,
+        f.uuid as file_uuid,
         samp.sample_id AS sample_ids,
+        samp.sample_id AS sample_id,
         samp.sample_site as sample_site,
         samp.physical_sample_type as physical_sample_type,
         samp.general_sample_pathology as general_sample_pathology,
@@ -425,134 +526,6 @@ Indices:
         a.arm as arm,
         collect(DISTINCT o.case_id) AS other_cases,
         fc.case_id AS case_id_file_to_all_to_case
-    "
-  - index_name: samples
-    type: neo4j
-    # type mapping for each property of the index
-
-    mapping:
-      # properties used in list search, could also used in return data
-      case_id:
-        type: keyword
-      sample_ids:
-        type: keyword
-      # properties used in return data, name can be different from GraphQL property name
-      breed:
-        type: keyword
-      diagnosis:
-        type: keyword
-      sample_site:
-        type: keyword
-      sample_type:
-        type: keyword
-      sample_pathology:
-        type: keyword
-      tumor_grade:
-        type: keyword
-      sample_chronology:
-        type: keyword
-      percentage_tumor:
-        type: keyword
-      necropsy_sample:
-        type: keyword
-      sample_preservation:
-        type: keyword
-      files:
-        type: keyword
-      physical_sample_type:
-        type: keyword
-      general_sample_pathology:
-        type: keyword
-      tumor_sample_origin:
-        type: keyword
-      comment:
-        type: keyword
-      individual_id:
-        type: keyword
-      other_cases:
-        type: keyword
-      patient_age_at_enrollment:
-        type: keyword
-      sex:
-        type: keyword
-      neutered_indicator:
-        type: keyword
-      weight:
-        type: keyword
-      primary_disease_site:
-        type: keyword
-      stage_of_disease:
-        type: keyword
-      date_of_diagnosis:
-        type: keyword
-      histology_cytopathology:
-        type: keyword
-      histological_grade:
-        type: keyword
-      best_response:
-        type: keyword
-      pathology_report:
-        type: keyword
-      treatment_data:
-        type: keyword
-      follow_up_data:
-        type: keyword
-      concurrent_disease:
-        type: keyword
-      concurrent_disease_type:
-        type: keyword
-      cohort_description:
-        type: keyword
-      arm:
-        type: keyword
-
-    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
-    cypher_query: "
-      MATCH (s:sample)
-      OPTIONAL MATCH (s)-[:of_case]->(c:case)
-      OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
-      OPTIONAL MATCH (c)<-[:of_case]-(d:diagnosis)
-      OPTIONAL MATCH (f:file)-[:of_sample]->(s)
-      OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
-      OPTIONAL MATCH (c)-->(co:cohort)
-      OPTIONAL MATCH (co)-->(a:study_arm)
-      RETURN DISTINCT
-        s.sample_id as sample_ids,
-        c.case_id as case_id,
-        demo.breed as breed,
-        d.disease_term as diagnosis,
-        s.sample_site as sample_site,
-        s.summarized_sample_type as sample_type,
-        s.specific_sample_pathology as sample_pathology,
-        s.tumor_grade as tumor_grade,
-        s.sample_chronology as sample_chronology,
-        s.percentage_tumor as percentage_tumor,
-        s.necropsy_sample as necropsy_sample,
-        s.sample_preservation as sample_preservation,
-        collect(DISTINCT(f.uuid)) AS files,
-        s.physical_sample_type as physical_sample_type,
-        s.general_sample_pathology as general_sample_pathology,
-        s.tumor_sample_origin as tumor_sample_origin,
-        s.comment as comment,
-        i.individual_id AS individual_id,
-        collect(DISTINCT o.case_id) AS other_cases,
-        demo.patient_age_at_enrollment AS patient_age_at_enrollment,
-        demo.sex AS sex,
-        demo.neutered_indicator AS neutered_indicator,
-        demo.weight as weight,
-        d.primary_disease_site as primary_disease_site,
-        d.stage_of_disease as stage_of_disease,
-        d.date_of_diagnosis as date_of_diagnosis,
-        d.histology_cytopathology as histology_cytopathology,
-        d.histological_grade as histological_grade,
-        d.best_response as best_response,
-        d.pathology_report as pathology_report,
-        d.treatment_data as treatment_data,
-        d.follow_up_data as follow_up_data,
-        d.concurrent_disease as concurrent_disease,
-        d.concurrent_disease_type as concurrent_disease_type,
-        co.cohort_description as cohort_description,
-        a.arm as arm
     "
   - index_name: studies
     type: neo4j

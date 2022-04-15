@@ -1,6 +1,5 @@
 package gov.nih.nci.bento.search.query;
 
-import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;

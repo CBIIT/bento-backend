@@ -50,7 +50,7 @@ public class BentoAutoConfiguration {
     @Test
     public void singleQueryYaml_Test() throws IOException {
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
-        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.SINGLE).getInputStream());
+        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES_BENTO.SINGLE).getInputStream());
         Map<String, DataFetcher> singleQueryMap = new HashMap<>();
         singleTypeQuery.getQuery().forEach(q->
             singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q))
@@ -61,7 +61,7 @@ public class BentoAutoConfiguration {
     @Test
     public void groupQueryYaml_Test() throws IOException {
         Yaml yaml = new Yaml(new Constructor(GroupTypeQuery.class));
-        GroupTypeQuery groupTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.GROUP).getInputStream());
+        GroupTypeQuery groupTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES_BENTO.GROUP).getInputStream());
         Map<String, DataFetcher> groupQueryMap = new HashMap<>();
 
         groupTypeQuery.getGroups().forEach(group->{
@@ -74,7 +74,7 @@ public class BentoAutoConfiguration {
     @Test
     public void globalQueryYaml_Test() throws IOException {
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
-        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES.GLOBAL).getInputStream());
+        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES_BENTO.GLOBAL).getInputStream());
         Map<String, DataFetcher> singleQueryMap = new HashMap<>();
         singleTypeQuery.getQuery().forEach(q->{
             singleQueryMap.put(q.getName(), env -> getYamlQuery(esService.CreateQueryParam(env), q));

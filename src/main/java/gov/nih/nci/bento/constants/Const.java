@@ -10,12 +10,19 @@ public class Const {
 
     public static class YAML_QUERY {
 
-        public static class FILE_NAMES {
+        public static class FILE_NAMES_BENTO {
             public static final String SINGLE = "yaml/single_query.yml";
             public static final String GROUP = "yaml/group_query.yml";
             public static final String GLOBAL = "yaml/global_query.yml";
             public static final String TEST = "yaml/test_es_query.yml";
 
+        }
+
+        public static class FILE_NAMES_ICDC {
+            public static final String SINGLE = "yaml/icdc_single_query.yml";
+            public static final String GROUP = "yaml/icdc_group_query.yml";
+            public static final String GLOBAL = "yaml/icdc_global_query.yml";
+            public static final String TEST = "yaml/test_icdc_es_query.yml";
         }
 
 
@@ -40,6 +47,8 @@ public class Const {
 
         public static class RESULT_TYPE {
             public static final String DEFAULT = "default";
+            // TODO Tobe deleted
+            public static final String ICDC_AGGREGATION = "icdc_aggregation";
             public static final String AGGREGATION = "aggregation";
             public static final String INT_TOTAL_AGGREGATION = "int_total_aggregation";
             public static final String RANGE = "range";
@@ -53,6 +62,8 @@ public class Const {
             public static final String NESTED = "nested";
             public static final String NESTED_TOTAL = "nested_total";
             public static final String NESTED_LIST = "nested_list";
+            // TO BE DELETED
+            public static final String ICDC_NESTED_LIST = "icdc_nested_list";
         }
 
 

@@ -109,17 +109,214 @@ query:
       # Get total number of documents in ES index
       type: number_of_docs
     resultType: int_total_count
-#  - name: numberOfAliquots
+#  - name: numberOfPrograms
 #    index:
-#      - aliquot
+#      - program
 #    filterType:
 #      # Get total number of documents in ES index
 #      type: number_of_docs
 #    resultType: int_total_count
-#  - name: volumeOfData
-#    index:
-#      - aliquot
-#    filterType:
-#      # Get total number of documents in ES index
-#      type: number_of_docs
-#    resultType: int_total_count
+  - name: caseCountByGender
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: sex
+    resultType: icdc_aggregation
+  - name: caseCountByBreed
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: breed
+    resultType: icdc_aggregation
+  - name: caseCountByNeuteredStatus
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: neutered_status
+    resultType: icdc_aggregation
+  - name: caseCountByStageOfDisease
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: stage_of_disease
+    resultType: icdc_aggregation
+  - name: caseCountByDiseaseSite
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: disease_site
+    resultType: icdc_aggregation
+  - name: caseCountByDiagnosis
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: diagnosis
+    resultType: icdc_aggregation
+
+  - name: filterCaseCountByProgram
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: program_acronym
+      filter: true
+      nestedPath: program_info
+      nestedFields:
+        - program_acronym
+    resultType: icdc_nested_list
+  - name: filterCaseCountByStudyType
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: study_type
+    resultType: icdc_aggregation
+  - name: filterCaseCountByDiagnosis
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: diagnosis
+    resultType: icdc_aggregation
+  - name: filterCaseCountByDiseaseSite
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: disease_site
+    resultType: icdc_aggregation
+  - name: filterCaseCountByStageOfDisease
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: stage_of_disease
+    resultType: icdc_aggregation
+  - name: filterCaseCountByResponseToTreatment
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: response_to_treatment
+    resultType: icdc_aggregation
+  - name: filterCaseCountBySex
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: sex
+    resultType: icdc_aggregation
+  - name: filterCaseCountByNeuteredStatus
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: neutered_status
+    resultType: icdc_aggregation
+  - name: filterCaseCountBySampleType
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: sample_type
+      filter: true
+      nestedPath: samples_info
+      nestedFields:
+        - sample_type
+        - sample_site
+        - sample_pathology
+    resultType: icdc_nested_list
+  - name: filterCaseCountBySamplePathology
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: sample_pathology
+      filter: true
+      nestedPath: samples_info
+      nestedFields:
+        - sample_type
+        - sample_site
+        - sample_pathology
+    resultType: icdc_nested_list
+  - name: filterCaseCountBySampleSite
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: sample_site
+      filter: true
+      nestedPath: samples_info
+      nestedFields:
+        - sample_type
+        - sample_site
+        - sample_pathology
+    resultType: icdc_nested_list
+  - name: filterCaseCountByFileAssociation
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: association
+      filter: true
+      nestedPath: files_info
+      nestedFields:
+        - association
+        - file_type
+        - file_format
+    resultType: icdc_nested_list
+  - name: filterCaseCountByFileType
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: file_type
+      filter: true
+      nestedPath: files_info
+      nestedFields:
+        - association
+        - file_type
+        - file_format
+    resultType: icdc_nested_list
+  - name: filterCaseCountByFileFormat
+    index:
+      - cases
+    filterType:
+      type: nested
+      selectedField: file_format
+      filter: true
+      nestedPath: files_info
+      nestedFields:
+        - association
+        - file_type
+        - file_format
+    resultType: icdc_nested_list
+
+
+  - name: numberOfAliquots
+    index:
+      - aliquot
+    filterType:
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count
+  - name: volumeOfData
+    index:
+      - aliquot
+    filterType:
+      # Get total number of documents in ES index
+      type: number_of_docs
+    resultType: int_total_count

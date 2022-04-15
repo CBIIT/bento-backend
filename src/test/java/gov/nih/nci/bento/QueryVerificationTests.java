@@ -79,7 +79,7 @@ public class QueryVerificationTests {
     @Test
     public void elasticQueryAPI_Test() throws Exception {
         Yaml yaml = new Yaml(new Constructor(YamlTest.class));
-        YamlTest singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.TEST).getInputStream());
+        YamlTest singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_BENTO.TEST).getInputStream());
         for (YamlTest.YamlTestQuery q : singleTypeQuery.getQuery()) {
             logger.info("Testing: " + q.getName());
             this.mockMvc.perform(MockMvcRequestBuilders

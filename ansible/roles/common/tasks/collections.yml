@@ -1,4 +1,7 @@
 ---
+- name: install aws collection
+  shell: ansible-galaxy collection install community.general
+
 - name: Install collection amazon.aws
   community.general.ansible_galaxy_install:
     type: collection
@@ -15,3 +18,4 @@
 #   loop:
 #     -  amazon.aws
 #     -  community.aws
+

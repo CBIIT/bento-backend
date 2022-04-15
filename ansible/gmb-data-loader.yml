@@ -20,4 +20,4 @@
         model_file2: "{{workspace}}/gmb-model/model-desc/000048_Model_Props.yml"
         property_file: "config/props-gmb-mock.yml"
         bucket: bento-gmb-metadata
-        ansible_python_interpreter: /usr/bin/python2.7
+        ansible_python_interpreter: /bin/python3

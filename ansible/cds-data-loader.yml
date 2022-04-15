@@ -20,4 +20,4 @@
         model_file2: "{{workspace}}/cds-model/model-desc/cds-model-props.yml"
         property_file: "config/props-cds.yml"
         bucket: bento-metadata
-        ansible_python_interpreter: /usr/bin/python2.7
+        ansible_python_interpreter: /bin/python3

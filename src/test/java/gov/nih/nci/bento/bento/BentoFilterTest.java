@@ -42,10 +42,9 @@ public class BentoFilterTest {
     @Autowired
     ConfigurationDAO config;
 
-    // Nested File Type
+    // Tested filter exclusion; parameters are filtering nested fields in Elasticsearch
     @Test
-    // TODO better way to test filter in nested search
-    public void nestedFilterAssociationSearch_Test() throws IOException {
+    public void nestedExcludeFilterSearch_Test() throws IOException {
         Map<String, Object> args = new HashMap<>();
         args.put("file_type", List.of("bai"));
 //        args.put("file_type", List.of("text"));
@@ -57,20 +56,48 @@ public class BentoFilterTest {
                                 .source(new NestedFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .selectedField("association")
-                                                .nestedPath("file_info")
+                                                .selectedField("composition")
+                                                .nestedPath("sample_info")
                                                 .isExcludeFilter(true)
                                                 // List filter fields
-                                                .nestedFields(Set.of("association", "file_type"))
+                                                .nestedFields(Set.of("composition"))
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getNestedAggregate()).build(),
+                MultipleRequests.builder()
+                        .name("TEST02")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField("composition")
+                                                .nestedPath("sample_info")
+                                                // List filter fields
+                                                .nestedFields(Set.of("composition"))
                                                 .build())
                                         .getSourceFilter()
                                 ))
                         .typeMapper(typeMapper.getNestedAggregate()).build());
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
-        QueryResult queryResult = (QueryResult) result.get("TEST01");
-        assertThat(queryResult.getSearchHits().size(), greaterThan(0));
-        assertThat(queryResult.getTotalHits(), greaterThan(0));
+        QueryResult excludeFilterResult = (QueryResult) result.get("TEST01");
+
+        QueryResult filterResult = (QueryResult) result.get("TEST02");
+
+        Map<String, Long> filteredMap = new HashMap<>();
+        filterResult.getSearchHits().forEach((hit)-> {
+            filteredMap.put((String) hit.get(BENTO_FIELDS.GROUP), (Long) hit.get(BENTO_FIELDS.SUBJECTS));
+        });
+
+        Map<String, Long> intersectionMap = new HashMap<>();
+        excludeFilterResult.getSearchHits().forEach((hit)-> {
+            if (filteredMap.containsKey((String) hit.get(BENTO_FIELDS.GROUP))) {
+                intersectionMap.put((String) hit.get(BENTO_FIELDS.GROUP), (Long) hit.get(BENTO_FIELDS.SUBJECTS));
+            }
+        });
+        assertThat(intersectionMap, equalTo(filteredMap));
     }
 
     @Test

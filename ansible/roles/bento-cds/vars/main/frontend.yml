@@ -5,8 +5,8 @@ frontend_image_version: "{{ frontend_version }}"
 frontend_container_build_path: "{{workspace}}/{{project_name}}-frontend"
 frontend_dockerfile_path: "{{workspace}}/icdc-devops/docker/dockerfiles/nginx-frontend-dockerfile"
 frontend_container_image: "{{ecr_repo}}/{{project_name}}-{{container_name}}:{{frontend_version}}-{{build_number}}"
-frontend_container_port: 80
-frontend_container_memory: 512
-frontend_container_cpu: 256
+frontend_container_port: "80"
+frontend_container_memory: "512"
+frontend_container_cpu: "256"
 frontend_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
 frontend_ecs_cluster_name: "{{ project_name }}-{{tier}}-ecs"

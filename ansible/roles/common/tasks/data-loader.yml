@@ -26,10 +26,10 @@
     dest: "{{workspace}}/config/config.yml"
     src: "{{workspace}}/config/config.yml.j2"
 
-- name: install python3
-  yum:
-    name: python3
-    state: installed
+#- name: install python3
+#  yum:
+#    name: python3
+#    state: installed
 
 - name: pip install requirements
   pip:

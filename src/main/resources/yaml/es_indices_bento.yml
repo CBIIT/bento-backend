@@ -269,6 +269,9 @@ Indices:
         type: keyword
       tissue_composition:
         type: keyword
+      #      TODO To be deleted
+      composition:
+        type: keyword
       sample_anatomic_site:
         type: keyword
       sample_anatomic_site_gs:
@@ -336,6 +339,7 @@ Indices:
       samp.tissue_type AS tissue_type,
       samp.tissue_type AS tissue_type_gs,
       samp.composition AS tissue_composition,
+      samp.composition AS composition,
       COLLECT(DISTINCT f.file_id) AS files,
       COLLECT(DISTINCT head(labels(parent))) AS association,
       COLLECT(DISTINCT f.file_type) AS file_type

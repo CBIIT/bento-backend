@@ -203,6 +203,14 @@ query:
       filter: true
       selectedField: diagnosis
     resultType: icdc_aggregation
+  - name: filterCaseCountByBreed
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: breed
+    resultType: icdc_aggregation
   - name: filterCaseCountByDiseaseSite
     index:
       - cases
@@ -287,7 +295,7 @@ query:
       - cases
     filterType:
       type: nested
-      selectedField: association
+      selectedField: file_association
       filter: true
       nestedPath: files_info
       nestedFields:

@@ -91,7 +91,7 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
                 logger.info(String.format("Cache Hit-Miss Ratio: %s-%s, %s%%", cacheHits, cacheMisses, ratio));
                 return values;
             }
-            logger.info("Cache Disabled: Executing query");
+            logger.info("Cache Disabled: Executing query " + cypher.getVariable());
             return executeQuery(session, cypher, transformedParams);
         }
     }

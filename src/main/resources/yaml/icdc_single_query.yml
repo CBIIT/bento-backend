@@ -120,14 +120,19 @@ query:
 #      # Get total number of documents in ES index
 #      type: number_of_docs
 #    resultType: int_total_count
-# TODO
-#  - name: volumeOfData
-#    index:
-#      - aliquot
-#    filterType:
-#      # Get total number of documents in ES index
-#      type: number_of_docs
-#    resultType: int_total_count
+  - name: volumeOfData
+    index:
+      - cases
+    filterType:
+      type: nested_sum
+      selectedField: file_size
+      filter: true
+      nestedPath: files_info
+      nestedFields:
+        - file_type
+        - file_association
+        - file_format
+    resultType: nested_sum
   - name: caseCountByGender
     index:
       - cases

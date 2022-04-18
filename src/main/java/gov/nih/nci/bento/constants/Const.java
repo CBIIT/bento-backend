@@ -43,6 +43,7 @@ public class Const {
             public static final String DEFAULT = "default";
             public static final String GLOBAL = "global";
             public static final String NESTED = "nested";
+            public static final String NESTED_SUM = "nested_sum";
         }
 
         public static class RESULT_TYPE {
@@ -62,6 +63,8 @@ public class Const {
             public static final String NESTED = "nested";
             public static final String NESTED_TOTAL = "nested_total";
             public static final String NESTED_LIST = "nested_list";
+            public static final String NESTED_SUM_AGG = "nested_sum";
+            public static final String SUM_AGG = "sum";
             // TO BE DELETED
             public static final String ICDC_NESTED_LIST = "icdc_nested_list";
         }

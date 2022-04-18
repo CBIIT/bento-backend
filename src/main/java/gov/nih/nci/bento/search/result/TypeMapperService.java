@@ -27,4 +27,6 @@ public interface TypeMapperService {
     // TODO TO BE DELETED
     TypeMapper<List<Map<String, Object>>> getICDCNestedAggregateList();
     TypeMapper<Integer> getIntTotalNestedAggregate();
+    TypeMapper<Float> getSumAggregate();
+    TypeMapper<Float> getNestedSumAggregate();
 }

@@ -131,6 +131,7 @@ type QueryType {
     numberOfFiles: Int
     numberOfPrograms: Int
     numberOfStudyFiles: Int
+    volumeOfData: Float
 
     filterCaseCountByProgram(program:[String] = [],
                                       study: [String] = [],

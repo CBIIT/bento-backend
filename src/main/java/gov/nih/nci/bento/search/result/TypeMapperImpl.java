@@ -16,6 +16,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.ParsedMax;
 import org.elasticsearch.search.aggregations.metrics.ParsedMin;
+import org.elasticsearch.search.aggregations.metrics.Sum;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -98,6 +99,26 @@ public class TypeMapperImpl implements TypeMapperService {
                     )
             );
             return result;
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    public TypeMapper<Float> getSumAggregate() {
+        return (response) -> {
+            Sum agg = response.getAggregations().get(ES_PARAMS.TERMS_AGGS);
+            return (float) agg.getValue();
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    public TypeMapper<Float> getNestedSumAggregate() {
+        return (response) -> {
+            Aggregations aggregate = response.getAggregations();
+            ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
+            // Get Nested Subaggregation
+            ParsedFilter aggFilters = aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+            Sum nestedSum = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
+            return (float) nestedSum.getValue();
         };
     }
 

@@ -98,14 +98,13 @@ query:
       # Get total number of documents in ES index
       type: number_of_docs
     resultType: int_total_count
-#    TODO SKIP
   - name: numberOfStudyFiles
     index:
-      - files
+      - cases
     filterType:
-      # Get total number of documents in ES index
-      type: number_of_docs
-    resultType: int_total_count
+      type: aggregation
+      selectedField: study_files
+    resultType: int_total_aggregation
   - name: numberOfPrograms
     index:
       - program

@@ -200,6 +200,7 @@ public class YamlQueryFactory {
                 return new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
+                        .sortDirection(filterType.getSortDirection())
                         .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();

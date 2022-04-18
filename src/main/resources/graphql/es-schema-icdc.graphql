@@ -130,7 +130,7 @@ type QueryType {
     numberOfSamples: Int
     numberOfFiles: Int
     numberOfPrograms: Int
-
+    numberOfStudyFiles: Int
 
     filterCaseCountByProgram(program:[String] = [],
                                       study: [String] = [],

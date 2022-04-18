@@ -178,7 +178,8 @@ pipeline {
                     tier: "${params.Environment}"
                     ], 
                   hostKeyChecking: false,
-            			colorized: true) 
+            			colorized: true,
+						extras: '-vvv') 
  				}
  			}
  		}

@@ -11,7 +11,8 @@
       include_role:
         name: common
         tasks_from: neo4j-ip
-
+    - debug:
+        msg: "bento/{{project_name}}/{{tier}}.neo4j_password"
     - name: seed opensearch
       include_role:
         name: common
@@ -23,4 +24,4 @@
         property_file: "config/props-gmb-mock.yml"
         about_file: "{{ workspace }}/gmb-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
         indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_gmb.yml"
-        ansible_python_interpreter: /usr/bin/python2.7
+        # ansible_python_interpreter: /bin/python3

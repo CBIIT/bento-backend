@@ -50,10 +50,6 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod')
-    booleanParam(
-    	defaultValue: true,
-    	description: 'Enable the Elasticsearch filter',
-    	name: 'Enable_ES_Filter')
 	string(
 	    defaultValue: '',
 		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
@@ -62,10 +58,9 @@ pipeline {
   options {
   	ansiColor('xterm')
   }
-  tools {
-  	maven 'Default' 
-    jdk 'Default' 
-  }
+  // tools {
+  // 	maven 'Default' 
+  // }
   stages{
   	stage('checkout'){
   		steps {

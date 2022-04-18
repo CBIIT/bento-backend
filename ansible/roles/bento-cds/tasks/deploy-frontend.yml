@@ -39,11 +39,11 @@
       - name: NEW_RELIC_APP_NAME
         value: "{{ app_name }}-{{container_name}}"
       - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-        value: true
+        value: "true"
       - name: NEW_RELIC_HOST
         value: "gov-collector.newrelic.com"
       - name: NEW_RELIC_NO_CONFIG_FILE
-        value: true
+        value: "true"
       - name: NEW_RELIC_LABELS
         value: "Project:{{ project_name }};Environment:{{ tier }}"
       - name: REACT_APP_GOOGLE_CLIENT_ID

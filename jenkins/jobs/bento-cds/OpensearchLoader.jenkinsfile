@@ -1,7 +1,7 @@
 pipeline {
 	agent {
 		node {
-			label 'data-loader'
+			label 'docker-dataloader'
 		}
 	}
 	parameters {
@@ -119,6 +119,9 @@ pipeline {
 			ansiblePlaybook( 
             	playbook: '${WORKSPACE}/icdc-devops/ansible/cds-opensearch-loader.yml',
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                    extraVars: [
+                        project_name: "${params.ProjectName}",
+                    ],
             		colorized: true) 
  			}
  		}

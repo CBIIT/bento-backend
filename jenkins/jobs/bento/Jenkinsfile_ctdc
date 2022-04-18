@@ -32,7 +32,7 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-			label 'cicd_microservice'
+			label 'cicd_ansible_2.9'
 		}
 	}
 	parameters {
@@ -307,7 +307,7 @@ pipeline {
        BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
       }
   		steps{
-  		  node('cicd_microservice') {
+  		  node('cicd_ansible_2.9') {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 

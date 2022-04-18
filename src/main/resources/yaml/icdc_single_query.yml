@@ -317,7 +317,59 @@ query:
         - file_type
         - file_format
     resultType: icdc_nested_list
-
-
-
-
+  - name: filterCaseCountByStudyParticipation
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: canine_individual
+    resultType: icdc_aggregation
+  - name: caseOverviewPaged
+    index:
+      - cases
+    filterType:
+      type: table
+      defaultSortField: case_id
+      sortDirection: asc
+    resultType: default
+  - name: caseOverviewPagedDesc
+    index:
+      - cases
+    filterType:
+      type: table
+      defaultSortField: case_id
+      sortDirection: desc
+    resultType: default
+  - name: sampleOverview
+    index:
+      - samples
+    filterType:
+      type: table
+      defaultSortField: sample_ids
+      sortDirection: asc
+    resultType: default
+  - name: sampleOverviewDesc
+    index:
+      - samples
+    filterType:
+      type: table
+      defaultSortField: sample_ids
+      sortDirection: desc
+    resultType: default
+  - name: fileOverview
+    index:
+      - files
+    filterType:
+      type: table
+      defaultSortField: file_name
+      sortDirection: asc
+    resultType: default
+  - name: fileOverviewDesc
+    index:
+      - files
+    filterType:
+      type: table
+      defaultSortField: file_name
+      sortDirection: desc
+    resultType: default

@@ -21,10 +21,20 @@ public class BentoQueryFactory extends QueryFactory {
     @SuppressWarnings("unchecked")
     public QueryBuilder createQuery(Map<String, Object> args, BoolQueryBuilder boolBuilder) {
         args.forEach((key,v)->{
-            List<String> list = (List<String>) args.get(key);
-            if (list.size() > 0) {
-                QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
-                boolBuilder.filter(builder);
+
+            // TODO
+            if (args.get(key) instanceof String) {
+                String val = (String) args.get(key);
+                if (!val.equals("")) {
+                    QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(List.of(val), key) : QueryBuilders.termQuery(key, args.get(key));
+                    boolBuilder.filter(builder);
+                }
+            } else {
+                List<String> list = (List<String>) args.get(key);
+                if (list.size() > 0) {
+                    QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
+                    boolBuilder.filter(builder);
+                }
             }
         });
         return boolBuilder.filter().size() > 0 ? boolBuilder : QueryBuilders.matchAllQuery();
@@ -32,11 +42,11 @@ public class BentoQueryFactory extends QueryFactory {
 
     private QueryBuilder getCaseInsensitiveQuery(List<String> list, String key) {
         BoolQueryBuilder bool = new BoolQueryBuilder();
-        list.forEach(value->{
+        list.forEach(value->
             bool.should(
                     QueryBuilders.wildcardQuery(key, value).caseInsensitive(true)
-            );
-        });
+            )
+        );
         return bool;
     }
 

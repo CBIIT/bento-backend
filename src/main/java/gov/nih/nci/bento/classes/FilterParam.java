@@ -17,6 +17,7 @@ public class FilterParam {
     private final QueryParam queryParam;
     private final String defaultSortField;
     private final String customOrderBy;
+    private final String sortDirection;
     private final boolean isRangeFilter;
     private final boolean caseInSensitive;
     private final int size;
@@ -30,7 +31,7 @@ public class FilterParam {
     public FilterParam(Map<String, Object> args, String selectedField, String subAggSelectedField,
                        boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy,
                        boolean isRangeFilter, String nestedPath, Set<String> nestedFields,
-                       boolean caseInSensitive, int size, Set<String> returnAllFields) {
+                       boolean caseInSensitive, int size, Set<String> returnAllFields, String sortDirection) {
         this.args = args;
         this.selectedField = selectedField;
         this.subAggSelectedField = subAggSelectedField;
@@ -44,6 +45,7 @@ public class FilterParam {
         this.caseInSensitive = caseInSensitive;
         this.size = size;
         this.returnAllFields = returnAllFields;
+        this.sortDirection = sortDirection;
         if (queryParam != null) this.tableParam = queryParam.getTableParam();
     }
 }

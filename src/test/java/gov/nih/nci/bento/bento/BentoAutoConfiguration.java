@@ -123,7 +123,7 @@ public class BentoAutoConfiguration {
                 return new TableFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
-                    .customOrderBy(getIntCustomOrderBy_Test(param, query))
+                        .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();
             case YAML_QUERY.FILTER.NO_OF_DOCUMENTS:

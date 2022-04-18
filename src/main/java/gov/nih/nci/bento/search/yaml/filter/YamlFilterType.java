@@ -15,6 +15,7 @@ public class YamlFilterType {
     private String subAggSelectedField;
     private String nestedPath;
     private Set<String> nestedFields;
+    private String sortDirection;
     private boolean filter;
     private boolean caseInSensitive;
     private int size;

@@ -45,10 +45,15 @@ public class QueryParam {
     private TableParam setTableParam(Map<String, Object> args) {
         return TableParam.builder()
                 .offSet(args.containsKey(Const.ES_PARAMS.OFFSET) ?  (int) args.get(Const.ES_PARAMS.OFFSET) : -1)
-                .pageSize(args.containsKey(Const.ES_PARAMS.PAGE_SIZE) ?  (int) args.get(Const.ES_PARAMS.PAGE_SIZE) : -1)
+                .pageSize(getPageSize(args))
                 .orderBy(getOrderByText(args))
                 .sortDirection(getSortType())
                 .build();
+    }
+
+    private int getPageSize(Map<String, Object> args) {
+        if (!args.containsKey(Const.ES_PARAMS.PAGE_SIZE)) return -1;
+        return Math.min((int) args.get(Const.ES_PARAMS.PAGE_SIZE), Const.ES_UNITS.MAX_SIZE);
     }
 
     private String getOrderByText(Map<String, Object> args) {

@@ -5,10 +5,10 @@
   become: yes
 
   tasks:
-    - name: deploy stage for ctdc frontend
+    - name: deploy stage for ctdc backend
       include_role:
         name: ctdc
-        tasks_from: deploy-frontend
+        tasks_from: deploy-backend
       vars:
         project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3

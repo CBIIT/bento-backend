@@ -1,0 +1,46 @@
+---
+#install aws collection
+- name: install ansible collections
+  include_role:
+    name: ctdc
+    tasks_from: collections
+
+#docker login
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: deploy ecs
+  include_role:
+    name: common
+    tasks_from: ecs
+  vars:
+    container_name: "{{ files_container_name }}"
+    image_version: "{{ files_image_version }}"
+    container_image_url: "{{ files_container_image_url }}"
+    container_port: "{{ files_container_port }}"
+    container_memory: "{{ files_container_memory }}"
+    container_cpu: "{{  files_container_cpu  }}"
+    ecs_cluster_name: "{{ files_ecs_cluster_name }}"
+    container_env:
+      - name: VERSION
+        value: "{{ files_version }}"
+      - name: DATE
+        value: "{{ ansible_date_time.date }}"
+      - name: PROJECT
+        value: "{{ project_name }}"
+      - name: URL_SRC
+        value: "{{ url_src }}"
+      - name: AUTH_ENABLED
+        value: "{{ auth_enabled }}"
+      - name: INDEXD_URL
+        value: "{{  }}"
+      - name: BACKEND_URL
+        value: "https://{{ project_name }}-{{ tier }}.bento-tools.org/v1/graphql/"
+      - name: NEW_RELIC_LICENSE_KEY
+        value: "{{ newrelic_license_key }}"
+      - name: NEW_RELIC_APP_NAME
+        value: "{{ project_name }}-{{tier}}-files"
+      - name: NEW_RELIC_LABELS
+        value: "Project:{{ project_name }};Environment:{{ tier }}"

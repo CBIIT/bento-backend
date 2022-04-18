@@ -8,7 +8,7 @@
     - name: deploy stage for ctdc frontend
       include_role:
         name: ctdc
-        tasks_from: deploy-frontend
+        tasks_from: deploy-files
       vars:
         project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3

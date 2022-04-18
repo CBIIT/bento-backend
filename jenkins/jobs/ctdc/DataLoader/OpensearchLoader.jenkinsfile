@@ -1,0 +1,134 @@
+pipeline {
+	agent {
+		node {
+			//label 'data-loader'
+			label 'docker-dataloader'
+		}
+	}
+	parameters {
+	extendedChoice(
+            name: 'Environment',
+            defaultValue: 'dev',
+            description: 'Choose the environment to build',
+            type: 'PT_SINGLE_SELECT',
+            value: 'dev,qa' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master',
+        name: 'Dataloader_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'master', 
+        name: 'Backend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-backend')
+    gitParameter(branchFilter: 'origin/(.*)', 
+        defaultValue: 'main',
+        name: 'Frontend_Branch', 
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false, 
+        selectedValue: 'DEFAULT', 
+        sortMode: 'ASCENDING_SMART', 
+        tagFilter: '*', 
+        useRepository: 'https://github.com/CBIIT/bento-ctdc-frontend')
+    gitParameter(branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'Model_Branch',
+            type: 'PT_BRANCH_TAG',
+            quickFilterEnabled: false,
+            selectedValue: 'DEFAULT',
+            sortMode: 'ASCENDING_SMART',
+            tagFilter: '*',
+            useRepository: 'https://github.com/CBIIT/ctdc-model')
+    }
+    options {
+      ansiColor('xterm')
+    }
+    tools {
+  	  maven 'Default' 
+      jdk 'Default' 
+    }
+    stages {
+  	  stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Dataloader_Branch}"]], 
+  				doGenerateSubmoduleConfigurations: 
+  				false, extensions: [], submoduleCfg: [], 
+                recursiveSubmodules: true,
+  				userRemoteConfigs: 
+  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Frontend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'ctdc-frontend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
+			
+			checkout([$class: 'GitSCM',
+				branches: [[name: "${params.Backend_Branch}"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'bento-backend']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/bento-backend']]])
+            
+			dir('ctdc-model'){
+                git branch: "${params.Model_Branch}",
+                url: 'https://github.com/CBIIT/ctdc-model'}
+			
+			sh 'git submodule update --init'
+  			
+			checkout([$class: 'GitSCM',
+				//branches: [[name: "master"]],
+				branches: [[name: "ctdc_fargate"]],
+				doGenerateSubmoduleConfigurations: false,
+				extensions: [[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'icdc-devops']],
+				submoduleCfg: [],
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops']]])
+
+  		}
+  	  }
+	
+  	stage('load-es-data'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+		    TIER = "${params.Environment}"
+			PROJECT_NAME = "ctdc"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			ansiblePlaybook( 
+            	playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-opensearch-loader.yml',
+					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+            		colorized: true,
+					extras: '-vvv') 
+ 			}
+ 		}
+    }
+	
+ }
+ 
+  post {
+  
+    always {
+	  cleanWs()
+    }
+	
+  }
+  
+}

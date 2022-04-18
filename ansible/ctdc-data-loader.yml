@@ -8,8 +8,8 @@
   tasks:
     - name: get db ip
       include_role:
-        name: ctdc
-        tasks_from: dataloader-ip
+        name: common
+        tasks_from: neo4j-ip
 
     - name: perform data loading
       include_role:

@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,perf,icdc,prod' )
+        value: 'dev,qa' )
     extendedChoice( 
         name: 'EnableAuthService', 
         defaultValue: 'false', 
@@ -108,8 +108,7 @@ pipeline {
 						tier: "${params.Environment}",
 						project_name: "ctdc"
                     ],
-					colorized: true,
-					extras: '-vvv')
+					colorized: true)
  			}
  		}
   	}

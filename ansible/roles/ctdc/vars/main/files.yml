@@ -15,4 +15,4 @@ files_ecs_cluster_name: "{{ project_name }}-{{ tier }}"
 files_container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
 url_src: INDEXD
 indexd_url: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier}}.indexd_url', nested=true, region='us-east-1' ) }}"
-auth_enabled: false
+auth_enabled: "false"

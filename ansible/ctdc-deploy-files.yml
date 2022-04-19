@@ -5,7 +5,7 @@
   become: yes
 
   tasks:
-    - name: deploy stage for ctdc frontend
+    - name: deploy stage for ctdc files
       include_role:
         name: ctdc
         tasks_from: deploy-files

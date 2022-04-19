@@ -2,7 +2,7 @@
 #install aws collection
 - name: install ansible collections
   include_role:
-    name: ctdc
+    name: common
     tasks_from: collections
 
 #docker login
@@ -35,7 +35,7 @@
       - name: AUTH_ENABLED
         value: "{{ auth_enabled }}"
       - name: INDEXD_URL
-        value: "{{  }}"
+        value: "{{ indexd_url }}"
       - name: BACKEND_URL
         value: "https://{{ project_name }}-{{ tier }}.bento-tools.org/v1/graphql/"
       - name: NEW_RELIC_LICENSE_KEY

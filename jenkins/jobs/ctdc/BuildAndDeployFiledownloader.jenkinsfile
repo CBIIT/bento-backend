@@ -108,7 +108,8 @@ pipeline {
 						tier: "${params.Environment}",
 						project_name: "ctdc"
                     ],
-					colorized: true)
+					colorized: true,
+					extras: '-vvv')
  			}
  		}
   	}

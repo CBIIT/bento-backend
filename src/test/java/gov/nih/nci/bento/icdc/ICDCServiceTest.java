@@ -2,6 +2,7 @@ package gov.nih.nci.bento.icdc;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
+import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.NestedFilter;
@@ -29,8 +30,7 @@ import java.util.*;
 
 import static gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @RunWith( SpringRunner.class )
 @SpringBootTest
@@ -41,6 +41,34 @@ public class ICDCServiceTest {
 
     @Autowired
     TypeMapperImpl typeMapper;
+
+    @Test
+    public void nestedExcludeFilterSearch_Test() throws IOException {
+        Map<String, Object> args = new HashMap<>();
+        args.put("file_format", List.of("bam"));
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.ICDC_INDEX.CASES)
+                                .source(new NestedFilter(
+                                        FilterParam.builder()
+                                                .args(args)
+                                                .selectedField("file_type")
+                                                .nestedPath("files_info")
+                                                .isExcludeFilter(true)
+                                                // List filter fields
+                                                .nestedFields(Set.of("file_format"))
+                                                .build())
+                                        .getSourceFilter()
+                                ))
+                        .typeMapper(typeMapper.getICDCNestedAggregate()).build()
+        );
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        QueryResult queryResult = (QueryResult) result.get("TEST01");
+        MatcherAssert.assertThat(queryResult.getTotalHits(), is(greaterThan(0)));
+    }
 
 
     @Test

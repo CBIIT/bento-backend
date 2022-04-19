@@ -147,6 +147,22 @@ query:
       type: aggregation
       selectedField: breed
     resultType: icdc_aggregation
+#    TODO
+  - name: caseCountByBiobank
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      selectedField: biobank
+    resultType: icdc_aggregation
+  - name: filterCaseCountByBiobank
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: biobank
+    resultType: icdc_aggregation
   - name: caseCountByNeuteredStatus
     index:
       - cases
@@ -299,7 +315,7 @@ query:
       filter: true
       nestedPath: files_info
       nestedFields:
-        - association
+        - file_association
         - file_type
         - file_format
     resultType: icdc_nested_list
@@ -312,7 +328,7 @@ query:
       filter: true
       nestedPath: files_info
       nestedFields:
-        - association
+        - file_association
         - file_type
         - file_format
     resultType: icdc_nested_list
@@ -325,7 +341,7 @@ query:
       filter: true
       nestedPath: files_info
       nestedFields:
-        - association
+        - file_association
         - file_type
         - file_format
     resultType: icdc_nested_list

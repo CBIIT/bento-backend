@@ -71,21 +71,23 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-          ansiblePlaybook( 
+          
+		  wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+            ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-files.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
                      tier: "${params.Environment}",
                      project_name: "ctdc",
-                    ],
-          colorized: true)
-        }
+                ],
+                colorized: true)
+            }
 		  }
   		}
   	}
 
   }
+  
   post {
 
 //    always {

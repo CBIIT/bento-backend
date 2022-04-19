@@ -94,14 +94,14 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID, PROGRAM_ID))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, PROGRAM_ID))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE, PROGRAM_CODE))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_CODE, PROGRAM_CODE))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
@@ -175,7 +175,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, SUBJECT_ID))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, SUBJECT_ID).caseInsensitive(true))
                 );
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
@@ -253,20 +253,20 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, SAMPLE_ID))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, SAMPLE_ID))
                 );
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS, ANATOMIC_SITES_GS))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS, ANATOMIC_SITES_GS))
                 );
 
         SearchSourceBuilder testBuilder03 = new SearchSourceBuilder()
                 .size(1)
                 .sort(Const.BENTO_FIELDS.SAMPLE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS, TISSUE_TYPE_GS))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS, TISSUE_TYPE_GS))
                 );
 
         List<MultipleRequests> requests = List.of(
@@ -331,7 +331,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_ID_GS, FILE_ID))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_ID_GS, FILE_ID))
                 );
 
         SearchSourceBuilder testBuilder02 = new SearchSourceBuilder()
@@ -345,7 +345,7 @@ public class BentoGlobalSearchTest {
                 .size(1)
                 .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .filter(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, FILE_FORMAT))
+                        .filter(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, FILE_FORMAT))
                 );
 
         List<MultipleRequests> requests = List.of(

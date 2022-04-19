@@ -7,8 +7,9 @@ query:
       # Default Sort
       defaultSortField: subject_id_num
       query:
-        - field: subject_id_gs
-          type: term
+        - field: subject_id
+          type: wildcard
+          caseInSensitive: true
         - field: diagnosis_gs
           type: wildcard
           caseInSensitive: true
@@ -26,11 +27,11 @@ query:
       defaultSortField: subject_id_num
       query:
         - field: sample_id_gs
-          type: term
+          type: wildcard
         - field: sample_anatomic_site_gs
-          type: term
+          type: wildcard
         - field: tissue_type_gs
-          type: term
+          type: wildcard
     resultType: global
   - name: globalSearchProgram
     index:
@@ -41,9 +42,9 @@ query:
       defaultSortField: program_id_kw
       query:
         - field: program_id
-          type: term
+          type: wildcard
         - field: program_code
-          type: term
+          type: wildcard
         - field: program_name
           type: wildcard
     resultType: global
@@ -56,11 +57,11 @@ query:
       defaultSortField: study_id_kw
       query:
         - field: study_id
-          type: term
+          type: wildcard
         - field: study_name
-          type: term
+          type: wildcard
         - field: study_type
-          type: term
+          type: wildcard
     resultType: global
   - name: globalSearchFile
     index:
@@ -71,12 +72,12 @@ query:
       defaultSortField: file_id_num
       query:
         - field: file_id_gs
-          type: term
+          type: wildcard
         - field: file_name
           type: wildcard
           caseInSensitive: true
         - field: file_format_gs
-          type: term
+          type: wildcard
     resultType: global
   # About Page
   # Always Set offset= 0 and default-size=10000

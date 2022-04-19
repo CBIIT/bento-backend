@@ -694,7 +694,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .query(
                         addConditionalQuery(
                                 new BoolQueryBuilder()
-                                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, param.getSearchText()))
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.SUBJECT_ID_GS, param.getSearchText()).caseInsensitive(true))
                                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.DIGNOSIS_GS, "*" + param.getSearchText()+ "*").caseInsensitive(true)),
                                 // Set Conditional Integer Query
                                 QueryBuilders.termQuery(Const.BENTO_FIELDS.AGE_AT_INDEX,StrUtil.getIntText(param.getSearchText())))
@@ -724,9 +724,9 @@ public class BentoQueryImpl implements BentoQuery {
                 .from(tableParam.getOffSet())
                 .sort(Const.BENTO_FIELDS.SUBJECT_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.SAMPLE_ID_GS, param.getSearchText()).caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.SAMPLE_ANATOMIC_SITE_GS, param.getSearchText()).caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.TISSUE_TYPE_GS, param.getSearchText()).caseInsensitive(true))
                 );
         return MultipleRequests.builder()
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_SAMPLE)
@@ -752,8 +752,8 @@ public class BentoQueryImpl implements BentoQuery {
                 .from(tableParam.getOffSet())
                 .sort(Const.BENTO_FIELDS.PROGRAM_ID_KW, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_ID, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROGRAM_CODE, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_ID, param.getSearchText()).caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_CODE, param.getSearchText()).caseInsensitive(true))
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROGRAM_NAME, "*" + param.getSearchText() + "*").caseInsensitive(true))
                 );
 
@@ -778,9 +778,9 @@ public class BentoQueryImpl implements BentoQuery {
                 .from(tableParam.getOffSet())
                 .sort(Const.BENTO_FIELDS.STUDY_ID_KW, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_ID, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_NAME, param.getSearchText()))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.STUDY_TYPE, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_ID, param.getSearchText()).caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_NAME, param.getSearchText()).caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE, param.getSearchText()).caseInsensitive(true))
                 );
         return MultipleRequests.builder()
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_STUDIES)
@@ -805,9 +805,9 @@ public class BentoQueryImpl implements BentoQuery {
                 .from(tableParam.getOffSet())
                 .sort(Const.BENTO_FIELDS.FILE_ID_NUM, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_ID_GS, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_ID_GS, param.getSearchText()).caseInsensitive(true))
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_NAME, "*" + param.getSearchText() + "*" ).caseInsensitive(true))
-                        .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, param.getSearchText()))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.FILE_FORMAT_GS, param.getSearchText()).caseInsensitive(true))
                 );
         return MultipleRequests.builder()
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_FILE)

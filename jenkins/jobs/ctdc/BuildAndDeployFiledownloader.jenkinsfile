@@ -106,7 +106,7 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					extraVars: [
 						tier: "${params.Environment}",
-						project: "ctdc"
+						project_name: "ctdc"
                     ],
 					colorized: true)
  			}

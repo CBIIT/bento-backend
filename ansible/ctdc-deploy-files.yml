@@ -1,7 +1,7 @@
 - name: ctdc deploy pipeline
   hosts: bento
   connection: local
-  gather_facts: no
+  gather_facts: yes
   become: yes
 
   tasks:

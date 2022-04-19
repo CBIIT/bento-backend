@@ -1,4 +1,3 @@
-
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
@@ -28,182 +27,105 @@ def sendSlackMessage() {
     }
 }
 
-
 pipeline {
-	agent {
-		node {
-			label 'cicd_microservice'
-		}
+
+  agent {
+	node {
+      label 'cicd_microservice'
 	}
-	parameters {
+  }
+	
+  parameters {
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa' )
-	booleanParam(
+        value: 'dev,qa')
+    booleanParam(
 		defaultValue: false,
 		description: 'Reload Elasticsearch data',
 		name: 'Reload_ES_Data')
-
-//	gitParameter(branchFilter: 'origin/(.*)', 
-//        defaultValue: 'integration', 
-//        name: 'Frontend_Image', 
-//        type: 'PT_BRANCH_TAG',
-//        quickFilterEnabled: false, 
-//        selectedValue: 'DEFAULT', 
-//        sortMode: 'ASCENDING_SMART', 
-//        tagFilter: '*', 
-//        useRepository: 'https://github.com/CBIIT/bento-frontend')
-//
-//	The Frontend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
-//	The GUI definition for this parameter should follow Environment and use the following values:
-//	
-//	Script:
-//		branch_name = Branch
-//
-//		def cmd = "/usr/local/bin/aws ecr list-images --repository-name bento-frontend --filter tagStatus=TAGGED --region us-east-1 --output text"
-//		
-//		def ecr_images_json = cmd.execute()
-//		ecr_images_json.waitFor()
-//		
-//		def ecr_images_list = ecr_images_json.text.readLines().collect { it.substring(it.lastIndexOf("\t") + 1) }
-//		ecr_images_list.removeAll(['latest'] as Object[])
-//		ecr_images_list.removeAll { it.contains('production') }
-//		
-//		List tagnames = ecr_images_list.sort()
-//		
-//		if(!branch_name.equals("Show All Tags")) {
-//		  def filteredtags = tagnames.findAll { it.contains branch_name }
-//		  return filteredtags
-//		  } else {
-//		      return tagnames
-//		      }
-//		
-//	Fallback Script:
-//		return ['integration']
-//		
-//		NOTE: this sets the default frontend branch to "integration" and is required for builds triggered from SCM polling.
-//		
-//	Referenced parameters:
-//		Environment
-
-//    gitParameter(branchFilter: 'origin/(.*)', 
-//        defaultValue: 'Integration', 
-//        name: 'Backend_Image', 
-//        type: 'PT_BRANCH_TAG',
-//        quickFilterEnabled: false, 
-//        selectedValue: 'DEFAULT', 
-//        sortMode: 'ASCENDING_SMART', 
-//        tagFilter: '*', 
-//        useRepository: 'https://github.com/CBIIT/bento-backend')
-//
-//	The Backend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
-//	The GUI definition for this parameter should follow Frontend_Image and use the following values:
-//	
-//	Script:
-//		front_tag = Frontend_Image
-//		branch_name = Branch
-//		
-//		def cmd = "/usr/local/bin/aws ecr list-images --repository-name bento-backend --filter tagStatus=TAGGED --region us-east-1 --output text"
-//		
-//		def ecr_images_json = cmd.execute()
-//		ecr_images_json.waitFor()
-//		
-//		def ecr_images_list = ecr_images_json.text.readLines().collect { it.substring(it.lastIndexOf("\t") + 1) }
-//		ecr_images_list.removeAll(['latest'] as Object[])
-//		ecr_images_list.removeAll { it.contains('production') }
-//		
-//		List tagnames = ecr_images_list.sort()
-//		
-//		if(!branch_name.equals("Show All Tags")) {
-//		  def filteredtags = tagnames.findAll { it.toLowerCase().contains branch_name.toLowerCase() }
-//		  for(int i=0; i < filteredtags.size(); i++) {
-//			if(filteredtags.get(i).equalsIgnoreCase(front_tag)) {
-//			  new_value = filteredtags[i] + ':selected'
-//			  filteredtags.set(i, new_value);
-//			  }
-//			}
-//		  return filteredtags
-//		  } else {
-//		    for(int i=0; i < tagnames.size(); i++) {
-//			  if(tagnames.get(i).equalsIgnoreCase(front_tag)) {
-//			    new_value = tagnames[i] + ':selected'
-//			    tagnames.set(i, new_value);
-//			    }
-//			  }
-//		        return tagnames
-//		    }
-//		
-//	Fallback Script:
-//		return ['Integration']
-//		
-//		NOTE: this sets the default backend branch to "Integration" and is required for builds triggered from SCM polling. The branch defined here should math the default for Frontend_Image
-//		
-//	Referenced parameters:
-//		Frontend_Image
-
   }
+  
   options {
   	ansiColor('xterm')
   }
-
+  
   stages{
 
-  	stage('deploy'){
-	  environment {
-	   SLACK_URL = "${SLACK_URL}"
-       TIER = "${params.Environment}"
-       FE_VERSION = "${params.Frontend_Image}"
-       BE_VERSION = "${params.Backend_Image}"
-	   SLACK_CHANNEL = "#system-alerts"
-	   URL_DOMAIN = "bento-tools.org"
-      }
+  	stage('checkout'){
+  		steps {
+				
+  		 checkout( poll: false, 
+			changelog:false,
+			scm: [$class: 'GitSCM', 
+			branches: [[name: '*/master']], 
+			doGenerateSubmoduleConfigurations: false, 
+			extensions: [[$class: 'DisableRemotePoll'],
+			[$class: 'PathRestriction', excludedRegions: '*'], 
+			[$class: 'RelativeTargetDirectory', 
+			relativeTargetDir: 'icdc-devops']], 
+			submoduleCfg: [], 
+			userRemoteConfigs: 
+			[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+        
+        }
+ 
+  	}
+
+	stage('deploy'){
+		environment {
+			SLACK_URL = "${SLACK_URL}"
+			TIER = "${params.Environment}"
+			FE_VERSION = "${params.Frontend_Image}"
+			BE_VERSION = "${params.Backend_Image}"
+			SLACK_CHANNEL = "#system-alerts"
+			URL_DOMAIN = "bento-tools.org"
+		}
   		steps{
-		  node('cicd_microservice') {
-		    checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-  			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-backend.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					colorized: true,
-					extras: '-vvv')
-				}
-					
+					colorized: true)
+ 			}
+			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-frontend.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					colorized: true,
-					extras: '-vvv')
-					
-				}
+					colorized: true)
+ 			}
 
-		  }
- 		}
-  	}
-
+		}
+ 	}
+	
   }
+  
   post {
 
-	cleanup {
-	
-		cleanWs()
-    
+    always {
+      sendSlackMessage()
+    }
+
+    success {
+
+		script {
+			if (params.Reload_ES_Data) {
+				echo 'Reload data to Elasticsearch'
+				build job: 'CTDC/_Data_Processing/Data-Loader-CTDC-ES', parameters: [gitParameter(name: 'Dataloader_Branch', value: 'master'), gitParameter(name: 'Frontend_Branch', value: "${params.Frontend_Tag}"), gitParameter(name: 'Backend_Branch', value: "${params.Backend_Tag}"), gitParameter(name: 'Model_Branch', value: 'master'), extendedChoice(name: 'Environment', value: "${params.Environment}")]
+				}
+			}
+
 	}
+	
+    cleanup {
+  
+      cleanWs()
+    
+    }
+	
   }
+  
 }

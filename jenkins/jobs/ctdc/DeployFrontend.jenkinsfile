@@ -165,8 +165,7 @@ pipeline {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 
-				//branches: [[name: '*/master']], 
-				branches: [[name: '*/ctdc_fargate']], 
+				branches: [[name: '*/master']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -181,8 +180,7 @@ pipeline {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-frontend.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					colorized: true,
-					extras: '-vvv')
+					colorized: true)
  			}
 
 		  }
@@ -192,10 +190,14 @@ pipeline {
   }
   post {
 
+    always {
+     sendSlackMessage()
+    }
+
 	cleanup {
-	
 		cleanWs()
-    
 	}
+	
   }
+  
 }

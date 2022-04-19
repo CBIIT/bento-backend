@@ -11,7 +11,7 @@ neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{stack_name}}/{{tier
 
 # elasticsearch
 enable_es_filter: "true"
-es_schema: es-schema-{{project_name}}.graphql
+es_schema_file: es-schema-{{project_name}}.graphql
 test_queries_file: "not_needed.txt"
 
 #graphql

@@ -1,4 +1,3 @@
-
 import groovy.json.JsonOutput
 
 def sendSlackMessage() {
@@ -28,13 +27,14 @@ def sendSlackMessage() {
     }
 }
 
-
 pipeline { 
+
 	agent {
 		node {
 			label 'cicd_microservice'
 		}
 	}
+
 	parameters {
     extendedChoice( 
         name: 'Environment', 
@@ -42,12 +42,6 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,perf,icdc,prod' )
-    extendedChoice( 
-        name: 'Project', 
-        defaultValue: 'bento', 
-        description: 'Choose project to build', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'bento,gmb,icdc,ctdc,c3dc' )
     extendedChoice( 
         name: 'EnableAuthService', 
         defaultValue: 'false', 
@@ -63,16 +57,14 @@ pipeline {
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
        useRepository: 'https://github.com/CBIIT/bento-files')
-
   }
+
   options {
   	ansiColor('xterm')
   }
-  tools {
-  	maven 'Default' 
-    jdk 'Default' 
-  }
+
   stages{
+
   	stage('checkout'){
   		steps {
 			checkout([$class: 'GitSCM',
@@ -87,7 +79,8 @@ pipeline {
   			checkout( poll: false, 
 				changelog:false,
 				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
+				//branches: [[name: '*/master']], 
+				branches: [[name: '*/ctdc_fargate']], 
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -96,7 +89,6 @@ pipeline {
 				submoduleCfg: [], 
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
-
         }
  
   	}
@@ -109,90 +101,49 @@ pipeline {
  		steps {
 
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
- 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
-                  ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-bento-file-downloader.yml', 
-            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-						extraVars: [
-                       		tier: "${params.Environment}",
-                          project: "${params.Project}"
-                        ],
-						colorized: true)
- 				}
+                ansiblePlaybook(  			
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-filedownloader.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+					extraVars: [
+						tier: "${params.Environment}",
+						project: "ctdc"
+                    ],
+					colorized: true)
  			}
  		}
   	}
 
-  	stage('deploy'){
-	  environment {
-       DOWNLOADER_VERSION = "${params.Downloader_Tag}-${BUILD_NUMBER}"
-       FILES_SLACK_URL = "${FILES_SLACK_URL}"
-      }
-  		steps{
-  		  node('cicd_microservice') {
-		    checkout( changelog:false,
-				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
-				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
-				])
-			
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-            		extraVars: [
-                     tier: "${params.Environment}",
-                     project: "${params.Project}",
-                     auth_enabled: "${params.EnableAuthService}"
-                    ],
-					colorized: true)
-  			}
-		  }
-  		}
-  	}
   }
   post {
 
-	always {
+//	always {
+//      sendSlackMessage()
+//    }
 
-      sendSlackMessage()
-
-    }
-
-	success {
-
-		script {
-			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
-				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
-				cd ${WORKSPACE}/bento-files
-				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
-				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
-				git config user.email "jenkins@bento-tools.org"
-				git config user.name "Bento Jenkins"
-				git tag --no-sign -a ${Downloader_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
-				git push https://${git_token}:x-oauth-basic@${gitURL} --tags 
-				
-				'''
-			
-				}
-			}
-	
-		
-		}
+//	success {
+//
+//		script {
+//			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+//				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
+//				cd ${WORKSPACE}/bento-files
+//				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
+//				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
+//				git config user.email "jenkins@bento-tools.org"
+//				git config user.name "Bento Jenkins"
+//				git tag --no-sign -a ${Downloader_Tag}-bento-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
+//				git push https://${git_token}:x-oauth-basic@${gitURL} --tags 
+//				
+//				'''
+//			
+//				}
+//			}
+//		
+//		}
 
 	cleanup {
-	
 	  cleanWs()
-    
 	}
 
   }
+  
 }

@@ -92,8 +92,7 @@ pipeline {
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
-				//branches: [[name: "master"]],
-				branches: [[name: "ctdc_fargate"]],
+				branches: [[name: "master"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'icdc-devops']],

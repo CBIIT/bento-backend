@@ -114,7 +114,7 @@ query:
       type: default
 #      selectedField: file_id
       selectedField: file_ids
-      # Return All Documents If Fields Below Contain Empty String
+      # Return All Documents If Fields Contained Empty String
       returnAllFields:
         - subject_ids
         - sample_ids
@@ -127,6 +127,9 @@ query:
     filterType:
       type: table
       defaultSortField: file_name
+      # Return All Documents If Fields Contained Empty String
+      returnAllFields:
+        - file_ids
     resultType: default
   - name: findSubjectIdsInList
     index:
@@ -135,4 +138,7 @@ query:
       type: default
       caseInSensitive: true
       size: 10000
+      # Return All Documents If Fields Contained Empty String
+      returnAllFields:
+        - subject_ids
     resultType: default

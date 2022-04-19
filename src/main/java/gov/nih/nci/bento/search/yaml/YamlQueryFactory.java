@@ -205,6 +205,7 @@ public class YamlQueryFactory {
                         .args(param.getArgs())
                         .queryParam(param)
                         .sortDirection(filterType.getSortDirection())
+                        .returnAllFields(filterType.getReturnAllFields())
                         .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();

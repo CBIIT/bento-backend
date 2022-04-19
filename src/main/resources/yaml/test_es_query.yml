@@ -169,7 +169,7 @@ query:
       },
       "query": "query search($subject_ids: [String]) {\n  fileIDsFromList(subject_ids: $subject_ids)\n}\n"
     }
-  - name: Get All Files
+  - name: Get All fileIDsFromList
     request: {
       "operationName": "search",
       "variables": {
@@ -178,6 +178,26 @@ query:
         "file_names": [ "" ]
       },
       "query": "query search($subject_ids: [String],$sample_ids: [String],$file_names: [String]) {\n  fileIDsFromList(subject_ids: $subject_ids,sample_ids: $sample_ids,file_names: $file_names)\n}\n"
+    }
+  - name: Get All filesInList
+    request: {
+      "operationName": "filesInList",
+      "variables": {
+        "offset": 0,
+        "first": 1,
+        "order_by": "file_name",
+        "sort_direction": "asc",
+        "file_ids": [ "" ]
+      },
+      "query": "query filesInList($file_ids: [String], $offset: Int = 0, $first: Int = 10, $order_by: String = \"file_name\", $sort_direction: String = \"asc\") {\n  filesInList(file_ids: $file_ids, offset: $offset, first: $first, order_by: $order_by, sort_direction: $sort_direction) {\n    study_code\n    subject_id\n    file_name\n    file_type\n    association\n    file_description\n    file_format\n    file_size\n    file_id\n    md5sum\n    __typename\n  }\n}\n"
+    }
+  - name: Get All findSubjectIdsInList
+    request: {
+      "operationName": "search",
+      "variables": {
+        "subject_ids": [ "" ]
+      },
+      "query": "query search($subject_ids: [String]) {\n  findSubjectIdsInList(subject_ids: $subject_ids) {\n    subject_id\n    program_id\n    __typename\n  }\n}\n"
     }
   - name: Global Search Program
     request: {

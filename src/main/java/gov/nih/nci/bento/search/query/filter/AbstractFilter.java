@@ -4,11 +4,10 @@ import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.BentoQueryFactory;
 import gov.nih.nci.bento.search.query.QueryFactory;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractFilter {
     // Parameters Exceptions
@@ -36,7 +35,44 @@ public abstract class AbstractFilter {
     }
 
     public SearchSourceBuilder getSourceFilter() {
+        // Exception Case; If all list contains empty string, give all documents
+        Map<String, Object> args = new HashMap<>(param.getArgs());
+        removeSortParams(args);
+        if (isAllContainEmptyString(args, param))
+            return new SearchSourceBuilder()
+                    .query(QueryBuilders.matchAllQuery())
+                    .size(Const.ES_UNITS.MAX_SIZE);
+        // Exception Case; If all arrays are empty, return nothing
+        if (isAllEmptyArray(args, param)) return new SearchSourceBuilder().size(0);
         return getFilter(param, bentoParam);
+    }
+
+
+    private boolean isAllEmptyArray(Map<String, Object> args, FilterParam param) {
+        List<List<String>> values = fillRequiredElements(args, param);
+        boolean emptyArrayCondition = values.size() > 0 && values.stream().allMatch(item->item.size()==0);
+        return isDesiredFieldsExisted(args, param) && emptyArrayCondition;
+    }
+
+    private boolean isAllContainEmptyString(Map<String, Object> args, FilterParam param) {
+        List<List<String>> values = fillRequiredElements(args, param);
+        boolean emptyStrCondition = values.size() > 0 && values.stream().allMatch(item->item.size()==1 && item.contains(""));
+        return isDesiredFieldsExisted(args, param) && emptyStrCondition;
+    }
+
+    private boolean isDesiredFieldsExisted(Map<String, Object> args, FilterParam param) {
+        Set<String> conditionFieldSet = param.getReturnAllFields();
+        return conditionFieldSet != null && conditionFieldSet.size() > 0 && conditionFieldSet.stream().allMatch(item->args.containsKey(item));
+    }
+
+    private List<List<String>> fillRequiredElements(Map<String, Object> args, FilterParam param) {
+        Set<String> conditionFieldSet = param.getReturnAllFields();
+        List<List<String>> values = new ArrayList<>();
+        if (conditionFieldSet == null) return values;
+        args.forEach((k, v) -> {
+            if (conditionFieldSet.contains(k)) values.add((List<String>) args.get(k));
+        });
+        return values;
     }
 
     abstract SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam);

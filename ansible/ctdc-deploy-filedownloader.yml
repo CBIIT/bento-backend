@@ -1,0 +1,14 @@
+- name: ctdc deploy pipeline
+  hosts: bento
+  connection: local
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: deploy stage for ctdc frontend
+      include_role:
+        name: ctdc
+        tasks_from: deploy-filedownloader
+      vars:
+        project_name: ctdc
+        ansible_python_interpreter: /usr/bin/python3

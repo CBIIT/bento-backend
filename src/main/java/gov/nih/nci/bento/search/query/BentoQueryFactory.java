@@ -7,7 +7,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class BentoQueryFactory extends QueryFactory {
 
@@ -32,8 +31,7 @@ public class BentoQueryFactory extends QueryFactory {
             } else {
                 List<String> list = (List<String>) args.get(key);
                 // Skip to Filter Nested Fields
-                Optional<String> nestedPath = Optional.ofNullable(filterParam.getNestedPath());
-                if (list.size() > 0 && nestedPath.isEmpty()) {
+                if (list.size() > 0 && !filterParam.getNestedFields().contains(key)) {
                     QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
                     boolBuilder.filter(builder);
                 }

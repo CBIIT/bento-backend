@@ -77,6 +77,7 @@ public class Const {
         public static final int DEFAULT_SIZE = 10;
         public static final int MAX_SIZE = 10000;
         public static final String GS_HIGHLIGHT_DELIMITER = "$";
+        public static final String KEYWORD = ".keyword";
     }
 
     public static class ES_PARAMS {

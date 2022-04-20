@@ -779,8 +779,8 @@ public class BentoQueryImpl implements BentoQuery {
                 .sort(Const.BENTO_FIELDS.STUDY_ID_KW, SortOrder.DESC)
                 .query(new BoolQueryBuilder()
                         .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_ID, param.getSearchText()).caseInsensitive(true))
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_NAME, param.getSearchText()).caseInsensitive(true))
-                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE, param.getSearchText()).caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_NAME + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*").caseInsensitive(true))
+                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.STUDY_TYPE + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*").caseInsensitive(true))
                 );
         return MultipleRequests.builder()
                 .name(Const.BENTO_FIELDS.GLOBAL_SEARCH_STUDIES)
@@ -834,10 +834,10 @@ public class BentoQueryImpl implements BentoQuery {
                 .query(
                         addConditionalQuery(
                                 new BoolQueryBuilder()
-                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + ".keyword", "*" + param.getSearchText() + "*").caseInsensitive(true))
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.VALUE + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*").caseInsensitive(true))
                                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_NAME, param.getSearchText()))
                                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.PROPERTY_TYPE, param.getSearchText()))
-                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + ".keyword", "*" + param.getSearchText() + "*").caseInsensitive(true))
+                                        .should(QueryBuilders.wildcardQuery(Const.BENTO_FIELDS.PROPERTY_DESCRIPTION + Const.ES_UNITS.KEYWORD, "*" + param.getSearchText() + "*").caseInsensitive(true))
                                         .should(QueryBuilders.termQuery(Const.BENTO_FIELDS.NODE_NAME, param.getSearchText())),
                                 // Set Conditional Bool Query
                                 QueryBuilders.matchQuery(Const.BENTO_FIELDS.PROPERTY_REQUIRED,StrUtil.getBoolText(param.getSearchText())))

@@ -1,0 +1,13 @@
+---
+- name: load data to elasticsearch
+  hosts: all
+  connection: local
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: perform data loading
+      include_role:
+        name: data-processing
+        tasks_from: bento-es-loader
+        vars_from: ctdc_es 

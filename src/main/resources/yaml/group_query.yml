@@ -21,9 +21,9 @@ groups:
       index:
         - subjects
       filterType:
-        # Get total number of documents in ES index
-        type: number_of_docs
-      resultType: int_total_count
+        type: aggregation
+        selectedField: subject_id
+      resultType: int_total_aggregation
     - name: numberOfSamples
       index:
         - subjects
@@ -35,9 +35,6 @@ groups:
         nestedFields:
           - composition
           - tissue_type
-#      filterType:
-#        # Get total number of documents in ES index
-#        type: number_of_docs
       resultType: nested_total
     - name: numberOfLabProcedures
       index:

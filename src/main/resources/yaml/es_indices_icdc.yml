@@ -8,8 +8,8 @@ Indices:
 
     mapping:
       # properties used as facet filters (can be also used to return data), name matches GraphQL parameter names
-      #      program:
-      #        type: keyword
+      program:
+        type: keyword
       study_code:
         type: keyword
       #        TODO TOBE DELETED
@@ -19,8 +19,6 @@ Indices:
         type: keyword
       biobank:
         type: keyword
-      #      study_participation:
-      #        type: keyword
       breed:
         type: keyword
       diagnosis:
@@ -35,22 +33,6 @@ Indices:
         type: keyword
       neutered_status:
         type: keyword
-
-      #      sample_type:
-      #        type: keyword
-      #      sample_pathology:
-      #        type: keyword
-      #      sample_site:
-      #        type: keyword
-      #
-      #      file_association:
-      #        type: keyword
-      #      file_type:
-      #        type: keyword
-      #      file_format:
-      #        type: keyword
-
-      # properties used in list search, could also used in return data
       case_id:
         type: keyword
       # TODO To Be DEELTED
@@ -94,6 +76,18 @@ Indices:
       clinical_study_designation:
         type: keyword
       study_files:
+        type: keyword
+      sample_site:
+        type: keyword
+      sample_type:
+        type: keyword
+      sample_pathology:
+        type: keyword
+      file_association:
+        type: keyword
+      file_type:
+        type: keyword
+      file_format:
         type: keyword
       program_info:
         type: nested
@@ -204,10 +198,17 @@ Indices:
         diag.concurrent_disease as concurrent_disease,
         diag.concurrent_disease_type as concurrent_disease_type,
         a.arm as arm,
+        COLLECT(DISTINCT(samp.sample_site)) AS sample_site,
+        COLLECT(DISTINCT(samp.summarized_sample_type)) AS sample_type,
+        COLLECT(DISTINCT(samp.specific_sample_pathology)) AS sample_pathology,
+        CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END AS file_association,
+        COLLECT(DISTINCT(f.file_type)) AS file_type,
+        COLLECT(DISTINCT(f.file_format)) AS file_format,
         COLLECT(DISTINCT (ff.uuid)) AS study_files,
         COLLECT(DISTINCT(f.uuid)) AS files,
         CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
         s.clinical_study_designation as clinical_study_designation,
+        COLLECT(DISTINCT p.program_acronym) AS program,        
         COLLECT(DISTINCT {program_acronym: p.program_acronym,program:p.program_acronym}) AS program_info,
         COLLECT(DISTINCT {sample_id: samp.sample_id,
                           sample_ids: samp.sample_id,

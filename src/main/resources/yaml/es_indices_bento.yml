@@ -547,6 +547,7 @@ Indices:
         type: keyword
       study_id_kw:
         type: keyword
+      #      TODO DOUBLE CHECK WHY KEYWORD
       study_name:
         type: text
         fields:

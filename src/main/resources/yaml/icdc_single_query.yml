@@ -84,13 +84,17 @@ query:
       type: number_of_docs
     resultType: int_total_count
   - name: numberOfSamples
-    #    todo needs filter
     index:
-      - samples
+      - cases
     filterType:
-      # Get total number of documents in ES index
-      type: number_of_docs
-    resultType: int_total_count
+      type: nested
+      selectedField: sample_id
+      nestedPath: samples_info
+      nestedFields:
+        - sample_pathology
+        - sample_site
+        - sample_type
+    resultType: nested_total
   - name: numberOfFiles
     index:
       - files
@@ -107,11 +111,23 @@ query:
     resultType: int_total_aggregation
   - name: numberOfPrograms
     index:
-      - program
+      - cases
     filterType:
-      # Get total number of documents in ES index
-      type: number_of_docs
-    resultType: int_total_count
+      type: nested
+      selectedField: program
+      nestedFields:
+        - program
+      nestedPath: program_info
+    resultType: nested_total
+
+
+#  - name: numberOfPrograms
+#    index:
+#      - program
+#    filterType:
+#      # Get total number of documents in ES index
+#      type: number_of_docs
+#    resultType: int_total_count
 #    TODO
 #  - name: numberOfAliquots
 #    index:
@@ -201,7 +217,7 @@ query:
       filter: true
       nestedPath: program_info
       nestedFields:
-        - program_acronym
+        - program
     resultType: icdc_nested_list
   - name: filterCaseCountByStudyType
     index:
@@ -351,7 +367,7 @@ query:
     filterType:
       type: aggregation
       filter: true
-      selectedField: canine_individual
+      selectedField: study_participation
     resultType: icdc_aggregation
   - name: caseOverviewPaged
     index:

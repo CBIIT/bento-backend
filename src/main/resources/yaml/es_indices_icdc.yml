@@ -12,10 +12,13 @@ Indices:
       #        type: keyword
       study_code:
         type: keyword
+      #        TODO TOBE DELETED
+      study:
+        type: keyword
       study_type:
         type: keyword
-      #      biobank:
-      #        type: keyword
+      biobank:
+        type: keyword
       #      study_participation:
       #        type: keyword
       breed:
@@ -50,7 +53,7 @@ Indices:
       # properties used in list search, could also used in return data
       case_id:
         type: keyword
-      # TODO To Be DELETED
+      # TODO To Be DEELTED
       case_ids:
         type: keyword
       # properties used in return data, name can be different from GraphQL property name
@@ -86,7 +89,7 @@ Indices:
         type: keyword
       arm:
         type: keyword
-      canine_individual:
+      study_participation:
         type: keyword
       clinical_study_designation:
         type: keyword
@@ -149,12 +152,19 @@ Indices:
             type: keyword
           file_type:
             type: keyword
+          file_association:
+            type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (c:case)
+      OPTIONAL MATCH (r:registration)-->(c)-->(sty:study)
+      WHERE NOT r.registration_origin = sty.clinical_study_designation
+      WITH DISTINCT c, COLLECT(DISTINCT c.case_id) as biobank_cases,r
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
       OPTIONAL MATCH (s:study)<--(c)
+      OPTIONAL MATCH (reg:registration)-->(c)
       OPTIONAL MATCH (c)-->(ss:study)<--(ff:file)
+      OPTIONAL MATCH (parent)<--(ff:file)
       OPTIONAL MATCH (c)<--(demo:demographic)
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)-->(co:cohort)
@@ -164,11 +174,13 @@ Indices:
       OPTIONAL MATCH (ss:study)<-[:member_of]-(c)  
       OPTIONAL MATCH (p:program)<--(s:study)<--(c)
       OPTIONAL MATCH (c)<--(samp:sample)
-      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci,p,samp,ff
+      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci,p,samp,ff,parent,biobank_cases,r
       return
         c.case_id AS case_id,
         c.case_id AS case_ids,
+        CASE c.case_id IN biobank_cases and NOT r.registration_origin = s.clinical_study_designation WHEN True THEN r.registration_origin ELSE 'Not Applicable' END AS biobank,
         s.clinical_study_designation AS study_code,
+        s.clinical_study_designation AS study,
         s.clinical_study_type AS study_type,
         co.cohort_description AS cohort,
         demo.breed AS breed,
@@ -194,7 +206,7 @@ Indices:
         a.arm as arm,
         COLLECT(DISTINCT (ff.uuid)) AS study_files,
         COLLECT(DISTINCT(f.uuid)) AS files,
-        CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS canine_individual,
+        CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
         s.clinical_study_designation as clinical_study_designation,
         COLLECT(DISTINCT {program_acronym: p.program_acronym,program:p.program_acronym}) AS program_info,
         COLLECT(DISTINCT {sample_id: samp.sample_id,
@@ -213,6 +225,7 @@ Indices:
                           comment:samp.comment}) AS samples_info,
         COLLECT(DISTINCT {file_uuid: f.uuid,
                   file_uuids: f.uuid,
+                  file_association: CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END,
                   file_size: f.file_size,
                   file_format: f.file_format,
                   file_description: f.file_description,

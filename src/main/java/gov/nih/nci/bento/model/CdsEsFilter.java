@@ -273,6 +273,11 @@ public class CdsEsFilter implements DataFetcher {
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"sample_id", "sample_id"},
 
+                new String[]{"experimental_strategy", "experimental_strategies"},
+                new String[]{"gender", "genders"},
+                new String[]{"site", "site"},
+                new String[]{"analyte_type", "analyte_type"},
+                new String[]{"is_tumor", "is_tumor"},
                 new String[]{"file_name", "file_name"},
                 new String[]{"file_type", "file_type"},
                 new String[]{"file_size", "file_size"},

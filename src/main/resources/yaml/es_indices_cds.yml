@@ -162,6 +162,10 @@ Indices:
 
       phs_accession:
         type: keyword
+      analyte_type:
+        type: keyword
+      site:
+        type: keyword
       file_id:
         type: keyword
       file_name:
@@ -194,6 +198,8 @@ Indices:
           f.file_name AS file_names,
 
           s.phs_accession AS phs_accession,
+          samp.sample_anatomic_site AS site,
+          samp.sample_type AS analyte_type,
           f.file_id AS file_id,
           f.file_name AS file_name,
           f.file_type AS file_type,

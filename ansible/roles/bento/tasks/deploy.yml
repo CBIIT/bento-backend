@@ -10,12 +10,6 @@
   set_fact:
     ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
 
-- name: install aws collection
-  command: /usr/local/bin/ansible-galaxy collection install {{item}}
-  loop:
-    -  amazon.aws
-    -  community.aws
-
 - name: login into ecr
   shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
   ignore_errors: True
@@ -28,7 +22,7 @@
 ############################################################################################################################
 
 - name: create task definition - {{ project }}-backend
-  community.aws.ecs_taskdefinition:
+  ecs_taskdefinition:
     containers:
     - name: backend
       essential: true
@@ -94,7 +88,7 @@
   register: task_output
 
 - name: create task definition - {{ project }}-frontend
-  community.aws.ecs_taskdefinition:
+  ecs_taskdefinition:
     containers:
     - name: frontend
       essential: true
@@ -144,7 +138,7 @@
   register: task_output
 
 - name: create task definition - sumo syslog
-  community.aws.ecs_taskdefinition:
+  ecs_taskdefinition:
     containers:
     - name: sumologic-syslog
       essential: true
@@ -172,7 +166,7 @@
   register: task_output
 
 - name: create task definition - sumo docker
-  community.aws.ecs_taskdefinition:
+  ecs_taskdefinition:
     containers:
     - name: sumologic-docker
       essential: true
@@ -205,7 +199,7 @@
   register: task_output
 
 - name: create task definition - newrelic docker
-  community.aws.ecs_taskdefinition:
+  ecs_taskdefinition:
     containers:
     - name: newrelic-docker
       essential: true

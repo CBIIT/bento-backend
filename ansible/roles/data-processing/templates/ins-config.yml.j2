@@ -31,7 +31,7 @@ Config:
   # Validations only, skip loading, can be overridden by -d/--dry-run argument
   dry_run: false
   # Wipe clean database before loading, you'll lose all data!, can be overridden by --wipe-db argument
-  wipe_db: false
+  wipe_db: {{ wipe_db }}
   # Skip backup database step, can be overridden by --no-backup argument
   no_backup: false
   # Automatically confirm deletion and database wiping, without asking user to confirm, can be overridden by -y/--yes argument

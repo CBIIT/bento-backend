@@ -5,8 +5,8 @@
   become: yes
     
   tasks:
-    - name: deploy ppdc-otp
+    - name: deploy mtp frontend
       include_role:
-        name: ppdc-otp
+        name: mtp-frontend
         tasks_from: deploy
   

@@ -191,6 +191,7 @@ pipeline {
                 extraVars: [
                     tier: "${params.Environment}",
                     frontend_version: "${params.Frontend_Tag}"
+					backend_version: "${params.Backend_Tag}"
                     ],
                 become: true,
                 hostKeyChecking: false,

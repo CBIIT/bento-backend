@@ -104,13 +104,11 @@ pipeline {
       name: 'be_commit_id')
 
   }
+
   options {
     ansiColor('xterm')
   }
-  tools {
-    maven 'Default' 
-    jdk 'Default' 
-  }
+
   stages{
     stage('checkout'){
       steps {

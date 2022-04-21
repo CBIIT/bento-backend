@@ -26,7 +26,6 @@
       CONFIG_URL_API: "{% if  tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/v4/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/v4/graphql{% endif %}"
       CONFIG_URL_API_BETA: "{% if tier == 'prod' %}https://{{stack_name}}.bento-tools.org/api/v4/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/v4/graphql{% endif %}"
       frontend_version : "{{ frontend_version }}"
-      backend_version : "{{ backend_version }}"
     restart_policy: always
     ports:
      - "80:80"

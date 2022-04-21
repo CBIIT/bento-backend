@@ -1,12 +1,12 @@
 ---
-- name: deploy stage of ppdc open-target-backend
+- name: deploy stage of mtp backend
   hosts: ppdc-otp-{{tier}}
   gather_facts: yes
   become: yes
     
   tasks:
-    - name: deploy ppdc open-target-backend
+    - name: deploy mtp backend
       include_role:
-        name: open-target-backend
+        name: mtp-backend
         tasks_from: deploy
   

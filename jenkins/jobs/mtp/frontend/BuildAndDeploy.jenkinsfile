@@ -50,7 +50,7 @@ pipeline {
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: 'https://github.com/CBIIT/ppdc-otp-frontend.git')
+       useRepository: 'https://github.com/CBIIT/mtp-frontend.git')
 
 
   }
@@ -72,7 +72,7 @@ pipeline {
 				relativeTargetDir: 'ppdc-otp-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/ppdc-otp-frontend.git']]])
+				[[url: 'https://github.com/CBIIT/mtp-frontend.git']]])
 
   			checkout( poll: false, 
 				changelog:false,
@@ -153,7 +153,7 @@ pipeline {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
           ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/build-ppdc-otp.yml', 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/mtp-build-frontend.yml', 
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   extraVars: [
                     tier: "${params.Environment}",
@@ -185,13 +185,12 @@ pipeline {
        ]){
              sh "cp ${host_file} ${WORKSPACE}/ansible/hosts"
              ansiblePlaybook( 
-                playbook: '${WORKSPACE}/ansible/deploy-ppdc-otp.yml', 
+                playbook: '${WORKSPACE}/ansible/mtp-deploy-frontend.yml', 
                 inventory: '${WORKSPACE}/ansible/hosts', 
                 credentialsId: 'server_ssh_key',
                 extraVars: [
                     tier: "${params.Environment}",
                     frontend_version: "${params.Frontend_Tag}"
-					backend_version: "${params.Backend_Tag}"
                     ],
                 become: true,
                 hostKeyChecking: false,

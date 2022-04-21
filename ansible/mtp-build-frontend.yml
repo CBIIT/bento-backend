@@ -1,5 +1,5 @@
 ---
-- name: ppdc cicd pipeline
+- name: mtp cicd pipeline
   hosts: ppdc-otp
   connection: local
   gather_facts: no
@@ -7,5 +7,5 @@
   tasks:
     - name: This is a build stage
       include_role:
-        name: ppdc-otp
+        name: mtp-frontend
         tasks_from: build

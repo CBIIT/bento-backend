@@ -62,10 +62,7 @@ pipeline {
   options {
   	ansiColor('xterm')
   }
-  tools {
-  	maven 'Default' 
-    jdk 'Default' 
-  }
+
   stages{
 
     stage('Set Environment'){
@@ -185,7 +182,8 @@ pipeline {
        BE_VERSION = "${params.Backend_Image}"
       }
   		steps{
-		  node('cicd_microservice') {
+		  //node('cicd_microservice') {
+		  node('cicd_ansible_2.9') {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 
@@ -202,7 +200,7 @@ pipeline {
   			
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-ins.yml', 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/ins-deploy.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
                     enable_redis_filter: "${params.Enable_Redis_Filter}",

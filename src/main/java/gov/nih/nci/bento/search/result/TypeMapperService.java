@@ -14,6 +14,7 @@ public interface TypeMapperService {
     // TODO ICDC PROJECT TO BE DELETED
     TypeMapper<List<Map<String, Object>>> getICDCAggregate();
     TypeMapper<Integer> getAggregateTotalCnt();
+    TypeMapper<Integer> getNestedAggregateTotalCnt();
     TypeMapper<List<String>> getStrList(String field);
     TypeMapper<Long> getIntTotal();
     TypeMapper<Map<String, Object>> getRange();

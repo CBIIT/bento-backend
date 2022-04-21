@@ -67,9 +67,8 @@ public class Const {
             public static final String SUM_AGG = "sum";
             // TO BE DELETED
             public static final String ICDC_NESTED_LIST = "icdc_nested_list";
+            public static final String NESTED_INT_TOTAL_AGGREGATION = "nested_int_total_count";
         }
-
-
     }
 
 

@@ -115,6 +115,8 @@ public class YamlQueryFactory {
                 return typeMapper.getAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.INT_TOTAL_AGGREGATION:
                 return typeMapper.getAggregateTotalCnt();
+            case Const.YAML_QUERY.RESULT_TYPE.NESTED_INT_TOTAL_AGGREGATION:
+                return typeMapper.getNestedAggregateTotalCnt();
             case Const.YAML_QUERY.RESULT_TYPE.RANGE:
                 return typeMapper.getRange();
             case Const.YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:

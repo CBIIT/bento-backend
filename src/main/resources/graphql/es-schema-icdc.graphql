@@ -111,6 +111,7 @@ type FileOverviewES {
     cohort_description: String
     arm: String
     other_cases: [String]
+    md5sum: String
 }
 
 type CaseGroupCount {
@@ -384,6 +385,24 @@ type QueryType {
                                       file_association: [String] = [],
                                       file_type: [String] = [],
                                       file_format: [String] = []): [CaseGroupCount]
+    filterCaseCountByStudyCodeTest(program:[String] = [],
+                                      study: [String] = [],
+                                      study_type: [String] = [],
+                                      biobank: [String] = [],
+                                      study_participation: [String] = [],
+                                      breed: [String] = [],
+                                      diagnosis: [String] = [],
+                                      disease_site: [String] = [],
+                                      stage_of_disease: [String] = [],
+                                      response_to_treatment: [String] = [],
+                                      sex: [String] = [],
+                                      neutered_status: [String] = [],
+                                      sample_site: [String] = [],
+                                      sample_type: [String] = [],
+                                      sample_pathology: [String] = [],
+                                      file_association: [String] = [],
+                                      file_type: [String] = [],
+                                      file_format: [String] = []): [CaseGroupCount]
     filterCaseCountByFileType(program:[String] = [],
                                       study: [String] = [],
                                       study_type: [String] = [],
@@ -432,4 +451,18 @@ type QueryType {
     caseCountByNeuteredStatus(case_ids: [String] = []): [CaseGroupCount]
     caseCountByStageOfDisease(case_ids: [String] = []): [CaseGroupCount]
     caseCountByDiseaseSite(case_ids: [String] = []): [CaseGroupCount]
+    filesInList(
+        uuids: [String],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverviewES]
+    filesInListDesc(
+        uuids: [String],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverviewES]
 }

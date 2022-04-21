@@ -69,12 +69,12 @@ query:
   - name: numberOfStudies
 #    todo needs filter
     index:
-      - studies
+      - cases
     filterType:
       # Get total number of documents in ES index
-      selectedField: clinical_study_designation
-      type: number_of_docs
-    resultType: int_total_count
+      selectedField: study
+      type: aggregation
+    resultType: int_total_aggregation
   - name: numberOfCases
     #    todo needs filter
     index:
@@ -102,6 +102,14 @@ query:
       # Get total number of documents in ES index
       type: number_of_docs
     resultType: int_total_count
+  - name: filterCaseCountByStudyCodeTest
+    index:
+      - cases
+    filterType:
+      type: aggregation
+      filter: true
+      selectedField: study_code
+    resultType: icdc_aggregation
   - name: numberOfStudyFiles
     index:
       - cases
@@ -118,7 +126,7 @@ query:
       nestedFields:
         - program
       nestedPath: program_info
-    resultType: nested_total
+    resultType: nested_int_total_count
 
 
 #  - name: numberOfPrograms
@@ -324,43 +332,28 @@ query:
     resultType: icdc_nested_list
   - name: filterCaseCountByFileAssociation
     index:
-      - cases
+      - files
     filterType:
-      type: nested
+      type: aggregation
       selectedField: file_association
       filter: true
-      nestedPath: files_info
-      nestedFields:
-        - file_association
-        - file_type
-        - file_format
-    resultType: icdc_nested_list
+    resultType: icdc_aggregation
   - name: filterCaseCountByFileType
     index:
-      - cases
+      - files
     filterType:
-      type: nested
+      type: aggregation
       selectedField: file_type
       filter: true
-      nestedPath: files_info
-      nestedFields:
-        - file_association
-        - file_type
-        - file_format
-    resultType: icdc_nested_list
+    resultType: icdc_aggregation
   - name: filterCaseCountByFileFormat
     index:
-      - cases
+      - files
     filterType:
-      type: nested
+      type: aggregation
       selectedField: file_format
       filter: true
-      nestedPath: files_info
-      nestedFields:
-        - file_association
-        - file_type
-        - file_format
-    resultType: icdc_nested_list
+    resultType: icdc_aggregation
   - name: filterCaseCountByStudyParticipation
     index:
       - cases
@@ -416,4 +409,23 @@ query:
       type: table
       defaultSortField: file_name
       sortDirection: desc
+    resultType: default
+  - name: filesInListDesc
+    index:
+      - files
+    filterType:
+      type: table
+      sortDirection: desc
+      defaultSortField: file_name
+      prioritySort:
+        access_file: file_format
+    resultType: default
+  - name: filesInList
+    index:
+      - files
+    filterType:
+      type: table
+      defaultSortField: file_name
+      prioritySort:
+        access_file: file_format
     resultType: default

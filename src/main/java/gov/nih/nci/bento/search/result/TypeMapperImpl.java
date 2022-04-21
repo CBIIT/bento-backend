@@ -102,7 +102,6 @@ public class TypeMapperImpl implements TypeMapperService {
         };
     }
 
-    @SuppressWarnings("unchecked")
     public TypeMapper<Float> getSumAggregate() {
         return (response) -> {
             Sum agg = response.getAggregations().get(ES_PARAMS.TERMS_AGGS);
@@ -110,15 +109,29 @@ public class TypeMapperImpl implements TypeMapperService {
         };
     }
 
-    @SuppressWarnings("unchecked")
     public TypeMapper<Float> getNestedSumAggregate() {
         return (response) -> {
-            Aggregations aggregate = response.getAggregations();
-            ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
-            // Get Nested Subaggregation
-            ParsedFilter aggFilters = aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+            ParsedFilter aggFilters = getParsedFilter(response);
             Sum nestedSum = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
             return (float) nestedSum.getValue();
+        };
+    }
+
+    private ParsedFilter getParsedFilter(SearchResponse response) {
+        Aggregations aggregate = response.getAggregations();
+        ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
+        // Get Nested Subaggregation
+        return aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+    }
+
+    @SuppressWarnings("unchecked")
+    public TypeMapper<Integer> getNestedAggregateTotalCnt() {
+        return (response) -> {
+            ParsedFilter aggFilters = getParsedFilter(response);
+            ParsedStringTerms aggTerms = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
+            List<Terms.Bucket> buckets = (List<Terms.Bucket>) aggTerms.getBuckets();
+            long totalCount = buckets.size() + aggTerms.getSumOfOtherDocCounts();
+            return (int) totalCount;
         };
     }
 
@@ -224,7 +237,7 @@ public class TypeMapperImpl implements TypeMapperService {
 
 
     public TypeMapper<QueryResult> getNestedAggregate() {
-        return (response) -> getNestedAggregate(response);
+        return this::getNestedAggregate;
     }
 
     public TypeMapper<List<Map<String, Object>>> getNestedAggregateList() {
@@ -233,7 +246,7 @@ public class TypeMapperImpl implements TypeMapperService {
 
     // TODO To Be DELETED
     public TypeMapper<QueryResult> getICDCNestedAggregate() {
-        return (response) -> getICDCNestedAggregate(response);
+        return this::getICDCNestedAggregate;
     }
     // TODO To Be DELETED
     public TypeMapper<List<Map<String, Object>>> getICDCNestedAggregateList() {
@@ -247,12 +260,10 @@ public class TypeMapperImpl implements TypeMapperService {
 
 
     // TODO TO BE DELETED
+    @SuppressWarnings("unchecked")
     private QueryResult getICDCNestedAggregate(SearchResponse response) {
         List<Map<String, Object>> result = new ArrayList<>();
-        Aggregations aggregate = response.getAggregations();
-        ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
-        // Get Nested Subaggregation
-        ParsedFilter aggFilters = aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+        ParsedFilter aggFilters = getParsedFilter(response);
         ParsedStringTerms aggTerms = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
         List<Terms.Bucket> buckets = (List<Terms.Bucket>) aggTerms.getBuckets();
 
@@ -270,12 +281,10 @@ public class TypeMapperImpl implements TypeMapperService {
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     private QueryResult getNestedAggregate(SearchResponse response) {
         List<Map<String, Object>> result = new ArrayList<>();
-        Aggregations aggregate = response.getAggregations();
-        ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);
-        // Get Nested Subaggregation
-        ParsedFilter aggFilters = aggNested.getAggregations().get(ES_PARAMS.NESTED_FILTER);
+        ParsedFilter aggFilters = getParsedFilter(response);
         ParsedStringTerms aggTerms = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
         List<Terms.Bucket> buckets = (List<Terms.Bucket>) aggTerms.getBuckets();
 
@@ -320,7 +329,6 @@ public class TypeMapperImpl implements TypeMapperService {
                                         BENTO_FIELDS.CHILDREN, studies
                                 )
                         );
-
                     }
             );
             return result;

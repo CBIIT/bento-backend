@@ -1,0 +1,160 @@
+ 
+import groovy.json.JsonOutput
+
+def sendSlackMessage() {
+  jenkins_image = ":jenkins:"
+  beer_image = ":beer:"
+  long epoch = System.currentTimeMillis()/1000
+  def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+  
+  def slack = JsonOutput.toJson(
+      [
+            icon_emoji: jenkins_image,
+            attachments: [[
+              title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+              text:  "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}  ${beer_image}\n Details at: ${env.BUILD_URL}console",
+              fallback: "Bento Jenkins Build",
+              color: "${BUILD_COLORS[currentBuild.currentResult]}",
+              footer: "bento devops",
+              ts: epoch,
+              mrkdwn_in: ["footer", "title"],
+           ]]
+        ]
+    )
+    try {
+        sh "curl -X POST -H 'Content-type: application/json' --data '${slack}'  '${SLACK_URL}'"
+    } catch (err) {
+        echo "${err} Slack notify failed"
+    }
+}
+
+
+pipeline {
+	agent {
+		node {
+			label 'data-loader'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,demo' )
+    gitParameter(branchFilter: 'origin/(.*)', 
+       defaultValue: 'main', 
+       name: 'Etl_Tag', 
+       type: 'PT_BRANCH_TAG',
+       quickFilterEnabled: false, 
+       selectedValue: 'DEFAULT', 
+       sortMode: 'ASCENDING_SMART', 
+       tagFilter: '*', 
+       useRepository: 'https://github.com/CBIIT/INS-ETL')
+    string(defaultValue: "etl-digest-files", 
+        description: 'S3 Folder to load data from', 
+        name: 'S3Folder')
+
+  }
+  
+  options {
+  	ansiColor('xterm')
+  }
+
+  stages{
+  	stage('checkout'){
+  		steps {
+
+				checkout([$class: 'GitSCM',
+					branches: [[name: "${params.Etl_Tag}"]],
+					doGenerateSubmoduleConfigurations: false,
+					extensions: [[$class: 'RelativeTargetDirectory',
+					relativeTargetDir: 'INS-ETL']],
+					submoduleCfg: [],
+					userRemoteConfigs: 
+					[[url: 'https://github.com/CBIIT/INS-ETL']]])
+
+  			checkout( poll: false, 
+				changelog:false,
+				scm: [$class: 'GitSCM', 
+				branches: [[name: '*/master']], 
+				doGenerateSubmoduleConfigurations: false, 
+				extensions: [[$class: 'DisableRemotePoll'],
+				[$class: 'PathRestriction', excludedRegions: '*'], 
+				[$class: 'RelativeTargetDirectory', 
+				relativeTargetDir: 'icdc-devops']], 
+				submoduleCfg: [], 
+				userRemoteConfigs: 
+				[[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+  	}
+   
+    stage('Set Environment'){
+      environment {
+       SLACK_URL = "${SLACK_URL}"
+       ETL_VERSION = "${params.Etl_Tag}"
+       S3_FOLDER = "${params.S3Folder}"
+       DEPLOYMENT_TYPE = "${params.Deployment_Type}"
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([usernamePassword(credentialsId: "${params.ProjectName}_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "${params.ProjectName}"
+                  env.SPLIT           = "${params.SplitTransactions}"
+                }
+              break
+              default:
+                withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {
+                  env.TIER  = "dev"
+                }
+              break
+            }
+          }
+        }
+    }
+
+ 	stage('build'){
+      environment {
+       VERSION = "${params.Etl_Tag}"
+       ETL_VERSION = "${params.Etl_Tag}"
+       S3_FOLDER = "${params.S3Folder}"
+      }
+ 		steps {
+
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
+                  ansiblePlaybook(  			
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/ins-etl.yml', 
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+						extraVars: [
+                        tier: "${params.Environment}",
+                        project: "ins",
+                        ],
+						colorized: true)
+ 				  }
+ 			  }
+ 		  }
+    }
+
+  }
+  post {
+
+	always {
+      sendSlackMessage()
+    }
+
+	cleanup {
+	  cleanWs()
+	}
+
+  }
+}

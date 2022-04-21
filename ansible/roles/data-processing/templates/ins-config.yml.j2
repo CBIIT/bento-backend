@@ -1,0 +1,51 @@
+Config:
+  temp_folder: tmp
+  backup_folder: /tmp/data-loader-backups
+
+  neo4j:
+    # Location of Neo4j server, e.g., bolt://127.0.0.1:7687, can be overridden by -i/--uir argument
+    uri: bolt://{{neo4j_ip}}:7687
+    # Neo4j username, can be overridden by -u/--user argument
+    user: neo4j
+    # Neo4j password, if not set here, will try to read from environment variable NEO_PASSWORD. CLI argument -p/--password will overwrite either settings
+    password: {{neo4j_password}}
+
+  # Schema files' locations, usually two file, can be overridden by -s/--schema argument
+  schema:
+    - {{workspace}}/data_loading/model-desc/ins_model_file.yaml
+    - {{workspace}}/data_loading/model-desc/ins_model_properties.yaml
+
+  # Plugin can be used to create additional nodes and relationships
+  plugins:
+    - module: loader_plugins.visit_creator
+      class: VisitCreator
+
+    - module: loader_plugins.individual_creator
+      class: IndividualCreator
+
+  # Property file location, props-icdc.yml, props-ctdc.yml etc. can be overridden by --prop-file argument
+  prop_file: {{workspace}}/data_loading/model-desc/props-ins.yml
+
+  # Skip validations, aka. Cheat Mode, can be overridden by -c/--cheat-mode argument
+  cheat_mode: false
+  # Validations only, skip loading, can be overridden by -d/--dry-run argument
+  dry_run: false
+  # Wipe clean database before loading, you'll lose all data!, can be overridden by --wipe-db argument
+  wipe_db: false
+  # Skip backup database step, can be overridden by --no-backup argument
+  no_backup: false
+  # Automatically confirm deletion and database wiping, without asking user to confirm, can be overridden by -y/--yes argument
+  no_confirmation: false
+  # Max violations to display, default is 10, can be overridden by -M/--max-violations argument
+  max_violations: 10
+  # Split the loading transaction into separate transactions for each file
+  split_transactions: false
+
+  # S3 bucket name, if you are loading from an S3 bucket, can be overridden by -b/--bucket argument
+  s3_bucket:
+  # S3 folder for dataset, will be overridden by --s3-folder argument
+  s3_folder:
+  # Loading mode, can be UPSERT_MODE, NEW_MODE or DELETE_MODE, default is UPSERT_MODE, can be overridden by -m/--mode argument
+  loading_mode: UPSERT_MODE
+  # Location of dataset, can be overridden by --dataset argument
+  dataset: {{workspace}}/data

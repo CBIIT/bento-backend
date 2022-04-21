@@ -1,0 +1,63 @@
+---
+- name: gather instance facts
+  ec2_instance_facts:
+    region: us-east-1
+    filters:
+      "tag:Name": "{{project}}-{{tier}}-neo4j-4"
+      "instance-state-name": running
+      "tag:Environment": "{{tier}}"
+  register: neo4j
+
+- name: set instance name
+  set_fact:
+    neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"
+
+- name: show db 
+  debug:
+    msg: "{{neo4j_ip}}"
+
+- name: Check if tmp directory exist
+  stat:
+    path: "{{workspace}}/tmp"
+  register: stat_result
+
+#- name: Check if tmp {{s3_folder}} exist
+#  stat:
+#    path: "{{workspace}}/{{s3_folder}}"
+#  register: s3folder_result
+
+- name: remove the tmp if exists
+  file:
+    path: "{{workspace}}/tmp"
+    state: absent
+  when: stat_result.stat.exists
+
+#- name: remove the {{s3_folder}} if exists
+#  file:
+#    path: "{{workspace}}/{{s3_folder}}"
+#    state: absent
+#  when: stat_result.stat.exists
+
+- name: update settings
+  template:
+    dest: "{{workspace}}/data_loading/config/config.yml"
+    src: ins-config.yml.j2
+
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/data_loading/requirements.txt"
+    executable: pip3
+
+
+- name: load data
+  shell:
+    cmd: >
+      python3
+      loader.py 
+      config/config.yml
+    chdir: "{{workspace}}/data_loading"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

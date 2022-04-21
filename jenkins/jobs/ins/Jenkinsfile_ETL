@@ -68,7 +68,6 @@ pipeline {
 				checkout([$class: 'GitSCM',
 					branches: [[name: "${params.Etl_Tag}"]],
 					doGenerateSubmoduleConfigurations: false,
-					extensions: [[$class: 'RelativeTargetDirectory',
 					submoduleCfg: [],
 					userRemoteConfigs: 
 					[[url: 'https://github.com/CBIIT/INS-ETL']]])

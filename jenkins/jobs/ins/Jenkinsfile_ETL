@@ -69,7 +69,6 @@ pipeline {
 					branches: [[name: "${params.Etl_Tag}"]],
 					doGenerateSubmoduleConfigurations: false,
 					extensions: [[$class: 'RelativeTargetDirectory',
-					relativeTargetDir: 'INS-ETL']],
 					submoduleCfg: [],
 					userRemoteConfigs: 
 					[[url: 'https://github.com/CBIIT/INS-ETL']]])

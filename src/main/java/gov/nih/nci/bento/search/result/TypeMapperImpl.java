@@ -303,6 +303,37 @@ public class TypeMapperImpl implements TypeMapperService {
     }
 
     @SuppressWarnings("unchecked")
+    public TypeMapper<List<Map<String, Object>>> getICDCArmProgram() {
+        return (response) -> {
+            Aggregations aggregate = response.getAggregations();
+            Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
+            List<Terms.Bucket> buckets = (List<Terms.Bucket>) terms.getBuckets();
+            List<Map<String, Object>> result = new ArrayList<>();
+            buckets.forEach(bucket-> {
+                        Aggregations subAggregate = bucket.getAggregations();
+                        Terms subTerms = subAggregate.get(ES_PARAMS.TERMS_AGGS);
+                        List<Terms.Bucket> subBuckets = (List<Terms.Bucket>) subTerms.getBuckets();
+                        List<Map<String, Object>> studies = new ArrayList<>();
+                        subBuckets.forEach((subBucket)->
+                                studies.add(Map.of(
+                                        ICDC_FIELDS.STUDY,subBucket.getKey(),
+                                        ICDC_FIELDS.CASE_SIZE,subBucket.getDocCount()
+                                ))
+                        );
+                        result.add(
+                                Map.of(
+                                        ICDC_FIELDS.PROGRAM, bucket.getKey(),
+                                        ICDC_FIELDS.CASE_SIZE,bucket.getDocCount(),
+                                        ICDC_FIELDS.STUDIES, studies
+                                )
+                        );
+                    }
+            );
+            return result;
+        };
+    }
+
+    @SuppressWarnings("unchecked")
     public TypeMapper<List<Map<String, Object>>> getArmProgram() {
 
         return (response) -> {

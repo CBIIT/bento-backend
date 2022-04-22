@@ -68,6 +68,7 @@ public class Const {
             // TO BE DELETED
             public static final String ICDC_NESTED_LIST = "icdc_nested_list";
             public static final String NESTED_INT_TOTAL_AGGREGATION = "nested_int_total_count";
+            public static final String ICDC_ARM_PROGRAM = "icdc_arm_program";
         }
     }
 
@@ -119,6 +120,10 @@ public class Const {
         public static final String RESPONSE_TO_TREATMENT = "response_to_treatment";
         public static final String CANINE_INDIVIDUAL = "canine_individual";
         public static final String FILTER_REGISTER_CLINICAL_MATCH = "filter_register_clinical_match";
+        public static final String STUDY = "study";
+        public static final String STUDIES = "studies";
+        public static final String CASE_SIZE = "caseSize";
+        public static final String PROGRAM = "program";
     }
 
     public static class ICDC_INDEX {

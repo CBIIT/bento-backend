@@ -1,324 +1,336 @@
 groups:
-  - name: searchSubjects
+  - name: searchCases
     query:
-    - name: numberOfPrograms
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: program
-      resultType: int_total_aggregation
     - name: numberOfStudies
       index:
-        - subjects
+        - cases
       filterType:
+        # Get total number of documents in ES index
+        selectedField: study
         type: aggregation
-        selectedField: study_info
       resultType: int_total_aggregation
-    - name: numberOfSubjects
+    - name: numberOfCases
       index:
-        - subjects
+        - cases
       filterType:
         # Get total number of documents in ES index
         type: number_of_docs
       resultType: int_total_count
     - name: numberOfSamples
       index:
-        - subjects
+        - cases
       filterType:
         type: nested
         selectedField: sample_id
+        nestedPath: samples_info
         nestedFields:
-          - composition
-          - tissue_type
-        nestedPath: sample_info
-#      filterType:
-#        # Get total number of documents in ES index
-#        type: number_of_docs
+          - sample_pathology
+          - sample_site
+          - sample_type
       resultType: nested_total
-    - name: numberOfLabProcedures
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: lab_procedures
-      resultType: int_total_aggregation
     - name: numberOfFiles
       index:
-        - subjects
+        - files
+      filterType:
+        # Get total number of documents in ES index
+        type: number_of_docs
+      resultType: int_total_count
+#      TODO WITHOUT Access CODE
+    - name: filterCaseCountByStudyCode
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        filter: true
+        selectedField: study_code
+      resultType: icdc_aggregation
+    - name: numberOfStudyFiles
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        selectedField: study_files
+      resultType: int_total_aggregation
+    - name: numberOfPrograms
+      index:
+        - cases
       filterType:
         type: nested
-        selectedField: file_id
+        selectedField: program
+        nestedFields:
+          - program
+        nestedPath: program_info
+      resultType: nested_int_total_count
+  #    TODO
+  #  - name: numberOfAliquots
+  #    index:
+  #      - aliquot
+  #    filterType:
+  #      # Get total number of documents in ES index
+  #      type: number_of_docs
+  #    resultType: int_total_count
+    - name: volumeOfData
+      index:
+        - cases
+      filterType:
+        type: nested_sum
+        selectedField: file_size
+        filter: true
+        nestedPath: files_info
         nestedFields:
           - file_type
-        nestedPath: file_info
-      resultType: nested_total
-    - name: subjectCountByProgram
+          - file_association
+          - file_format
+      resultType: nested_sum
+    - name: caseCountByGender
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        selectedField: program
-      resultType: aggregation
-    - name: filterSubjectCountByProgram
+        selectedField: sex
+      resultType: icdc_aggregation
+    - name: caseCountByBreed
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        # Filter query without selected field
-        selectedField: program
+        selectedField: breed
+      resultType: icdc_aggregation
+    - name: caseCountByBiobank
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        selectedField: biobank
+      resultType: icdc_aggregation
+    - name: filterCaseCountByBiobank
+      index:
+        - cases
+      filterType:
+        type: aggregation
         filter: true
-      resultType: aggregation
-    - name: subjectCountByStudy
+        selectedField: biobank
+      resultType: icdc_aggregation
+    - name: caseCountByNeuteredStatus
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        # Filter query without selected field
-        selectedField: study_info
-      resultType: aggregation
-    - name: filterSubjectCountByStudy
+        selectedField: neutered_status
+      resultType: icdc_aggregation
+    - name: caseCountByStageOfDisease
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        # Filter query without selected field
-        selectedField: study_info
-        filter: true
-      resultType: aggregation
-    - name: subjectCountByDiagnoses
+        selectedField: stage_of_disease
+      resultType: icdc_aggregation
+    - name: caseCountByDiseaseSite
       index:
-        - subjects
+        - cases
+      filterType:
+        type: aggregation
+        selectedField: disease_site
+      resultType: icdc_aggregation
+    - name: caseCountByDiagnosis
+      index:
+        - cases
       filterType:
         type: aggregation
         selectedField: diagnosis
-      resultType: aggregation
-    - name: filterSubjectCountByDiagnoses
+      resultType: icdc_aggregation
+
+    - name: filterCaseCountByProgram
       index:
-        - subjects
+        - cases
+      filterType:
+        type: nested
+        selectedField: program
+        filter: true
+        nestedPath: program_info
+        nestedFields:
+          - program
+      resultType: icdc_nested_list
+    - name: filterCaseCountByStudyType
+      index:
+        - cases
       filterType:
         type: aggregation
-        # Filter query without selected field
+        filter: true
+        selectedField: study_type
+      resultType: icdc_aggregation
+    - name: filterCaseCountByDiagnosis
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        filter: true
         selectedField: diagnosis
+      resultType: icdc_aggregation
+    - name: filterCaseCountByBreed
+      index:
+        - cases
+      filterType:
+        type: aggregation
         filter: true
-      resultType: aggregation
-    - name: subjectCountByRecurrenceScore
+        selectedField: breed
+      resultType: icdc_aggregation
+    - name: filterCaseCountByDiseaseSite
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        selectedField: recurrence_score
-      resultType: aggregation
-    - name: filterSubjectCountByRecurrenceScore
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        # Filter query without selected field
-        selectedField: recurrence_score
         filter: true
-      resultType: aggregation
-    - name: subjectCountByTumorSize
+        selectedField: disease_site
+      resultType: icdc_aggregation
+    - name: filterCaseCountByStageOfDisease
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        selectedField: tumor_size
-      resultType: aggregation
-    - name: filterSubjectCountByTumorSize
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        # Filter query without selected field
-        selectedField: tumor_size
         filter: true
-      resultType: aggregation
-    - name: subjectCountByTumorGrade
+        selectedField: stage_of_disease
+      resultType: icdc_aggregation
+    - name: filterCaseCountByResponseToTreatment
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        selectedField: tumor_grade
-      resultType: aggregation
-    - name: filterSubjectCountByTumorGrade
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: tumor_grade
         filter: true
-      resultType: aggregation
-    - name: subjectCountByErStatus
+        selectedField: response_to_treatment
+      resultType: icdc_aggregation
+    - name: filterCaseCountBySex
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        selectedField: er_status
-      resultType: aggregation
-    - name: filterSubjectCountByErStatus
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: er_status
         filter: true
-      resultType: aggregation
-    - name: subjectCountByPrStatus
+        selectedField: sex
+      resultType: icdc_aggregation
+    - name: filterCaseCountByNeuteredStatus
       index:
-        - subjects
+        - cases
       filterType:
         type: aggregation
-        selectedField: pr_status
-      resultType: aggregation
-    - name: filterSubjectCountByPrStatus
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: pr_status
         filter: true
-      resultType: aggregation
-    - name: subjectCountByChemotherapyRegimen
+        selectedField: neutered_status
+      resultType: icdc_aggregation
+    - name: filterCaseCountBySampleType
       index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: chemotherapy
-      resultType: aggregation
-    - name: filterSubjectCountByChemotherapyRegimen
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: chemotherapy
-        filter: true
-      resultType: aggregation
-    - name: subjectCountByEndocrineTherapy
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: endocrine_therapy
-      resultType: aggregation
-    - name: filterSubjectCountByEndocrineTherapy
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: endocrine_therapy
-        filter: true
-      resultType: aggregation
-    - name: subjectCountByMenopauseStatus
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: menopause_status
-      resultType: aggregation
-    - name: filterSubjectCountByMenopauseStatus
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: menopause_status
-        filter: true
-      resultType: aggregation
-    - name: subjectCountByTissueType
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: tissue_type
-      resultType: aggregation
-    - name: filterSubjectCountByTissueType
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: tissue_type
-        filter: true
-      resultType: aggregation
-    - name: subjectCountByTissueComposition
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: composition
-      resultType: aggregation
-    - name: filterSubjectCountByTissueComposition
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: composition
-        filter: true
-      resultType: aggregation
-    - name: subjectCountByFileAssociation
-      index:
-        - subjects
+        - cases
       filterType:
         type: nested
-        selectedField: association
-        nestedPath: file_info
+        selectedField: sample_type
+        filter: true
+        nestedPath: samples_info
         nestedFields:
-          - file_type
-      resultType: nested_list
-    - name: filterSubjectCountByFileAssociation
+          - sample_type
+          - sample_site
+          - sample_pathology
+      resultType: icdc_nested_list
+    - name: filterCaseCountBySamplePathology
       index:
-        - subjects
+        - cases
       filterType:
         type: nested
+        selectedField: sample_pathology
+        filter: true
+        nestedPath: samples_info
+        nestedFields:
+          - sample_type
+          - sample_site
+          - sample_pathology
+      resultType: icdc_nested_list
+    - name: filterCaseCountBySampleSite
+      index:
+        - cases
+      filterType:
+        type: nested
+        selectedField: sample_site
+        filter: true
+        nestedPath: samples_info
+        nestedFields:
+          - sample_type
+          - sample_site
+          - sample_pathology
+      resultType: icdc_nested_list
+    - name: filterCaseCountByFileAssociation
+      index:
+        - files
+      filterType:
+        type: aggregation
         selectedField: association
         filter: true
-        nestedPath: file_info
-        nestedFields:
-          - file_type
-      resultType: nested_list
-    - name: subjectCountByFileType
-      index:
-        - subjects
-      filterType:
-        type: nested
-        selectedField: file_type
-        nestedPath: file_info
-      resultType: nested_list
-    - name: filterSubjectCountByFileType
+      resultType: icdc_aggregation
+    - name: filterCaseCountByFileType
       index:
         - files
       filterType:
         type: aggregation
         selectedField: file_type
         filter: true
-      resultType: aggregation
-    - name: armsByPrograms
+      resultType: icdc_aggregation
+    - name: filterCaseCountByFileFormat
       index:
-        - subjects
+        - files
+      filterType:
+        type: aggregation
+        selectedField: file_format
+        filter: true
+      resultType: icdc_aggregation
+    - name: filterCaseCountByStudyParticipation
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        filter: true
+        selectedField: study_participation
+      resultType: icdc_aggregation
+    - name: caseCountByProgram
+      index:
+        - cases
+      filterType:
+        type: nested
+        selectedField: program
+        nestedPath: program_info
+        nestedFields:
+          - program
+      resultType: icdc_nested_list
+    - name: caseCountByStudyCode
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        selectedField: study_code
+      resultType: icdc_aggregation
+    - name: caseCountByStudyType
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        selectedField: study_type
+      resultType: icdc_aggregation
+    - name: caseCountByStudyParticipation
+      index:
+        - cases
+      filterType:
+        type: aggregation
+        selectedField: study_participation
+      resultType: icdc_aggregation
+    - name: caseCountByFileFormat
+      index:
+        - files
+      filterType:
+        type: aggregation
+        selectedField: file_format
+      resultType: icdc_aggregation
+    - name: programsAndStudies
+      index:
+        - cases
       filterType:
         type: sub_aggregation
         selectedField: program
-        subAggSelectedField: study_acronym
-      resultType: arm_program
-    - name: subjectCountByLabProcedures
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: lab_procedures
-      resultType: aggregation
-    - name: filterSubjectCountByLabProcedures
-      index:
-        - subjects
-      filterType:
-        type: aggregation
-        selectedField: lab_procedures
-        filter: true
-      resultType: aggregation
-    - name: filterSubjectCountByAge
-      index:
-        - subjects
-      filterType:
-        type: range
-        selectedField: age_at_index
-        filter: true
-      resultType: range
+        #        selectedField: program
+        subAggSelectedField: study
+#      TODO Duplicate Arm Program
+      resultType: icdc_arm_program

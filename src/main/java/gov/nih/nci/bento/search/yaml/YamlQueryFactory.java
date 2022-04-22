@@ -65,19 +65,18 @@ public class YamlQueryFactory {
         logger.info("Yaml File Queries Loaded");
         // Set Single Request API
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
-//        SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES.SINGLE).getInputStream());
         SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_ICDC.SINGLE).getInputStream());
         Map<String, graphql.schema.DataFetcher> result = new HashMap<>();
         singleTypeQuery.getQuery().forEach(q->
                 result.put(q.getName(), env -> createSingleYamlQuery(esService.CreateQueryParam(env), q))
         );
-//        // Set Group Request API
-//        Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
-//        GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_BENTO.GROUP).getInputStream());
-//        groupTypeQuery.getGroups().forEach(group->{
-//            String queryName = group.getName();
-//            result.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
-//        });
+        // Set Group Request API
+        Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
+        GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_ICDC.GROUP).getInputStream());
+        groupTypeQuery.getGroups().forEach(group->{
+            String queryName = group.getName();
+            result.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
+        });
 //        // Set Global Search Request API
 //        Yaml globalYaml = new Yaml(new Constructor(SingleTypeQuery.class));
 //        SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_BENTO.GLOBAL).getInputStream());
@@ -121,6 +120,9 @@ public class YamlQueryFactory {
                 return typeMapper.getRange();
             case Const.YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:
                 return typeMapper.getArmProgram();
+//                TODO DUPLICATE ICDC ARM
+            case Const.YAML_QUERY.RESULT_TYPE.ICDC_ARM_PROGRAM:
+                return typeMapper.getICDCArmProgram();
             case Const.YAML_QUERY.RESULT_TYPE.INT_TOTAL_COUNT:
                 return typeMapper.getIntTotal();
             case Const.YAML_QUERY.RESULT_TYPE.STRING_LIST:

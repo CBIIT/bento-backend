@@ -27,6 +27,17 @@ type CaseOverviewES {
     arm: String
 }
 
+type ProgramStudiesES {
+    program: String
+    caseSize: Int
+    studies: [StudyInfoES]
+}
+
+type StudyInfoES {
+    study: String
+    caseSize: Int
+}
+
 type SampleOverviewES {
     sample_id: String
     case_id: String
@@ -114,7 +125,7 @@ type FileOverviewES {
     md5sum: String
 }
 
-type CaseGroupCount {
+type GroupCountES {
     group: String
     count: Int
 }
@@ -123,360 +134,161 @@ schema {
     query: QueryType
 }
 
-type QueryType {
-
-
+type SearchResultES {
+    numberOfPrograms: Int
     numberOfStudies: Int
     numberOfCases: Int
     numberOfSamples: Int
     numberOfFiles: Int
-    numberOfPrograms: Int
     numberOfStudyFiles: Int
+    numberOfAliquots: Int
     volumeOfData: Float
-    filterCaseCountByBreed(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByProgram(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByStudyType(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByDiagnosis(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByDiseaseSite(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByStageOfDisease(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByResponseToTreatment(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountBySex(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByNeuteredStatus(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountBySampleType(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountBySamplePathology(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountBySampleSite(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByStudyParticipation(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByFileAssociation(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByStudyCodeTest(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByFileType(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByFileFormat(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    filterCaseCountByBiobank(program:[String] = [],
-                                      study: [String] = [],
-                                      study_type: [String] = [],
-                                      biobank: [String] = [],
-                                      study_participation: [String] = [],
-                                      breed: [String] = [],
-                                      diagnosis: [String] = [],
-                                      disease_site: [String] = [],
-                                      stage_of_disease: [String] = [],
-                                      response_to_treatment: [String] = [],
-                                      sex: [String] = [],
-                                      neutered_status: [String] = [],
-                                      sample_site: [String] = [],
-                                      sample_type: [String] = [],
-                                      sample_pathology: [String] = [],
-                                      file_association: [String] = [],
-                                      file_type: [String] = [],
-                                      file_format: [String] = []): [CaseGroupCount]
-    caseOverviewPaged (case_ids: [String] = [], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
-    caseOverviewPagedDesc (case_ids: [String] = [], order_by: String = "", first: Int = 10, offset: Int = 0): [CaseOverviewES]
-    sampleOverview(case_ids: [String] = [], sample_ids: [String] = [], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
-    sampleOverviewDesc(case_ids: [String] = [], sample_ids: [String] = [], order_by: String = "", first: Int = 10, offset: Int = 0): [SampleOverviewES]
-    fileOverview(case_ids: [String] = [], file_uuids: [String] = [], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
-    fileOverviewDesc(case_ids: [String] = [], file_uuids: [String] = [], order_by: String = "", file_association: String, first: Int = 10, offset: Int = 0): [FileOverviewES]
-    caseCountByDiagnosis(case_ids: [String] = []): [CaseGroupCount]
-    caseCountByGender(case_ids: [String] = []): [CaseGroupCount]
-    caseCountByBreed(case_ids: [String] = []): [CaseGroupCount]
-    caseCountByNeuteredStatus(case_ids: [String] = []): [CaseGroupCount]
-    caseCountByStageOfDisease(case_ids: [String] = []): [CaseGroupCount]
-    caseCountByDiseaseSite(case_ids: [String] = []): [CaseGroupCount]
-    filesInList(
-        uuids: [String],
-        order_by: String = "",
+
+    caseCountByDiagnosis: [GroupCountES]
+    caseCountByGender: [GroupCountES]
+    caseCountByBreed: [GroupCountES]
+    caseCountByNeuteredStatus: [GroupCountES]
+    caseCountByStageOfDisease: [GroupCountES]
+    caseCountByDiseaseSite: [GroupCountES]
+    caseCountByProgram: [GroupCountES]
+    caseCountByStudyCode: [GroupCountES]
+    caseCountByStudyType: [GroupCountES]
+    caseCountByBiobank: [GroupCountES]
+    caseCountByStudyParticipation: [GroupCountES]
+    caseCountByFileFormat: [GroupCountES]
+    programsAndStudies: [ProgramStudiesES]
+
+    filterCaseCountByBreed: [GroupCountES]
+    filterCaseCountByProgram: [GroupCountES]
+    filterCaseCountByStudyType: [GroupCountES]
+    filterCaseCountByDiagnosis: [GroupCountES]
+    filterCaseCountByDiseaseSite: [GroupCountES]
+    filterCaseCountByStageOfDisease: [GroupCountES]
+    filterCaseCountByResponseToTreatment: [GroupCountES]
+    filterCaseCountBySex: [GroupCountES]
+    filterCaseCountByNeuteredStatus: [GroupCountES]
+    filterCaseCountBySampleType: [GroupCountES]
+    filterCaseCountBySamplePathology: [GroupCountES]
+    filterCaseCountBySampleSite: [GroupCountES]
+    filterCaseCountByStudyParticipation: [GroupCountES]
+    filterCaseCountByFileAssociation: [GroupCountES]
+    filterCaseCountByStudyCode: [GroupCountES]
+    filterCaseCountByFileType: [GroupCountES]
+    filterCaseCountByFileFormat: [GroupCountES]
+    filterCaseCountByBiobank: [GroupCountES]
+}
+
+
+type QueryType {
+    searchCases (
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+        sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = []
+    ): SearchResultES
+
+    caseOverview (
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+
+        sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = [],
+        order_by: String = "case_ids",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [CaseOverviewES]
+
+    sampleOverview(
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+
+        sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = [],
+        order_by: String = "sample_ids",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SampleOverviewES]
+
+    fileOverview(
+        program: [String] = [],
+        study: [String] = [],
+        study_type: [String] = [],
+        biobank: [String] = [],
+        study_participation: [String] = [],
+        breed: [String] = [],
+        diagnosis: [String] = [],
+        disease_site: [String] = [],
+        stage_of_disease: [String] = [],
+        response_to_treatment: [String] = [],
+        sex: [String] = [],
+        neutered_status: [String] = [],
+
+        sample_site: [String] = [],
+        sample_type: [String] = [],
+        sample_pathology: [String] = [],
+
+        file_association: [String] = [],
+        file_type: [String] = [],
+        file_format: [String] = [],
+        order_by: String = "file_name",
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
     ): [FileOverviewES]
-    filesInListDesc(
+
+    caseCountByDiagnosis(case_ids: [String] = []): [GroupCountES]
+    caseCountByGender(case_ids: [String] = []): [GroupCountES]
+    caseCountByBreed(case_ids: [String] = []): [GroupCountES]
+    caseCountByNeuteredStatus(case_ids: [String] = []): [GroupCountES]
+    caseCountByStageOfDisease(case_ids: [String] = []): [GroupCountES]
+    caseCountByDiseaseSite(case_ids: [String] = []): [GroupCountES]
+    filesInList(
         uuids: [String],
         order_by: String = "",
         sort_direction: String = "ASC",

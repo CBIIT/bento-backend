@@ -1,6 +1,7 @@
 type CaseOverview {
     case_id: String
     trial_code: String
+    trial_id: String
     arm_id: String
     arm_treatment: String
     diagnosis: String

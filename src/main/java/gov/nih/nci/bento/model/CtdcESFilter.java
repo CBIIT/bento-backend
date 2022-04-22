@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,33 +113,61 @@ public class CtdcESFilter implements DataFetcher {
     }
 
     private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
-        List<String> propList = List.of(
-                "case_id",
-                "trial_code",
-                "arm_id",
-                "arm_treatment",
-                "diagnosis",
-                "gender",
-                "race",
-                "ethnicity"
-        );
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"case_id","case_id"},
+                new String[]{"trial_code","clinical_trial_designation"},
+                new String[]{"trial_id","clinical_trial_id"},
+                new String[]{"arm_id","arm_id"},
+                new String[]{"arm_treatment","arm_treatment"},
+                new String[]{"diagnosis","disease"},
+                new String[]{"gender","gender"},
+                new String[]{"race","race"},
+                new String[]{"ethnicity","ethnicity"}
+        };
+
         String defaultSort = "case_id";
-        return overview(CASES_END_POINT, params, defaultSort, propList);
+
+        Map<String, String> mapping = Map.ofEntries(
+            Map.entry("case_id","case_id"),
+            Map.entry("trial_code","clinical_trial_designation"),
+            Map.entry("trial_id","clinical_trial_id"),
+            Map.entry("arm_id","arm_id"),
+            Map.entry("arm_treatment","arm_treatment"),
+            Map.entry("diagnosis","disease"),
+            Map.entry("gender","gender"),
+            Map.entry("race","race"),
+            Map.entry("ethnicity","ethnicity")
+        );
+
+        return overview(CASES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
-        List<String> propList = List.of(
-                "file_name",
-                "association",
-                "description",
-                "file_format",
-                "size",
-                "trial_code",
-                "arm",
-                "case_id"
-        );
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"file_name","file_name"},
+                new String[]{"association","association"},
+                new String[]{"description","description"},
+                new String[]{"file_format","file_format"},
+                new String[]{"size","size"},
+                new String[]{"trial_code","trial_code"},
+                new String[]{"arm","arm"},
+                new String[]{"case_id","case_id"}
+        };
+
         String defaultSort = "file_name";
-        return overview(FILES_END_POINT, params, defaultSort, propList);
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("file_name","file_name"),
+                Map.entry("association","association"),
+                Map.entry("description","description"),
+                Map.entry("file_format","file_format"),
+                Map.entry("size","size"),
+                Map.entry("trial_code","trial_code"),
+                Map.entry("arm","arm"),
+                Map.entry("case_id","case_id")
+        );
+
+        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
     private Map<String, Object> searchCases(Map<String, Object> params) throws IOException {
@@ -662,17 +691,6 @@ public class CtdcESFilter implements DataFetcher {
             data.add(groupCount);
         }
         return data;
-    }
-
-    private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String defaultSort, List<String> propList) throws IOException {
-        String[][] properties = new String[propList.size()][];
-        Map<String, String> mapping = new HashMap<>();
-        for (int i = 0; i < properties.length; i++) {
-            String property = propList.get(i);
-            properties[i] = new String[]{property, property};
-            mapping.put(property, property);
-        }
-        return overview(endpoint, params, properties, defaultSort, mapping);
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {

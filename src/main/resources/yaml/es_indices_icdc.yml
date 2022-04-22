@@ -158,11 +158,11 @@ Indices:
       OPTIONAL MATCH (s:study)<--(c)
       OPTIONAL MATCH (reg:registration)-->(c)
       OPTIONAL MATCH (c)-->(ss:study)<--(ff:file)
-      OPTIONAL MATCH (parent)<--(ff:file)
       OPTIONAL MATCH (c)<--(demo:demographic)
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (f:file)-[*]->(c)
+      OPTIONAL MATCH (parent)<--(f:file)
       OPTIONAL MATCH (co)-->(a:study_arm)
       OPTIONAL MATCH (c)-->(ci:canine_individual)
       OPTIONAL MATCH (ss:study)<-[:member_of]-(c)  
@@ -172,9 +172,9 @@ Indices:
       return
         c.case_id AS case_id,
         c.case_id AS case_ids,
-        CASE c.case_id IN biobank_cases and NOT r.registration_origin = s.clinical_study_designation WHEN True THEN r.registration_origin ELSE 'Not Applicable' END AS biobank,
-        s.clinical_study_designation AS study_code,
-        s.clinical_study_designation AS study,
+        CASE c.case_id IN biobank_cases and NOT r.registration_origin = s.clinical_study_designation WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END AS biobank,
+        (s.clinical_study_designation + '(' + s.accession_id +')') AS study_code,        
+        (s.clinical_study_designation + '(' + s.accession_id +')') AS study,        
         s.clinical_study_type AS study_type,
         co.cohort_description AS cohort,
         demo.breed AS breed,
@@ -226,7 +226,7 @@ Indices:
                           comment:samp.comment}) AS samples_info,
         COLLECT(DISTINCT {file_uuid: f.uuid,
                   file_uuids: f.uuid,
-                  file_association: CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END,
+                  file_association: head(labels(parent)),
                   file_size: f.file_size,
                   file_format: f.file_format,
                   file_description: f.file_description,
@@ -374,28 +374,37 @@ Indices:
     # type mapping for each property of the index
 
     mapping:
+      program:
+        type: keyword
       # properties used in list search, could also used in return data
       case_id:
+        type: keyword
+      case_ids:
         type: keyword
       sample_ids:
         type: keyword
       #      TODO Added
       sample_id:
         type: keyword
+      md5sum:
+        type: keyword
       file_uuids:
         type: keyword
-      #      TODO Added
+      #      TODO TO BE DELETED DUPLICATE
       file_uuid:
         type: keyword
-      #      TODO Added
+      #      TODO TO BE DELETED DUPLICATE
+      uuids:
+        type: keyword
+      #      TODO TO BE DELETED DUPLICATE
       association:
         type: keyword
       file_association:
         type: keyword
 
       # properties used in return data, name can be different from GraphQL property name
-      parent_type:
-        type: keyword
+      #      parent_type:
+      #        type: keyword
       file_name:
         type: keyword
       file_type:
@@ -412,6 +421,13 @@ Indices:
         type: keyword
       study_code:
         type: keyword
+      #        TODO Duplicate Field
+      study:
+        type: keyword
+      study_type:
+        type: keyword
+      study_participation:
+        type: keyword
       sample_site:
         type: keyword
       physical_sample_type:
@@ -420,9 +436,9 @@ Indices:
         type: keyword
       tumor_sample_origin:
         type: keyword
-      summarized_sample_type:
+      sample_type:
         type: keyword
-      specific_sample_pathology:
+      sample_pathology:
         type: keyword
       date_of_sample_collection:
         type: keyword
@@ -448,13 +464,17 @@ Indices:
         type: keyword
       weight:
         type: keyword
-      primary_disease_site:
+      disease_site:
         type: keyword
       stage_of_disease:
         type: keyword
       date_of_diagnosis:
         type: keyword
       histology_cytopathology:
+        type: keyword
+      neutered_status:
+        type: keyword
+      response_to_treatment:
         type: keyword
       histological_grade:
         type: keyword
@@ -476,20 +496,25 @@ Indices:
         type: keyword
       other_cases:
         type: keyword
-      case_id_file_to_all_to_case:
+      biobank:
         type: keyword
-
+      access_file:
+        type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (f:file)
       OPTIONAL MATCH (f)-->(parent)
       OPTIONAL MATCH (parent)-[:of_case]->(cf:case)
-      WITH f, parent, CASE cf WHEN NULL THEN parent ELSE cf END AS c,
+      OPTIONAL MATCH (r:registration)-->(cf)-->(sty:study)
+      WHERE NOT r.registration_origin = sty.clinical_study_designation
+      WITH f, parent, CASE cf WHEN NULL THEN parent ELSE cf END AS c,CASE cf WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf.case_id) END AS biobank_cases,r,
       CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END AS association
       OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
       OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
       OPTIONAL MATCH (c)-[:member_of]->(s:study)
+      OPTIONAL MATCH (p:program)<--(s)<--(c)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+      OPTIONAL MATCH (f:file)-[*]->(ci:canine_individual)
       OPTIONAL MATCH (f)-[*]->(samp:sample)
       OPTIONAL MATCH (enroll:enrollment)-[:of_case]->(c)
       OPTIONAL MATCH (c)-->(co:cohort)
@@ -498,28 +523,41 @@ Indices:
       RETURN DISTINCT
         f.file_name as file_name,
         f.file_type as file_type,
-        association as association,
+        head(labels(parent)) as association,
         association as file_association,
-        head(labels(parent)) as parent_type,
         f.file_description as file_description,
         f.file_format as file_format,
         f.file_size as file_size,
+        CASE f.file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END as access_file,
+        f.md5sum as md5sum,
         c.case_id as case_id,
+        c.case_id as case_ids,
         demo.breed as breed,
         diag.disease_term as diagnosis,
+        diag.best_response AS response_to_treatment,        
+        COLLECT(DISTINCT p.program_acronym) AS program,        
         CASE WHEN s.clinical_study_designation IS NULL
         THEN parent.clinical_study_designation
         ELSE s.clinical_study_designation END AS study_code,
+        CASE WHEN s.clinical_study_designation IS NULL
+        THEN parent.clinical_study_designation
+        ELSE s.clinical_study_designation END AS study,
+        CASE WHEN s.clinical_study_type IS NULL
+        THEN parent.clinical_study_type
+        ELSE s.clinical_study_type END AS study_type,      
+        CASE c.case_id IN biobank_cases and NOT r.registration_origin = s.clinical_study_designation AND r.registration_origin IS NOT NULL WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END AS biobank,
+        CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,        
         f.uuid as file_uuids,
         f.uuid as file_uuid,
+        f.uuid as uuids,
         samp.sample_id AS sample_ids,
         samp.sample_id AS sample_id,
         samp.sample_site as sample_site,
         samp.physical_sample_type as physical_sample_type,
         samp.general_sample_pathology as general_sample_pathology,
         samp.tumor_sample_origin as tumor_sample_origin,
-        samp.summarized_sample_type as summarized_sample_type,
-        samp.specific_sample_pathology as specific_sample_pathology,
+        samp.summarized_sample_type as sample_type,
+        samp.specific_sample_pathology as sample_pathology,
         samp.date_of_sample_collection as date_of_sample_collection,
         samp.tumor_grade as tumor_grade,
         samp.sample_chronology as sample_chronology,
@@ -527,12 +565,13 @@ Indices:
         samp.necropsy_sample as necropsy_sample,
         samp.sample_preservation as sample_preservation,
         samp.comment as comment,
-        i.canine_individual_id AS individual_id,
+        ci.canine_individual_id AS individual_id,
         demo.patient_age_at_enrollment as patient_age_at_enrollment,
+        demo.neutered_indicator AS neutered_status,
         demo.sex as sex,
         demo.neutered_indicator as neutered_indicator,
         demo.weight as weight,
-        diag.primary_disease_site as primary_disease_site,
+        diag.primary_disease_site as disease_site,
         diag.stage_of_disease as stage_of_disease,
         diag.date_of_diagnosis as date_of_diagnosis,
         diag.histology_cytopathology as histology_cytopathology,
@@ -545,8 +584,7 @@ Indices:
         diag.concurrent_disease_type as concurrent_disease_type,
         co.cohort_description as cohort_description,
         a.arm as arm,
-        collect(DISTINCT o.case_id) AS other_cases,
-        fc.case_id AS case_id_file_to_all_to_case
+        collect(DISTINCT o.case_id) AS other_cases
     "
   - index_name: studies
     type: neo4j

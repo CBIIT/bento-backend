@@ -4,6 +4,7 @@
   loop:
     -  amazon.aws
     -  community.aws
+    -  community.docker
     
 
 

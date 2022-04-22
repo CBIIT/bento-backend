@@ -87,9 +87,9 @@ pipeline {
   	}
     stage('build'){
       environment {
-       FE_VERSION = "${params.Frontend_Tag}"
-       BE_VERSION = "${params.Backend_Tag}"
-	   TIER = "${params.Environment}"
+        FE_VERSION = "${params.Frontend_Tag}"
+        BE_VERSION = "${params.Backend_Tag}"
+	      TIER = "${params.Environment}"
       }
       steps {
           wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

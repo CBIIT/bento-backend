@@ -335,7 +335,7 @@ query:
       - files
     filterType:
       type: aggregation
-      selectedField: file_association
+      selectedField: association
       filter: true
     resultType: icdc_aggregation
   - name: filterCaseCountByFileType
@@ -417,8 +417,6 @@ query:
       type: table
       sortDirection: desc
       defaultSortField: file_name
-      prioritySort:
-        access_file: file_format
     resultType: default
   - name: filesInList
     index:
@@ -426,6 +424,4 @@ query:
     filterType:
       type: table
       defaultSortField: file_name
-      prioritySort:
-        access_file: file_format
     resultType: default

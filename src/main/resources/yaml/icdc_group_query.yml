@@ -46,7 +46,7 @@ groups:
       resultType: icdc_aggregation
     - name: numberOfStudyFiles
       index:
-        - cases
+        - files
       filterType:
         type: aggregation
         selectedField: study_files

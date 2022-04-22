@@ -129,6 +129,7 @@ Indices:
             type: keyword
           comment:
             type: keyword
+      # TODO DELETE
       files_info:
         type: nested
         properties:
@@ -428,6 +429,8 @@ Indices:
         type: keyword
       study_participation:
         type: keyword
+      study_files:
+        type: keyword
       sample_site:
         type: keyword
       physical_sample_type:
@@ -520,6 +523,7 @@ Indices:
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (co)-->(a:study_arm)
       OPTIONAL MATCH (f)-[*]->(fc:case)
+      OPTIONAL MATCH (sp:program)<--(ss:study)<--(f)
       RETURN DISTINCT
         f.file_name as file_name,
         f.file_type as file_type,
@@ -534,14 +538,15 @@ Indices:
         c.case_id as case_ids,
         demo.breed as breed,
         diag.disease_term as diagnosis,
-        diag.best_response AS response_to_treatment,        
-        COLLECT(DISTINCT p.program_acronym) AS program,        
+        diag.best_response AS response_to_treatment,
+        CASE head(labels(parent)) WHEN 'study' THEN f.uuid ELSE null END AS study_files,      
+        CASE association WHEN 'study' THEN COLLECT(DISTINCT sp.program_acronym) ELSE COLLECT(DISTINCT p.program_acronym) END AS program,       
         CASE WHEN s.clinical_study_designation IS NULL
-        THEN parent.clinical_study_designation
-        ELSE s.clinical_study_designation END AS study_code,
+        THEN (parent.clinical_study_designation + '(' + parent.accession_id +')')
+        ELSE (s.clinical_study_designation + '(' + s.accession_id +')') END AS study_code,
         CASE WHEN s.clinical_study_designation IS NULL
-        THEN parent.clinical_study_designation
-        ELSE s.clinical_study_designation END AS study,
+        THEN (parent.clinical_study_designation + '(' + parent.accession_id +')')
+        ELSE (s.clinical_study_designation + '(' + s.accession_id +')') END AS study,        
         CASE WHEN s.clinical_study_type IS NULL
         THEN parent.clinical_study_type
         ELSE s.clinical_study_type END AS study_type,      
@@ -567,7 +572,7 @@ Indices:
         samp.comment as comment,
         ci.canine_individual_id AS individual_id,
         demo.patient_age_at_enrollment as patient_age_at_enrollment,
-        demo.neutered_indicator AS neutered_status,
+        demo.neutered_indicator AS neutered_status,    
         demo.sex as sex,
         demo.neutered_indicator as neutered_indicator,
         demo.weight as weight,

@@ -194,6 +194,7 @@ type QueryType {
         experimental_strategies: [String] = [],
         is_tumor: [String] = [],
         accesses: [String] = [],
+        phs_accession: [String] = [],
 
         order_by: String = "",
         sort_direction: String = "ASC",

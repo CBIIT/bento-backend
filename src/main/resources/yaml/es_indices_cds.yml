@@ -45,6 +45,7 @@ Indices:
     cypher_query: "
       MATCH (s:study)<--(p:participant)
       OPTIONAL MATCH (p)<--(samp:sample)
+      OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
           s.study_acronym AS studies,
@@ -58,10 +59,10 @@ Indices:
 
           p.participant_id AS subject_id_gs,
           s.study_acronym AS study_gs,
-          COLLECT(DISTINCT samp.sample_anatomic_site) AS site_gs,
+          COLLECT(DISTINCT diag.primary_site) AS site,
 
           COLLECT(DISTINCT samp.sample_type) AS analyte_type,
-          COLLECT(DISTINCT samp.sample_anatomic_site) AS site,
+          COLLECT(DISTINCT diag.primary_site) AS site_gs,
 
           COLLECT(DISTINCT samp.sample_id) AS samples,
           COLLECT(DISTINCT f.file_id) AS files
@@ -182,6 +183,7 @@ Indices:
     cypher_query: "
       MATCH (s:study)<--(p:participant)
       OPTIONAL MATCH (p)<--(samp:sample)
+      OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
           s.study_acronym AS studies,
@@ -198,7 +200,7 @@ Indices:
           f.file_name AS file_names,
 
           s.phs_accession AS phs_accession,
-          samp.sample_anatomic_site AS site,
+          diag.primary_site AS site,
           samp.sample_type AS analyte_type,
           f.file_id AS file_id,
           f.file_name AS file_name,

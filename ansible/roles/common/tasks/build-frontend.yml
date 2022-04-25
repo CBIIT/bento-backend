@@ -50,4 +50,4 @@
     repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
     force_tag: yes
     push: yes
-    # source: local
+    source: local

@@ -22,7 +22,7 @@ public class Const {
             public static final String SINGLE = "yaml/icdc_single_query.yml";
             public static final String GROUP = "yaml/icdc_group_query.yml";
             public static final String GLOBAL = "yaml/icdc_global_query.yml";
-            public static final String TEST = "yaml/test_icdc_es_query.yml";
+            public static final String TEST = "yaml/icdc_test_es_query.yml";
         }
 
 
@@ -98,11 +98,7 @@ public class Const {
         public static final String CLINICAL_STUDY = "clinical_study_designation";
         public static final String CASE_ID = "case_id";
         public static final String FILE_NAME = "file_name";
-        public static final String FILE_TYPE = "file_type";
         public static final String CASE_MEMBER_OF_STUDY = "case_ids_case_to_member_of_to_study";
-        public static final String DIAG_OF_CASE_CASE = "case_id_diag_to_case_of_to_case";
-        public static final String DEMOG_OF_CASE_CASE = "case_id_demogr_to_case_of_to_case";
-        public static final String DIAG_CASE_OF_CASE = "case_id_diag_to_case_of_to_case";
 
         public static final String COUNT = "count";
         public static final String GROUP = "group";
@@ -124,6 +120,16 @@ public class Const {
         public static final String STUDIES = "studies";
         public static final String CASE_SIZE = "caseSize";
         public static final String PROGRAM = "program";
+        public static final String STUDY_TYPE = "study_type";
+        public static final String BIO_BANK = "biobank";
+        public static final String STUDY_PARTICIPATION = "study_participation";
+        public static final String SAMPLE_SITE = "sample_site";
+        public static final String SAMPLE_TYPE = "sample_type";
+        public static final String SAMPLE_PATHOLOGY = "sample_pathology";
+
+        public static final String FILE_ASSOCIATION = "file_association";
+        public static final String FILE_TYPE = "file_type";
+        public static final String FILE_FORMAT = "file_type";
     }
 
     public static class ICDC_INDEX {

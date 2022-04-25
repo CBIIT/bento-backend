@@ -43,7 +43,7 @@ public class ICDCServiceTest {
     TypeMapperImpl typeMapper;
 
     @Test
-    public void nestedExcludeFilterSearch_Test() throws IOException {
+    public void nestedExcludeFilterSearch_Test() {
         Map<String, Object> args = new HashMap<>();
         args.put("file_format", List.of("bam"));
         List<MultipleRequests> requests = List.of(

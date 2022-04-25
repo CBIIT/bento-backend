@@ -1,141 +1,318 @@
-{
-  "operationName": "caseOverview",
-  "variables": {
-    "program": [],
-    "study": [],
-    "study_type": [],
-    "biobank": [],
-    "study_participation": [],
-    "breed": [],
-    "diagnosis": [],
-    "disease_site": [],
-    "stage_of_disease": [],
-    "response_to_treatment": [],
-    "sex": [],
-    "neutered_status": [],
+#{
+#  "operationName": "caseOverview",
+#  "variables": {
+#    "program": [],
+#    "study": [],
+#    "study_type": [],
+#    "biobank": [],
+#    "study_participation": [],
+#    "breed": [],
+#    "diagnosis": [],
+#    "disease_site": [],
+#    "stage_of_disease": [],
+#    "response_to_treatment": [],
+#    "sex": [],
+#    "neutered_status": [],
+#
+#    "sample_site": [],
+#    "sample_type": [],
+#    "sample_pathology": [],
+#
+#    "file_association": [],
+#    "file_type": [],
+#    "file_format": [],
+#    "order_by": "case_id",
+#    "sort_direction": "ASC",
+#    "first": 10,
+#    "offset": 0
+#  },
+#  "query": "query caseOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  caseOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    case_id\n    study_code\n    study_type\n    cohort\n    breed\n    diagnosis\n    stage_of_disease\n    age\n    sex\n    neutered_status\n    weight\n    response_to_treatment\n    disease_site\n    files\n    other_cases\n    __typename\n  }\n}\n"
+#}
+#
+#{
+#  "operationName": "sampleOverview",
+#  "variables": {
+#    "program": [],
+#    "study": [],
+#    "study_type": [],
+#    "biobank": [],
+#    "study_participation": [],
+#    "breed": [],
+#    "diagnosis": [],
+#    "disease_site": [],
+#    "stage_of_disease": [],
+#    "response_to_treatment": [],
+#    "sex": [],
+#    "neutered_status": [],
+#    "sample_site": [],
+#    "sample_type": [],
+#    "sample_pathology": [],
+#    "file_association": [],
+#    "file_type": [],
+#    "file_format": [],
+#    "order_by": "sample_id",
+#    "sort_direction": "ASC",
+#    "first": 10,
+#    "offset": 0
+#  },
+#  "query": "query sampleOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  sampleOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    sample_id\n    case_id\n    breed\n    diagnosis\n    sample_site\n    sample_type\n    sample_pathology\n    tumor_grade\n    sample_chronology\n    percentage_tumor\n    necropsy_sample\n    sample_preservation\n    files\n    __typename\n  }\n}\n"
+#}
+#
+#{
+#  "operationName": "fileOverview",
+#  "variables": {
+#    "program": [],
+#    "study": [],
+#    "study_type": [],
+#    "biobank": [],
+#    "study_participation": [],
+#    "breed": [],
+#    "diagnosis": [],
+#    "disease_site": [],
+#    "stage_of_disease": [],
+#    "response_to_treatment": [],
+#    "sex": [],
+#    "neutered_status": [],
+#    "sample_site": [],
+#    "sample_type": [],
+#    "sample_pathology": [],
+#    "file_association": [],
+#    "file_type": [],
+#    "file_format": [],
+#    "order_by": "file_name",
+#    "sort_direction": "ASC",
+#    "first": 10,
+#    "offset": 0
+#  },
+#  "query": "query fileOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  fileOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    file_name\n    file_type\n    sample_id\n    association\n    file_description\n    file_format\n    file_size\n    case_id\n    breed\n    diagnosis\n    study_code\n    file_uuid\n    __typename\n  }\n}\n"
+#}
+#
+## Total Number of Cases
+#{
+#  "operationName": "searchCases",
+#  "variables": {
+#    "program": [],
+#    "study": [],
+#    "study_type": [],
+#    "biobank": [],
+#    "study_participation": [],
+#    "breed": [],
+#    "diagnosis": [],
+#    "disease_site": [],
+#    "stage_of_disease": [],
+#    "response_to_treatment": [],
+#    "sex": [],
+#    "neutered_status": [],
+#    "sample_site": [],
+#    "sample_type": [],
+#    "sample_pathology": [],
+#    "file_association": [],
+#    "file_type": [],
+#    "file_format": []
+#  },
+#  "query": "query searchCases($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String]) {\n  searchCases(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format) {\n    numberOfPrograms\n        numberOfStudies\n        numberOfCases\n        numberOfSamples\n        numberOfFiles\n        numberOfStudyFiles\n        numberOfAliquots\n        volumeOfData\n        __typename\n  }\n}\n"
+#}
+#
+## ICDC Searchcase Query
+#{
+#  "operationName": "searchCases",
+#  "variables": {
+#    "program": [],
+#    "study": [],
+#    "study_type": [],
+#    "biobank": [],
+#    "study_participation": [],
+#    "breed": [],
+#    "diagnosis": [],
+#    "disease_site": [],
+#    "stage_of_disease": [],
+#    "response_to_treatment": [],
+#    "sex": [],
+#    "neutered_status": [],
+#    "sample_site": [],
+#    "sample_type": [],
+#    "sample_pathology": [],
+#    "file_association": [],
+#    "file_type": [],
+#    "file_format": []
+#  },
+#  "query": "query searchCases($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String]) {\n  searchCases(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format) {\n    numberOfPrograms\n        numberOfStudies\n        numberOfCases\n        numberOfSamples\n        numberOfFiles\n        numberOfStudyFiles\n        numberOfAliquots\n        volumeOfData\n
+#filterCaseCountByBreed {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByProgram {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByDiagnosis {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByDiseaseSite {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStageOfDisease {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByResponseToTreatment {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySex {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByNeuteredStatus {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySampleType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySamplePathology {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySampleSite {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyParticipation {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileAssociation {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyCode {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByBiobank {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     caseCountByDiagnosis {\n    group\n    count\n    __typename\n  }\n     caseCountByGender {\n    group\n    count\n    __typename\n  }\n     caseCountByBreed {\n    group\n    count\n    __typename\n  }\n     caseCountByNeuteredStatus {\n    group\n    count\n    __typename\n  }\n     caseCountByStageOfDisease {\n    group\n    count\n    __typename\n  }\n     caseCountByDiseaseSite {\n    group\n    count\n    __typename\n  }\n     caseCountByProgram {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyCode {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyType {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyParticipation {\n    group\n    count\n    __typename\n  }\n     caseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     __typename\n  }\n}\n"
+#}
 
-    "sample_site": [],
-    "sample_type": [],
-    "sample_pathology": [],
 
-    "file_association": [],
-    "file_type": [],
-    "file_format": [],
-    "order_by": "case_id",
-    "sort_direction": "ASC",
-    "first": 10,
-    "offset": 0
-  },
-  "query": "query caseOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  caseOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    case_id\n    study_code\n    study_type\n    cohort\n    breed\n    diagnosis\n    stage_of_disease\n    age\n    sex\n    neutered_status\n    weight\n    response_to_treatment\n    disease_site\n    files\n    other_cases\n    __typename\n  }\n}\n"
-}
+query:
+  - name: caseOverview
+    request: {
+      "operationName": "caseOverview",
+      "variables": {
+        "program": [ ],
+        "study": [ ],
+        "study_type": [ ],
+        "biobank": [ ],
+        "study_participation": [ ],
+        "breed": [ ],
+        "diagnosis": [ ],
+        "disease_site": [ ],
+        "stage_of_disease": [ ],
+        "response_to_treatment": [ ],
+        "sex": [ ],
+        "neutered_status": [ ],
 
-{
-  "operationName": "sampleOverview",
-  "variables": {
-    "program": [],
-    "study": [],
-    "study_type": [],
-    "biobank": [],
-    "study_participation": [],
-    "breed": [],
-    "diagnosis": [],
-    "disease_site": [],
-    "stage_of_disease": [],
-    "response_to_treatment": [],
-    "sex": [],
-    "neutered_status": [],
-    "sample_site": [],
-    "sample_type": [],
-    "sample_pathology": [],
-    "file_association": [],
-    "file_type": [],
-    "file_format": [],
-    "order_by": "sample_id",
-    "sort_direction": "ASC",
-    "first": 10,
-    "offset": 0
-  },
-  "query": "query sampleOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  sampleOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    sample_id\n    case_id\n    breed\n    diagnosis\n    sample_site\n    sample_type\n    sample_pathology\n    tumor_grade\n    sample_chronology\n    percentage_tumor\n    necropsy_sample\n    sample_preservation\n    files\n    __typename\n  }\n}\n"
-}
+        "sample_site": [ ],
+        "sample_type": [ ],
+        "sample_pathology": [ ],
 
-{
-  "operationName": "fileOverview",
-  "variables": {
-    "program": [],
-    "study": [],
-    "study_type": [],
-    "biobank": [],
-    "study_participation": [],
-    "breed": [],
-    "diagnosis": [],
-    "disease_site": [],
-    "stage_of_disease": [],
-    "response_to_treatment": [],
-    "sex": [],
-    "neutered_status": [],
-    "sample_site": [],
-    "sample_type": [],
-    "sample_pathology": [],
-    "file_association": [],
-    "file_type": [],
-    "file_format": [],
-    "order_by": "file_name",
-    "sort_direction": "ASC",
-    "first": 10,
-    "offset": 0
-  },
-  "query": "query fileOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  fileOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    file_name\n    file_type\n    sample_id\n    association\n    file_description\n    file_format\n    file_size\n    case_id\n    breed\n    diagnosis\n    study_code\n    file_uuid\n    __typename\n  }\n}\n"
-}
+        "file_association": [ ],
+        "file_type": [ ],
+        "file_format": [ ],
 
-# Total Number of Cases
-{
-  "operationName": "searchCases",
-  "variables": {
-    "program": [],
-    "study": [],
-    "study_type": [],
-    "biobank": [],
-    "study_participation": [],
-    "breed": [],
-    "diagnosis": [],
-    "disease_site": [],
-    "stage_of_disease": [],
-    "response_to_treatment": [],
-    "sex": [],
-    "neutered_status": [],
-    "sample_site": [],
-    "sample_type": [],
-    "sample_pathology": [],
-    "file_association": [],
-    "file_type": [],
-    "file_format": []
-  },
-  "query": "query searchCases($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String]) {\n  searchCases(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format) {\n    numberOfPrograms\n        numberOfStudies\n        numberOfCases\n        numberOfSamples\n        numberOfFiles\n        numberOfStudyFiles\n        numberOfAliquots\n        volumeOfData\n        __typename\n  }\n}\n"
-}
+        "order_by": "disease_site",
+        "sort_direction": "ASC",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query caseOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  caseOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) {\n    
+      case_id\n    weight\n    study_code\n    study_type\n    breed\n    diagnosis\n    stage_of_disease\n    age\n    sex\n    neutered_status\n    disease_site\n    cohort\n    response_to_treatment\n    files\n    other_cases\n    __typename\n  }\n}\n"
+    }
+    expectedKeySet:
+      - case_id
+      - weight
+      - study_code
+      - study_type
+      - breed
+      - diagnosis
+      - stage_of_disease
+      - age
+      - sex
+      - neutered_status
+      - disease_site
+      - cohort
+      - response_to_treatment
+      - files
+      - other_cases
 
-# ICDC Searchcase Query
-{
-  "operationName": "searchCases",
-  "variables": {
-    "program": [],
-    "study": [],
-    "study_type": [],
-    "biobank": [],
-    "study_participation": [],
-    "breed": [],
-    "diagnosis": [],
-    "disease_site": [],
-    "stage_of_disease": [],
-    "response_to_treatment": [],
-    "sex": [],
-    "neutered_status": [],
-    "sample_site": [],
-    "sample_type": [],
-    "sample_pathology": [],
-    "file_association": [],
-    "file_type": [],
-    "file_format": []
-  },
-  "query": "query searchCases($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String]) {\n  searchCases(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format) {\n    numberOfPrograms\n        numberOfStudies\n        numberOfCases\n        numberOfSamples\n        numberOfFiles\n        numberOfStudyFiles\n        numberOfAliquots\n        volumeOfData\n        
-filterCaseCountByBreed {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByProgram {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByDiagnosis {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByDiseaseSite {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStageOfDisease {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByResponseToTreatment {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySex {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByNeuteredStatus {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySampleType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySamplePathology {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySampleSite {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyParticipation {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileAssociation {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyCode {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByBiobank {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     caseCountByDiagnosis {\n    group\n    count\n    __typename\n  }\n     caseCountByGender {\n    group\n    count\n    __typename\n  }\n     caseCountByBreed {\n    group\n    count\n    __typename\n  }\n     caseCountByNeuteredStatus {\n    group\n    count\n    __typename\n  }\n     caseCountByStageOfDisease {\n    group\n    count\n    __typename\n  }\n     caseCountByDiseaseSite {\n    group\n    count\n    __typename\n  }\n     caseCountByProgram {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyCode {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyType {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyParticipation {\n    group\n    count\n    __typename\n  }\n     caseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     __typename\n  }\n}\n"
-}
+  - name: sampleOverview
+    request: {
+      "operationName": "sampleOverview",
+      "variables": {
+        "program": [],
+        "study": [],
+        "study_type": [],
+        "biobank": [],
+        "study_participation": [],
+        "breed": [],
+        "diagnosis": [],
+        "disease_site": [],
+        "stage_of_disease": [],
+        "response_to_treatment": [],
+        "sex": [],
+        "neutered_status": [],
+        "sample_site": [],
+        "sample_type": [],
+        "sample_pathology": [],
+        "file_association": [],
+        "file_type": [],
+        "file_format": [],
+        "order_by": "sample_id",
+        "sort_direction": "ASC",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query sampleOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  sampleOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) 
+      {\n    sample_id\n    case_id\n    breed\n    diagnosis\n    sample_site\n    sample_type\n    sample_pathology\n    tumor_grade\n    sample_chronology\n    percentage_tumor\n    necropsy_sample\n    sample_preservation\n    files\n    __typename\n  }\n}\n"
+    }
+    expectedKeySet:
+      - sample_id
+      - case_id
+      - breed
+      - diagnosis
+      - sample_site
+      - sample_type
+      - sample_pathology
+      - tumor_grade
+      - sample_chronology
+      - percentage_tumor
+      - necropsy_sample
+      - sample_preservation
+      - files
+  - name: fileOverview
+    request: {
+      "operationName": "fileOverview",
+      "variables": {
+        "program": [],
+        "study": [],
+        "study_type": [],
+        "biobank": [],
+        "study_participation": [],
+        "breed": [],
+        "diagnosis": [],
+        "disease_site": [],
+        "stage_of_disease": [],
+        "response_to_treatment": [],
+        "sex": [],
+        "neutered_status": [],
+        "sample_site": [],
+        "sample_type": [],
+        "sample_pathology": [],
+        "file_association": [],
+        "file_type": [],
+        "file_format": [],
+        "order_by": "disease_site",
+        "sort_direction": "ASC",
+        "first": 10,
+        "offset": 0
+      },
+      "query": "query fileOverview($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String], $first: Int, $offset: Int, $order_by: String, $sort_direction: String) {\n  fileOverview(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format,first: $first, offset: $offset, order_by: $order_by, sort_direction: $sort_direction) 
+      {\n    file_name\n    file_type\n    association\n    file_description\n    file_format\n    file_size\n    case_id\n    breed\n    diagnosis\n    study_code\n    file_uuid\n    sample_id\n    __typename\n  }\n}\n"
+    }
+    expectedKeySet:
+      - file_name
+      - file_type
+      - association
+      - file_description
+      - file_format
+      - file_size
+      - case_id
+      - breed
+      - diagnosis
+      - study_code
+      - file_uuid
+      - sample_id
+  - name: searchCases
+    request: {
+      "operationName": "searchCases",
+      "variables": {
+          "program": [],
+          "study": [],
+          "study_type": [],
+          "biobank": [],
+          "study_participation": [],
+          "breed": [],
+          "diagnosis": [],
+          "disease_site": [],
+          "stage_of_disease": [],
+          "response_to_treatment": [],
+          "sex": [],
+          "neutered_status": [],
+
+          "sample_site": [],
+          "sample_type": [],
+          "sample_pathology": [],
+
+          "file_association": [],
+          "file_type": [],
+          "file_format": []
+      },
+      "query": "query searchCases($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String]) {\n  searchCases(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format)
+      {\n    numberOfPrograms\n    numberOfStudies\n    numberOfCases\n    numberOfSamples\n    numberOfFiles\n    numberOfStudyFiles\n    numberOfAliquots\n    volumeOfData\n    __typename\n  }\n}\n"
+    }
+    expectedKeySet:
+      - numberOfPrograms
+      - numberOfStudies
+      - numberOfCases
+      - numberOfSamples
+      - numberOfFiles
+      - numberOfStudyFiles
+      - numberOfAliquots
+      - volumeOfData

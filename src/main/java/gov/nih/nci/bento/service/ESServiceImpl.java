@@ -9,6 +9,7 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -30,18 +31,18 @@ public class ESServiceImpl implements EsSearch {
     private final ConfigurationDAO config;
 
     @Override
-    public <T> T elasticSend(SearchRequest request, TypeMapper<T> mapper) throws IOException {
+    public <T> T elasticSend(SearchRequest request, TypeMapper<T> mapper) {
         SearchResponse searchResponse = null;
         try (RestHighLevelClient elasticClient = new DefaultClient(config).getElasticClient()) {
             searchResponse = elasticClient.search(request, RequestOptions.DEFAULT);
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             logger.error(e.toString());
         }
         return mapper.get(searchResponse);
     }
 
     @Override
-    public Map<String, Object> elasticMultiSend(@NotNull List<MultipleRequests> requests) throws IOException {
+    public Map<String, Object> elasticMultiSend(@NotNull List<MultipleRequests> requests) {
         MultiSearchRequest multiRequests = new MultiSearchRequest();
         requests.forEach(r->multiRequests.add(r.getRequest()));
         Map<String, Object> result = new HashMap<>();
@@ -50,7 +51,7 @@ public class ESServiceImpl implements EsSearch {
             MultiSearchResponse.Item[] responseResponses = response.getResponses();
             result = getMultiResponse(responseResponses, requests);
         }
-        catch (RuntimeException e) {
+        catch (IOException | ElasticsearchException e) {
             logger.error(e.toString());
         }
         return result;

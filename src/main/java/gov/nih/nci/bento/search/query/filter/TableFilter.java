@@ -2,8 +2,10 @@ package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.TableParam;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.QueryFactory;
 import gov.nih.nci.bento.utility.ElasticUtil;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
@@ -14,17 +16,17 @@ public class TableFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
+    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam, boolean loadAllData) {
         TableParam tableParam = param.getTableParam();
         return new SearchSourceBuilder()
                 .query(
-                        bentoParam.getQuery()
+                        loadAllData ? QueryBuilders.matchAllQuery() : bentoParam.getQuery()
                 )
                 .from(tableParam.getOffSet())
                 .sort(
                         getSortType(param),
                         getSortDirection(param))
-                .size(tableParam.getPageSize());
+                .size(loadAllData ? Const.ES_UNITS.MAX_SIZE : tableParam.getPageSize());
     }
 
     private SortOrder getSortDirection(FilterParam param) {

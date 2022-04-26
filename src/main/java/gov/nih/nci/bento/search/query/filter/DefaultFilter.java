@@ -11,7 +11,7 @@ public class DefaultFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
+    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam, boolean loadAllData) {
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .query(bentoParam.getQuery());
         if (param.getSize()!=0) builder.size(param.getSize());

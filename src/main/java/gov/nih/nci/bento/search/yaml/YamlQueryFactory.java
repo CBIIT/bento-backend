@@ -25,7 +25,10 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
@@ -151,6 +154,8 @@ public class YamlQueryFactory {
                 return typeMapper.getNestedSumAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.SUM_AGG:
                 return typeMapper.getSumAggregate();
+            case Const.YAML_QUERY.RESULT_TYPE.EMPTY:
+                return response -> 0;
             default:
                 throw new IllegalArgumentException();
         }

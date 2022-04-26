@@ -69,6 +69,7 @@ public class Const {
             public static final String ICDC_NESTED_LIST = "icdc_nested_list";
             public static final String NESTED_INT_TOTAL_AGGREGATION = "nested_int_total_count";
             public static final String ICDC_ARM_PROGRAM = "icdc_arm_program";
+            public static final String EMPTY = "empty";
         }
     }
 

@@ -9,45 +9,45 @@
 
 - name: copy application.properties file to /src/main/resources/
   template:
-    src: "{{workspace}}/src/main/resources/application.properties.j2"
-    dest: "{{workspace}}/src/main/resources/application.properties"
+    src: "{{ workspace }}/src/main/resources/application.properties.j2"
+    dest: "{{ workspace }}/src/main/resources/application.properties"
 
 - name: create graphql directory in backend
   file:
     state: directory
-    path: "{{workspace}}/src/main/resources/graphql"
+    path: "{{ workspace }}/src/main/resources/graphql"
 
 - name: create yaml directory in backend
   file:
     state: directory
-    path: "{{workspace}}/src/main/resources/yaml"
+    path: "{{ workspace }}/src/main/resources/yaml"
 
 - name: copy schema from frontend to resources
   template:
-    src: "{{workspace}}/{{ project_name }}-frontend/graphql/{{ schema_file}}"
-    dest: "{{workspace}}/src/main/resources/graphql/{{ schema_file}}"
+    src: "{{ workspace }}/{{ project_name }}-frontend/graphql/{{ schema_file}}"
+    dest: "{{ workspace }}/src/main/resources/graphql/{{ schema_file}}"
 
 - name: verify test queries file exists
   stat:
-    path: "{{workspace}}/{{ project_name }}-frontend/yaml/{{ test_queries_file }}"
+    path: "{{ workspace }}/{{ project_name }}-frontend/yaml/{{ test_queries_file }}"
   register: test_queries
 
 - name: copy test queries from frontend to resources
   template:
-    src: "{{workspace}}/{{ project_name }}-frontend/yaml/{{ test_queries_file }}"
-    dest: "{{workspace}}/src/main/resources/yaml/{{ test_queries_file }}"
+    src: "{{ workspace }}/{{ project_name }}-frontend/yaml/{{ test_queries_file }}"
+    dest: "{{ workspace }}/src/main/resources/yaml/{{ test_queries_file }}"
   when: test_queries.stat.exists
 
 - name: build springboot code
   command: mvn package -DskipTests
   args:
-    chdir: "{{workspace}}"
+    chdir: "{{ workspace }}"
 
 - name: copy Bento-0.0.1.war to ROOT.war
   copy:
     remote_src: yes
-    src: "{{workspace}}/target/Bento-0.0.1.war"
-    dest: "{{workspace}}/target/ROOT.war"
+    src: "{{ workspace }}/target/Bento-0.0.1.war"
+    dest: "{{ workspace }}/target/ROOT.war"
 
 - name: build {{ project_name }}-{{ container_name }} image
   community.docker.docker_image:
@@ -58,11 +58,31 @@
       dockerfile: "{{ dockerfile_path }}"
       pull: yes
       nocache: yes
-    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    name: "{{ project_name }}-{{ container_name }}"
     tag: "{{ image_version }}-{{ build_number }}"
-    push: yes
+    push: no
     force_source: yes
     source: build
+
+- name: test image for vulnerabilities
+  block:
+    - name: run trivy scanner on 
+      #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+      command: "trivy image --severity HIGH,CRITICAL {{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+      register: vuln_results
+  always:
+    - name: echo vulnerability results
+      debug:
+        msg: "{{ vuln_results.stdout_lines }}"
+
+- name: Add {{ project_name }}-{{ container_name }} image to ECR
+  docker_image:
+    name: "{{ project_name }}-{{ container_name }}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    force_tag: yes
+    push: yes
+    source: local
 
 - name: Add tag latest to {{ project_name }}-{{container_name}} image
   community.docker.docker_image:

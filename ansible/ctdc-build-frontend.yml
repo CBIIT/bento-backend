@@ -5,6 +5,12 @@
   become: yes
 
   tasks:
+    #install collections
+    - name: install ansible collections
+      include_role:
+        name: ctdc
+        tasks_from: collections
+    
     - name: build stage for ctdc frontend
       include_role:
         name: ctdc

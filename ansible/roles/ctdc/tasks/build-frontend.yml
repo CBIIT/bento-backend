@@ -1,9 +1,9 @@
 ---
 #install aws collection
-- name: install ansible collections
-  include_role:
-    name: common
-    tasks_from: collections
+#- name: install ansible collections
+#  include_role:
+#    name: ctdc
+#    tasks_from: collections
 
 #docker login
 - name: docker login
@@ -13,8 +13,8 @@
 
 - name: build frontend
   include_role:
-    name: common
-    tasks_from: build-frontend
+    name: bento.common.build_frontend
+    #tasks_from: build-frontend
   vars:
     container_name: "{{ frontend_container_name }}"
     image_version: "{{ frontend_image_version }}"

@@ -68,7 +68,7 @@ pipeline {
   		  checkout( poll: false, 
 			changelog:false,
 			scm: [$class: 'GitSCM', 
-			#branches: [[name: '*/master']], 
+			//branches: [[name: '*/master']], 
 			branches: [[name: '*/ansible_collections']], 
 			doGenerateSubmoduleConfigurations: false, 
 			extensions: [[$class: 'DisableRemotePoll'],

@@ -51,9 +51,9 @@
 
 - name: build {{ project_name }}-{{ container_name }} image
   community.docker.docker_image:
-    buildargs:
-      ECR_REPO: "{{ container_registry_url }}"
     build:
+      args:
+        ECR_REPO: "{{ container_registry_url }}"
       path: "{{ workspace }}"
       dockerfile: "{{ dockerfile_path }}"
       pull: yes

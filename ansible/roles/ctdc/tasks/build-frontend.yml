@@ -8,8 +8,8 @@
 #docker login
 - name: docker login
   include_role:
-    name: common
-    tasks_from: ecr-login
+    name: bento.common.ecr_login
+    #tasks_from: ecr-login
 
 - name: build frontend
   include_role:

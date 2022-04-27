@@ -113,7 +113,7 @@
       nocache: yes
     name: "{{ project }}-backend"
     tag: "{{bento_api_version}}-{{build_number}}"
-    push: yes
+    push: no
     force_source: yes
     source: build
 
@@ -193,7 +193,7 @@
       nocache: yes
     name: "{{ project }}-frontend"
     tag: "{{frontend_version}}-{{build_number}}"
-    push: yes
+    push: no
     force_source: yes
     source: build
 

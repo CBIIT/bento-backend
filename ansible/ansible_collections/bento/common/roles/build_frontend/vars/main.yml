@@ -1,0 +1,14 @@
+# vars file for data loading
+project_name:  "{{lookup('env','PROJECT_NAME')}}"
+database_name: "{{ project_name }}-{{tier}}-neo4j-4"
+tier: "{{ lookup('env','TIER') }}"
+stack_name: "{{project_name}}"
+workspace: "{{ lookup('env','WORKSPACE') }}"
+neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_user', nested=true, region='us-east-1' ) }}"
+neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
+s3_folder: "{{ lookup('env','S3_FOLDER') }}"
+wipe_db:  "{{ lookup('env','WIPE_DB') }}"
+cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
+split_transactions:  "{{ lookup('env','SPLIT')}}"
+region: us-east-1
+data_bucket: "{{ bucket }}"

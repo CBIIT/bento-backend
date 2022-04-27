@@ -1,0 +1,23 @@
+- name: login
+  include_tasks: ecr-login.yml
+
+- name: build {{ project_name }}-{{container_name}} image
+  community.docker.docker_image:
+    build:
+      path: "{{container_build_path}}"
+      dockerfile: "{{dockerfile_path}}"
+      pull: yes
+      nocache: yes
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    push: yes
+    force_source: yes
+    source: build
+
+- name: Add tag latest to {{ project_name }}-{{container_name}} image
+  community.docker.docker_image:
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
+    force_tag: yes
+    push: yes
+    source: local

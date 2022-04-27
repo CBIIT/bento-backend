@@ -1,0 +1,13 @@
+
+- name: gather instance facts
+  community.aws.ec2_instance_info:
+    region: us-east-1
+    filters:
+      "tag:Name": "{{ database_name }}"
+      "instance-state-name": running
+      "tag:Environment": "{{ tier }}"
+  register: neo4j
+
+- name: set instance name
+  set_fact:
+    neo4j_ip: "{{ neo4j.instances[0].network_interfaces[0].private_ip_address }}"

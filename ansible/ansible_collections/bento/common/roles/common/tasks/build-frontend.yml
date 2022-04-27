@@ -1,0 +1,73 @@
+- name: copy  nginx conf
+  copy:
+    remote_src: yes
+    src: '{{ workspace }}/icdc-devops/docker/dockerfiles/nginx.conf'
+    dest: '{{ container_build_path }}/nginx.conf'
+
+- name: copy entrypoint.sh to workspace
+  copy:
+    src: "nginx-entrypoint.sh"
+    dest: "{{ container_build_path }}/nginx-entrypoint.sh"
+    mode: 0755
+
+- name: run npm install in {{ workspace }}/{{ project_name }}-frontend/
+  command: "{{ item }}"
+  args:
+    chdir: "{{ container_build_path }}"
+    warn: false
+  loop:
+    - npm set progress=false
+    - npm install --silent
+    - npm run build --silent
+
+- name: copy env to dist
+  copy:
+    src: inject.template.js
+    dest: "{{ container_build_path }}/dist/inject.template.js"
+    mode: 0755
+
+- name: copy docker file to build path
+  copy:
+    remote_src: yes
+    src: '{{ dockerfile_path }}'
+    dest: '{{ container_build_path }}/Dockerfile'
+
+- name: build {{ project_name }}-{{container_name}} image
+  community.docker.docker_image:
+    build:
+      path: "{{ container_build_path }}"
+      pull: yes
+#      nocache: yes
+    name: "{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    push: no
+    force_source: yes
+    source: build
+
+- name: test image for vulnerabilities
+  block:
+    - name: run trivy scanner on 
+      #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+      command: "trivy image --severity HIGH,CRITICAL {{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+      register: vuln_results
+  always:
+    - name: echo vulnerability results
+      debug:
+        msg: "{{ vuln_results.stdout_lines }}"
+
+- name: Add {{ project_name }}-{{ container_name }} image to ECR
+  community.docker.docker_image:
+    name: "{{ project_name }}-{{ container_name }}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    force_tag: yes
+    push: yes
+    source: local
+
+- name: Add  latest tag to {{ project_name }}-{{container_name}} image
+  community.docker.docker_image:
+    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
+    force_tag: yes
+    push: yes
+    source: local

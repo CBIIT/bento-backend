@@ -1,0 +1,51 @@
+---
+- name: Check if tmp directory exist
+  stat:
+    path: "{{workspace}}/tmp"
+  register: stat_result
+
+- name: Check if tmp {{s3_folder}} exist
+  stat:
+    path: "{{workspace}}/{{s3_folder}}"
+  register: s3folder_result
+
+- name: remove the tmp if exists
+  file:
+    path: "{{workspace}}/tmp"
+    state: absent
+  when: stat_result.stat.exists
+
+- name: remove the {{s3_folder}} if exists
+  file:
+    path: "{{workspace}}/{{s3_folder}}"
+    state: absent
+  when: stat_result.stat.exists
+
+- name: update settings
+  template:
+    dest: "{{workspace}}/config/config.yml"
+    src: "{{workspace}}/config/config.yml.j2"
+
+# - name: install python3
+#   yum:
+#     name: python3
+#     state: installed
+
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/requirements.txt"
+    executable: pip3
+
+
+- name: loader data
+  shell:
+    cmd: >
+      python3
+      loader.py 
+      {{workspace}}/config/config.yml
+    chdir: "{{workspace}}"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

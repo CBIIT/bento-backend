@@ -22,7 +22,7 @@ public class NestedSumFilter extends AbstractFilter {
 
     // TODO Remove Duplicate
     @Override
-    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam, boolean loadAllData) {
+    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
         return new SearchSourceBuilder()
                 .size(0)
                 .query(bentoParam.getQuery())

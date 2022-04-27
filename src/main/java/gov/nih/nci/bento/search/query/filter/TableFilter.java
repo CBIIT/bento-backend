@@ -2,12 +2,11 @@ package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.TableParam;
-import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.QueryFactory;
-import gov.nih.nci.bento.utility.ElasticUtil;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+
+import static gov.nih.nci.bento.utility.ElasticUtil.getPrioritySortType;
+import static gov.nih.nci.bento.utility.ElasticUtil.getSortDirection;
 
 public class TableFilter extends AbstractFilter {
 
@@ -16,29 +15,16 @@ public class TableFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam, boolean loadAllData) {
+    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
         TableParam tableParam = param.getTableParam();
         return new SearchSourceBuilder()
                 .query(
-                        loadAllData ? QueryBuilders.matchAllQuery() : bentoParam.getQuery()
+                        bentoParam.getQuery()
                 )
                 .from(tableParam.getOffSet())
                 .sort(
-                        getSortType(param),
+                        getPrioritySortType(param),
                         getSortDirection(param))
-                .size(loadAllData ? Const.ES_UNITS.MAX_SIZE : tableParam.getPageSize());
-    }
-
-    private SortOrder getSortDirection(FilterParam param) {
-        TableParam tableParam = param.getTableParam();
-        // If SortDirection Defined, Sort it by Custom
-        return param.getSortDirection() !=null ? ElasticUtil.getSortType(param.getSortDirection()) : tableParam.getSortDirection();
-    }
-
-    private String getSortType(FilterParam param) {
-        TableParam tableParam = param.getTableParam();
-        // TODO CHECK
-        if (param.getCustomOrderBy() != null && !param.getCustomOrderBy().equals("")) return param.getCustomOrderBy();
-        return tableParam.getOrderBy().equals("") ? param.getDefaultSortField() : tableParam.getOrderBy();
+                .size(tableParam.getPageSize());
     }
 }

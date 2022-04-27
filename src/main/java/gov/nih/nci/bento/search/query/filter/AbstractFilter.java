@@ -1,12 +1,17 @@
 package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.classes.TableParam;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.BentoQueryFactory;
 import gov.nih.nci.bento.search.query.QueryFactory;
+import gov.nih.nci.bento.utility.ElasticUtil;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.*;
+
+import static gov.nih.nci.bento.utility.ElasticUtil.getSortDirection;
 
 public abstract class AbstractFilter {
     // Parameters Exceptions
@@ -37,11 +42,25 @@ public abstract class AbstractFilter {
         // Exception Case; If all list contains empty string, give all documents
         Map<String, Object> args = new HashMap<>(param.getArgs());
         removeSortParams(args);
+        if (isAllContainEmptyString(args, param)) return getAllDataQuery();
         // Exception Case; If all arrays are empty, return nothing
         if (isAllEmptyArray(args, param)) return new SearchSourceBuilder().size(0);
-        return getFilter(param, bentoParam, isAllContainEmptyString(args, param));
+        return getFilter(param, bentoParam);
     }
 
+    private SearchSourceBuilder getAllDataQuery() {
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .query(QueryBuilders.matchAllQuery())
+                .size(Const.ES_UNITS.MAX_SIZE);
+        TableParam tableParam = param.getTableParam();
+        if (tableParam !=null) {
+            builder.size(tableParam.getPageSize());
+            builder.sort(ElasticUtil.getPrioritySortType(param),
+                    getSortDirection(param));
+            builder.from(tableParam.getOffSet());
+        }
+        return builder;
+    }
 
     private boolean isAllEmptyArray(Map<String, Object> args, FilterParam param) {
         List<List<String>> values = fillRequiredElements(args, param);
@@ -70,5 +89,5 @@ public abstract class AbstractFilter {
         return values;
     }
 
-    abstract SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam, boolean loadAllData);
+    abstract SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam);
 }

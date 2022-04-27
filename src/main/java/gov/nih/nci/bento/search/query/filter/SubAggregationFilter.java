@@ -13,7 +13,7 @@ public class SubAggregationFilter extends AbstractFilter {
     }
 
     @Override
-    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam, boolean loadAllData) {
+    SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
         return new SearchSourceBuilder()
                 .query(bentoParam.getQuery())
                 .size(0)

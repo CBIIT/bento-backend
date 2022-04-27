@@ -15,6 +15,8 @@
   args:
     chdir: "{{ container_build_path }}"
     warn: false
+  environment:
+    CI: false
   loop:
     - npm set progress=false
     - npm install --silent

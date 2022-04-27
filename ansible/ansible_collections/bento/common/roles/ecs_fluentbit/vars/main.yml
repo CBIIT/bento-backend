@@ -2,5 +2,4 @@
 project_name:  "{{lookup('env','PROJECT_NAME')}}"
 database_name: "{{ project_name }}-{{tier}}-neo4j-4"
 tier: "{{ lookup('env','TIER') }}"
-workspace: "{{ lookup('env','WORKSPACE') }}"
 region: us-east-1

@@ -1,5 +1,0 @@
----
-# tasks file for common
-- name: Set timezone to America/New_York
-  timezone:
-    name: America/New_York

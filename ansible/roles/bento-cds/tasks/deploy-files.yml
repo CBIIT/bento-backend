@@ -11,18 +11,18 @@
     name: common
     tasks_from: ecr-login
 
-- name: get distribution domain name
-  command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName |[0]" --output text
-  register: dist_info
+# - name: get distribution domain name
+#   command: aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?Id=='{{cloudfront_origin_id}}']].DomainName |[0]" --output text
+#   register: dist_info
 
-- name: retrieve key group id
-  command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]" --output text --region us-east-1
-  register: key_group
+# - name: retrieve key group id
+#   command:  aws cloudfront list-public-keys --query "PublicKeyList.Items[?Name=='{{cloudfront_key_group_name}}'].Id |[0]" --output text --region us-east-1
+#   register: key_group
 
-- name: set facts distribution DomainName and key_group id
-  set_fact:
-    cloudfront_domain_name: "{{dist_info.stdout_lines | map('trim') | list |first}}"
-    cloudfront_key_group_id: "{{key_group.stdout_lines | map('trim') | list |first}}"
+# - name: set facts distribution DomainName and key_group id
+#   set_fact:
+#     cloudfront_domain_name: "{{dist_info.stdout_lines | map('trim') | list |first}}"
+#     cloudfront_key_group_id: "{{key_group.stdout_lines | map('trim') | list |first}}"
 
 
 - name: deploy ecs
@@ -44,12 +44,6 @@
         value: "{{ansible_date_time.date}}"
       - name: PROJECT
         value: "{{project_name}}"
-      - name: CF_URL
-        value: https://{{cloudfront_domain_name}}
-      - name: CF_PRIVATE_KEY
-        value: "{{cloudfront_private_key}}"
-      - name: CF_KEY_PAIR_ID
-        value: "{{cloudfront_key_group_id}}"
       - name: URL_SRC
         value: "{{url_src}}"
       - name: AUTH_ENABLED

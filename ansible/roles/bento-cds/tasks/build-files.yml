@@ -4,6 +4,13 @@
     name: common
     tasks_from: collections
 
+#docker login
+- name: docker login
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+
 - name: build files
   include_role:
     name: common

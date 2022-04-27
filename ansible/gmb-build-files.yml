@@ -1,4 +1,4 @@
-- name: cds backend pipeline
+- name: gmb backend pipeline
   hosts: bento
   connection: local
   gather_facts: no

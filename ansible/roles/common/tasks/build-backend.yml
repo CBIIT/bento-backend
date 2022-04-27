@@ -50,7 +50,7 @@
     dest: "{{workspace}}/target/ROOT.war"
 
 - name: build {{ project_name }}-{{ container_name }} image
-  docker_image:
+  community.docker.docker_image:
     buildargs:
       ECR_REPO: "{{ container_registry_url }}"
     build:
@@ -65,7 +65,7 @@
     source: build
 
 - name: Add tag latest to {{ project_name }}-{{container_name}} image
-  docker_image:
+  community.docker.docker_image:
     name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
     repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
     force_tag: yes

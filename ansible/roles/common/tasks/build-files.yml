@@ -2,7 +2,7 @@
   include_tasks: ecr-login.yml
 
 - name: build {{ project_name }}-{{container_name}} image
-  docker_image:
+  community.docker.docker_image:
     build:
       path: "{{container_build_path}}"
       dockerfile: "{{dockerfile_path}}"
@@ -15,7 +15,7 @@
     source: build
 
 - name: Add tag latest to {{ project_name }}-{{container_name}} image
-  docker_image:
+  community.docker.docker_image:
     name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
     repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
     force_tag: yes

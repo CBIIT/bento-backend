@@ -10,7 +10,7 @@ files_container_cpu: 256
 files_ecs_cluster_name: "{{project_name}}-{{tier}}-ecs"
 files_container_image_url: "{{ecr_repo}}/{{project_name}}-{{container_name}}"
 url_src: CLOUD_FRONT
-cloudfront_origin_id: "{{project_name}}_files_origin_id"
-cloudfront_key_group_name: "{{project_name}}-{{tier}}-pub-key"
-cloudfront_private_key: "{{ lookup('aws_ssm', 'bento_files_cloudfront_private_key', region='us-east-1' ) }}"
+# cloudfront_origin_id: "{{project_name}}_files_origin_id"
+# cloudfront_key_group_name: "{{project_name}}-{{tier}}-pub-key"
+# cloudfront_private_key: "{{ lookup('aws_ssm', 'bento_files_cloudfront_private_key', region='us-east-1' ) }}"
 auth_enabled: false

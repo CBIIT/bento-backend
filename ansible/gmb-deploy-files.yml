@@ -1,0 +1,13 @@
+---
+- name: gmb backend deploy pipeline
+  hosts: bento
+  connection: local
+  gather_facts: yes
+    
+  tasks:
+    - name: deploy files
+      include_role:
+        name: bento-cds
+        tasks_from: deploy-files
+      vars:
+        ansible_python_interpreter: /usr/bin/python3

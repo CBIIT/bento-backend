@@ -1,7 +1,7 @@
 - name: copy  nginx conf
   copy:
     remote_src: yes
-    src: '{{workspace}}/icdc-devops/docker/dockerfiles/nginx.conf'
+    src: '{{ workspace }}/icdc-devops/docker/dockerfiles/nginx.conf'
     dest: '{{ container_build_path }}/nginx.conf'
 
 - name: copy entrypoint.sh to workspace
@@ -10,8 +10,8 @@
     dest: "{{ container_build_path }}/nginx-entrypoint.sh"
     mode: 0755
 
-- name: run npm install in {{workspace}}/{{ project_name }}-frontend/
-  command: "{{item}}"
+- name: run npm install in {{ workspace }}/{{ project_name }}-frontend/
+  command: "{{ item }}"
   args:
     chdir: "{{ container_build_path }}"
     warn: false
@@ -38,11 +38,31 @@
       path: "{{ container_build_path }}"
       pull: yes
 #      nocache: yes
-    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
-    tag: "{{ image_version }}-{{build_number}}"
-    push: yes
+    name: "{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    push: no
     force_source: yes
     source: build
+
+- name: test image for vulnerabilities
+  block:
+    - name: run trivy scanner on 
+      #command: "trivy image --exit-code 1 --severity HIGH,CRITICAL {{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+      command: "trivy image --severity HIGH,CRITICAL {{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+      register: vuln_results
+  always:
+    - name: echo vulnerability results
+      debug:
+        msg: "{{ vuln_results.stdout_lines }}"
+
+- name: Add {{ project_name }}-{{ container_name }} image to ECR
+  community.docker.docker_image:
+    name: "{{ project_name }}-{{ container_name }}"
+    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}"
+    tag: "{{ image_version }}-{{ build_number }}"
+    force_tag: yes
+    push: yes
+    source: local
 
 - name: Add  latest tag to {{ project_name }}-{{container_name}} image
   community.docker.docker_image:

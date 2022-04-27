@@ -5,7 +5,14 @@
   become: yes
 
   tasks:
-    - name: build stage for ctdc filedownloader
+    #install collections
+    - name: install ansible collections
+      include_role:
+        name: ctdc
+        tasks_from: collections
+
+    #build files
+    - name: build stage for ctdc files
       include_role:
         name: ctdc
         tasks_from: build-files

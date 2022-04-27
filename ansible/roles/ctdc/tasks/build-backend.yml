@@ -1,25 +1,18 @@
 ---
-#install aws collection
-- name: install ansible collections
-  include_role:
-    name: common
-    tasks_from: collections
-
 #docker login
 - name: docker login
   include_role:
-    name: common
-    tasks_from: ecr-login
+    name: bento.common.ecr_login
 
+#get db ip
 - name: get db ip
   include_role:
-    name: common
-    tasks_from: neo4j-ip
+    name: bento.common.neo4j_ip
 
+#backend build
 - name: build backend
   include_role:
-    name: common
-    tasks_from: build-backend
+    name: bento.common.build_backend
   vars:
     container_name: "{{ backend_container_name }}"
     image_version: "{{ backend_image_version }}"

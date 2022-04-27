@@ -6,27 +6,26 @@
   become: yes
 
   tasks:
+    #install collections
     - name: install ansible collections
       include_role:
-        name: common
+        name: ctdc
         tasks_from: collections
 
+    #get db ip
     - name: get db ip
       include_role:
-        name: common
-        tasks_from: neo4j-ip
+        name: bento.common.neo4j_ip
 
+    #load opensearch data
     - name: seed opensearch
       include_role:
-        name: common
-        tasks_from: opensearch-loader
+        name: bento.common.opensearch_loader
       vars:
         es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
-        #neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
         model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
         model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
         property_file: "config/props-ctdc.yml"
         about_file: "{{ workspace }}/ctdc-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
         indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_ctdc.yml"
-        #ansible_python_interpreter: /usr/bin/python2.7
         ansible_python_interpreter: /usr/bin/python3

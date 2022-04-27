@@ -1,20 +1,13 @@
 ---
-#install aws collection
-- name: install ansible collections
-  include_role:
-    name: common
-    tasks_from: collections
-
 #docker login
 - name: docker login
   include_role:
-    name: common
-    tasks_from: ecr-login
+    name: bento.common.ecr_login
 
+#deploy files
 - name: deploy ecs
   include_role:
-    name: common
-    tasks_from: ecs
+    name: bento.common.ecs
   vars:
     container_name: "{{ files_container_name }}"
     image_version: "{{ files_image_version }}"

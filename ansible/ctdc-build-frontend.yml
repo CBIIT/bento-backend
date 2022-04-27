@@ -11,6 +11,7 @@
         name: ctdc
         tasks_from: collections
     
+    #build frontend
     - name: build stage for ctdc frontend
       include_role:
         name: ctdc

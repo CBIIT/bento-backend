@@ -72,9 +72,9 @@ pipeline {
                   ansiblePlaybook(  			
                     playbook: '${WORKSPACE}/icdc-devops/ansible/build-image-bento.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-					extraVars: [
-                        dockerhub_path: "cbiitssrepo",
-						],
+					//extraVars: [
+                    //    dockerhub_path: "cbiitssrepo",
+					//	],
 				    extras: '-vvv',
             		colorized: true)
  				}

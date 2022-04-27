@@ -7,29 +7,43 @@
     file_type: file
   register: backend_dockerfile
 
-- name: list all dockerfiles in frontend directory
-  find: 
-    path: ../bento/frontend
-    patterns: 'Dockerfile'
-    file_type: file
-  register: frontend_dockerfile
+#- name: list all dockerfiles in frontend directory
+#  find: 
+#    path: ../bento/frontend
+#    patterns: 'Dockerfile'
+#    file_type: file
+#  register: frontend_dockerfile
 
 - name: set name of backend dockerfiles
   set_fact:
     backendfiles: "{{ backend_dockerfile.files | json_query('[*].path')}}"
 
-- name: set name of frontend dockerfiles
-  set_fact:
-    frontendfiles: "{{ frontend_dockerfile.files | json_query('[*].path')}}"
+#- name: set name of frontend dockerfiles
+#  set_fact:
+#    frontendfiles: "{{ frontend_dockerfile.files | json_query('[*].path')}}"
 
 - name: merge file lists
   set_fact:
-    dockerfiles: "{{ backendfiles + frontendfiles }}"
+    #dockerfiles: "{{ backendfiles + frontendfiles }}"
+    dockerfiles: "{{ backendfiles }}"
 
-- name: log into DockerHub
-  docker_login:
-    username: "{{docker_user}}"
-    password: "{{docker_password}}"
+#- name: log into DockerHub
+#  docker_login:
+#    username: "{{docker_user}}"
+#    password: "{{docker_password}}"
+
+- name: Get the current caller identity information
+  aws_caller_info:
+  register: caller_info
+
+- name: set ECR registry name
+  set_fact:
+    ecr_repo: "{{ caller_info.account }}.dkr.ecr.{{ region }}.amazonaws.com"
+
+- name: login into ecr
+  shell: "docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ecr_repo}}"
+  ignore_errors: True
+  register: ecr_login
 
 - name: build all the docker images
   docker_image:
@@ -38,7 +52,8 @@
       dockerfile: "Dockerfile"
       pull: yes
       nocache: yes
-    name: "{{ dockerhub_path }}/bento-{{ item | dirname | basename }}"
+    #name: "{{ dockerhub_path }}/bento-{{ item | dirname | basename }}"
+    name: "{{ ecr_repo }}/bento-{{ item | dirname | basename }}"
     tag: "release"
     push: yes
     force_source: yes

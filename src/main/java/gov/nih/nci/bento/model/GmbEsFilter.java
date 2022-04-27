@@ -98,6 +98,10 @@ public class GmbEsFilter implements DataFetcher{
                             return fileIdsFromFileName(args);
                         })
                         .dataFetcher("idsLists", env -> idsLists())
+                        .dataFetcher("fileIDsFromList", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return fileIDsFromList(args);
+                        })
                 )
                 .build();
     }
@@ -184,6 +188,32 @@ public class GmbEsFilter implements DataFetcher{
         );
 
         return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
+    }
+
+    private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {
+        //Remap parameter names to match elasticsearch fields
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("subject_id", "subject_ids"),
+                Map.entry("file_name", "file_names")
+        );
+        Map<String, Object> mappedParams = new HashMap<>();
+        for (String key: mapping.keySet()){
+            String oldKey = mapping.get(key);
+            if (params.containsKey(oldKey)){
+                mappedParams.put(key, params.get(oldKey));
+            }
+        }
+        return collectFieldFromList(mappedParams, "file_id", FILES_END_POINT);
+    }
+
+    private List<String> collectFieldFromList(Map<String, Object> params, String collectField, String endpoint) throws IOException {
+        String[] idFieldArray = new String[]{collectField};
+        Map<String, Object> query = esService.buildListQuery(params, Set.of());
+        query = esService.addAggregations(query, idFieldArray);
+        Request request = new Request("GET", endpoint);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject jsonObject = esService.send(request);
+        return esService.collectTerms(jsonObject, collectField);
     }
 
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {

@@ -1,0 +1,13 @@
+---
+- name: scan bento base images
+  hosts: all
+  connection: local
+  #become: yes
+  gather_facts: yes
+  
+  tasks:
+    - name: scan bento image
+      include_role:
+        name: build-image-bento
+        tasks_from: bento-scan
+        vars_from: bento

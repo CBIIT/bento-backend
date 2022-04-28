@@ -31,6 +31,8 @@
     - name: docker login
       include_role:
         name: bento.common.ecr_login
+      vars:
+        region: us-east-1
 
     #frontend build
     - name: build frontend

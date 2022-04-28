@@ -456,13 +456,14 @@ public class GmbEsFilter implements DataFetcher{
                 Map.entry("md5sum", "md5sum")
         );
 
-        Map<String, Object> query = esService.buildListQuery(params, Set.of(ORDER_BY, SORT_DIRECTION));
+        Map<String, Object> query = esService.buildListQuery(params, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
+        int pageSize = (int) params.get(PAGE_SIZE);
+        int offset = (int) params.get(OFFSET);
         Request request = new Request("GET", FILES_END_POINT);
-
-        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+        return esService.collectPage(request, query, properties, pageSize, offset);
     }
 
     private Map<String, Object> idsLists() throws IOException {

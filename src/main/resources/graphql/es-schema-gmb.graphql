@@ -216,7 +216,9 @@ type QueryType {
     filesInList(
         file_id: [String] = [],
         order_by: String = "",
-        sort_direction: String = "ASC"
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
     ): [FileOverviewES]
 
     idsLists: SubjectIds

@@ -6,11 +6,6 @@
 
   tasks:
     #install collections
-#    - name: install ansible collections
-#      include_role:
-#        name: ctdc
-#        tasks_from: collections
-
     - name: install aws collection
       command: ansible-galaxy collection install {{item}}
       loop:
@@ -18,14 +13,6 @@
         -  community.aws
         -  community.docker
         -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
-
-#    #build frontend
-#    - name: build stage for ctdc frontend
-#      include_role:
-#        name: ctdc
-#        tasks_from: build-frontend
-#      vars:
-#        ansible_python_interpreter: /usr/bin/python3
 
     #docker login
     - name: docker login

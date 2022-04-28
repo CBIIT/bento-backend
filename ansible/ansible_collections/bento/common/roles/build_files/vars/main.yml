@@ -1,6 +1,10 @@
-# vars file for data loading
-project_name:  "{{lookup('env','PROJECT_NAME')}}"
-database_name: "{{ project_name }}-{{tier}}-neo4j-4"
-tier: "{{ lookup('env','TIER') }}"
-workspace: "{{ lookup('env','WORKSPACE') }}"
-region: us-east-1
+# vars file for files build
+#ansible_python_interpreter:
+#workspace:
+#build_number:
+#project_name:
+#image_version:
+#container_name:
+#container_build_path:
+#dockerfile_path:
+#container_registry_url:

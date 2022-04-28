@@ -1,8 +1,8 @@
-- name: build {{ project_name }}-{{container_name}} image
+- name: build {{ project_name }}-{{ container_name }} image
   community.docker.docker_image:
     build:
-      path: "{{container_build_path}}"
-      dockerfile: "{{dockerfile_path}}"
+      path: "{{ container_build_path }}"
+      dockerfile: "{{ dockerfile_path }}"
       pull: yes
       nocache: yes
     name: "{{ project_name }}-{{ container_name }}"

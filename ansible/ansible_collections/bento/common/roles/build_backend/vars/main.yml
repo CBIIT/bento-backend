@@ -1,4 +1,4 @@
-# vars file for data loading
+# vars file for backend build
 #ansible_python_interpreter:
 #workspace:
 #build_number:

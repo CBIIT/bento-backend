@@ -50,26 +50,47 @@ Indices:
       OPTIONAL MATCH (s)<--(sv:SOMATIC_VARIANT)
       OPTIONAL MATCH (s)<--(gv:GERMLINE_VARIANT)
       OPTIONAL MATCH (s)<--(f:FILE)
-      RETURN DISTINCT
-        s.PT_ID AS subject_id,
-        s.PT_ID AS subject_id_gs,
-        s.PT_RACE_CD_1 AS race,
-        s.DZ_DX_NM AS disease_term,
-        s.REG_INST_ID_CD AS registering_institution,
-        s.PT_SUBGRP_ASSIGN_TP AS patient_subgroup,
-        e.DISEAS_STG AS stage_at_entry,
-        srv.DEATH_CAUS_CD AS cause_of_death,
-        srv.ATPSY_DZ_SITE_NM AS sites_of_disease_at_autopsy,
-        l.LAB_DATA_SRCE_NM AS source_of_the_lab_data,
-        l.LAB_TEST_NM AS lab_test,
-        ae.MEDDRA_SOC_TRM_NM AS system_organ_class,
-        ae.SAE_RSN AS serious,
-        ae.AE_OUTCOME AS outcome,
-        ct.CLINICAL_TRIAL_ID AS clinical_trial_id,
-        gv.GRMLN_VAR_PTHGNC_CAT AS germline_pathogenicity,
-        sv.SOMATIC_VAR_PTHGNC_CAT AS somatic_pathogenicity,
+      WITH
+        coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id,
+        coalesce(s.PT_ID, 'N/A') AS subject_id,
+        coalesce(s.PT_ID, 'N/A') AS subject_id_gs,
+        coalesce(s.PT_RACE_CD_1, 'N/A') AS race,
+        coalesce(s.DZ_DX_NM, 'N/A') AS disease_term,
+        coalesce(s.REG_INST_ID_CD, 'N/A') AS registering_institution,
+        coalesce(s.PT_SUBGRP_ASSIGN_TP, 'N/A') AS patient_subgroup,
+        COLLECT(DISTINCT e.DISEAS_STG) AS stage_at_entry,
+        COLLECT(DISTINCT srv.DEATH_CAUS_CD) AS cause_of_death,
+        COLLECT(DISTINCT srv.ATPSY_DZ_SITE_NM) AS sites_of_disease_at_autopsy,
+        COLLECT(DISTINCT l.LAB_DATA_SRCE_NM) AS source_of_the_lab_data,
+        COLLECT(DISTINCT l.LAB_TEST_NM) AS lab_test,
+        COLLECT(DISTINCT ae.MEDDRA_SOC_TRM_NM) AS system_organ_class,
+        COLLECT(DISTINCT ae.SAE_RSN) AS serious,
+        COLLECT(DISTINCT ae.AE_OUTCOME) AS outcome,
+        COLLECT(DISTINCT gv.GRMLN_VAR_PTHGNC_CAT) AS germline_pathogenicity,
+        COLLECT(DISTINCT sv.SOMATIC_VAR_PTHGNC_CAT) AS somatic_pathogenicity,
         COLLECT(DISTINCT f.FILE_TYPE) AS file_type,
         COLLECT(DISTINCT f.UUID) AS files
+
+      RETURN
+        clinical_trial_id,
+        subject_id,
+        subject_id_gs,
+        race,
+        disease_term,
+        registering_institution,
+        patient_subgroup,
+        CASE size(stage_at_entry) WHEN 0 THEN 'N/A' WHEN 1 THEN head(stage_at_entry) ELSE stage_at_entry END AS stage_at_entry,
+        CASE size(cause_of_death) WHEN 0 THEN 'N/A' WHEN 1 THEN head(cause_of_death) ELSE cause_of_death END AS cause_of_death,
+        CASE size(sites_of_disease_at_autopsy) WHEN 0 THEN 'N/A' WHEN 1 THEN head(sites_of_disease_at_autopsy) ELSE sites_of_disease_at_autopsy END AS sites_of_disease_at_autopsy,
+        CASE size(source_of_the_lab_data) WHEN 0 THEN 'N/A' WHEN 1 THEN head(source_of_the_lab_data) ELSE source_of_the_lab_data END AS source_of_the_lab_data,
+        CASE size(lab_test) WHEN 0 THEN 'N/A' WHEN 1 THEN head(lab_test) ELSE lab_test END AS lab_test,
+        CASE size(system_organ_class) WHEN 0 THEN 'N/A' WHEN 1 THEN head(system_organ_class) ELSE system_organ_class END AS system_organ_class,
+        CASE size(serious) WHEN 0 THEN 'N/A' WHEN 1 THEN head(serious) ELSE serious END AS serious,
+        CASE size(outcome) WHEN 0 THEN 'N/A' WHEN 1 THEN head(outcome) ELSE outcome END AS outcome,
+        CASE size(germline_pathogenicity) WHEN 0 THEN 'N/A' WHEN 1 THEN head(germline_pathogenicity) ELSE germline_pathogenicity END AS germline_pathogenicity,
+        CASE size(somatic_pathogenicity) WHEN 0 THEN 'N/A' WHEN 1 THEN head(somatic_pathogenicity) ELSE somatic_pathogenicity END AS somatic_pathogenicity,
+        CASE size(file_type) WHEN 0 THEN 'N/A' WHEN 1 THEN head(file_type) ELSE file_type END AS file_type,
+        CASE size(files) WHEN 0 THEN 'N/A' WHEN 1 THEN head(files) ELSE files END AS files
     "
   # Files Index
   - index_name: files

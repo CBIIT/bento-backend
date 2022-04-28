@@ -209,8 +209,8 @@ type QueryType {
     ): [FileOverviewES]
 
     fileIDsFromList(
-        file_names: [String] = [],
-        subject_ids: [String] = [],
+        file_names: [String] = [""],
+        subject_ids: [String] = [""],
     ): [String]
 
     filesInList(

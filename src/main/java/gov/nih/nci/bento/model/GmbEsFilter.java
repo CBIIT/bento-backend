@@ -223,7 +223,8 @@ public class GmbEsFilter implements DataFetcher{
                 new String[]{"description", "file_description"},
                 new String[]{"fileFormat", "file_format"},
                 new String[]{"size", "file_size"},
-                new String[]{"fileType", "file_type"}
+                new String[]{"fileType", "file_type"},
+                new String[]{"file_id", "file_id"}
         };
 
         String defaultSort = "subject_id"; // Default sort order
@@ -234,7 +235,8 @@ public class GmbEsFilter implements DataFetcher{
                 Map.entry("description", "file_description"),
                 Map.entry("fileFormat", "file_format"),
                 Map.entry("size", "file_size"),
-                Map.entry("fileType", "file_type")
+                Map.entry("fileType", "file_type"),
+                Map.entry("file_id", "file_id")
         );
 
         return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);

@@ -1,5 +1,5 @@
 # vars file for data loading
-project_name:  "{{lookup('env','PROJECT_NAME')}}"
-tier: "{{ lookup('env','TIER') }}"
-workspace: "{{ lookup('env','WORKSPACE') }}"
-region: us-east-1
+#project_name:  "{{lookup('env','PROJECT_NAME')}}"
+#tier: "{{ lookup('env','TIER') }}"
+#workspace: "{{ lookup('env','WORKSPACE') }}"
+#region: us-east-1

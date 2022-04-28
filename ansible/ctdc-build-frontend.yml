@@ -38,3 +38,4 @@
         container_build_path: "{{ workspace }}/{{ project_name }}-frontend"
         dockerfile_path: "{{ workspace }}/icdc-devops/docker/dockerfiles/nginx-frontend-dockerfile"
         container_image: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+        container_registry_url: "{{ ecr_repo }}"

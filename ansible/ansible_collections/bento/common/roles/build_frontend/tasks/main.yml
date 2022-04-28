@@ -66,10 +66,10 @@
     push: yes
     source: local
 
-- name: Add  latest tag to {{ project_name }}-{{container_name}} image
-  community.docker.docker_image:
-    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
-    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
-    force_tag: yes
-    push: yes
-    source: local
+#- name: Add  latest tag to {{ project_name }}-{{container_name}} image
+#  community.docker.docker_image:
+#    name: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{build_number}}"
+#    repository: "{{ container_registry_url }}/{{ project_name }}-{{ container_name }}:latest"
+#    force_tag: yes
+#    push: yes
+#    source: local

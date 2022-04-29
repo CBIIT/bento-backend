@@ -198,6 +198,7 @@ type QueryType {
     ): [CaseOverview]
 
     fileOverview(
+        case_id: [String] = [],
         file_name: [String] = [],
         clinical_trial_id: [String] = [], 
         clinical_trial_designation: [String] = [],

@@ -7,25 +7,37 @@
 
   tasks:
     #install collections
-    - name: install ansible collections
-      include_role:
-        name: ctdc
-        tasks_from: collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        -  amazon.aws
+        -  community.aws
+        -  community.docker
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
 
     #get db ip
     - name: get db ip
       include_role:
         name: bento.common.neo4j_ip
-
-    #load opensearch data
-    - name: seed opensearch
-      include_role:
-        name: bento.common.opensearch_loader
       vars:
-        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
-        model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
-        model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
-        property_file: "config/props-ctdc.yml"
-        about_file: "{{ workspace }}/ctdc-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
-        indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_ctdc.yml"
+        tier: "{{ lookup('env','TIER') }}"
+        database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
+
+    #load data
+    - name: perform data loading
+      include_role:
+        name: bento.common.opensearch-loader
+      vars:
         ansible_python_interpreter: /usr/bin/python3
+        project_name:  "{{ lookup('env','PROJECT_NAME') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        workspace: "{{ lookup('env','WORKSPACE') }}"
+        region: us-east-1
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='{{ region }}' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='{{ region }' ) }}"
+        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='{{ region }}' ) }}"
+        model_file1: "{{ workspace }}/cds-model/model-desc/{{ project_name }}-model.yml"
+        model_file2: "{{ workspace }}/cds-model/model-desc/{{ project_name }}-model-props.yml"
+        property_file: "config/props-{{ project_name }}.yml"
+        about_file: "{{ workspace }}/{{ project_name }}-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+        indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_{{ project_name }}.yml"

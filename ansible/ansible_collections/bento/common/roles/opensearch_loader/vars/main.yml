@@ -1,6 +1,14 @@
 # vars file for data loading
-project_name:  "{{lookup('env','PROJECT_NAME')}}"
-database_name: "{{ project_name }}-{{tier}}-neo4j-4"
-tier: "{{ lookup('env','TIER') }}"
-workspace: "{{ lookup('env','WORKSPACE') }}"
-region: us-east-1
+#ansible_python_interpreter:
+#project_name:
+#tier:
+#workspace:
+#region:
+#neo4j_user:
+#neo4j_password:
+#es_host:
+#model_file1:
+#model_file2:
+#property_file:
+#about_file:
+#indices_file:

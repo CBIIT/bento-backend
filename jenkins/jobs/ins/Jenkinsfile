@@ -56,7 +56,7 @@ pipeline {
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: ' https://github.com/CBIIT/INS-WebService')
+       useRepository: 'https://github.com/CBIIT/INS-WebService')
     gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'main', 
        name: 'Frontend_Tag', 
@@ -65,7 +65,7 @@ pipeline {
        selectedValue: 'DEFAULT', 
        sortMode: 'ASCENDING_SMART', 
        tagFilter: '*', 
-       useRepository: ' https://github.com/CBIIT/INS-WebPortal')
+       useRepository: 'https://github.com/CBIIT/INS-WebPortal')
     string(
       defaultValue: 'ins',
       description: 'Project Name',

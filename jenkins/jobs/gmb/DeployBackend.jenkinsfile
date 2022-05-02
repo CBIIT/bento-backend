@@ -48,6 +48,10 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'dev,qa,stage,prod' )
+	booleanParam(
+		defaultValue: true,
+		description: 'Enable the Elasticsearch filter',
+		name: 'Enable_ES_Filter')
 
   }
   options {
@@ -87,7 +91,8 @@ pipeline {
             		playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy-backend.yml',
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
             		extraVars: [
-                    project_name: "${params.Project}"
+                    project_name: "${params.Project}",
+					enable_es_filter: "${params.Enable_ES_Filter}"
                     ],
 					colorized: true)
  			}

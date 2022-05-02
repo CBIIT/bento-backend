@@ -44,6 +44,8 @@ groups:
         filter: true
         selectedField: study_code
       resultType: icdc_aggregation
+# TODO change selected_field
+
     - name: numberOfStudyFiles
       index:
         - files
@@ -62,13 +64,13 @@ groups:
         nestedPath: program_info
       resultType: nested_int_total_count
   #    TODO
-  #  - name: numberOfAliquots
-  #    index:
-  #      - aliquot
-  #    filterType:
-  #      # Get total number of documents in ES index
-  #      type: number_of_docs
-  #    resultType: int_total_count
+    - name: numberOfAliquots
+      index:
+        - cases
+      filterType:
+        # Get total number of documents in ES index
+        type: number_of_docs
+      resultType: empty
     - name: volumeOfData
       index:
         - cases
@@ -259,7 +261,7 @@ groups:
         - files
       filterType:
         type: aggregation
-        selectedField: association
+        selectedField: file_association
         filter: true
       resultType: icdc_aggregation
     - name: filterCaseCountByFileType

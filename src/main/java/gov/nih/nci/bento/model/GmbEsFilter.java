@@ -73,6 +73,7 @@ public class GmbEsFilter implements DataFetcher{
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                        .dataFetcher("esSchemaVersion", env -> "0.1.0")
                         .dataFetcher("searchSubjects", env -> {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects(args);

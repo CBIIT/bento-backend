@@ -130,6 +130,8 @@ schema {
 
 type QueryType {
 
+    esSchemaVersion: String
+
     searchSubjects(
         subject_id: [String] = [],
         race: [String] = [],

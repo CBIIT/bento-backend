@@ -87,7 +87,7 @@ pipeline {
 				])
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-build-files.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy-files.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
                 extraVars: [
                     auth_enabled: "${params.EnableAuthService}",

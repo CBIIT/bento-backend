@@ -491,15 +491,17 @@ Indices:
     cypher_query: "
       MATCH (f:file)
       OPTIONAL MATCH (f)-[*..3]-(parent)
-      OPTIONAL MATCH (parent)-[:of_case]->(cf:case)
-      
-      
+      OPTIONAL MATCH (parent)-[:of_case]->(cf:case)      
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
       OPTIONAL MATCH (first_parent)-[:of_case]->(cf2:case)
       OPTIONAL MATCH (r:registration)-->(cf2)-->(sty:study)      
       WHERE NOT r.registration_origin = sty.clinical_study_designation
       WITH f, CASE cf WHEN NULL THEN parent ELSE cf END AS c,CASE cf WHEN NULL THEN first_parent ELSE cf END AS cc2, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases,r,sty,
       COLLECT(DISTINCT r.registration_origin) as r_origin
+      
+      
+      
+      
       OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
       OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
       OPTIONAL MATCH (c)<-[:of_case]-(samp:sample)
@@ -513,25 +515,25 @@ Indices:
       WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study,cc2
       
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
-      OPTIONAL MATCH  (f)-[*0..2]-(:case)-[:represents]-(ciii:canine_individual)
+      OPTIONAL MATCH  (f)-[*0..2]-(:case)-[:represents]-(caine:canine_individual)
       
       OPTIONAL MATCH (cf2:case)-[:member_of]->(first_parent)
       OPTIONAL MATCH (r2:registration)-->(cf2)-->(sty2:study)      
       WHERE NOT r2.registration_origin = sty2.clinical_study_designation
       
-      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,ciii,
-      CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases_test,
       
       
-      COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank_test
       
-      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,biobank_test,ciii,
-      COLLECT(DISTINCT CASE study_case.case_id IN biobank_cases_test and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS bio_boolean
+      WITH f, c, r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,
+      CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS study_biobank,
+      COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank
       
+      WITH f, c, r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,biobank,
+      COLLECT(DISTINCT CASE study_case.case_id IN study_biobank and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS study_biobank_arr
       RETURN DISTINCT
         CASE file_study IS NOT NULL WHEN True
-        THEN (CASE [True] IN COLLECT(bio_boolean) WHEN True THEN COLLECT(DISTINCT r2.registration_origin) ELSE 'Not Applicable' END)
-        ELSE (CASE [True] IN COLLECT(biobank_test) WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END) END AS biobank,
+        THEN (CASE [True] IN COLLECT(study_biobank_arr) WHEN True THEN COLLECT(DISTINCT r2.registration_origin) ELSE 'Not Applicable' END)
+        ELSE (CASE [True] IN COLLECT(biobank) WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END) END AS biobank,
         f.file_name as file_name,
         f.file_type as file_type,
         f.uuid as file_uuids,
@@ -572,9 +574,9 @@ Indices:
         COLLECT(DISTINCT diag.best_response) AS response_to_treatment,
         COLLECT(DISTINCT diag.primary_disease_site) AS disease_site,
         COLLECT(DISTINCT diag.stage_of_disease) AS stage_of_disease,
-        
-        COLLECT(DISTINCT stu.clinical_study_designation) AS study_code,        
-        COLLECT(DISTINCT stu.clinical_study_designation) AS study,
+
+        COLLECT(DISTINCT (stu.clinical_study_designation + '(' + stu.accession_id +')')) AS study_code,        
+        COLLECT(DISTINCT (stu.clinical_study_designation + '(' + stu.accession_id +')')) AS study,
         COLLECT(DISTINCT stu.clinical_study_type) AS study_type,
     
         
@@ -588,8 +590,8 @@ Indices:
         CASE 'study' IN COLLECT(DISTINCT head(labels(file_parent))) WHEN True THEN 'study' ELSE 'other' END AS association,
         
         CASE file_study IS NOT NULL WHEN True 
-        THEN (CASE COUNT(ciii) > 0 WHEN True THEN ['Single Study', 'Multiple Study'] ELSE 'Single Study' END) 
-        ELSE (CASE COUNT(ciii) > 0 WHEN True THEN 'Multiple Study' ELSE 'Single Study' END) END AS study_participation,
+        THEN (CASE COUNT(caine) > 0 WHEN True THEN ['Single Study', 'Multiple Study'] ELSE 'Single Study' END) 
+        ELSE (CASE COUNT(caine) > 0 WHEN True THEN 'Multiple Study' ELSE 'Single Study' END) END AS study_participation,
         
         COLLECT(DISTINCT ca.canine_individual_id) AS individual_id
         

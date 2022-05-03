@@ -505,9 +505,12 @@ Indices:
       OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
       OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
       OPTIONAL MATCH (c)<-[:of_case]-(samp:sample)
+      
+      
+      
+      
       OPTIONAL MATCH (c)-[:member_of]->(stu:study)
       OPTIONAL MATCH (c)-[:represents]->(ca:canine_individual)
-
       OPTIONAL MATCH (f)-[*..4]->(pro:program)
       OPTIONAL MATCH (f)-[*..1]->(file_parent)
 
@@ -527,9 +530,11 @@ Indices:
       WITH f, c, r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,
       CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS study_biobank,
       COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank
+      OPTIONAL MATCH (f)-[*..3]-(file_stu:study)
       
-      WITH f, c, r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,biobank,
+      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,biobank,file_stu,
       COLLECT(DISTINCT CASE study_case.case_id IN study_biobank and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS study_biobank_arr
+      OPTIONAL MATCH (f)-[*0..3]-(samp:sample)
       RETURN DISTINCT
         CASE file_study IS NOT NULL WHEN True
         THEN (CASE [True] IN COLLECT(study_biobank_arr) WHEN True THEN COLLECT(DISTINCT r2.registration_origin) ELSE 'Not Applicable' END)
@@ -575,11 +580,18 @@ Indices:
         COLLECT(DISTINCT diag.primary_disease_site) AS disease_site,
         COLLECT(DISTINCT diag.stage_of_disease) AS stage_of_disease,
 
-        COLLECT(DISTINCT (stu.clinical_study_designation + '(' + stu.accession_id +')')) AS study_code,        
-        COLLECT(DISTINCT (stu.clinical_study_designation + '(' + stu.accession_id +')')) AS study,
-        COLLECT(DISTINCT stu.clinical_study_type) AS study_type,
-    
-        
+
+        CASE file_study IS NOT NULL WHEN True 
+        THEN COLLECT(DISTINCT (file_study.clinical_study_designation + '(' + file_study.accession_id +')')) 
+        ELSE COLLECT(DISTINCT (file_stu.clinical_study_designation + '(' + file_stu.accession_id +')'))  END AS study_code,
+
+        CASE file_study IS NOT NULL WHEN True 
+        THEN COLLECT(DISTINCT (file_study.clinical_study_designation + '(' + file_study.accession_id +')')) 
+        ELSE COLLECT(DISTINCT (file_stu.clinical_study_designation + '(' + file_stu.accession_id +')'))  END AS study,
+
+        CASE file_study IS NOT NULL WHEN True 
+        THEN COLLECT(DISTINCT (file_study.clinical_study_type)) 
+        ELSE COLLECT(DISTINCT (file_stu.clinical_study_type)) END AS study_type,        
       
         CASE file_study IS NOT NULL WHEN True THEN f.uuid ELSE null END AS study_files,
                 

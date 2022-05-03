@@ -124,6 +124,11 @@ type GS_About {
     text: String
 }
 
+type SubjectTrial{
+    subject_id: String
+    trial_id: String
+}
+
 schema {
     query: QueryType
 }
@@ -222,5 +227,13 @@ type QueryType {
     ): [FileOverviewES]
 
     idsLists: SubjectIds
+
+    findSubjectIdsInList(
+        subject_id: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectTrial]
     
 }

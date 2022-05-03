@@ -102,6 +102,10 @@ public class GmbEsFilter implements DataFetcher{
                             Map<String, Object> args = env.getArguments();
                             return fileIDsFromList(args);
                         })
+                        .dataFetcher("findSubjectIdsInList", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return findSubjectIdsInList(args);
+                        })
                 )
                 .build();
     }
@@ -185,6 +189,22 @@ public class GmbEsFilter implements DataFetcher{
                 Map.entry("serious", "serious"),
                 Map.entry("outcome", "outcome"),
                 Map.entry("files", "files")
+        );
+
+        return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);
+    }
+
+    private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"subject_id", "subject_id"},
+                new String[]{"trial_id", "clinical_trial_id"}
+        };
+
+        String defaultSort = "subject_id"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("subject_id", "subject_id"),
+                Map.entry("trial_id", "clinical_trial_id")
         );
 
         return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, mapping);

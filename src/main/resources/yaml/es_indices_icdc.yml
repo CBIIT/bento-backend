@@ -505,23 +505,27 @@ Indices:
       OPTIONAL MATCH (c)<-[:of_case]-(samp:sample)
       OPTIONAL MATCH (c)-[:member_of]->(stu:study)
       OPTIONAL MATCH (c)-[:represents]->(ca:canine_individual)
-      OPTIONAL MATCH (stu)-[:member_of]->(pro:program)
+
+      OPTIONAL MATCH (f)-[*..4]->(pro:program)
       OPTIONAL MATCH (f)-[*..1]->(file_parent)
+
       OPTIONAL MATCH (f)-[:of_study]->(file_study:study)
       WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study,cc2
       
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
+      OPTIONAL MATCH  (f)-[*0..2]-(:case)-[:represents]-(ciii:canine_individual)
+      
       OPTIONAL MATCH (cf2:case)-[:member_of]->(first_parent)
       OPTIONAL MATCH (r2:registration)-->(cf2)-->(sty2:study)      
       WHERE NOT r2.registration_origin = sty2.clinical_study_designation
       
-      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,
+      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,ciii,
       CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases_test,
       
       
       COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank_test
       
-      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,biobank_test,
+      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,biobank_test,ciii,
       COLLECT(DISTINCT CASE study_case.case_id IN biobank_cases_test and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS bio_boolean
       
       RETURN DISTINCT
@@ -583,7 +587,10 @@ Indices:
         
         CASE 'study' IN COLLECT(DISTINCT head(labels(file_parent))) WHEN True THEN 'study' ELSE 'other' END AS association,
         
-        CASE COLLECT(DISTINCT ca) IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
+        CASE file_study IS NOT NULL WHEN True 
+        THEN (CASE COUNT(ciii) > 0 WHEN True THEN ['Single Study', 'Multiple Study'] ELSE 'Single Study' END) 
+        ELSE (CASE COUNT(ciii) > 0 WHEN True THEN 'Multiple Study' ELSE 'Single Study' END) END AS study_participation,
+        
         COLLECT(DISTINCT ca.canine_individual_id) AS individual_id
         
     "

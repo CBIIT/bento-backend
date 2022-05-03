@@ -27,6 +27,8 @@ Indices:
         type: keyword
       case_id_gs:
         type: search_as_you_type
+      uuid:
+        type: keyword
       file_type:
         type: keyword
       file_format:
@@ -48,6 +50,7 @@ Indices:
         a.arm_id+'_'+a.arm_drug AS trial_arm,
         a.arm_id AS arm_id,
         a.arm_drug AS arm_treatment,
+        COLLECT(DISTINCT f.uuid) as uuid,
         COLLECT(DISTINCT f.file_type) AS file_type,
         COLLECT(DISTINCT f.file_format) AS file_format
     "

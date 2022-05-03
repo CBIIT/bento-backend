@@ -8,6 +8,7 @@ type CaseOverview {
     gender: String
     race: String
     ethnicity: String
+    files: [String]
 }
 
 type CaseIds{
@@ -23,6 +24,7 @@ type FileOverview {
     trial_code: String
     arm: String
     case_id: String
+    file_id: String
 }
 
 type GroupCountES {

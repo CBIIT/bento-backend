@@ -122,7 +122,8 @@ public class CtdcESFilter implements DataFetcher {
                 new String[]{"diagnosis","disease"},
                 new String[]{"gender","gender"},
                 new String[]{"race","race"},
-                new String[]{"ethnicity","ethnicity"}
+                new String[]{"ethnicity","ethnicity"},
+                new String[]{"files", "uuid"}
         };
 
         String defaultSort = "case_id";
@@ -136,7 +137,8 @@ public class CtdcESFilter implements DataFetcher {
             Map.entry("diagnosis","disease"),
             Map.entry("gender","gender"),
             Map.entry("race","race"),
-            Map.entry("ethnicity","ethnicity")
+            Map.entry("ethnicity","ethnicity"),
+            Map.entry("files", "uuid")
         );
 
         return overview(CASES_END_POINT, params, PROPERTIES, defaultSort, mapping);
@@ -151,7 +153,8 @@ public class CtdcESFilter implements DataFetcher {
                 new String[]{"size","size"},
                 new String[]{"trial_code","trial_code"},
                 new String[]{"arm","arm"},
-                new String[]{"case_id","case_id"}
+                new String[]{"case_id","case_id"},
+                new String[]{"file_id", "uuid"}
         };
 
         String defaultSort = "file_name";
@@ -164,7 +167,8 @@ public class CtdcESFilter implements DataFetcher {
                 Map.entry("size","size"),
                 Map.entry("trial_code","trial_code"),
                 Map.entry("arm","arm"),
-                Map.entry("case_id","case_id")
+                Map.entry("case_id","case_id"),
+                Map.entry("file_id", "uuid")
         );
 
         return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);

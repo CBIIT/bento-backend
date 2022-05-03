@@ -15,6 +15,10 @@ type CaseIds{
     case_ids: [String]
 }
 
+type FileIds{
+    file_ids: [String]
+}
+
 type FileOverview {
     file_name: String
     association: String
@@ -259,4 +263,8 @@ type QueryType {
     ): [FileOfCase]
 
     idsLists: CaseIds
+
+    fileIdsFromCaseId(
+        case_id: [String] = [""]
+    ): FileIds
 }

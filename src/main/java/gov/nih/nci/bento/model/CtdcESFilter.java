@@ -99,6 +99,10 @@ public class CtdcESFilter implements DataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return fileIdsFromFileName(args);
                         })
+                        .dataFetcher("fileIdsFromCaseId", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return fileIdsFromCaseIds(args);
+                        })
                         .dataFetcher("filesInList", env -> {
                             Map<String, Object> args = env.getArguments();
                             return filesInList(args);
@@ -462,6 +466,21 @@ public class CtdcESFilter implements DataFetcher {
         response.forEach(x -> case_ids.add((String) x.get("case_id")));
         Map<String, Object> result = Map.of(
                 "case_ids", case_ids
+        );
+        return result;
+    }
+
+    private Map<String, Object> fileIdsFromCaseIds(Map<String, Object> params) throws IOException {
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"file_id", "uuid"}
+        };
+        Map<String, Object> query = esService.buildListQuery(params, Set.of());
+        Request request = new Request("GET", FILES_END_POINT);
+        List<Map<String, Object>> response = esService.collectPage(request, query, PROPERTIES, ESService.MAX_ES_SIZE, 0);
+        ArrayList<String> file_ids = new ArrayList<>();
+        response.forEach(x -> file_ids.add((String) x.get("file_id")));
+        Map<String, Object> result = Map.of(
+                "file_ids", file_ids
         );
         return result;
     }

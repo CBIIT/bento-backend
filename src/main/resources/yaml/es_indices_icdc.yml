@@ -165,6 +165,7 @@ Indices:
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (f:file)-[*]->(c)
+      OPTIONAL MATCH (file_case:file)<-[*0..3]->(c)
       OPTIONAL MATCH (parent)<--(f:file)
       OPTIONAL MATCH (co)-->(a:study_arm)
       OPTIONAL MATCH (c)-->(ci:canine_individual)
@@ -173,7 +174,7 @@ Indices:
       OPTIONAL MATCH (c)<--(samp:sample)
       OPTIONAL MATCH (study_file:file)-->(stu:study)<--(c)
 
-      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci,p,samp,ff,parent,biobank_cases,r,study_file
+      WITH DISTINCT c, s, a, co, demo, diag, f, o, i, ci,p,samp,ff,parent,biobank_cases,r,study_file,file_case
       return
         c.case_id AS case_id,
         c.case_id AS case_ids,
@@ -214,10 +215,10 @@ Indices:
         ELSE COLLECT(DISTINCT head(labels(parent)))
         END AS file_association,
 
-        COLLECT(DISTINCT(f.file_type)) AS file_type,
-        COLLECT(DISTINCT(f.file_format)) AS file_format,
+        COLLECT(DISTINCT(file_case.file_type)) AS file_type,
+        COLLECT(DISTINCT(file_case.file_format)) AS file_format,
         COLLECT(DISTINCT (ff.uuid)) AS study_files,
-        COLLECT(DISTINCT(f.uuid)) AS files,
+        COLLECT(DISTINCT(file_case.uuid)) AS files,
         CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
         s.clinical_study_designation as clinical_study_designation,
         COLLECT(DISTINCT p.program_acronym) AS program,
@@ -486,19 +487,18 @@ Indices:
       biobank:
         type: keyword
 
-
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (f:file)
       OPTIONAL MATCH (f)-[*..3]-(parent)
       OPTIONAL MATCH (parent)-[:of_case]->(cf:case)
-      OPTIONAL MATCH (r:registration)-->(cf)-->(sty:study)
-      
-
       
       
+      OPTIONAL MATCH (f)-[*..1]->(first_parent)
+      OPTIONAL MATCH (first_parent)-[:of_case]->(cf2:case)
+      OPTIONAL MATCH (r:registration)-->(cf2)-->(sty:study)      
       WHERE NOT r.registration_origin = sty.clinical_study_designation
-      WITH f, parent, CASE cf WHEN NULL THEN parent ELSE cf END AS c,CASE cf WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf.case_id) END AS biobank_cases,r,sty,
+      WITH f, CASE cf WHEN NULL THEN parent ELSE cf END AS c,CASE cf WHEN NULL THEN first_parent ELSE cf END AS cc2, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases,r,sty,
       COLLECT(DISTINCT r.registration_origin) as r_origin
       OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
       OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
@@ -508,16 +508,26 @@ Indices:
       OPTIONAL MATCH (stu)-[:member_of]->(pro:program)
       OPTIONAL MATCH (f)-[*..1]->(file_parent)
       OPTIONAL MATCH (f)-[:of_study]->(file_study:study)
-      WITH f, parent, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study
-      OPTIONAL MATCH (f)-[*]->(first_parent)
-      OPTIONAL MATCH (first_parent)-[:of_case]->(cf2:case)
-      OPTIONAL MATCH (r2:registration)-->(cf2)-->(sty2:study)
+      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study,cc2
+      
+      OPTIONAL MATCH (f)-[*..1]->(first_parent)
+      OPTIONAL MATCH (cf2:case)-[:member_of]->(first_parent)
+      OPTIONAL MATCH (r2:registration)-->(cf2)-->(sty2:study)      
       WHERE NOT r2.registration_origin = sty2.clinical_study_designation
-      WITH f, parent, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study,CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS c2,CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases2,r2,sty2
-      WITH f, parent, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, c2,r2,sty2,
-      COLLECT(CASE c2.case_id IN biobank_cases2 and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS biobank_test
+      
+      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,
+      CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases_test,
+      
+      
+      COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank_test
+      
+      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,biobank_test,
+      COLLECT(DISTINCT CASE study_case.case_id IN biobank_cases_test and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS bio_boolean
+      
       RETURN DISTINCT
-        CASE [True] IN COLLECT(biobank_test) WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END AS biobank,
+        CASE file_study IS NOT NULL WHEN True
+        THEN (CASE [True] IN COLLECT(bio_boolean) WHEN True THEN COLLECT(DISTINCT r2.registration_origin) ELSE 'Not Applicable' END)
+        ELSE (CASE [True] IN COLLECT(biobank_test) WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END) END AS biobank,
         f.file_name as file_name,
         f.file_type as file_type,
         f.uuid as file_uuids,

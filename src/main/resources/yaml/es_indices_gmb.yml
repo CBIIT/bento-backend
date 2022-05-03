@@ -90,7 +90,7 @@ Indices:
         CASE size(germline_pathogenicity) WHEN 0 THEN 'N/A' WHEN 1 THEN head(germline_pathogenicity) ELSE germline_pathogenicity END AS germline_pathogenicity,
         CASE size(somatic_pathogenicity) WHEN 0 THEN 'N/A' WHEN 1 THEN head(somatic_pathogenicity) ELSE somatic_pathogenicity END AS somatic_pathogenicity,
         CASE size(file_type) WHEN 0 THEN 'N/A' WHEN 1 THEN head(file_type) ELSE file_type END AS file_type,
-        CASE size(files) WHEN 0 THEN 'N/A' WHEN 1 THEN head(files) ELSE files END AS files
+        files
     "
   # Files Index
   - index_name: files

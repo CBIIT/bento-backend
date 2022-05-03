@@ -1,0 +1,123 @@
+
+import groovy.json.JsonOutput
+
+pipeline {
+	agent {
+		node {
+			label 'cicd_scala'
+		}
+	}
+	parameters {
+    extendedChoice( 
+        name: 'Environment', 
+        defaultValue: 'dev', 
+        description: 'Choose the environment to build', 
+        type: 'PT_SINGLE_SELECT',
+        value: 'dev,qa,stage,prod,demo' )
+      extendedChoice(
+            name: 'BackupFile',
+            defaultValue: 'clickhouse_backup_03_23_2022',
+            description: 'choose the backup file to restore',
+            type: 'PT_SINGLE_SELECT',
+            value: 'clickhouse_backup_03_23_2022,clickhouse-backup-test,clickhouse-backup-04-13' )
+
+
+  }
+  options {
+  	ansiColor('xterm')
+  }
+  tools {
+  	maven 'Default' 
+    jdk 'Default' 
+  }
+  stages{
+      stage('checkout'){
+      steps {
+
+        checkout( poll: false, 
+        changelog:false,
+        scm: [$class: 'GitSCM', 
+        branches: [[name: '*/master']], 
+        doGenerateSubmoduleConfigurations: false, 
+        extensions: [[$class: 'DisableRemotePoll'],
+        [$class: 'PathRestriction', excludedRegions: '*'], 
+        [$class: 'RelativeTargetDirectory', 
+        relativeTargetDir: 'icdc-devops']], 
+        submoduleCfg: [], 
+        userRemoteConfigs: 
+        [[url: 'https://github.com/CBIIT/icdc-devops.git']]])
+
+        }
+ 
+    }
+    stage('Set Environment'){
+      environment {
+        PPDC_SLACK_URL = "${PPDC_SLACK_URL}"
+
+      }
+        steps {
+          script {
+            switch("${params.Environment}") {
+              case "dev":
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_DEV_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "dev"
+                }
+              break
+              case "qa":
+                withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_QA_IP}"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "qa"
+                }
+              break
+              default:
+                withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "dev"
+                }
+              break
+            }
+          }
+        }
+    }
+  	stage('clickhouse_restore'){
+ 		steps{
+      wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+       withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER'),
+       file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file'),
+       ]){
+             sh "cp ${host_file} ${WORKSPACE}/ansible/hosts"
+             ansiblePlaybook( 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/clickhouse-restore.yml', 
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                credentialsId: 'server_ssh_key',
+                extraVars: [
+                    tier: "${params.Environment}",
+                    backupfile: "${params.BackupFile}"
+                    ],
+                become: true,
+                hostKeyChecking: false,
+                colorized: true)
+           }
+        }
+      }
+  	}
+  }
+  post {
+
+	always {
+
+      sendSlackMessage()
+
+    }
+
+	cleanup {
+	
+	  cleanWs()
+    
+	}
+
+  }
+}

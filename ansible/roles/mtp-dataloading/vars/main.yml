@@ -1,0 +1,2 @@
+clickhouse_path: /home/bento/build/linux/amd64
+backupfile: "{{ lookup('env','BACKUPFILE') }}"

@@ -1,0 +1,11 @@
+---
+- name: deploy stage of ppdc otp
+  hosts: ppdc-otp-{{tier}}-database
+  gather_facts: yes
+  become: yes
+    
+  tasks:
+    - name: clickhouse data restore
+      include_role:
+        name: mtp-dataloading
+        tasks_from: clickhouse-restore

@@ -11,7 +11,6 @@
       loop:
         -  amazon.aws
         -  community.aws
-        -  community.docker
         -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
 
     #docker login

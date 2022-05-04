@@ -150,8 +150,6 @@ public class YamlQueryFactory {
                 return typeMapper.getIntTotalNestedAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
-            case Const.YAML_QUERY.RESULT_TYPE.NESTED_SUM_AGG:
-                return typeMapper.getNestedSumAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.SUM_AGG:
                 return typeMapper.getSumAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.EMPTY:
@@ -258,13 +256,11 @@ public class YamlQueryFactory {
                         .getSourceFilter();
             case Const.YAML_QUERY.FILTER.GLOBAL:
                 return createGlobalQuery(param,query);
-            case Const.YAML_QUERY.FILTER.NESTED_SUM:
-                return new NestedSumFilter(
+            case Const.YAML_QUERY.FILTER.SUM:
+                return new SumFilter(
                                 FilterParam.builder()
                                         .args(param.getArgs())
                                         .selectedField(filterType.getSelectedField())
-                                        .nestedPath(filterType.getNestedPath())
-                                        .nestedFields(filterType.getNestedFields())
                                         .build())
                                 .getSourceFilter();
             default:

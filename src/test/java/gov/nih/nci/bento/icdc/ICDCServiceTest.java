@@ -6,7 +6,7 @@ import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
 import gov.nih.nci.bento.search.query.filter.NestedFilter;
-import gov.nih.nci.bento.search.query.filter.NestedSumFilter;
+import gov.nih.nci.bento.search.query.filter.SumFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
 import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
 import gov.nih.nci.bento.service.ESServiceImpl;
@@ -100,15 +100,13 @@ public class ICDCServiceTest {
                 .name("TEST01")
                 .request(new SearchRequest()
                         .indices(Const.ICDC_INDEX.CASES)
-                        .source(new NestedSumFilter(
+                        .source(new SumFilter(
                                 FilterParam.builder()
                                         .args(args)
                                         .selectedField("file_size")
-                                        .nestedPath("files_info")
-                                        .nestedFields(Set.of("file_type", "file_format", "file_association"))
                                         .build())
                                 .getSourceFilter()))
-                .typeMapper(typeMapper.getNestedSumAggregate()).build());
+                .typeMapper(typeMapper.getSumAggregate()).build());
 
         Map<String, Object> result = esService.elasticMultiSend(requests);
         double  test01Result = (double) result.get("TEST01");

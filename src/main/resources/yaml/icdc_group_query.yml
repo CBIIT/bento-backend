@@ -63,7 +63,6 @@ groups:
           - program
         nestedPath: program_info
       resultType: nested_int_total_count
-  #    TODO
     - name: numberOfAliquots
       index:
         - cases
@@ -73,17 +72,11 @@ groups:
       resultType: empty
     - name: volumeOfData
       index:
-        - cases
+        - files
       filterType:
-        type: nested_sum
+        type: sum
         selectedField: file_size
-        filter: true
-        nestedPath: files_info
-        nestedFields:
-          - file_type
-          - file_association
-          - file_format
-      resultType: nested_sum
+      resultType: sum
     - name: caseCountByGender
       index:
         - cases

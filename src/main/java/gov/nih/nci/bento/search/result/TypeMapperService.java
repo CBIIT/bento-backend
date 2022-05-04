@@ -30,5 +30,4 @@ public interface TypeMapperService {
     TypeMapper<List<Map<String, Object>>> getICDCNestedAggregateList();
     TypeMapper<Integer> getIntTotalNestedAggregate();
     TypeMapper<Float> getSumAggregate();
-    TypeMapper<Float> getNestedSumAggregate();
 }

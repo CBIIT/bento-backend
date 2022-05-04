@@ -109,14 +109,6 @@ public class TypeMapperImpl implements TypeMapperService {
         };
     }
 
-    public TypeMapper<Float> getNestedSumAggregate() {
-        return (response) -> {
-            ParsedFilter aggFilters = getParsedFilter(response);
-            Sum nestedSum = aggFilters.getAggregations().get(ES_PARAMS.TERMS_AGGS);
-            return (float) nestedSum.getValue();
-        };
-    }
-
     private ParsedFilter getParsedFilter(SearchResponse response) {
         Aggregations aggregate = response.getAggregations();
         ParsedNested aggNested = (ParsedNested) aggregate.getAsMap().get(ES_PARAMS.NESTED_SEARCH);

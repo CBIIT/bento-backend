@@ -43,7 +43,7 @@ public class Const {
             public static final String DEFAULT = "default";
             public static final String GLOBAL = "global";
             public static final String NESTED = "nested";
-            public static final String NESTED_SUM = "nested_sum";
+            public static final String SUM = "sum";
         }
 
         public static class RESULT_TYPE {

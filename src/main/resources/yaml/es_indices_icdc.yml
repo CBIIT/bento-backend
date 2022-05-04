@@ -45,8 +45,6 @@ Indices:
         type: float
       weight:
         type: float
-      files:
-        type: keyword
       other_cases:
         type: keyword
       individual_id:
@@ -131,26 +129,6 @@ Indices:
             type: keyword
           comment:
             type: keyword
-      #            TODO DELETE
-      files_info:
-        type: nested
-        properties:
-          file_uuid:
-            type: keyword
-          file_uuids:
-            type: keyword
-          file_size:
-            type: double
-          file_format:
-            type: keyword
-          file_description:
-            type: keyword
-          file_name:
-            type: keyword
-          file_type:
-            type: keyword
-          file_association:
-            type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (c:case)
@@ -165,7 +143,7 @@ Indices:
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (f:file)-[*]->(c)
-      OPTIONAL MATCH (file_case:file)<-[*0..3]->(c)
+      OPTIONAL MATCH (file_case:file)<-[*0..2]->(c)
       OPTIONAL MATCH (parent)<--(f:file)
       OPTIONAL MATCH (co)-->(a:study_arm)
       OPTIONAL MATCH (c)-->(ci:canine_individual)
@@ -218,7 +196,6 @@ Indices:
         COLLECT(DISTINCT(file_case.file_type)) AS file_type,
         COLLECT(DISTINCT(file_case.file_format)) AS file_format,
         COLLECT(DISTINCT (ff.uuid)) AS study_files,
-        COLLECT(DISTINCT(file_case.uuid)) AS files,
         CASE ci IS NULL WHEN True THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
         s.clinical_study_designation as clinical_study_designation,
         COLLECT(DISTINCT p.program_acronym) AS program,
@@ -236,15 +213,7 @@ Indices:
                           physical_sample_type: samp.physical_sample_type,
                           general_sample_pathology:samp.general_sample_pathology,
                           tumor_sample_origin:samp.tumor_sample_origin,
-                          comment:samp.comment}) AS samples_info,
-        COLLECT(DISTINCT {file_uuid: f.uuid,
-                  file_uuids: f.uuid,
-                  file_association: head(labels(parent)),
-                  file_size: f.file_size,
-                  file_format: f.file_format,
-                  file_description: f.file_description,
-                  file_name: f.file_name,
-                  file_type: f.file_type}) AS files_info
+                          comment:samp.comment}) AS samples_info
       "
   - index_name: samples
     type: neo4j
@@ -490,7 +459,7 @@ Indices:
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (f:file)
-      OPTIONAL MATCH (f)-[*..3]-(parent)
+      OPTIONAL MATCH (f)-[*..2]-(parent)
       OPTIONAL MATCH (parent)-[:of_case]->(cf:case)      
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
       OPTIONAL MATCH (first_parent)-[:of_case]->(cf2:case)
@@ -499,23 +468,17 @@ Indices:
       WITH f, CASE cf WHEN NULL THEN parent ELSE cf END AS c,CASE cf WHEN NULL THEN first_parent ELSE cf END AS cc2, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases,r,sty,
       COLLECT(DISTINCT r.registration_origin) as r_origin
       
-      
-      
-      
       OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
-      OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)
+      OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)      
       OPTIONAL MATCH (c)<-[:of_case]-(samp:sample)
-      
-      
-      
-      
+            
       OPTIONAL MATCH (c)-[:member_of]->(stu:study)
       OPTIONAL MATCH (c)-[:represents]->(ca:canine_individual)
       OPTIONAL MATCH (f)-[*..4]->(pro:program)
       OPTIONAL MATCH (f)-[*..1]->(file_parent)
 
       OPTIONAL MATCH (f)-[:of_study]->(file_study:study)
-      WITH f, c, biobank_cases,r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study,cc2
+      WITH f, c, biobank_cases,r, sty, diag, demo,stu, ca, pro, file_parent, file_study,cc2,samp
       
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
       OPTIONAL MATCH  (f)-[*0..2]-(:case)-[:represents]-(caine:canine_individual)
@@ -525,16 +488,13 @@ Indices:
       WHERE NOT r2.registration_origin = sty2.clinical_study_designation
       
       
-      
-      
-      WITH f, c, r, sty, diag, demo,samp, stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,
+      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,samp,
       CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS study_biobank,
       COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank
       OPTIONAL MATCH (f)-[*..3]-(file_stu:study)
-      
-      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,biobank,file_stu,
+      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,biobank,file_stu,samp,
       COLLECT(DISTINCT CASE study_case.case_id IN study_biobank and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS study_biobank_arr
-      OPTIONAL MATCH (f)-[*0..3]-(samp:sample)
+
       RETURN DISTINCT
         CASE file_study IS NOT NULL WHEN True
         THEN (CASE [True] IN COLLECT(study_biobank_arr) WHEN True THEN COLLECT(DISTINCT r2.registration_origin) ELSE 'Not Applicable' END)
@@ -572,7 +532,7 @@ Indices:
         COLLECT(DISTINCT head(labels(file_parent))) as file_association,
         
         COLLECT(DISTINCT demo.breed) AS breed,
-        COLLECT(DISTINCT demo.neutered_status) AS neutered_status,
+        COLLECT(DISTINCT demo.neutered_indicator) AS neutered_status,
         COLLECT(DISTINCT demo.sex) AS sex,
         
         COLLECT(DISTINCT diag.disease_term) AS diagnosis,

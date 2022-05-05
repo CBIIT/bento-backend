@@ -72,6 +72,11 @@ pipeline {
                   env.TIER  = "qa"
                 }
               break
+              case "demo":
+                {
+                  env.TIER  = "demo"
+                }
+              break
               default:
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
                   env.BEARER = "${BEARER}"

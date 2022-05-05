@@ -59,6 +59,12 @@
 - name: copy config files
   command: cp "{{workspace}}/ppdc-otp-backend/production.conf" "{{workspace}}/ppdc-otp-backend/production.xml" "{{workspace}}/app/conf"
 
+- name: updating mtp backend version in application.conf
+  replace:
+    path: {{workspace}}/ppdc-otp-backend/conf/application.conf
+    regexp: 'version = "1.0.0"'
+    replace: 'version = "{{backend_version}}"'
+
 - name: delete bat script
   command: rm -rf *.bat
   args:

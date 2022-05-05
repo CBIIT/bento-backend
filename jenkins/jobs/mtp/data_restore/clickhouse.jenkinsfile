@@ -109,8 +109,6 @@ pipeline {
 
 	always {
 
-      sendSlackMessage()
-
     }
 
 	cleanup {

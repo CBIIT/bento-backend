@@ -316,3 +316,63 @@ query:
       - numberOfStudyFiles
       - numberOfAliquots
       - volumeOfData
+  - name: searchCases
+    request: {
+      "operationName": "searchCases",
+      "variables": {
+        "program": [],
+        "study": [],
+        "study_type": [],
+        "biobank": [],
+        "study_participation": [],
+        "breed": [],
+        "diagnosis": [],
+        "disease_site": [],
+        "stage_of_disease": [],
+        "response_to_treatment": [],
+        "sex": [],
+        "neutered_status": [],
+
+        "sample_site": [],
+        "sample_type": [],
+        "sample_pathology": [],
+
+        "file_association": [],
+        "file_type": [],
+        "file_format": []
+      },
+      "query": "query searchCases($program: [String], $study: [String], $study_type: [String], $biobank: [String], $study_participation: [String], $breed: [String], $diagnosis: [String], $disease_site: [String], $stage_of_disease: [String], $response_to_treatment: [String], $sex: [String], $neutered_status: [String], $sample_site: [String], $sample_type: [String], $sample_pathology: [String], $file_association: [String], $file_type: [String],$file_format: [String]) {\n  searchCases(program: $program, study: $study, study_type: $study_type, biobank: $biobank, study_participation: $study_participation, breed: $breed, diagnosis: $diagnosis, disease_site: $disease_site, stage_of_disease: $stage_of_disease, response_to_treatment: $response_to_treatment, sex: $sex, neutered_status: $neutered_status, sample_type: $sample_type, sample_site: $sample_site, sample_pathology: $sample_pathology, file_association: $file_association, file_type: $file_type, file_format: $file_format) {\n    filterCaseCountByBreed {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByProgram {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByDiagnosis {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByDiseaseSite {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStageOfDisease {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByResponseToTreatment {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySex {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByNeuteredStatus {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySampleType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySamplePathology {\n    group\n    count\n    __typename\n  }\n     filterCaseCountBySampleSite {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyParticipation {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileAssociation {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByStudyCode {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileType {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByBiobank {\n    group\n    count\n    __typename\n  }\n     filterCaseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     caseCountByDiagnosis {\n    group\n    count\n    __typename\n  }\n     caseCountByGender {\n    group\n    count\n    __typename\n  }\n     caseCountByBreed {\n    group\n    count\n    __typename\n  }\n     caseCountByNeuteredStatus {\n    group\n    count\n    __typename\n  }\n     caseCountByStageOfDisease {\n    group\n    count\n    __typename\n  }\n     caseCountByDiseaseSite {\n    group\n    count\n    __typename\n  }\n     caseCountByProgram {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyCode {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyType {\n    group\n    count\n    __typename\n  }\n     caseCountByStudyParticipation {\n    group\n    count\n    __typename\n  }\n     caseCountByFileFormat {\n    group\n    count\n    __typename\n  }\n     __typename\n  }\n}\n"
+    }
+    expectedKeySet:
+      - filterCaseCountByBreed
+      - filterCaseCountByProgram
+      - filterCaseCountByStudyType
+      - filterCaseCountByDiagnosis
+      - filterCaseCountByDiseaseSite
+      - filterCaseCountByStageOfDisease
+      - filterCaseCountByResponseToTreatment
+      - filterCaseCountBySex
+      - filterCaseCountByNeuteredStatus
+      - filterCaseCountBySampleType
+      - filterCaseCountBySamplePathology
+      - filterCaseCountBySampleSite
+      - filterCaseCountByStudyParticipation
+      - filterCaseCountByFileAssociation
+      - filterCaseCountByStudyCode
+      - filterCaseCountByFileType
+      - filterCaseCountByFileFormat
+      - filterCaseCountByBiobank
+      - filterCaseCountByFileFormat
+      - caseCountByDiagnosis
+      - caseCountByGender
+      - caseCountByBreed
+      - caseCountByNeuteredStatus
+      - caseCountByStageOfDisease
+      - caseCountByDiseaseSite
+      - caseCountByProgram
+      - caseCountByStudyCode
+      - caseCountByStudyType
+      - caseCountByStudyParticipation
+      - caseCountByFileFormat
+
+

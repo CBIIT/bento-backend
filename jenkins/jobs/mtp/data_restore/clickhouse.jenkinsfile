@@ -91,7 +91,7 @@ pipeline {
   	stage('clickhouse_restore'){
  		steps{
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-       file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file'),
+       file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file')
        ]){
              sh "cp ${host_file} ${WORKSPACE}/ansible/hosts"
              sh "cat ${WORKSPACE}/ansible/hosts"

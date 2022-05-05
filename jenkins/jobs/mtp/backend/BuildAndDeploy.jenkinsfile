@@ -41,7 +41,7 @@ pipeline {
         defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa,stage,prod' )
+        value: 'dev,qa,stage,prod,demo' )
     gitParameter(branchFilter: 'origin/(.*)', 
        defaultValue: 'master', 
        name: 'Backend_Tag', 
@@ -140,6 +140,18 @@ pipeline {
                   
                   
                   
+                }
+              break
+              case "demo":
+                withCredentials([string(credentialsId: 'perf_bearer', variable: 'BEARER')]) {
+                  env.ELASTICSEARCH_HOST = "${OTP_ELASTICSEARCH_DEMO_IP}"
+                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_DEMO_IP}"
+                  env.PLAY_PORT = "${PLAY_PORT}"
+                  env.NEW_RELIC_APP_NAME = "PPDC_AWS_BACKEND_DEMO"
+                  env.NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+                  env.NEW_RELIC_HOST = "gov-collector.newrelic.com"
+                  env.BEARER = "${BEARER}"
+                  env.TIER  = "demo"
                 }
               break
               case "prod":

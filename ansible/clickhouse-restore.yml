@@ -1,6 +1,6 @@
 ---
-- name: deploy stage of ppdc otp
-  hosts: ppdc-otp-{{tier}}-database
+- name: clickhouse restore for MTP
+  hosts: ppdc-otp-{{tier}}-db
   gather_facts: yes
   become: yes
     

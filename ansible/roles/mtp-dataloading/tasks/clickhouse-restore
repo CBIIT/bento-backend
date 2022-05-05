@@ -59,7 +59,7 @@
     chdir: "{{clickhouse_path}}"
   register: output
 
-- name: show server start output
+- name: displaying tables output
   debug:
     msg: "{{output}}"
 

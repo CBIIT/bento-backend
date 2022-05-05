@@ -186,8 +186,7 @@ Indices:
         COLLECT(DISTINCT(samp.summarized_sample_type)) AS sample_type,
         COLLECT(DISTINCT(samp.specific_sample_pathology)) AS sample_pathology,
         CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END AS association,
-
-
+        
         CASE study_file IS NOT NULL WHEN True
         THEN 'study' + COLLECT(DISTINCT head(labels(parent)))
         ELSE COLLECT(DISTINCT head(labels(parent)))
@@ -375,16 +374,9 @@ Indices:
       #      TODO Added
       sample_id:
         type: keyword
-
-
-
-      #      #      TODO TO BE DELETED DUPLICATE
-      #      association:
-      #        type: keyword
-      #
-      #      # properties used in return data, name can be different from GraphQL property name
-      #      #      parent_type:
-      #      #        type: keyword
+      # TODO TO BE DELETED DUPLICATE
+      association:
+        type: keyword
       file_name:
         type: keyword
       file_type:
@@ -405,13 +397,9 @@ Indices:
       #        type: keyword
       #      case_ids:
       #        type: keyword
-
-
-
-
       study_code:
         type: keyword
-      #      #        TODO Duplicate Field
+      # TODO Duplicate Field
       study:
         type: keyword
       study_type:
@@ -462,42 +450,46 @@ Indices:
       OPTIONAL MATCH (f)-[*..2]-(parent)
       OPTIONAL MATCH (parent)-[:of_case]->(cf:case)      
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
-      OPTIONAL MATCH (first_parent)-[:of_case]->(cf2:case)
-      OPTIONAL MATCH (r:registration)-->(cf2)-->(sty:study)      
+      OPTIONAL MATCH (first_parent)-[:of_case]->(fp_case:case)
+      OPTIONAL MATCH (r:registration)-->(fp_case)-->(sty:study)      
       WHERE NOT r.registration_origin = sty.clinical_study_designation
-      WITH f, CASE cf WHEN NULL THEN parent ELSE cf END AS c,CASE cf WHEN NULL THEN first_parent ELSE cf END AS cc2, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS biobank_cases,r,sty,
-      COLLECT(DISTINCT r.registration_origin) as r_origin
       
+      WITH f,r,sty,
+      CASE cf WHEN NULL THEN parent ELSE cf END AS c,
+      CASE cf WHEN NULL THEN first_parent ELSE cf END AS one_depth_case,
+      CASE fp_case WHEN NULL THEN [] ELSE COLLECT(DISTINCT fp_case.case_id) END AS biobank_cases   
       OPTIONAL MATCH (c)<-[:of_case]-(diag:diagnosis)
       OPTIONAL MATCH (c)<-[:of_case]-(demo:demographic)      
-      OPTIONAL MATCH (c)<-[:of_case]-(samp:sample)
-            
+      OPTIONAL MATCH (c)<-[:of_case]-(samp:sample)            
       OPTIONAL MATCH (c)-[:member_of]->(stu:study)
       OPTIONAL MATCH (c)-[:represents]->(ca:canine_individual)
       OPTIONAL MATCH (f)-[*..4]->(pro:program)
       OPTIONAL MATCH (f)-[*..1]->(file_parent)
-
       OPTIONAL MATCH (f)-[:of_study]->(file_study:study)
-      WITH f, c, biobank_cases,r, sty, diag, demo,stu, ca, pro, file_parent, file_study,cc2,samp
-      
+
+      WITH f, c, biobank_cases,r, sty, diag, demo,stu, ca, pro, file_parent, file_study,one_depth_case,samp      
       OPTIONAL MATCH (f)-[*..1]->(first_parent)
-      OPTIONAL MATCH  (f)-[*0..2]-(:case)-[:represents]-(caine:canine_individual)
+      OPTIONAL MATCH (f)-[*0..3]-(caine:canine_individual)
+      OPTIONAL MATCH (fp_case:case)-[:member_of]->(first_parent)
+      OPTIONAL MATCH (study_biobank_reg:registration)-->(fp_case)-->(study_biobank_sty:study)      
+      WHERE NOT study_biobank_reg.registration_origin = study_biobank_sty.clinical_study_designation
       
-      OPTIONAL MATCH (cf2:case)-[:member_of]->(first_parent)
-      OPTIONAL MATCH (r2:registration)-->(cf2)-->(sty2:study)      
-      WHERE NOT r2.registration_origin = sty2.clinical_study_designation
-      
-      
-      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,samp,
-      CASE cf2 WHEN NULL THEN first_parent ELSE cf2 END AS study_case, CASE cf2 WHEN NULL THEN [] ELSE COLLECT(DISTINCT cf2.case_id) END AS study_biobank,
-      COLLECT(DISTINCT CASE cc2.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation WHEN True Then True Else False END) AS biobank
+      WITH f, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, one_depth_case,study_biobank_reg,study_biobank_sty,caine,samp,
+      CASE fp_case WHEN NULL THEN first_parent ELSE fp_case END AS study_case, 
+      CASE fp_case WHEN NULL THEN [] ELSE COLLECT(DISTINCT fp_case.case_id) END AS study_biobank,
+      COLLECT(
+        DISTINCT CASE one_depth_case.case_id IN biobank_cases and NOT r.registration_origin = sty.clinical_study_designation 
+        WHEN True Then True 
+        Else False END) AS biobank
       OPTIONAL MATCH (f)-[*..3]-(file_stu:study)
-      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, cc2,r2,sty2,caine,biobank,file_stu,samp,
-      COLLECT(DISTINCT CASE study_case.case_id IN study_biobank and NOT r2.registration_origin = sty2.clinical_study_designation WHEN True Then True Else False END) AS study_biobank_arr
+      
+      WITH *,
+      COLLECT(DISTINCT CASE study_case.case_id IN study_biobank and NOT study_biobank_reg.registration_origin = study_biobank_sty.clinical_study_designation WHEN True Then True Else False END) AS study_biobank,
+      COLLECT(DISTINCT head(labels(file_parent))) as file_association
 
       RETURN DISTINCT
         CASE file_study IS NOT NULL WHEN True
-        THEN (CASE [True] IN COLLECT(study_biobank_arr) WHEN True THEN COLLECT(DISTINCT r2.registration_origin) ELSE 'Not Applicable' END)
+        THEN (CASE [True] IN COLLECT(study_biobank) WHEN True THEN COLLECT(DISTINCT study_biobank_reg.registration_origin) ELSE 'Not Applicable' END)
         ELSE (CASE [True] IN COLLECT(biobank) WHEN True THEN COLLECT(DISTINCT r.registration_origin) ELSE 'Not Applicable' END) END AS biobank,
         f.file_name as file_name,
         f.file_type as file_type,
@@ -509,27 +501,19 @@ Indices:
         f.file_size as file_size,
         CASE f.file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END as access_file,
         f.md5sum as md5sum,
-        COLLECT(DISTINCT samp.sample_id) AS sample_ids,   
-        
-        COLLECT(DISTINCT samp.sample_id) AS sample_id,   
-
+        COLLECT(DISTINCT samp.sample_id) AS sample_ids,
+        COLLECT(DISTINCT samp.sample_id) AS sample_id,
         COLLECT(DISTINCT samp.sample_site) AS sample_site,   
-                    
         COLLECT(DISTINCT samp.physical_sample_type) AS physical_sample_type,   
-              
         COLLECT(DISTINCT samp.general_sample_pathology) AS general_sample_pathology,   
-      
         COLLECT(DISTINCT samp.tumor_sample_origin) AS tumor_sample_origin,   
-        
         COLLECT(DISTINCT samp.summarized_sample_type) AS sample_type,   
- 
         COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,   
-  
         COLLECT(DISTINCT samp.tumor_grade) AS tumor_grade,   
-
         COLLECT(DISTINCT samp.sample_chronology) AS sample_chronology,
-        
-        COLLECT(DISTINCT head(labels(file_parent))) as file_association,
+
+        CASE 'study' IN file_association WHEN True THEN 'study' ELSE 'other' END AS association,
+        file_association as file_association,
         
         COLLECT(DISTINCT demo.breed) AS breed,
         COLLECT(DISTINCT demo.neutered_indicator) AS neutered_status,
@@ -539,7 +523,6 @@ Indices:
         COLLECT(DISTINCT diag.best_response) AS response_to_treatment,
         COLLECT(DISTINCT diag.primary_disease_site) AS disease_site,
         COLLECT(DISTINCT diag.stage_of_disease) AS stage_of_disease,
-
 
         CASE file_study IS NOT NULL WHEN True 
         THEN COLLECT(DISTINCT (file_study.clinical_study_designation + '(' + file_study.accession_id +')')) 
@@ -554,17 +537,12 @@ Indices:
         ELSE COLLECT(DISTINCT (file_stu.clinical_study_type)) END AS study_type,        
       
         CASE file_study IS NOT NULL WHEN True THEN f.uuid ELSE null END AS study_files,
-                
 
-        COLLECT(DISTINCT pro.program_acronym) AS program,   
-        
-        
-        CASE 'study' IN COLLECT(DISTINCT head(labels(file_parent))) WHEN True THEN 'study' ELSE 'other' END AS association,
-        
         CASE file_study IS NOT NULL WHEN True 
-        THEN (CASE COUNT(caine) > 0 WHEN True THEN ['Single Study', 'Multiple Study'] ELSE 'Single Study' END) 
+        THEN ['Single Study', 'Multiple Study']
         ELSE (CASE COUNT(caine) > 0 WHEN True THEN 'Multiple Study' ELSE 'Single Study' END) END AS study_participation,
         
+        COLLECT(DISTINCT pro.program_acronym) AS program,
         COLLECT(DISTINCT ca.canine_individual_id) AS individual_id
         
     "

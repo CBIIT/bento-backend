@@ -275,6 +275,7 @@ type QueryType {
         sample_pathology: [String] = [],
 
         file_association: [String] = [],
+        association: [String] = [],
         file_type: [String] = [],
         file_format: [String] = [],
         order_by: String = "file_name",

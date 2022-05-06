@@ -38,10 +38,11 @@ pipeline {
   parameters {
     extendedChoice( 
         name: 'Environment', 
-        defaultValue: 'dev', 
+        //defaultValue: 'test', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        value: 'dev,qa')
+        //value: 'dev,qa')
+		value: 'test')
     booleanParam(
 		defaultValue: false,
 		description: 'Reload Elasticsearch data',
@@ -60,7 +61,8 @@ pipeline {
   		 checkout( poll: false, 
 			changelog:false,
 			scm: [$class: 'GitSCM', 
-			branches: [[name: '*/master']], 
+			//branches: [[name: '*/master']], 
+			branches: [[name: '*/ansible_collections']], 
 			doGenerateSubmoduleConfigurations: false, 
 			extensions: [[$class: 'DisableRemotePoll'],
 			[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -80,6 +82,7 @@ pipeline {
 			TIER = "${params.Environment}"
 			FE_VERSION = "${params.Frontend_Image}"
 			BE_VERSION = "${params.Backend_Image}"
+			DOWNLOADER_VERSION = "${params.Files_Image}"
 			SLACK_CHANNEL = "#system-alerts"
 			URL_DOMAIN = "bento-tools.org"
 		}
@@ -97,6 +100,13 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					colorized: true)
  			}
+			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-files.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+					colorized: true)
+ 			}
 
 		}
  	}
@@ -105,9 +115,9 @@ pipeline {
   
   post {
 
-    always {
-      sendSlackMessage()
-    }
+//    always {
+//      sendSlackMessage()
+//    }
 
     success {
 

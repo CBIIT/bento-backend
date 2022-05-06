@@ -487,6 +487,11 @@ Indices:
         type: keyword
       biobank:
         type: keyword
+      # TODO To Be DUPLICATE DELETED
+      case_id:
+        type: keyword
+      case_ids:
+        type: keyword
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -518,7 +523,7 @@ Indices:
       OPTIONAL MATCH (study_biobank_reg:registration)-->(fp_case)-->(study_biobank_sty:study)
       WHERE NOT study_biobank_reg.registration_origin = study_biobank_sty.clinical_study_designation
 
-      WITH f, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, one_depth_case,study_biobank_reg,study_biobank_sty,caine,samp,
+      WITH f, c, r, sty, diag, demo,stu, ca, pro, file_parent, file_study, one_depth_case,study_biobank_reg,study_biobank_sty,caine,samp,first_parent,
       CASE fp_case WHEN NULL THEN first_parent ELSE fp_case END AS study_case,
       CASE fp_case WHEN NULL THEN [] ELSE COLLECT(DISTINCT fp_case.case_id) END AS study_biobank,
       COLLECT(
@@ -544,9 +549,9 @@ Indices:
         f.file_format as file_format,
         f.file_size as file_size,
         CASE f.file_size < 12000000 WHEN TRUE THEN 0 ELSE 1 END as access_file,
-        f.md5sum as md5sum,
-        COLLECT(DISTINCT samp.sample_id) AS sample_ids,
-        COLLECT(DISTINCT samp.sample_id) AS sample_id,
+        f.md5sum as md5sum,        
+        CASE 'sample' IN COLLECT (DISTINCT head(labels(first_parent))) WHEN True THEN COLLECT(DISTINCT first_parent.sample_id) ELSE NULL END AS sample_ids,
+        CASE 'sample' IN COLLECT (DISTINCT head(labels(first_parent))) WHEN True THEN COLLECT(DISTINCT first_parent.sample_id) ELSE NULL END AS sample_id,
         COLLECT(DISTINCT samp.sample_site) AS sample_site,
         COLLECT(DISTINCT samp.physical_sample_type) AS physical_sample_type,
         COLLECT(DISTINCT samp.general_sample_pathology) AS general_sample_pathology,
@@ -587,8 +592,9 @@ Indices:
         ELSE (CASE COUNT(caine) > 0 WHEN True THEN 'Multiple Study' ELSE 'Single Study' END) END AS study_participation,
 
         COLLECT(DISTINCT pro.program_acronym) AS program,
-        COLLECT(DISTINCT ca.canine_individual_id) AS individual_id
-
+        COLLECT(DISTINCT ca.canine_individual_id) AS individual_id,
+        CASE file_study IS NOT NULL WHEN True THEN null ELSE COLLECT(DISTINCT c.case_id) END AS case_id,
+        CASE file_study IS NOT NULL WHEN True THEN null ELSE COLLECT(DISTINCT c.case_id) END AS case_ids
     "
   - index_name: studies
     type: neo4j

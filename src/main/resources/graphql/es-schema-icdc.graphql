@@ -81,6 +81,7 @@ type FileOverviewES {
     file_name: String
     file_type: String
     association: String
+    file_association: String
     file_description: String
     file_format: String
     file_size: Float

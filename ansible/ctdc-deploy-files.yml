@@ -36,9 +36,9 @@
         container_cpu: 256
         container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
         url_src: INDEXD
-        indexd_url: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.indexd_url', nested=true, region='{{ region }}' ) }}"
+        indexd_url: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.indexd_url', nested=true, region='us-east-1' ) }}"
         auth_enabled: "false"
-        newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='{{ region }}' ) }}"
+        newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
         container_env:
           - name: VERSION
             value: "{{ image_version }}"

@@ -27,7 +27,7 @@
     #load data
     - name: perform data loading
       include_role:
-        name: bento.common.opensearch-loader
+        name: bento.common.opensearch_loader
       vars:
         ansible_python_interpreter: /usr/bin/python3
         project_name:  "{{ lookup('env','PROJECT_NAME') }}"

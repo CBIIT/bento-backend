@@ -26,6 +26,7 @@
         name: bento.common.neo4j_ip
       vars:
         tier: "{{ lookup('env','TIER') }}"
+        project_name: ctdc
         database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
 
     #deploy backend

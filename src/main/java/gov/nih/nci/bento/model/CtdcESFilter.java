@@ -438,7 +438,8 @@ public class CtdcESFilter implements DataFetcher {
                 new String[]{"file_description", "description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "size"},
-                new String[]{"md5sum", "md5sum"}
+                new String[]{"md5sum", "md5sum"},
+                new String[]{"uuid", "uuid"}
         };
 
         String defaultSort = "file_name"; // Default sort order
@@ -450,7 +451,8 @@ public class CtdcESFilter implements DataFetcher {
                 Map.entry("file_description", "description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "size"),
-                Map.entry("md5sum", "md5sum")
+                Map.entry("md5sum", "md5sum"),
+                Map.entry("uuid", "uuid")
         );
 
         return listQuery(params, PROPERTIES, mapping, defaultSort, FILES_END_POINT);

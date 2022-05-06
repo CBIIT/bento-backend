@@ -178,6 +178,7 @@ type FileOfCase {
     file_format: String,
     file_size: Float,
     md5sum: String
+    uuid: String
 }
 
 schema {

@@ -1,5 +1,6 @@
 ---
 frontend_version: "{{ lookup('env','FE_VERSION') }}"
+frontend_branch: "{{ frontend_version | split('-') | first }}"
 frontend_container_name: "frontend"
 frontend_image_version: "{{ frontend_version }}"
 frontend_container_build_path: "{{workspace}}/{{project_name}}-frontend"

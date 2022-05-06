@@ -31,6 +31,7 @@
         container_name: "files"
         image_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
         tier: "{{ lookup('env','TIER') }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}"
         container_port: 8081
         container_memory: 512
         container_cpu: 256

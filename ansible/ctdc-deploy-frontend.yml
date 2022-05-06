@@ -42,6 +42,7 @@
         backend_version: "{{ lookup('env','BE_VERSION') }}"
         image_version: "{{ frontend_version }}"
         tier: "{{ lookup('env','TIER') }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}"
         container_port: 80
         container_memory: 512
         container_cpu: 256

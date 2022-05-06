@@ -92,7 +92,8 @@ pipeline {
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
-				branches: [[name: "master"]],
+				//branches: [[name: "master"]],
+				branches: [[name: "ansible_collections"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'icdc-devops']],

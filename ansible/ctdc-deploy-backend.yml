@@ -11,7 +11,7 @@
       loop:
         -  amazon.aws
         -  community.aws
-        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,master
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ecs_fluentbit
 
     #docker login
     - name: docker login
@@ -32,7 +32,7 @@
     #deploy backend
     - name: deploy stage for ctdc backend
       include_role:
-        name: bento.common.ecs
+        name: bento.common.ecs_fluentbit
       vars:
         ansible_python_interpreter: /usr/bin/python3
         project_name: ctdc
@@ -45,6 +45,8 @@
         neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
         neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
         newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+        sumo_collector_endpoint: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_endpoint', nested=true, region='us-east-1' ) }}"
+        sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_token_be', nested=true, region='us-east-1' ) }}"
         container_port: 8080
         container_memory: 1024
         container_cpu: 512

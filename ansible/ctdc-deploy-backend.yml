@@ -5,10 +5,106 @@
   become: yes
 
   tasks:
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        -  amazon.aws
+        -  community.aws
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
+
+    #docker login
+    - name: docker login
+      include_role:
+        name: bento.common.ecr_login
+      vars:
+        region: us-east-1
+
+    #get db ip
+    - name: get db ip
+      include_role:
+        name: bento.common.neo4j_ip
+      vars:
+        tier: "{{ lookup('env','TIER') }}"
+        project_name: ctdc
+        database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
+
+    #deploy backend
     - name: deploy stage for ctdc backend
       include_role:
-        name: ctdc
-        tasks_from: deploy-backend
+        name: bento.common.ecs
       vars:
-        project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3
+        project_name: ctdc
+        platform: aws
+        region: us-east-1
+        container_name: "backend"
+        image_version: "{{ lookup('env','BE_VERSION') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}"
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
+        newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+        container_port: 8080
+        container_memory: 1024
+        container_cpu: 512
+        container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
+        #Elasticsearch
+        es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='us-east-1' ) }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}"
+        es_schema: "es-schema-{{ project_name }}.graphql"
+        enable_es_filter: "true"
+        #Redis vars
+        enable_redis: "false"
+        redis_port: "6379"
+        use_cluster: "true"
+        redis_host: localhost
+        #Entrypoint
+        container_entrypoint:
+          - "/bin/ash"
+          - "-c"
+          - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
+        #Environment
+        container_env:
+          - name: ES_SCHEMA
+            value: "{{ es_schema }}"
+          - name: PROJECT
+            value: "{{ project_name }}"
+          - name: NEO4J_URL
+            value: "bolt://{{ neo4j_ip }}:7687"
+          - name: NEO4J_USER
+            value: "{{ neo4j_user }}"
+          - name: NEO4J_PASSWORD
+            value: "{{ neo4j_password }}"
+          - name: NEO4J_GRAPHQL_ENDPOINT
+            value: "http://{{ neo4j_ip }}:7474/graphql/"
+          - name: BENTO_API_VERSION
+            value: "{{ image_version }}"
+          - name: ES_HOST
+            value: "{{ es_host }}"
+          - name: ES_FILTER_ENABLED
+            value: "{{ enable_es_filter }}"
+          - name: NEW_RELIC_LICENSE_KEY
+            value: "{{ newrelic_license_key }}"
+          - name: NEW_RELIC_APP_NAME
+            value: "{{ project_name }}-{{ platform }}-{{ tier }}-{{ container_name }}"
+          - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+            value: "true"
+          - name: NEW_RELIC_HOST
+            value: "gov-collector.newrelic.com"
+          - name: NEW_RELIC_LOG_FILE_NAME
+            value: "STDOUT"
+          - name: NEW_RELIC_LABELS
+            value: "Project:{{ project_name }};Environment:{{ tier }}"
+          - name: JAVA_OPTS
+            value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"
+          - name: REDIS_ENABLE
+            value: "{{ enable_redis }}"
+          - name: REDIS_USE_CLUSTER
+            value: "{{ use_cluster }}"
+          - name: REDIS_HOST
+            value: "{{ redis_host }}"
+          - name: REDIS_PORT
+            value: "{{ redis_port }}"
+          - name: REDIS_FILTER_ENABLE
+            value: "false"

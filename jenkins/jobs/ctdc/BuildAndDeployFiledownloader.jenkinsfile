@@ -71,7 +71,7 @@ pipeline {
 				branches: [[name: "${params.Downloader_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-files']],
+				relativeTargetDir: 'ctdc-files']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-files']]])
@@ -101,7 +101,7 @@ pipeline {
 
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
                 ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-filedownloader.yml', 
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-files.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					extraVars: [
 						tier: "${params.Environment}",

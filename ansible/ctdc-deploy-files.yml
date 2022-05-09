@@ -5,10 +5,59 @@
   become: yes
 
   tasks:
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        -  amazon.aws
+        -  community.aws
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
+
+    #docker login
+    - name: docker login
+      include_role:
+        name: bento.common.ecr_login
+      vars:
+        region: us-east-1
+
+    #deploy files
     - name: deploy stage for ctdc files
       include_role:
-        name: ctdc
-        tasks_from: deploy-files
+        name: bento.common.ecs
       vars:
-        project_name: ctdc
         ansible_python_interpreter: /usr/bin/python3
+        project_name: ctdc
+        region: us-east-1
+        container_name: "files"
+        image_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}"
+        container_port: 8081
+        container_memory: 512
+        container_cpu: 256
+        container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
+        url_src: INDEXD
+        indexd_url: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.indexd_url', nested=true, region='us-east-1' ) }}"
+        auth_enabled: "false"
+        newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
+        container_env:
+          - name: VERSION
+            value: "{{ image_version }}"
+          - name: DATE
+            value: "{{ ansible_date_time.date }}"
+          - name: PROJECT
+            value: "{{ project_name }}"
+          - name: URL_SRC
+            value: "{{ url_src }}"
+          - name: AUTH_ENABLED
+            value: "{{ auth_enabled }}"
+          - name: INDEXD_URL
+            value: "{{ indexd_url }}"
+          - name: BACKEND_URL
+            value: "https://{{ project_name }}-{{ tier }}.bento-tools.org/v1/graphql/"
+          - name: NEW_RELIC_LICENSE_KEY
+            value: "{{ newrelic_license_key }}"
+          - name: NEW_RELIC_APP_NAME
+            value: "{{ project_name }}-{{ tier }}-files"
+          - name: NEW_RELIC_LABELS
+            value: "Project:{{ project_name }};Environment:{{ tier }}"

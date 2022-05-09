@@ -5,9 +5,38 @@
   become: yes
 
   tasks:
-    - name: build stage for ctdc frontend
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        -  community.docker
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
+
+    #docker login
+    - name: docker login
       include_role:
-        name: ctdc
-        tasks_from: build-backend
+        name: bento.common.ecr_login
+      vars:
+        region: us-east-1
+
+    #build backend
+    - name: build stage for ctdc backend
+      include_role:
+        name: bento.common.build_backend
       vars:
         ansible_python_interpreter: /usr/bin/python3
+        workspace: "{{ lookup('env','WORKSPACE') }}"
+        build_number: "{{ lookup('env','BUILD_NUMBER')}}"
+        project_name: "{{ lookup('env','PROJECT_NAME') }}"
+        project: "{{ project_name }}"
+        image_version: "{{ lookup('env','BE_VERSION') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        bento_api_version: "{{ image_version }}"
+        container_name: "backend"
+        schema_file: "{{ project_name }}.graphql"
+        es_schema_file: "es-schema-{{ project_name }}.graphql"
+        es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='us-east-1' ) }}"
+        test_queries_file: "not_needed.txt"
+        dockerfile_path: "{{workspace}}/icdc-devops/docker/dockerfiles/backend-dockerfile"
+        container_image: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}:{{ image_version }}-{{ build_number }}"
+        container_registry_url: "{{ ecr_repo }}"

@@ -1,0 +1,12 @@
+# vars file for backend build
+#ansible_python_interpreter:
+#workspace:
+#build_number:
+#project_name:
+#image_version:
+#container_name:
+#schema_file:
+#test_queries_file:
+#dockerfile_path:
+#container_image:
+#container_registry_url:

@@ -1,0 +1,16 @@
+# vars file for data loading
+#ansible_python_interpreter:
+#workspace:
+#project_name:
+#tier:
+#s3_folder:
+#wipe_db:
+#cheat_mode:
+#split_transactions:
+#region:
+#neo4j_user:
+#neo4j_password:
+#model_file1:
+#model_file2:
+#property_file:
+#data_bucket:

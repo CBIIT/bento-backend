@@ -6,18 +6,39 @@
   become: yes
 
   tasks:
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        -  community.aws
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
+
+    #get db ip
     - name: get db ip
       include_role:
-        name: common
-        tasks_from: neo4j-ip
+        name: bento.common.neo4j_ip
+      vars:
+        tier: "{{ lookup('env','TIER') }}"
+        project_name: ctdc
+        database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
 
+    #load data
     - name: perform data loading
       include_role:
-        name: common
-        tasks_from: data-loader
+        name: bento.common.data_loader
       vars:
-        model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
-        model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
-        property_file: "config/props-ctdc.yml"
-        bucket: bento-ctdc-metadata
         ansible_python_interpreter: /usr/bin/python3
+        workspace: "{{ lookup('env','WORKSPACE') }}"
+        project_name:  "{{ lookup('env','PROJECT_NAME') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        s3_folder: "{{ lookup('env','S3_FOLDER') }}"
+        wipe_db:  "{{ lookup('env','WIPE_DB') }}"
+        cheat_mode:  "{{ lookup('env','CHEAT_MODE')}}"
+        split_transactions:  "{{ lookup('env','SPLIT')}}"
+        region: us-east-1
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
+        model_file1: "{{ workspace }}/ctdc-model/model-desc/ctdc_model_file.yaml"
+        model_file2: "{{ workspace }}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
+        property_file: "config/props-ctdc.yml"
+        data_bucket: bento-ctdc-metadata

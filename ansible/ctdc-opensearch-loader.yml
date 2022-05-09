@@ -6,27 +6,40 @@
   become: yes
 
   tasks:
-    - name: install ansible collections
-      include_role:
-        name: common
-        tasks_from: collections
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        -  amazon.aws
+        -  community.aws
+        -  community.docker
+        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ansible_collections
 
+    #get db ip
     - name: get db ip
       include_role:
-        name: common
-        tasks_from: neo4j-ip
-
-    - name: seed opensearch
-      include_role:
-        name: common
-        tasks_from: opensearch-loader
+        name: bento.common.neo4j_ip
       vars:
-        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
-        #neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.neo4j_password', nested=true, region='us-east-1' ) }}"
-        model_file1: "{{workspace}}/ctdc-model/model-desc/ctdc_model_file.yaml"
-        model_file2: "{{workspace}}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
-        property_file: "config/props-ctdc.yml"
-        about_file: "{{ workspace }}/ctdc-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
-        indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_ctdc.yml"
-        #ansible_python_interpreter: /usr/bin/python2.7
+        tier: "{{ lookup('env','TIER') }}"
+        project_name: ctdc
+        database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
+
+    #load data
+    - name: perform data loading
+      include_role:
+        name: bento.common.opensearch_loader
+      vars:
         ansible_python_interpreter: /usr/bin/python3
+        project_name:  "{{ lookup('env','PROJECT_NAME') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        workspace: "{{ lookup('env','WORKSPACE') }}"
+        region: us-east-1
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
+        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='us-east-1' ) }}"
+        model_file1: "{{ workspace }}/ctdc-model/model-desc/ctdc_model_file.yaml"
+        model_file2: "{{ workspace }}/ctdc-model/model-desc/ctdc_model_properties_file.yaml"
+        property_file: "config/props-{{ project_name }}.yml"
+        about_file: "{{ workspace }}/{{ project_name }}-frontend/src/content/dev/aboutPagesContent.yaml"
+        #about_file: "{{ workspace }}/{{ project_name }}-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+        indices_file: "{{ workspace }}/bento-backend/src/main/resources/yaml/es_indices_{{ project_name }}.yml"

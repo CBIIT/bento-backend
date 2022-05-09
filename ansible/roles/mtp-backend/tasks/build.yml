@@ -59,6 +59,12 @@
 - name: copy config files
   command: cp "{{workspace}}/ppdc-otp-backend/production.conf" "{{workspace}}/ppdc-otp-backend/production.xml" "{{workspace}}/app/conf"
 
+- name: listing the contents after extracting
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "{{workspace}}/ppdc-otp-backend/conf/"
+
 - name: updating mtp backend version in application.conf
   replace:
     path: "{{workspace}}/ppdc-otp-backend/conf/application.conf"

@@ -62,7 +62,7 @@
 - name: updating mtp backend version in application.conf
   replace:
     path: "{{workspace}}/ppdc-otp-backend/conf/application.conf"
-    regexp: 'version = "1.0.0"'
+    regexp: 'version\s\=\s\"1.0.0\"'
     replace: 'version = "{{backend_version}}"'
 
 - name: delete bat script

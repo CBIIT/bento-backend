@@ -186,9 +186,9 @@ pipeline {
   
   post {
 
-    always {
-      sendSlackMessage()
-    }
+//    always {
+//      sendSlackMessage()
+//    }
 
     success {
 

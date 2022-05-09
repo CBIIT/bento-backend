@@ -38,11 +38,10 @@ pipeline {
   parameters {
     extendedChoice( 
         name: 'Environment', 
-        //defaultValue: 'test', 
+        defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        //value: 'dev,qa')
-		value: 'test')
+        value: 'dev,qa')
     booleanParam(
 		defaultValue: false,
 		description: 'Reload Elasticsearch data',
@@ -61,8 +60,7 @@ pipeline {
   		 checkout( poll: false, 
 			changelog:false,
 			scm: [$class: 'GitSCM', 
-			//branches: [[name: '*/master']], 
-			branches: [[name: '*/ansible_collections']], 
+			branches: [[name: '*/master']], 
 			doGenerateSubmoduleConfigurations: false, 
 			extensions: [[$class: 'DisableRemotePoll'],
 			[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -115,9 +113,9 @@ pipeline {
   
   post {
 
-//    always {
-//      sendSlackMessage()
-//    }
+    always {
+      sendSlackMessage()
+    }
 
     success {
 

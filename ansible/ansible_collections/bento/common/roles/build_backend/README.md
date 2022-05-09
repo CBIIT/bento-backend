@@ -25,6 +25,9 @@ test_queries_file
 dockerfile_path
 container_image
 container_registry_url
+tier
+es_schema_file
+es_host
 
 Dependencies
 ------------

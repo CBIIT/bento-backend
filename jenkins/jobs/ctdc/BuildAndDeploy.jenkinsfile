@@ -43,7 +43,7 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         //value: 'dev,qa')
-		value: 'dev,qa')value: 'test')
+		value: 'test')
     booleanParam(
 		defaultValue: false,
 		description: 'Reload Elasticsearch data',

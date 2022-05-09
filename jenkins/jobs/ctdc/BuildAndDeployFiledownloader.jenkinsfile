@@ -71,7 +71,7 @@ pipeline {
 				branches: [[name: "${params.Downloader_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'bento-files']],
+				relativeTargetDir: 'ctdc-files']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/bento-files']]])

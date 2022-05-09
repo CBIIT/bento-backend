@@ -22,7 +22,7 @@
     #build backend
     - name: build stage for ctdc backend
       include_role:
-        name: bento.common.build_frontend
+        name: bento.common.build_backend
       vars:
         ansible_python_interpreter: /usr/bin/python3
         workspace: "{{ lookup('env','WORKSPACE') }}"

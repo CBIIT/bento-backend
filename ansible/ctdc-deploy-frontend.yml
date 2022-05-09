@@ -39,6 +39,7 @@
         region: us-east-1
         container_name: "frontend"
         frontend_version: "{{ lookup('env','FE_VERSION') }}"
+        frontend_branch: "{{ lookup('env','FE_BRANCH') }}"
         backend_version: "{{ lookup('env','BE_VERSION') }}"
         image_version: "{{ frontend_version }}"
         tier: "{{ lookup('env','TIER') }}"
@@ -47,7 +48,7 @@
         container_memory: 512
         container_cpu: 256
         container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
-        about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version }}/src/content/{{ tier }}/aboutPagesContent.yaml"
+        about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_branch }}/src/content/prod/aboutPagesContent.yml{% else %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_branch }}/src/content/pre-prod/aboutPagesContent.yml{% endif %}"
         newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
         app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
         container_env:

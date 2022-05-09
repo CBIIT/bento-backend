@@ -80,7 +80,6 @@ pipeline {
 			TIER = "${params.Environment}"
 			FE_VERSION = "${params.Frontend_Image}"
 			BE_VERSION = "${params.Backend_Image}"
-			DOWNLOADER_VERSION = "${params.Files_Image}"
 			SLACK_CHANNEL = "#system-alerts"
 			URL_DOMAIN = "bento-tools.org"
 		}
@@ -95,13 +94,6 @@ pipeline {
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-frontend.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					colorized: true)
- 			}
-			
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-  				ansiblePlaybook( 
-            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-files.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					colorized: true)
  			}

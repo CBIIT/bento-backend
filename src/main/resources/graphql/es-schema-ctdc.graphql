@@ -105,12 +105,20 @@ type GS_Arm {
 type GS_Case {
     type: String
     case_id: String
+    clinical_trial_code: String
+    arm_id: String
+    gender: String
+    race: String
+    disease: String
 }
 
 type GS_File {
     type: String
     file_name: String
     file_description: String
+    file_type: String
+    file_size: String
+    clinical_trial_code: String
 }
 
 type GS_Model {

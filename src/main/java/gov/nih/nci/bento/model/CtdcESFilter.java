@@ -278,11 +278,16 @@ public class CtdcESFilter implements DataFetcher {
                 GS_COUNT_RESULT_FIELD, "case_count",
                 GS_RESULT_FIELD, "cases",
                 GS_SEARCH_FIELD, List.of(
-                        "case_id_gs"
+                        "case_id_gs", "clinical_trial_code_gs", "arm_id_gs", "gender_gs", "race_gs", "disease_gs"
                 ),
                 GS_SORT_FIELD, "case_id",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"case_id", "case_id_gs"}
+                        new String[]{"case_id", "case_id_gs"},
+                        new String[]{"clinical_trial_code", "clinical_trial_code_gs"},
+                        new String[]{"arm_id", "arm_id_gs"},
+                        new String[]{"gender", "gender_gs"},
+                        new String[]{"race", "race_gs"},
+                        new String[]{"disease", "disease_gs"}
                 },
                 GS_CATEGORY_TYPE, "case"
         ));
@@ -293,12 +298,15 @@ public class CtdcESFilter implements DataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD, List.of(
-                        "file_name_gs", "file_description_gs"
+                        "file_name_gs", "file_description_gs", "file_type_gs", "file_size_gs", "clinical_trials_code_gs"
                 ),
                 GS_SORT_FIELD, "file_name",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"file_name", "file_name_gs"},
-                        new String[]{"file_description", "file_description_gs"}
+                        new String[]{"file_description", "file_description_gs"},
+                        new String[]{"file_type", "file_type_gs"},
+                        new String[]{"file_size", "file_size_gs"},
+                        new String[]{"clinical_trial_code", "clinical_trial_code_gs"}
                 },
                 GS_CATEGORY_TYPE, "file"
         ));

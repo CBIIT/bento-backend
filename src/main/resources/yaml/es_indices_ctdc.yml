@@ -25,14 +25,24 @@ Indices:
         type: keyword
       arm_treatment:
         type: keyword
-      case_id_gs:
-        type: search_as_you_type
       uuid:
         type: keyword
       file_type:
         type: keyword
       file_format:
         type: keyword
+      case_id_gs:
+        type: search_as_you_type
+      clinical_trial_code_gs:
+        type: search_as_you_type
+      gender_gs:
+        type: search_as_you_type
+      race_gs:
+        type: search_as_you_type
+      disease_gs:
+        type: search_as_you_type
+      arm_id_gs:
+        type: search_as_you_type
     cypher_query: "
       MATCH (c:case)
       OPTIONAL MATCH (c)-[:of_arm]->(a:arm)-[:of_trial]->(ct:clinical_trial)
@@ -42,13 +52,18 @@ Indices:
         c.case_id AS case_id_gs,
         ct.clinical_trial_id as clinical_trial_id,
         ct.clinical_trial_designation AS clinical_trial_designation,
+        ct.clinical_trial_designation AS clinical_trial_code_gs,
         a.pubmed_id AS pubmed_id,
         c.gender AS gender,
+        c.gender AS gender_gs,
         c.race AS race,
+        c.race AS race_gs,
         c.ethnicity AS ethnicity,
         c.disease AS disease,
+        c.disease AS disease_gs,
         a.arm_id+'_'+a.arm_drug AS trial_arm,
         a.arm_id AS arm_id,
+        a.arm_id AS arm_id_gs,
         a.arm_drug AS arm_treatment,
         COLLECT(DISTINCT f.uuid) as uuid,
         COLLECT(DISTINCT f.file_type) AS file_type,
@@ -99,6 +114,12 @@ Indices:
         type: search_as_you_type
       file_description_gs:
         type: search_as_you_type
+      file_type_gs:
+        type: search_as_you_type
+      file_size_gs:
+        type: search_as_you_type
+      clinical_trial_code_gs:
+        type: search_as_you_type
     cypher_query: "
       MATCH (f:file)
       OPTIONAL MATCH (f)-[*]->(a:arm)-[:of_trial]->(ct:clinical_trial)
@@ -106,6 +127,7 @@ Indices:
       OPTIONAL MATCH (f)-->(parent)
       RETURN DISTINCT 
         ct.clinical_trial_designation AS trial_code,
+        ct.clinical_trial_designation AS clinical_trial_code_gs,
         ct.clinical_trial_id as trial_id,
         a.pubmed_id AS pubmed_id,
         a.arm_id+'_'+a.arm_drug AS trial_arm,
@@ -115,6 +137,7 @@ Indices:
         c.race AS race,
         c.ethnicity AS ethnicity,
         f.file_type AS file_type,
+        f.file_type AS file_type_gs,
         f.file_format AS file_format,
         f.file_name AS file_name,
         f.file_name AS file_name_gs,
@@ -122,6 +145,7 @@ Indices:
         f.file_description AS description,
         f.file_description AS file_description_gs,
         f.file_size AS size,
+        f.file_size AS file_size_gs,
         a.arm_id AS arm,
         c.case_id AS case_id,
         f.uuid AS uuid,

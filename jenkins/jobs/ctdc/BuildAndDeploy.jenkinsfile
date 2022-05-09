@@ -38,12 +38,10 @@ pipeline {
   parameters {
     extendedChoice( 
         name: 'Environment', 
-        //defaultValue: 'dev', 
-		defaultValue: 'test', 
+        defaultValue: 'dev', 
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
-        //value: 'dev,qa')
-		value: 'test')
+        value: 'dev,qa')
     booleanParam(
 		defaultValue: false,
 		description: 'Reload Elasticsearch data',
@@ -75,20 +73,10 @@ pipeline {
 			userRemoteConfigs: 
 			[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
         
-  		 checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Files_Tag}"]],
-				doGenerateSubmoduleConfigurations: false,
-				extensions: [[$class: 'RelativeTargetDirectory',
-				relativeTargetDir: 'ctdc-files']],
-				submoduleCfg: [],
-				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/bento-files']]])
-		 
-		 checkout( poll: false, 
+  		 checkout( poll: false, 
 			changelog:false,
 			scm: [$class: 'GitSCM', 
-			//branches: [[name: '*/master']], 
-			branches: [[name: '*/ansible_collections']], 
+			branches: [[name: '*/master']], 
 			doGenerateSubmoduleConfigurations: false, 
 			extensions: [[$class: 'DisableRemotePoll'],
 			[$class: 'PathRestriction', excludedRegions: '*'], 
@@ -106,7 +94,6 @@ pipeline {
 		environment {
 			FE_VERSION = "${params.Frontend_Tag}"
 			BE_VERSION = "${params.Backend_Tag}"
-			DOWNLOADER_VERSION = "${params.Files_Tag}"
 			TIER = "${params.Environment}"
 		}
 		steps {
@@ -129,17 +116,6 @@ pipeline {
 					],
 					colorized: true)
 			}
-			
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-                ansiblePlaybook(  			
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-files.yml', 
-            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-					extraVars: [
-						tier: "${params.Environment}",
-						project_name: "ctdc"
-                    ],
-					colorized: true)
- 			}
 		  
         }
   	}
@@ -150,7 +126,6 @@ pipeline {
 			TIER = "${params.Environment}"
 			FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
 			BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
-			DOWNLOADER_VERSION = "${params.Files_Tag}-${BUILD_NUMBER}"
 			SLACK_CHANNEL = "#system-alerts"
 			URL_DOMAIN = "bento-tools.org"
 		}
@@ -168,17 +143,6 @@ pipeline {
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
 					colorized: true)
  			}
-			
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-            ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-files.yml',
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-                extraVars: [
-                     tier: "${params.Environment}",
-                     project_name: "ctdc",
-                ],
-                colorized: true)
-            }
 
 		}
  	}
@@ -187,9 +151,9 @@ pipeline {
   
   post {
 
-//    always {
-//      sendSlackMessage()
-//    }
+    always {
+      sendSlackMessage()
+    }
 
     success {
 

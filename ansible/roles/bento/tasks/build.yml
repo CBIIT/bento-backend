@@ -173,6 +173,8 @@
   args:
     chdir: "{{workspace}}/{{ project }}-frontend"
     warn: false
+  environment:
+    CI: false
   loop:
     - npm set progress=false
     - npm install --silent

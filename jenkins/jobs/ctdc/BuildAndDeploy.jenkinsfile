@@ -76,7 +76,7 @@ pipeline {
 			[[url: 'https://github.com/CBIIT/bento-ctdc-frontend']]])
         
   		 checkout([$class: 'GitSCM',
-				branches: [[name: "${params.Downloader_Tag}"]],
+				branches: [[name: "${params.Files_Tag}"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'bento-files']],

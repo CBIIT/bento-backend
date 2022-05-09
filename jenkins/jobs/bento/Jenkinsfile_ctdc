@@ -313,6 +313,7 @@ pipeline {
 				poll: false,
 				scm: [$class: 'GitSCM', 
 				branches: [[name: '*/master']],
+				branches: [[name: '*/ctdc_troubleshooting']],
 				doGenerateSubmoduleConfigurations: false, 
 				extensions: [[$class: 'DisableRemotePoll'],
 				[$class: 'PathRestriction', excludedRegions: '*'], 

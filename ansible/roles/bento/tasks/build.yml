@@ -210,7 +210,8 @@
 
 - name: Add {{ project }}-frontend image to ECR
   docker_image:
-    name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
+    #name: "{{ ecr_repo }}/{{ project }}-frontend:{{frontend_version}}-{{build_number}}"
+    name: "{{ project }}-frontend"
     repository: "{{ ecr_repo }}/{{ project }}-frontend"
     tag: "{{frontend_version}}-{{build_number}}"
     force_tag: yes

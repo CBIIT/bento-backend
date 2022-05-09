@@ -27,3 +27,4 @@
       NEW_RELIC_APP_NAME: "{{newrelic_appname}}"
       NEW_RELIC_LICENSE_KEY: "{{newrelic_license}}"
       NEW_RELIC_HOST: "{{newrelic_host}}"
+      backend_version : "{{ backend_version }}"

@@ -1,0 +1,65 @@
+---
+
+- name: install wget and curl
+  yum:
+    name:
+      - wget
+      - curl
+
+- name: install clickhouse-backup tool to build 
+
+  shell: >
+    wget https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz -P /tmp
+    && tar xf /tmp/clickhouse-backup-linux-amd64.tar.gz -C /home/bento
+  args:
+    warn: False
+
+
+- name: copy the backup.yml file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+  loop:
+    - {src: 'backup.yml.j2',dest: '{{clickhouse_path}}/backup.yml'}
+
+- name: start the server
+  shell:
+    "sudo ./clickhouse-backup server --config backup.yml &"
+  args:
+    chdir: "{{clickhouse_path}}"
+  register: fileout
+
+- name: show server start output
+  debug:
+    msg: "{{fileout}}"
+
+- name: list the backup files
+  shell:
+    "curl -s localhost:7171/backup/list/remote
+  args:
+    chdir: "{{clickhouse_path}}"
+  register: backups
+
+- name: display the backup files
+  debug:
+    msg: "{{backups}}"
+
+- name: download the backup file
+  command: curl -s localhost:7171/backup/download/{{backupfile}} -X POST
+
+- name: perform restore operation
+  command: curl -s localhost:7171/backup/restore/{{backupfile}} -X POST
+
+- name: checking tables
+  shell:
+    "sudo ./clickhouse-backup tables"
+  args:
+    chdir: "{{clickhouse_path}}"
+  register: output
+
+- name: displaying tables output
+  debug:
+    msg: "{{output}}"
+

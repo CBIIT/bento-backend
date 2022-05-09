@@ -124,6 +124,7 @@ pipeline {
 		environment {
 			SLACK_URL = "${SLACK_URL}"
 			TIER = "${params.Environment}"
+			FE_BRANCH = "${params.Frontend_Tag}"
 			FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
 			BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
 			SLACK_CHANNEL = "#system-alerts"

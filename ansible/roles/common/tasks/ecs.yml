@@ -49,6 +49,7 @@
     memory: "{{container_memory}}"
     cpu: "{{container_cpu}}"
     state: present
+    force_create: true
     region: "{{ region }}"
   register: task_output
 

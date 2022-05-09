@@ -8,12 +8,10 @@ pipeline {
 	parameters {
 	extendedChoice(
             name: 'Environment',
-            //defaultValue: 'dev',
-			defaultValue: 'test',
+            defaultValue: 'dev',
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
-            //value: 'dev,qa' )
-			value: 'test' )
+            value: 'dev,qa' )
     gitParameter(branchFilter: 'origin/(.*)', 
         defaultValue: 'master',
         name: 'Dataloader_Branch', 
@@ -94,8 +92,7 @@ pipeline {
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
-				//branches: [[name: "master"]],
-				branches: [[name: "ansible_collections"]],
+				branches: [[name: "master"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'icdc-devops']],

@@ -18,6 +18,7 @@ workspace
 build_number
 project_name
 image_version
+bento_api_version
 container_name
 schema_file
 test_queries_file

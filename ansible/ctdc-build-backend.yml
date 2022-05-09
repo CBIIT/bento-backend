@@ -29,6 +29,7 @@
         build_number: "{{ lookup('env','BUILD_NUMBER')}}"
         project_name: "{{ lookup('env','PROJECT_NAME') }}"
         image_version: "{{ lookup('env','BE_VERSION') }}"
+        bento_api_version: "{{ image_version }}"
         container_name: "backend"
         schema_file: "{{ project_name }}.graphql"
         test_queries_file: "not_needed.txt"

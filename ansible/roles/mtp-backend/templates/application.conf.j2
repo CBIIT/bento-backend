@@ -1,0 +1,252 @@
+# https://www.playframework.com/documentation/latest/Configuration
+play.http.secret.key = "changeme"
+slick.dbs {
+  default {
+    profile = "clickhouse.ClickHouseProfile$"
+    db {
+      driver = "ru.yandex.clickhouse.ClickHouseDriver"
+      url = "jdbc:clickhouse://127.0.0.1:8123"
+      numThreads = 4
+      queueSize = 128
+      maxConnections = 4
+    }
+  }
+}
+
+ot {
+  clickhouse {
+    literature {
+      label = "Literature ocurrences table"
+      name = "ot.literature"
+    }
+    literatureIndex {
+      label = "Literature index ocurrences table"
+      name = "ot.literature_index"
+    }
+    similarities {
+      label = "Similarity table for the Word2Vec model"
+      name = "ot.ml_w2v"
+    }
+    target {
+      associations {
+        label = "Association table for targets"
+        name = "ot.associations_otf_target"
+      }
+    }
+
+    disease {
+      associations {
+        label = "Association table for targets"
+        name = "ot.associations_otf_disease"
+      }
+    }
+
+    harmonic {
+      pExponent = 2
+      datasources = [
+        {id: "europepmc", weight: 0.2, data-type = "literature", propagate = true},
+        {id: "expression_atlas", weight: 0.2, data-type = "rna_expression", propagate = false},
+        {id: "phenodigm", weight: 0.2, data-type = "animal_model", propagate = true},
+        {id: "progeny", weight: 0.5, data-type = "affected_pathway", propagate = true},
+        {id: "slapenrich", weight: 0.5, data-type = "affected_pathway", propagate = true},
+        {id: "sysbio", weight: 0.5, data-type = "affected_pathway", propagate = true},
+        {id: "cancer_biomarkers", weight: 0.5, data-type = "affected_pathway", propagate = true},
+        {id: "ot_crispr", weight: 0.5, data-type = "ot_partner", propagate = true},
+        {id: "encore", weight: 0.5, data-type = "ot_partner", propagate = true},
+      ]
+    }
+  }
+  elasticsearch {
+    host = "localhost"
+    port = 9200
+    // name is the api reference, index in the index name in ES
+    entities = [
+      {
+        name = "go"
+        index = "go"
+      },
+      {
+        name = "literature"
+        index = "literature"
+      },
+      {
+        name = "interaction_evidence"
+        index = "interaction_evidence"
+      },
+      {
+        name = "interaction"
+        index = "interaction"
+      },
+      {
+        name = "evidences_aotf"
+        index = "evidences_aotf"
+      },
+      {
+        name = "known_drugs"
+        index = "known_drugs"
+      },
+      {
+        name = "otar_projects"
+        index = "otar_projects"
+      },
+      {
+        name = "faers"
+        index = "openfda_faers"
+      },
+      {
+        name = "mp"
+        index = "mouse_phenotypes"
+      },
+      {
+        name = "so"
+        index = "so"
+      },
+      {
+        name = "eco"
+        index = "eco"
+      },
+      {
+        name = "evidences"
+        index = "evidence_datasource_"
+      },
+      {
+        name = "expression"
+        index = "expression"
+      },
+      {
+        name = "reactome"
+        index = "reactome"
+      },
+      {
+        name = "cancerBiomarker"
+        index = "cancerbiomarker"
+      },
+      {
+        name = "target"
+        index = "target"
+        searchIndex = "search_target"
+      },
+      {
+        name = "disease"
+        index = "disease"
+        searchIndex = "search_disease"
+      },
+      {
+        name = "disease_hpo"
+        index = "disease_hpo"
+      },
+      {
+        name = "hpo"
+        index = "hpo"
+      },
+      {
+        name = "drug"
+        index = "drug"
+        searchIndex = "search_drug"
+      },
+      {
+        name = "drugMoA"
+        index = "mechanism_of_action"
+      },
+      {
+        name = "drugIndications"
+        index = "indication"
+      },
+      {
+        name = "drugWarnings"
+        index = "drug_warnings"
+      }
+    ]
+    highlightFields = [
+      "id",
+      "keywords",
+      "name",
+      "description",
+      "prefixes",
+      "terms",
+      "terms5",
+      "terms25",
+      "ngrams"
+    ]
+  }
+
+  meta {
+    name = "Open Targets GraphQL & REST API Beta"
+    apiVersion {
+      x = 22
+      y = 02
+      z = 4
+    }
+    dataVersion {
+      year = 22
+      month = 02
+      iteration = 3
+    }
+    mtpVersion{
+      version = {{ backend_version }}
+    }
+  }
+  apiKeyHash = "-1467626332"
+  logging {
+    // header defined here because it's also used on the FE. If the FE changes their value we can update it here without
+    // having to recompile code.
+    otHeader = "OT-Platform"
+    // GQL servers regularly ping the server to get schema information, we don't care about this.
+    ignoredQueries = ["IntrospectionQuery"]
+  }
+}
+
+play {
+  cache {
+    caffeine {
+      defaults = {
+        initial-capacity = 1000
+        maximum-size = 100000
+      }
+    }
+  }
+  server {
+    akka {
+      max-header-size = 16k
+    }
+  }
+  filters {
+    cors {
+      serveForbiddenOrigins = true
+    }
+    # GZip filter configuration
+    gzip {
+
+      # The buffer size to use for gzipped bytes
+      bufferSize = 8k
+
+      # The maximum amount of content to buffer for gzipping in order to calculate the content length before falling back
+      # to chunked encoding.
+      chunkedThreshold = 100k
+
+      contentType {
+
+        # If non empty, then a response will only be compressed if its content type is in this list.
+        whiteList = []
+
+        # The black list is only used if the white list is empty.
+        # Compress all responses except the ones whose content type is in this list.
+        blackList = []
+      }
+    }
+    disabled = [
+      play.filters.hosts.AllowedHostsFilter,
+      play.filters.csp.CSPFilter,
+      play.filters.csrf.CSRFFilter,
+      play.filters.headers.SecurityHeadersFilter]
+    enabled = [play.filters.cors.CORSFilter]
+  }
+
+
+}
+
+akka.http {
+  parsing {
+    max-uri-length = 16k
+  }
+}

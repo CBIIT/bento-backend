@@ -8,7 +8,7 @@
         image: "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable"
         environment:
           - name: FLB_LOG_LEVEL
-            value: debug
+            value: "debug"
 #        memory: 100
         firelensConfiguration:
           type: fluentbit

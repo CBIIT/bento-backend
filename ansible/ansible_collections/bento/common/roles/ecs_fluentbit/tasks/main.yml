@@ -6,6 +6,9 @@
         essential: true
         #image: "906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:2.21.3"
         image: "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable"
+        environment:
+          - name: FLB_LOG_LEVEL
+            value: debug
 #        memory: 100
         firelensConfiguration:
           type: fluentbit

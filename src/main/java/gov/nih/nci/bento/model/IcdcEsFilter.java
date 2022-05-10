@@ -292,7 +292,7 @@ public class IcdcEsFilter implements DataFetcher {
 
     private List<Map<String, Object>> programsAndStudies(Map<String, Object> params) throws IOException {
         final String category = "program";
-        final String subCategory = "study";
+        final String subCategory = "study_code";
 
         String[] subCategories = new String[] { subCategory };
         Map<String, Object> query = esService.buildFacetFilterQuery(params);
@@ -361,7 +361,7 @@ public class IcdcEsFilter implements DataFetcher {
     private List<Map<String, Object>> caseOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"case_id", "case_ids"},
-                new String[]{"study_code", "study"},
+                new String[]{"study_code", "study_code"},
                 new String[]{"study_type", "study_type"},
                 new String[]{"cohort", "cohort"},
                 new String[]{"breed", "breed"},
@@ -391,7 +391,7 @@ public class IcdcEsFilter implements DataFetcher {
         String defaultSort = "case_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("study_code", "study"),
+                Map.entry("study_code", "study_code"),
                 Map.entry("study_type", "study_type"),
                 Map.entry("cohort", "cohort"),
                 Map.entry("breed", "breed"),

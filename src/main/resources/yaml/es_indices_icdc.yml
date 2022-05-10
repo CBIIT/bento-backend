@@ -51,6 +51,8 @@ Indices:
       case_ids:
         type: keyword
       # properties used in return data, name can be different from GraphQL property name
+      study_code:
+        type: keyword
       cohort:
         type: keyword
       age:
@@ -105,7 +107,8 @@ Indices:
       return
         p.program_acronym AS program,
         c.case_id AS case_ids,
-        s.clinical_study_designation AS study,
+        s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
+        s.clinical_study_designation AS study_code,
         s.clinical_study_type AS study_type,
         CASE registrations
           WHEN [] THEN ['Not Applicable']
@@ -267,7 +270,7 @@ Indices:
         COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
         p.program_acronym AS program,
-        s.clinical_study_designation AS study,
+        s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
         s.clinical_study_type AS study_type,
         CASE registrations
           WHEN [] THEN ['Not Applicable']
@@ -467,7 +470,7 @@ Indices:
         COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
         p.program_acronym AS program,
-        s.clinical_study_designation AS study,
+        s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
         s.clinical_study_type AS study_type,
         CASE registrations
           WHEN [] THEN ['Not Applicable']
@@ -592,7 +595,7 @@ Indices:
       COLLECT(DISTINCT CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
       p.program_acronym AS program,
-      s.clinical_study_designation AS study,
+      s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
       s.clinical_study_type AS study_type,
       CASE registrations
       WHEN [] THEN ['Not Applicable']

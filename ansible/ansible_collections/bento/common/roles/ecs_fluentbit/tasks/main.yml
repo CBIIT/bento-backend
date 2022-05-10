@@ -41,7 +41,7 @@
             Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
             Host: "{{ sumo_collector_endpoint }}"
             URI: "/receiver/v1/http/{{ sumo_collector_token }}"
-            Port: 443
+            Port: '443'
             tls: on
             tls.verify: off
             Format: json_lines

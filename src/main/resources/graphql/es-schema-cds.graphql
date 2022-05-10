@@ -205,7 +205,8 @@ type QueryType {
     fileIDsFromList(
         subject_ids: [String] = [""],
         sample_ids: [String] = [""],
-        file_names: [String] = [""]
+        file_names: [String] = [""],
+        file_ids: [String] = [""]
     ): [String]
 
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]

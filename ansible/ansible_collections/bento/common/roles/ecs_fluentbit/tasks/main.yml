@@ -41,10 +41,11 @@
             Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
             Host: "{{ sumo_collector_endpoint }}"
             URI: "/receiver/v1/http/{{ sumo_collector_token }}"
-            Port: '443'
-            tls: 'on'
-            tls.verify: 'off'
-            Format: 'json_lines'
+            Port: 443
+            tls: on
+            tls.verify: off
+            Format: json_lines
+            Retry_Limit: 2
     launch_type: FARGATE
     network_mode: awsvpc
     execution_role_arn: "arn:aws:iam::{{ account }}:role/{{ project_name }}-{{ tier }}-task-execution-role"

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +38,9 @@ public class GmbEsFilter implements DataFetcher{
 
     final String TRIALS_END_POINT = "/trials/_search";
     final String TRIALS_COUNT_END_POINT = "/trials/_count";
+
+    final String SITES_END_POINT = "/sites/_search";
+    final String SITES_COUNT_END_POINT = "/sites/_count";
 
     final String NODES_END_POINT = "/model_nodes/_search";
     final String NODES_COUNT_END_POINT = "/model_nodes/_count";
@@ -290,24 +292,47 @@ public class GmbEsFilter implements DataFetcher{
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
-                GS_SEARCH_FIELD, List.of("subject_id_gs"),
+                GS_SEARCH_FIELD, List.of("subject_id_gs", "registering_institution_gs", "disease_term_gs"),
                 GS_SORT_FIELD, "subject_id",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"subject_id", "subject_id_gs"}
+                        new String[]{"subject_id", "subject_id_gs"},
+                        new String[]{"registering_institution", "registering_institution_gs"},
+                        new String[]{"disease_term", "disease_term_gs"}
                 },
                 GS_CATEGORY_TYPE, "subject"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, SITES_END_POINT,
+                GS_COUNT_ENDPOINT, SITES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "site_count",
+                GS_RESULT_FIELD, "sites",
+                GS_SEARCH_FIELD, List.of("site_id_gs", "site_name_gs", "site_address_gs", "site_status_gs",
+                        "clinical_trial_id_gs"),
+                GS_SORT_FIELD, "site_id",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"site_id", "site_id_gs"},
+                        new String[]{"site_name", "site_name_gs"},
+                        new String[]{"site_address", "site_address_gs"},
+                        new String[]{"site_status", "site_status_gs"},
+                        new String[]{"clinical_trial_id", "clinical_trial_id_gs"}
+                },
+                GS_CATEGORY_TYPE, "site"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, FILES_END_POINT,
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
-                GS_SEARCH_FIELD, List.of("file_id_gs", "file_name_gs", "file_description_gs"),
+                GS_SEARCH_FIELD, List.of("file_id_gs", "file_name_gs", "file_description_gs", "clinical_trial_id_gs",
+                        "subject_id_gs", "file_format_gs"),
                 GS_SORT_FIELD, "file_id",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"file_id", "file_id_gs"},
                         new String[]{"file_name", "file_name_gs"},
-                        new String[]{"file_description", "file_description_gs"}
+                        new String[]{"file_description", "file_description_gs"},
+                        new String[]{"clinical_trial_id", "clinical_trial_id_gs"},
+                        new String[]{"subject_id", "subject_id_gs"},
+                        new String[]{"file_format", "file_format_gs"}
                 },
                 GS_CATEGORY_TYPE, "file"
         ));

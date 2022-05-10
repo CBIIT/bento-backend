@@ -5,8 +5,6 @@ Indices:
     mapping:
       subject_id: 
         type: keyword
-      subject_id_gs: 
-        type: search_as_you_type
       race: 
         type: keyword
       disease_term: 
@@ -41,6 +39,12 @@ Indices:
         type: keyword
       files:
         type: keyword
+      subject_id_gs:
+        type: search_as_you_type
+      registering_institution_gs:
+        type: search_as_you_type
+      disease_term_gs:
+        type: search_as_you_type
     cypher_query: "
       MATCH (s:SUBJECT)-->(ct:CLINICALTRIAL)
       OPTIONAL MATCH (e:ENROLLMENT)-->(s)
@@ -56,7 +60,9 @@ Indices:
         coalesce(s.PT_ID, 'N/A') AS subject_id_gs,
         coalesce(s.PT_RACE_CD_1, 'N/A') AS race,
         coalesce(s.DZ_DX_NM, 'N/A') AS disease_term,
+        coalesce(s.DZ_DX_NM, 'N/A') AS disease_term_gs,
         coalesce(s.REG_INST_ID_CD, 'N/A') AS registering_institution,
+        coalesce(s.REG_INST_ID_CD, 'N/A') AS registering_institution_gs,
         coalesce(s.PT_SUBGRP_ASSIGN_TP, 'N/A') AS patient_subgroup,
         COLLECT(DISTINCT e.DISEAS_STG) AS stage_at_entry,
         COLLECT(DISTINCT srv.DEATH_CAUS_CD) AS cause_of_death,
@@ -70,14 +76,15 @@ Indices:
         COLLECT(DISTINCT sv.SOMATIC_VAR_PTHGNC_CAT) AS somatic_pathogenicity,
         COLLECT(DISTINCT f.FILE_TYPE) AS file_type,
         COLLECT(DISTINCT f.UUID) AS files
-
       RETURN
         clinical_trial_id,
         subject_id,
         subject_id_gs,
         race,
         disease_term,
+        disease_term_gs,
         registering_institution,
+        registering_institution_gs,
         patient_subgroup,
         CASE size(stage_at_entry) WHEN 0 THEN 'N/A' WHEN 1 THEN head(stage_at_entry) ELSE stage_at_entry END AS stage_at_entry,
         CASE size(cause_of_death) WHEN 0 THEN 'N/A' WHEN 1 THEN head(cause_of_death) ELSE cause_of_death END AS cause_of_death,
@@ -98,16 +105,10 @@ Indices:
     mapping:
       file_id:
         type: keyword
-      file_id_gs:
-        type: search_as_you_type
       file_name:
         type: keyword
-      file_name_gs:
-        type: search_as_you_type
       file_description:
         type: keyword
-      file_description_gs:
-        type: search_as_you_type
       file_format:
         type: keyword
       file_size:
@@ -152,6 +153,18 @@ Indices:
         type: keyword
       md5sum:
         type: keyword
+      file_id_gs:
+        type: search_as_you_type
+      file_name_gs:
+        type: search_as_you_type
+      file_description_gs:
+        type: search_as_you_type
+      clinical_trial_id_gs:
+        type: search_as_you_type
+      subject_id_gs:
+        type: search_as_you_type
+      file_format_gs:
+        type: search_as_you_type
     cypher_query: "
       MATCH (f:FILE)
       OPTIONAL MATCH (f)-->(s:SUBJECT)-->(ct:CLINICALTRIAL)
@@ -169,11 +182,14 @@ Indices:
         f.FILE_DESCRIPTION AS file_description,
         f.FILE_DESCRIPTION AS file_description_gs,
         f.FILE_FORMAT AS file_format,
+        f.FILE_FORMAT AS file_format_gs,
         f.FILE_SIZE AS file_size,
         ct.CLINICAL_TRIAL_ID AS trial_id,
+        ct.CLINICAL_TRIAL_ID AS clinical_trial_id_gs,
         ct.CLINICAL_TRIAL_SHORT_NAME AS trial_short_name,
         s.ARM AS arm,
         s.PT_ID AS subject_id,
+        s.PT_ID AS subject_id_gs,
         s.PT_RACE_CD_1 AS race,
         s.DZ_DX_NM AS disease_term,
         s.REG_INST_ID_CD AS registering_institution,
@@ -228,6 +244,33 @@ Indices:
         ct.CLINICAL_TRIAL_DESCRIPTION AS trial_description_gs,
         ct.CLINICAL_TRIAL_TYPE AS trial_type,
         ct.CLINICAL_TRIAL_TYPE AS trial_type_gs
+    "
+  # Sites Index
+  - index_name: sites
+    type: neo4j
+    mapping:
+      site_id:
+        type: keyword
+      site_id_gs:
+        type: search_as_you_type
+      site_name_gs:
+        type: search_as_you_type
+      site_address_gs:
+          type: search_as_you_type
+      site_status_gs:
+        type: search_as_you_type
+      clinical_trial_id_gs:
+        type: search_as_you_type
+    cypher_query: "
+      MATCH (site:SITE)
+      OPTIONAL MATCH (site)-->(ct:CLINICALTRIAL)
+      RETURN DISTINCT
+        site.uuid AS site_id,
+        site.uuid AS site_id_gs,
+        site.REG_INST_ID AS site_name_gs,
+        site.EMAIL AS site_address_gs,
+        site.STATUS AS site_status_gs,
+        ct.CLINICAL_TRIAL_ID AS clinical_trial_id_gs
     "
   # About Page Index
   - index_name: about_page

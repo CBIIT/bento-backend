@@ -81,6 +81,9 @@ type GlobalSearchResult {
     file_count: Int
     files: [GS_File]
 
+    site_count: Int
+    sites: [GS_Site]
+
     about_count: Int
     about_page: [GS_About]
 
@@ -98,12 +101,25 @@ type GS_Trial {
 
 type GS_Subject {
     subject_id: String
+    registering_institution: String
+    disease_term: String
 }
 
 type GS_File {
     file_id: String
     file_name: String
     file_description: String
+    clinical_trial_id: String
+    subject_id: String
+    file_format: String
+}
+
+type GS_Site {
+    site_id: String
+    site_name: String
+    site_address: String
+    site_status: String
+    clinical_trial_id: String
 }
 
 type GS_Model {

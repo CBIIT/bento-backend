@@ -5,18 +5,18 @@
       - name: sumologic-firelens
         essential: true
         image: "906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:2.21.3"
-#        memory: 100
-#        logConfiguration:
-#          logDriver: awslogs
-#          options:
-#            awslogs-group: "/ecs/{{project_name}}/{{tier}}/sumologic/logs"
-#            awslogs-region: "{{region}}"
-#            awslogs-create-group: "true"
-#            awslogs-stream-prefix: "{{project_name}}-{{container_name}}"
+        memory: 100
         firelensConfiguration:
           type: fluentbit
           options:
             enable-ecs-log-metadata: "true"
+        logConfiguration:
+          logDriver: awslogs
+          options:
+            awslogs-group: "/ecs/{{project_name}}/{{tier}}/sumologic/logs"
+            awslogs-region: "{{region}}"
+            awslogs-create-group: "true"
+            awslogs-stream-prefix: "{{project_name}}-{{container_name}}"
       - name: "{{container_name}}"
         essential: true
         image: "{{ container_image_url }}:{{image_version}}"
@@ -38,7 +38,7 @@
             Host: "{{ sumo_collector_endpoint }}"
             URI: "/receiver/v1/http/{{ sumo_collector_token }}"
             Port: '443'
-            tls: 'On'
+            tls: 'on'
             tls.verify: 'off'
             Format: 'json_lines'
     launch_type: FARGATE

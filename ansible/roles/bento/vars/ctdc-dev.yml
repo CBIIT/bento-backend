@@ -6,4 +6,5 @@ redis_host:
 schema_file: "ctdc.graphql"
 es_schema_file: "es-schema-ctdc.graphql"
 
+frontend_branch: "{{ lookup('env','FE_BRANCH') }}"
 about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_branch }}/src/content/prod/aboutPagesContent.yml{% else %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_branch }}/src/content/pre-prod/aboutPagesContent.yml{% endif %}"

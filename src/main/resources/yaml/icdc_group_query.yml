@@ -18,22 +18,22 @@ groups:
       resultType: int_total_count
     - name: numberOfSamples
       index:
-        - cases
+        - samples
       filterType:
-        type: nested
-        selectedField: sample_id
-        nestedPath: samples_info
-        nestedFields:
-          - sample_pathology
-          - sample_site
-          - sample_type
-      resultType: nested_total
+        # Get total number of documents in ES index
+        type: number_of_docs
+      resultType: int_total_count
     - name: numberOfFiles
       index:
         - files
       filterType:
         # Get total number of documents in ES index
         type: number_of_docs
+      dynamicFilter:
+        index:
+          - cases
+        dynamicField: case_id
+        targetField: all_case_ids
       resultType: int_total_count
 #      TODO WITHOUT Access CODE
     - name: filterCaseCountByStudyCode
@@ -46,13 +46,18 @@ groups:
       resultType: icdc_aggregation
 # TODO change selected_field
 
-#    - name: numberOfStudyFiles
-#      index:
-#        - files
-#      filterType:
-#        type: aggregation
-#        selectedField: study_files
-#      resultType: int_total_aggregation
+    - name: numberOfStudyFiles
+      index:
+        - files
+      filterType:
+        type: aggregation
+        selectedField: study_files
+      dynamicFilter:
+        index:
+          - cases
+        dynamicField: case_id
+        targetField: case_id
+      resultType: int_total_aggregation
     - name: numberOfPrograms
       index:
         - cases
@@ -76,6 +81,11 @@ groups:
       filterType:
         type: sum
         selectedField: file_size
+      dynamicFilter:
+        index:
+          - cases
+        dynamicField: case_id
+        targetField: all_case_ids
       resultType: sum
     - name: caseCountByGender
       index:
@@ -212,43 +222,28 @@ groups:
       resultType: icdc_aggregation
     - name: filterCaseCountBySampleType
       index:
-        - cases
+        - files
       filterType:
-        type: nested
-        selectedField: sample_type
+        type: aggregation
         filter: true
-        nestedPath: samples_info
-        nestedFields:
-          - sample_type
-          - sample_site
-          - sample_pathology
-      resultType: icdc_nested_list
+        selectedField: sample_type
+      resultType: icdc_aggregation
     - name: filterCaseCountBySamplePathology
       index:
-        - cases
+        - files
       filterType:
-        type: nested
-        selectedField: sample_pathology
+        type: aggregation
         filter: true
-        nestedPath: samples_info
-        nestedFields:
-          - sample_type
-          - sample_site
-          - sample_pathology
-      resultType: icdc_nested_list
+        selectedField: sample_pathology
+      resultType: icdc_aggregation
     - name: filterCaseCountBySampleSite
       index:
-        - cases
+        - files
       filterType:
-        type: nested
-        selectedField: sample_site
+        type: aggregation
         filter: true
-        nestedPath: samples_info
-        nestedFields:
-          - sample_type
-          - sample_site
-          - sample_pathology
-      resultType: icdc_nested_list
+        selectedField: sample_site
+      resultType: icdc_aggregation
     - name: filterCaseCountByFileAssociation
       index:
         - files
@@ -256,6 +251,11 @@ groups:
         type: aggregation
         selectedField: file_association
         filter: true
+      dynamicFilter:
+        index:
+          - cases
+        dynamicField: case_id
+        targetField: all_case_ids
       resultType: icdc_aggregation
     - name: filterCaseCountByFileType
       index:
@@ -264,6 +264,11 @@ groups:
         type: aggregation
         selectedField: file_type
         filter: true
+      dynamicFilter:
+        index:
+          - cases
+        dynamicField: case_id
+        targetField: all_case_ids
       resultType: icdc_aggregation
     - name: filterCaseCountByFileFormat
       index:
@@ -272,6 +277,11 @@ groups:
         type: aggregation
         selectedField: file_format
         filter: true
+      dynamicFilter:
+        index:
+          - cases
+        dynamicField: case_id
+        targetField: all_case_ids
       resultType: icdc_aggregation
     - name: filterCaseCountByStudyParticipation
       index:

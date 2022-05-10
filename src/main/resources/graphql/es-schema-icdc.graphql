@@ -141,6 +141,7 @@ type SearchResultES {
     numberOfCases: Int
     numberOfSamples: Int
     numberOfFiles: Int
+    numberOfStudyFiles: Int
     numberOfAliquots: Int
     volumeOfData: Float
 

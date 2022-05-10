@@ -5,10 +5,7 @@ import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import gov.nih.nci.bento.search.result.TypeMapperService;
-import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
-import gov.nih.nci.bento.search.yaml.filter.YamlGlobalFilterType;
-import gov.nih.nci.bento.search.yaml.filter.YamlHighlight;
-import gov.nih.nci.bento.search.yaml.filter.YamlQuery;
+import gov.nih.nci.bento.search.yaml.filter.*;
 import gov.nih.nci.bento.service.EsSearch;
 import gov.nih.nci.bento.utility.StrUtil;
 import graphql.schema.DataFetcher;
@@ -195,21 +192,49 @@ public class YamlQueryFactory {
         return esService.elasticSend(request, getReturnType(param, query));
     }
 
+    private Map<String, Object> getDynamicFilter(QueryParam param, YamlQuery query) {
+        if (query.getDynamicFilter() == null) return param.getArgs();
+        YamlDynamicFilter dynamicFilter = query.getDynamicFilter();
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name(Const.ES_PARAMS.TERMS_AGGS)
+                        .request(new SearchRequest()
+                                .indices(dynamicFilter.getIndex())
+                                .source(new AggregationFilter(
+                                        FilterParam.builder()
+                                                .args(param.getArgs())
+                                                .selectedField(dynamicFilter.getDynamicField())
+                                                .build())
+                                        .getSourceFilter()))
+                        .typeMapper(typeMapper.getICDCCaseIds()).build()
+        );
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        List<String> caseIds = (List<String>) result.get(Const.ES_PARAMS.TERMS_AGGS);
+        if (caseIds.size() > 0) {
+            Map<String, Object> args = new HashMap<>(param.getArgs());
+            args.put(dynamicFilter.getTargetField(), caseIds);
+            return args;
+        }
+        return param.getArgs();
+    }
+
     private SearchSourceBuilder getQueryFilter(QueryParam param, YamlQuery query) {
         // Set Arguments
         YamlFilterType filterType = query.getFilterType();
+        Map<String, Object> args = getDynamicFilter(param, query);
         switch (filterType.getType()) {
             case Const.YAML_QUERY.FILTER.AGGREGATION:
                 return new AggregationFilter(
                         FilterParam.builder()
-                                .args(param.getArgs())
+                                .args(args)
                                 .isExcludeFilter(filterType.isFilter())
                                 .selectedField(filterType.getSelectedField())
                                 .build())
                         .getSourceFilter();
             case Const.YAML_QUERY.FILTER.TABLE:
                 return new TableFilter(FilterParam.builder()
-                        .args(param.getArgs())
+                        .args(args)
                         .queryParam(param)
                         .sortDirection(filterType.getSortDirection())
                         .returnAllFields(filterType.getReturnAllFields())
@@ -219,13 +244,13 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.FILTER.NO_OF_DOCUMENTS:
                 return new SearchCountFilter(
                         FilterParam.builder()
-                                .args(param.getArgs())
+                                .args(args)
                                 .build())
                         .getSourceFilter();
             case Const.YAML_QUERY.FILTER.RANGE:
                 return new RangeFilter(
                         FilterParam.builder()
-                                .args(param.getArgs())
+                                .args(args)
                                 .selectedField(filterType.getSelectedField())
                                 .isRangeFilter(true)
                                 .build())
@@ -233,7 +258,7 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.FILTER.SUB_AGGREAGATION:
                 return new SubAggregationFilter(
                         FilterParam.builder()
-                                .args(param.getArgs())
+                                .args(args)
                                 .selectedField(filterType.getSelectedField())
                                 .subAggSelectedField(filterType.getSubAggSelectedField())
                                 .build())
@@ -243,11 +268,11 @@ public class YamlQueryFactory {
                         .size(filterType.getSize())
                         .returnAllFields(filterType.getReturnAllFields())
                         .caseInSensitive(filterType.isCaseInSensitive())
-                        .args(param.getArgs()).build()).getSourceFilter();
+                        .args(args).build()).getSourceFilter();
             case Const.YAML_QUERY.FILTER.NESTED:
                 return new NestedFilter(
                         FilterParam.builder()
-                                .args(param.getArgs())
+                                .args(args)
                                 .isExcludeFilter(filterType.isFilter())
                                 .selectedField(filterType.getSelectedField())
                                 .nestedPath(filterType.getNestedPath())
@@ -259,7 +284,7 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.FILTER.SUM:
                 return new SumFilter(
                                 FilterParam.builder()
-                                        .args(param.getArgs())
+                                        .args(args)
                                         .selectedField(filterType.getSelectedField())
                                         .build())
                                 .getSourceFilter();

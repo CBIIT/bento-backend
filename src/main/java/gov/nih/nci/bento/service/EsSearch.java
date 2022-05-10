@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface EsSearch {
-    Map<String, Object> elasticMultiSend(List<MultipleRequests> requests) throws IOException;
+    Map<String, Object> elasticMultiSend(List<MultipleRequests> requests);
     <T> T elasticSend(SearchRequest request, TypeMapper<T> mapper) throws IOException;
     QueryParam CreateQueryParam(DataFetchingEnvironment env);
 }

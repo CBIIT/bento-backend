@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @Service
 public class TypeMapperImpl implements TypeMapperService {
@@ -63,6 +64,16 @@ public class TypeMapperImpl implements TypeMapperService {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
+    public TypeMapper<List<String>> getICDCCaseIds() {
+        return (response) -> {
+            Aggregations aggregate = response.getAggregations();
+            Terms terms = aggregate.get(ES_PARAMS.TERMS_AGGS);
+            List<Terms.Bucket> buckets = (List<Terms.Bucket>) terms.getBuckets();
+            List<String> result = buckets.stream().map((bucket)->(String) bucket.getKey()).collect(Collectors.toList());
+            return result;
+        };
+    }
 
     @SuppressWarnings("unchecked")
     public TypeMapper<List<Map<String, Object>>> getICDCAggregate() {

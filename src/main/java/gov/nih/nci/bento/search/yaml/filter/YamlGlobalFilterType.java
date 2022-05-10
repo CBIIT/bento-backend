@@ -12,7 +12,7 @@ public class YamlGlobalFilterType {
     private List<GlobalQuerySet> optionalQuery;
 
     @Data
-    public static  class GlobalQuerySet {
+    public static class GlobalQuerySet {
         private String field;
         private String type;
         private String option;

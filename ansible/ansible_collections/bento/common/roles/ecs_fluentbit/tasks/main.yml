@@ -45,7 +45,7 @@
             tls: on
             tls.verify: off
             Format: json_lines
-            Retry_Limit: 2
+            Retry_Limit: '2'
     launch_type: FARGATE
     network_mode: awsvpc
     execution_role_arn: "arn:aws:iam::{{ account }}:role/{{ project_name }}-{{ tier }}-task-execution-role"

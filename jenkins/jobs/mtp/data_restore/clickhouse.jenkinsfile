@@ -100,6 +100,7 @@ pipeline {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
         withCredentials([file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file')
        ]){
+             sh "ls ${WORKSPACE}/"
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
              sh "cat ${WORKSPACE}/icdc-devops/ansible/hosts"
              ansiblePlaybook( 

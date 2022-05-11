@@ -4,12 +4,10 @@
     containers:
       - name: sumologic-firelens
         essential: true
-        #image: "906394416424.dkr.ecr.us-east-1.amazonaws.com/aws-for-fluent-bit:2.21.3"
         image: "public.ecr.aws/aws-observability/aws-for-fluent-bit:stable"
         environment:
           - name: FLB_LOG_LEVEL
             value: "debug"
-#        memory: 100
         firelensConfiguration:
           type: fluentbit
           options:
@@ -17,8 +15,7 @@
         logConfiguration:
           logDriver: awslogs
           options:
-            #awslogs-group: "/ecs/{{project_name}}/{{tier}}/sumologic/logs"
-            awslogs-group: "/ecs/{{project_name}}/{{tier}}/sumo-forwarder/logs"
+            awslogs-group: "/ecs/{{project_name}}/{{tier}}-{{container_name}}/sumologic/logs"
             awslogs-region: "{{region}}"
             awslogs-create-group: "true"
             awslogs-stream-prefix: "{{project_name}}-{{container_name}}"
@@ -31,16 +28,10 @@
           - containerPort: "{{ container_port }}"
             hostPort: "{{ container_port }}"
         logConfiguration:
-#          logDriver: awslogs
-#          options:
-#            awslogs-group: "/ecs/{{project_name}}/{{tier}}/logs"
-#            awslogs-region: "{{region}}"
-#            awslogs-create-group: "true"
-#            awslogs-stream-prefix: "{{container_name}}"
           logDriver: awsfirelens
           options:
-            #Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
-            Name: "http"
+            Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
+            #Name: "http"
             Host: "{{ sumo_collector_endpoint }}"
             URI: "/receiver/v1/http/{{ sumo_collector_token }}"
             Port: "443"

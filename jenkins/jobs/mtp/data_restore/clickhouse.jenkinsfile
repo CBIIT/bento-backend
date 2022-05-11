@@ -93,8 +93,8 @@ pipeline {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
         withCredentials([file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file')
        ]){
-             sh "cp ${host_file} ${WORKSPACE}/ansible/hosts"
-             sh "cat ${WORKSPACE}/ansible/hosts"
+             sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
+             sh "cat ${WORKSPACE}/icdc-devops/ansible/hosts"
              ansiblePlaybook( 
                 playbook: '${WORKSPACE}/icdc-devops/ansible/clickhouse-restore.yml', 
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 

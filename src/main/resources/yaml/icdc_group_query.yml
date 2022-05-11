@@ -56,7 +56,7 @@ groups:
         index:
           - cases
         dynamicField: case_id
-        targetField: case_id
+        targetField: all_case_ids
       resultType: int_total_aggregation
     - name: numberOfPrograms
       index:

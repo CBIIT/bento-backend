@@ -83,6 +83,11 @@ query:
     filterType:
       type: table
       defaultSortField: file_name
+    dynamicFilter:
+      index:
+        - cases
+      dynamicField: case_id
+      targetField: all_case_ids
     resultType: default
   - name: filesInListDesc
     index:

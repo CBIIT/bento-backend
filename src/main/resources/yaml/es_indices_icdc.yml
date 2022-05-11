@@ -184,7 +184,7 @@ Indices:
         COLLECT(DISTINCT(samp.sample_site)) AS sample_site,
         COLLECT(DISTINCT(samp.summarized_sample_type)) AS sample_type,
         COLLECT(DISTINCT(samp.specific_sample_pathology)) AS sample_pathology,
-        CASE head(labels(parent)) WHEN 'study' THEN 'study' ELSE 'other' END AS association,
+        CASE study_file IS NOT NULL WHEN True THEN 'study' ELSE 'other' END AS association,
 
         CASE study_file IS NOT NULL WHEN True
         THEN 'study' + COLLECT(DISTINCT head(labels(parent)))

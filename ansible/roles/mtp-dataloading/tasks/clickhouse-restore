@@ -37,7 +37,7 @@
 
 - name: list the backup files
   shell:
-    "curl -s localhost:7171/backup/list/remote
+    "curl -s localhost:7171/backup/list/remote"
   args:
     chdir: "{{clickhouse_path}}"
   register: backups

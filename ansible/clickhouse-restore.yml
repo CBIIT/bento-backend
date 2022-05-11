@@ -9,3 +9,5 @@
       include_role:
         name: mtp-dataloading
         tasks_from: clickhouse-restore
+      vars:
+        ansible_python_interpreter: /usr/bin/python3

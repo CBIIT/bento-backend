@@ -87,6 +87,11 @@ pipeline {
         }
     }
   	stage('clickhouse_restore'){
+    agent {
+      node {
+        label 'bastion-host'
+      }
+    }
  		steps{
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
         withCredentials([file(credentialsId: 'ppdc_ansible_host_file', variable: 'host_file')

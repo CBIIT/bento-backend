@@ -1,7 +1,12 @@
 ---
 
-- name: install clickhouse-backup tool to build 
+- name: install python selinux library required by future ansible modules
+  yum:
+    name: libselinux-python3
+    state: present
+    update_cache: true
 
+- name: install clickhouse-backup tool to build 
   shell: >
     wget https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz -P /tmp
     && tar xf /tmp/clickhouse-backup-linux-amd64.tar.gz -C /home/bento

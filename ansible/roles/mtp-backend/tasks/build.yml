@@ -65,11 +65,16 @@
   args:
     chdir: "{{workspace}}/ppdc-otp-backend/conf/"
 
-- name: copy entrypoint.sh to workspace
-  copy:
-    src: "application.conf.j2"
+# - name: copy entrypoint.sh to workspace
+#   copy:
+#     src: "application.conf.j2"
+#     dest: "{{workspace}}/ppdc-otp-backend/conf/application.conf"
+#     mode: 0755
+
+- name: copy application.conf file to /src/main/resources/
+  template:
+    src: "{{workspace}}/ppdc-otp-backend/conf/application.conf.j2"
     dest: "{{workspace}}/ppdc-otp-backend/conf/application.conf"
-    mode: 0755
 
 # - name: updating mtp backend version in application.conf
 #   replace:

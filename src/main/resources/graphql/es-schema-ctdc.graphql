@@ -185,8 +185,9 @@ type FileOfCase {
     file_description: String,
     file_format: String,
     file_size: Float,
-    md5sum: String
-    uuid: String
+    md5sum: String,
+    uuid: String,
+    association: String
 }
 
 schema {

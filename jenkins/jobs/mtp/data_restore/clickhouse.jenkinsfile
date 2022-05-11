@@ -60,14 +60,12 @@ pipeline {
             switch("${params.Environment}") {
               case "dev":
                 withCredentials([string(credentialsId: 'dev_bearer', variable: 'BEARER')]) {
-                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_DEV_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "dev"
                 }
               break
               case "qa":
                 withCredentials([string(credentialsId: 'qa_bearer', variable: 'BEARER')]) {
-                  env.SLICK_CLICKHOUSE_URL = "${OTP_CLICKHOUSE_QA_IP}"
                   env.BEARER = "${BEARER}"
                   env.TIER  = "qa"
                 }

@@ -32,6 +32,8 @@
         image_version: "{{ lookup('env','DOWNLOADER_VERSION') }}"
         tier: "{{ lookup('env','TIER') }}"
         ecs_cluster_name: "{{ project_name }}-{{ tier }}"
+        sumo_collector_endpoint: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_endpoint', nested=true, region='us-east-1' ) }}"
+        sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_token_files', nested=true, region='us-east-1' ) }}"
         container_port: 8081
         container_memory: 512
         container_cpu: 256

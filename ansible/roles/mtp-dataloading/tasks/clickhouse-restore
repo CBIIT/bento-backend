@@ -1,10 +1,19 @@
 ---
 
-- name: install wget and curl
+- name: install python3
+  yum:
+    name: python3
+    state: installed
+
+
+- name: install dependencies
   yum:
     name:
-      - wget
+      - git
       - curl
+      - wget
+    state: installed
+
 
 - name: install clickhouse-backup tool to build 
 

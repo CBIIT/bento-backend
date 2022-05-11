@@ -23,3 +23,5 @@
 #redis_host:
 #container_entrypoint:
 #container_env:
+#sumo_collector_endpoint:
+#sumo_collector_token:

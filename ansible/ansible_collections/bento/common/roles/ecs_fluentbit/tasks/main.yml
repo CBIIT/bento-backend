@@ -30,8 +30,8 @@
         logConfiguration:
           logDriver: awsfirelens
           options:
-            Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
-            #Name: "http"
+            #Name: "{{project_name }}-{{ tier }}-{{ container_name }}-logs"
+            Name: "http"
             Host: "{{ sumo_collector_endpoint }}"
             URI: "/receiver/v1/http/{{ sumo_collector_token }}"
             Port: "443"

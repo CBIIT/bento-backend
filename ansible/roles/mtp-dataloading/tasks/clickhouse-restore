@@ -1,7 +1,14 @@
 ---
 
+- name : Install multiple packages
+  yum:
+      name={{ item }}
+      state=latest
+      update_cache=true
+  loop: [git, wget, unzip, curl]
+
 - name: install python selinux library required by future ansible modules
-  dnf:
+  yum:
     name: libselinux-python3
     state: present
     update_cache: true

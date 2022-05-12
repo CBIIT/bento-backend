@@ -30,7 +30,8 @@ def sendSlackMessage() {
 pipeline {
 	agent {
 		node {
-      	  label 'cicd_microservice'
+      	  //label 'cicd_microservice'
+		  label 'cicd_ansible_3.0'
 		}
 	}
 	

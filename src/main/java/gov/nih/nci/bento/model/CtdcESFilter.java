@@ -278,11 +278,12 @@ public class CtdcESFilter implements DataFetcher {
                 GS_COUNT_RESULT_FIELD, "case_count",
                 GS_RESULT_FIELD, "cases",
                 GS_SEARCH_FIELD, List.of(
-                        "case_id_gs", "clinical_trial_code_gs", "arm_id_gs", "gender_gs", "race_gs", "disease_gs"
+                        "case_id_gs", "clinical_trial_id_gs", "clinical_trial_code_gs", "arm_id_gs", "gender_gs", "race_gs", "disease_gs"
                 ),
                 GS_SORT_FIELD, "case_id",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"case_id", "case_id_gs"},
+                        new String[]{"clinical_trial_id", "clinical_trial_id_gs"},
                         new String[]{"clinical_trial_code", "clinical_trial_code_gs"},
                         new String[]{"arm_id", "arm_id_gs"},
                         new String[]{"gender", "gender_gs"},

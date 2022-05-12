@@ -33,6 +33,8 @@ Indices:
         type: keyword
       case_id_gs:
         type: search_as_you_type
+      clinical_trial_id_gs:
+        type: search_as_you_type
       clinical_trial_code_gs:
         type: search_as_you_type
       gender_gs:
@@ -51,6 +53,7 @@ Indices:
         c.case_id AS case_id,
         c.case_id AS case_id_gs,
         ct.clinical_trial_id as clinical_trial_id,
+        ct.clinical_trial_id as clinical_trial_id_gs,
         ct.clinical_trial_designation AS clinical_trial_designation,
         ct.clinical_trial_designation AS clinical_trial_code_gs,
         a.pubmed_id AS pubmed_id,

@@ -105,6 +105,7 @@ type GS_Arm {
 type GS_Case {
     type: String
     case_id: String
+    clinical_trial_id: String
     clinical_trial_code: String
     arm_id: String
     gender: String

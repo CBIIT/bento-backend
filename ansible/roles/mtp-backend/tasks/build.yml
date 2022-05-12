@@ -44,7 +44,7 @@
     src: "{{workspace}}/ppdc-otp-backend/target/universal/{{artifact_dir_name}}.zip"
     dest: "{{workspace}}"
 
-- name: listing the contents after extracting
+- name: listing the contents of the workspace {{workspace}} after extracting
   shell: ls
   register: shell_result
   args:
@@ -59,24 +59,14 @@
 - name: copy config files
   command: cp "{{workspace}}/ppdc-otp-backend/production.conf" "{{workspace}}/ppdc-otp-backend/production.xml" "{{workspace}}/app/conf"
 
-- name: listing the contents of {{workspace}}/ppdc-otp-backend/conf/
+- name: listing the contents of {{workspace}}/app/conf
   shell: ls
   register: shell_result
   args:
-    chdir: "{{workspace}}/ppdc-otp-backend/conf/"
+    chdir: "{{workspace}}/app/conf/"
 
 - debug:
     var: shell_result.stdout_lines
-
-- name: listing the contents of {{workspace}}/ppdc-otp-backend/app/conf/
-  shell: ls
-  register: shell_result
-  args:
-    chdir: "{{workspace}}/ppdc-otp-backend/app/conf/"
-
-- debug:
-    var: shell_result.stdout_lines
-
 
 # - name: copy entrypoint.sh to workspace
 #   copy:
@@ -84,10 +74,10 @@
 #     dest: "{{workspace}}/ppdc-otp-backend/conf/application.conf"
 #     mode: 0755
 
-- name: copy application.conf file to {{workspace}}/ppdc-otp-backend/conf/
+- name: copy application.conf file to {{workspace}}/app/conf/
   template:
-    src: "{{workspace}}/ppdc-otp-backend/app/conf/application.conf.j2"
-    dest: "{{workspace}}/ppdc-otp-backend/app/conf/application.conf"
+    src: "{{workspace}}/ppdc-otp-backend/conf/application.conf.j2"
+    dest: "{{workspace}}/app/conf/application.conf"
 
 # - name: updating mtp backend version in application.conf
 #   replace:

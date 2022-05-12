@@ -9,5 +9,5 @@
     - name: build cicd image
       include_role:
         name: build-image-bento
-        tasks_from: cicd-ecs-3-0
+        tasks_from: cicd-ecs-4-0
         vars_from: bento

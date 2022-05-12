@@ -69,7 +69,7 @@ pipeline {
   			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  				withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]){
                   ansiblePlaybook(  			
-                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-image-cicd-ecs-3-0.yml', 
+                    playbook: '${WORKSPACE}/icdc-devops/ansible/build-image-cicd-ecs-4-0.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 					extraVars: [
                         dockerhub_path: "cbiitssrepo",

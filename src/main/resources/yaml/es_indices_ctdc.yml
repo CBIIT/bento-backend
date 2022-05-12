@@ -121,6 +121,8 @@ Indices:
         type: search_as_you_type
       file_size_gs:
         type: search_as_you_type
+      clinical_trial_id_gs:
+        type: search_as_you_type
       clinical_trial_code_gs:
         type: search_as_you_type
     cypher_query: "
@@ -132,6 +134,7 @@ Indices:
         ct.clinical_trial_designation AS trial_code,
         ct.clinical_trial_designation AS clinical_trial_code_gs,
         ct.clinical_trial_id as trial_id,
+        ct.clinical_trial_id as clinical_trial_id_gs,
         a.pubmed_id AS pubmed_id,
         a.arm_id+'_'+a.arm_drug AS trial_arm,
         a.arm_id AS arm_id,

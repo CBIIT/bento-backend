@@ -119,6 +119,7 @@ type GS_File {
     file_description: String
     file_type: String
     file_size: String
+    clinical_trial_id: String
     clinical_trial_code: String
 }
 

@@ -299,7 +299,8 @@ public class CtdcESFilter implements DataFetcher {
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
                 GS_SEARCH_FIELD, List.of(
-                        "file_name_gs", "file_description_gs", "file_type_gs", "file_size_gs", "clinical_trials_code_gs"
+                        "file_name_gs", "file_description_gs", "file_type_gs", "file_size_gs", "clinical_trials_code_gs",
+                        "clinical_trial_id_gs"
                 ),
                 GS_SORT_FIELD, "file_name",
                 GS_COLLECT_FIELDS, new String[][]{
@@ -307,6 +308,7 @@ public class CtdcESFilter implements DataFetcher {
                         new String[]{"file_description", "file_description_gs"},
                         new String[]{"file_type", "file_type_gs"},
                         new String[]{"file_size", "file_size_gs"},
+                        new String[]{"clinical_trial_id", "clinical_trial_id_gs"},
                         new String[]{"clinical_trial_code", "clinical_trial_code_gs"}
                 },
                 GS_CATEGORY_TYPE, "file"

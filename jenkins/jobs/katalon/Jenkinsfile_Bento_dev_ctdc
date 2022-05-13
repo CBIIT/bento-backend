@@ -84,15 +84,6 @@ pipeline {
 					extensions: [],
 					submoduleCfg: [], 
                     userRemoteConfigs: [[url: 'https://github.com/CBIIT/Commons_Automation']]])
-				
-				//git branch: "${params.Tag}", 
-				//    changelog: false, 
-				//	poll: false, 
-				//	url: 'https://github.com/CBIIT/Commons_Automation'
-
-                //dir('icdc-devops'){
-                //    git branch: 'master',
-                //    url: 'https://github.com/CBIIT/icdc-devops.git'}
 
                 }
             }
@@ -187,7 +178,8 @@ pipeline {
 								#echo "projectPath=$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
 								
 								# Run Katalon Tests
-								katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
+								#katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
+								katalonc -noSplash -runMode=console --config -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"
 
 								'''
 
@@ -212,7 +204,7 @@ pipeline {
 
 					sh label: 'Zip-Katalon-Results', script: '''#!/bin/bash
 
-					apt-get update && apt-get install -y zip
+					mv /etc/apt/sources.list.d/google-chrome.list /etc/apt/sources.list.d/google-chrome.list.bak && apt-get update && apt-get install -y zip
 					
 					resultsFile=$(basename results/*.html)
 					zipFile=$(basename -s .html results/*.html)

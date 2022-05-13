@@ -196,6 +196,7 @@ type QueryType {
     fileOverview(
         file_id: [String] = [],
         file_name: [String] = [],
+        subject_id: [String] = [],
         race: [String] = [],
         disease_term: [String] = [],
         registering_institution: [String] = [],

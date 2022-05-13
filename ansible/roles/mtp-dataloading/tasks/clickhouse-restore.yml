@@ -54,7 +54,7 @@
 
 - name: start the server
   shell:
-    "sudo ./clickhouse-backup server --config backup.yml &"
+    "./clickhouse-backup server --config backup.yml &"
   args:
     chdir: "{{clickhouse_path}}"
   register: fileout
@@ -68,7 +68,7 @@
     "curl -s localhost:7171/backup/list/remote"
   args:
     chdir: "{{clickhouse_path}}"
-  warn: false
+    warn: false
   register: backups
 
 - name: display the backup files

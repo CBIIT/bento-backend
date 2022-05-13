@@ -7,13 +7,23 @@
       update_cache=true
   loop: [git, wget, unzip, curl]
 
-- name: install clickhouse-backup tool to build 
-  shell: >
-    wget https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz -P /tmp
-    && tar xf /tmp/clickhouse-backup-linux-amd64.tar.gz -C /home/bento
-  args:
-    warn: False
+#- name: install clickhouse-backup tool to build 
+#  shell: >
+#    wget https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz -P /tmp
+#    && tar xf /tmp/clickhouse-backup-linux-amd64.tar.gz -C /home/bento
+#  args:
+#    warn: False
 
+- name: install clickhouse-backup tool to build 
+  get_url:
+    url: https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz
+    dest: /tmp
+    mode: 0775
+
+- name: unarchive the tool
+  unarchive:
+    src: /tmp/clickhouse-backup-linux-amd64.tar.gz
+    dest: /home/bento
 
 - name: copy the backup.yml file
   template:

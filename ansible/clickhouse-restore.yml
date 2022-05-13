@@ -2,7 +2,7 @@
 - name: clickhouse restore for MTP
   hosts: ppdc-otp-{{tier}}-db
   connection: local
-  gather_facts: yes
+  gather_facts: no
     
   tasks:
     - name: clickhouse data restore

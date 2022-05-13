@@ -25,6 +25,24 @@
     src: /tmp/clickhouse-backup-linux-amd64.tar.gz
     dest: /home/bento
 
+- name: listing the contents of the workspace after extracting
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "/home/bento"
+
+- debug:
+        var: shell_result.stdout_lines
+
+- name: listing the contents of the workspace after extracting
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "{{clickhouse_path}}"
+
+- debug:
+        var: shell_result.stdout_lines
+
 - name: copy the backup.yml file
   template:
     src: "{{ item.src }}"

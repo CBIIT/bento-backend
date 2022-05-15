@@ -24,7 +24,7 @@ pipeline {
             description: 'S3 Folder to load data from',
             name: 'S3BucketSubFolder')
     gitParameter(branchFilter: 'origin/(.*)',
-        defaultValue: 'master',
+        defaultValue: 'main',
         name: 'Tag',
         type: 'PT_BRANCH_TAG',
         quickFilterEnabled: false,

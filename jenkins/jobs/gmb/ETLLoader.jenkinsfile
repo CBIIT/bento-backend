@@ -17,10 +17,10 @@ pipeline {
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
             value: 'test,uat,prod' )
-    string(defaultValue: "",
+    string(defaultValue: "bento-rave-etl",
                     description: 'S3 Bucket ETL',
                     name: 'S3Bucket')
-    string(defaultValue: "",
+    string(defaultValue: "gmb",
             description: 'S3 Folder to load data from',
             name: 'S3BucketSubFolder')
     gitParameter(branchFilter: 'origin/(.*)',
@@ -69,6 +69,8 @@ pipeline {
             			extraVars: [
                           rave_env: "${params.RaveEnvironment}",
                           project_name: "${params.ProjectName}",
+                          bucket_name : "${params.S3Bucket}",
+                          s3_bucket_subfolder: "${params.S3BucketSubFolder}",
                         ],
             			colorized: true)
  				}

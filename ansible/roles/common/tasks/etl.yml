@@ -5,7 +5,7 @@
 
 - name: pip install requirements
   pip:
-    requirements: "{{workspace}}/requirements.txt"
+    requirements: "{{workspace}}/etc/requirements.txt"
     executable: pip3
 
 - name: loader data
@@ -14,7 +14,7 @@
       python3
       {{project_name}}-etl.py 
       {{project_name}}_config.yml
-    chdir: "{{workspace}}"
+    chdir: "{{workspace}}/etl"
   register: etl
 
 - name: show dataloader output

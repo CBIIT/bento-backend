@@ -45,7 +45,7 @@ pipeline {
   				branches: [[name: "${params.Tag}"]],
   				doGenerateSubmoduleConfigurations:
   				false,
-  				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'etl']]
+  				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'etl']],
   				submoduleCfg: [],
                 recursiveSubmodules: true,
   				userRemoteConfigs:

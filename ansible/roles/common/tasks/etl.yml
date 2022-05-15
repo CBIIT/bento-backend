@@ -1,7 +1,7 @@
 - name: load config.yml file
   template:
-    dest: "{{workspace}}/{{project_name}}_config.yml"
-    src: "{{workspace}}/{{project_name}}_config.yaml.j2"
+    dest: "{{workspace}}/etl/{{project_name}}_config.yml"
+    src: "{{workspace}}/etl/{{project_name}}_config.yaml.j2"
 
 - name: pip install requirements
   pip:

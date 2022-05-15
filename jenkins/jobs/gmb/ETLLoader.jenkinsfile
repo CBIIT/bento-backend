@@ -37,14 +37,17 @@ pipeline {
   	maven 'Default'
     jdk 'Default'
   }
+
   stages{
   	stage('checkout'){
   		steps {
   			checkout([$class: 'GitSCM',
   				branches: [[name: "${params.Tag}"]],
   				doGenerateSubmoduleConfigurations:
-  				false, extensions: [], submoduleCfg: [],
-          recursiveSubmodules: true,
+  				false,
+  				extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'etl']]
+  				submoduleCfg: [],
+                recursiveSubmodules: true,
   				userRemoteConfigs:
   				[[url: 'https://github.com/CBIIT/gmb-etl']]])
           sh 'git submodule update --init'
@@ -70,6 +73,6 @@ pipeline {
             			colorized: true)
  				}
  		}
-    } 
+    }
  }
 }

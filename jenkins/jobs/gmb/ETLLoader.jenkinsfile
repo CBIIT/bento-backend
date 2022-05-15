@@ -5,6 +5,24 @@ pipeline {
 		}
 	}
 	parameters {
+	extendedChoice(
+         name: 'ProjectName',
+         defaultValue: 'gmb',
+         description: 'Choose the environment to build',
+         type: 'PT_SINGLE_SELECT',
+         value: 'gmb' )
+    extendedChoice(
+            name: 'RaveEnvironment',
+            defaultValue: 'uat',
+            description: 'Choose the environment to build',
+            type: 'PT_SINGLE_SELECT',
+            value: 'test,uat,prod' )
+    string(defaultValue: "",
+                    description: 'S3 Bucket ETL',
+                    name: 'S3Bucket')
+    string(defaultValue: "",
+            description: 'S3 Folder to load data from',
+            name: 'S3BucketSubFolder')
     gitParameter(branchFilter: 'origin/(.*)',
         defaultValue: 'master',
         name: 'Tag',
@@ -14,18 +32,6 @@ pipeline {
         sortMode: 'ASCENDING_SMART',
         tagFilter: '*',
         useRepository: 'https://github.com/CBIIT/gmb-etl')
-    extendedChoice(
-        name: 'RaveEnvironment',
-        defaultValue: 'uat',
-        description: 'Choose the environment to build',
-        type: 'PT_SINGLE_SELECT',
-        value: 'test,uat,prod' )
-    string(defaultValue: "",
-                description: 'S3 Bucket ETL',
-                name: 'S3Bucket')
-    string(defaultValue: "",
-        description: 'S3 Folder to load data from',
-        name: 'S3BucketSubFolder')
   }
   tools {
   	maven 'Default'
@@ -57,9 +63,13 @@ pipeline {
  					ansiblePlaybook(
             			playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-etl.yml',
             			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+            			extraVars: [
+                          rave_env: "${params.RaveEnvironment}",
+                          project_name: "${params.ProjectName}",
+                        ],
             			colorized: true)
  				}
  		}
-    }
+    } 
  }
 }

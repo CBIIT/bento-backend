@@ -1,7 +1,7 @@
 ---
 - name: include etl mode
   include_role:
-    name: commons
+    name: common
     tasks_from: etl
   vars:
     etl_command: "{{project_name}}-etl.py {{project_name}}_config.yml"

@@ -1,0 +1,68 @@
+pipeline {
+	agent {
+		node {
+			label 'docker-dataloader'
+		}
+	}
+	parameters {
+    gitParameter(branchFilter: 'origin/(.*)',
+        defaultValue: 'master',
+        name: 'Tag',
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false,
+        selectedValue: 'DEFAULT',
+        sortMode: 'ASCENDING_SMART',
+        tagFilter: '*',
+        useRepository: 'https://github.com/CBIIT/gmb-etl')
+    extendedChoice(
+        name: 'RaveEnvironment',
+        defaultValue: 'uat',
+        description: 'Choose the environment to build',
+        type: 'PT_SINGLE_SELECT',
+        value: 'test,uat,prod' )
+    string(defaultValue: "",
+                description: 'S3 Bucket ETL',
+                name: 'S3Bucket')
+    string(defaultValue: "",
+        description: 'S3 Folder to load data from',
+        name: 'S3BucketSubFolder')
+  }
+  tools {
+  	maven 'Default'
+    jdk 'Default'
+  }
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM',
+  				branches: [[name: "${params.Tag}"]],
+  				doGenerateSubmoduleConfigurations:
+  				false, extensions: [], submoduleCfg: [],
+          recursiveSubmodules: true,
+  				userRemoteConfigs:
+  				[[url: 'https://github.com/CBIIT/gmb-etl']]])
+          sh 'git submodule update --init'
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+  		}
+  	}
+  	stage('ETL loader'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				withCredentials([usernamePassword(credentialsId: 'neo4j_user', passwordVariable: 'NEO4J_PASSWORD', usernameVariable: 'NEO4J_USER')]) {
+
+ 					ansiblePlaybook(
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-etl.yml',
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+            			colorized: true)
+ 				}
+ 			}
+ 		}
+    }
+ }
+}

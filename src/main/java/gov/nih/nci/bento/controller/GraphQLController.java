@@ -68,9 +68,9 @@ public class GraphQLController {
 	@RequestMapping(value = "/version", method = {RequestMethod.GET}, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	public ResponseEntity<String> getVersion(HttpEntity<String> httpEntity, HttpServletResponse response){
 		logger.info("Hit end point:/version");
-		String versionString = "Bento API Version: "+config.getBentoApiVersion();
+		String versionString = config.getBentoApiVersion();
 		logger.info(versionString);
-		return ResponseEntity.ok(versionString);
+		return ResponseEntity.ok(gson.toJson(Map.of("version", versionString)));
 	}
 
 	@CrossOrigin

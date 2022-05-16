@@ -17,6 +17,12 @@ pipeline {
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
             value: 'test,uat,prod' )
+    extendedChoice(
+             name: 'ETLOperation',
+               defaultValue: 'Load',
+               description: 'Choose the type of ETL Operation',
+               type: 'PT_RADIO',
+               value: 'Load,Transform' )
     string(defaultValue: "bento-rave-etl",
                     description: 'S3 Bucket ETL',
                     name: 'S3Bucket')
@@ -62,6 +68,9 @@ pipeline {
  		environment {
  			SLACK_URL = "${SLACK_URL}"
  		}
+ 		when {
+ 		    "${params.ETLOperation}" == "Load"
+ 		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
  					ansiblePlaybook(
@@ -71,11 +80,32 @@ pipeline {
                           rave_env: "${params.RaveEnvironment}",
                           project_name: "${params.ProjectName}",
                           bucket_name : "${params.S3Bucket}",
-                          s3_bucket_subfolder: "${params.S3BucketSubFolder}",
                         ],
             			colorized: true)
- 				}
+ 			}
  		}
     }
+    stage('ETL Transform'){
+     		environment {
+     			SLACK_URL = "${SLACK_URL}"
+     		}
+     		when {
+     		    "${params.ETLOperation}" == "Transform"
+     		}
+     		steps {
+     			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+     					ansiblePlaybook(
+                			playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-etl-transform.yml',
+                			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                			extraVars: [
+                              rave_env: "${params.RaveEnvironment}",
+                              project_name: "${params.ProjectName}",
+                              bucket_name : "${params.S3Bucket}",
+                              s3_bucket_subfolder: "${params.S3BucketSubFolder}",
+                            ],
+                			colorized: true)
+     			}
+     		}
+        }
  }
 }

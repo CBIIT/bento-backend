@@ -26,7 +26,7 @@ pipeline {
     string(defaultValue: "bento-rave-etl",
                     description: 'S3 Bucket ETL',
                     name: 'S3Bucket')
-    string(defaultValue: "gmb",
+    string(defaultValue: "2022-05-13T161413",
             description: 'S3 Folder to load data from',
             name: 'S3BucketSubFolder')
     gitParameter(branchFilter: 'origin/(.*)',

@@ -46,6 +46,7 @@ pipeline {
   				doGenerateSubmoduleConfigurations:
   				false,
   				extensions: [],
+  				//[$class: 'RelativeTargetDirectory', relativeTargetDir: 'etl']
   				submoduleCfg: [],
                 recursiveSubmodules: true,
   				userRemoteConfigs:

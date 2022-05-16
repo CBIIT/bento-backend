@@ -9,13 +9,13 @@
     executable: pip3
 
 - name: show workspace
-  cmd: ls -l {{ workspace }}
+  command: ls -l {{ workspace }}
   register: output
 
 - name: show workspace
   debug:
     msg: "{{ output.stdout_lines }}"
-    
+
 - name: loader data
   shell:
     cmd: >

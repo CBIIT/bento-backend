@@ -1,11 +1,3 @@
-- name: show workspace
-  command: ls -l {{ workspace }}
-  register: output
-
-- name: show workspace
-  debug:
-    msg: "{{ output.stdout_lines }}"
-
 - name: load config.yml file
   template:
     dest: "{{workspace}}/{{project_name}}_config.yml"
@@ -19,10 +11,7 @@
 - name: loader data
   shell:
     cmd: >
-      python3
-      {{project_name}}-etl.py 
-      {{project_name}}_config.yml
-    chdir: "{{workspace}}"
+      {{ etl_command }}
   register: etl
 
 - name: show dataloader output

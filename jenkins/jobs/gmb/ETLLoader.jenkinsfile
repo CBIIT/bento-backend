@@ -8,7 +8,7 @@ pipeline {
 	extendedChoice(
          name: 'ProjectName',
          defaultValue: 'gmb',
-         description: 'Choose the environment to build',
+         description: 'Choose project',
          type: 'PT_SINGLE_SELECT',
          value: 'gmb' )
     extendedChoice(

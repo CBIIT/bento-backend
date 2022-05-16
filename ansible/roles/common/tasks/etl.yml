@@ -5,15 +5,15 @@
 - name: show workspace
   debug:
     msg: "{{ output.stdout_lines }}"
-    
+
 - name: load config.yml file
   template:
-    dest: "{{workspace}}/etl/{{project_name}}_config.yml"
-    src: "{{workspace}}/etl/{{project_name}}_config.yaml.j2"
+    dest: "{{workspace}}/{{project_name}}_config.yml"
+    src: "{{workspace}}/{{project_name}}_config.yaml.j2"
 
 - name: pip install requirements
   pip:
-    requirements: "{{workspace}}/etl/requirements.txt"
+    requirements: "{{workspace}}/requirements.txt"
     executable: pip3
 
 - name: loader data
@@ -22,7 +22,7 @@
       python3
       {{project_name}}-etl.py 
       {{project_name}}_config.yml
-    chdir: "{{workspace}}/etl"
+    chdir: "{{workspace}}"
   register: etl
 
 - name: show dataloader output

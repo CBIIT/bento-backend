@@ -45,6 +45,8 @@ Indices:
         type: search_as_you_type
       disease_term_gs:
         type: search_as_you_type
+      clinical_trial_id_gs:
+        type: search_as_you_type
     cypher_query: "
       MATCH (s:SUBJECT)-->(ct:CLINICALTRIAL)
       OPTIONAL MATCH (e:ENROLLMENT)-->(s)
@@ -56,6 +58,7 @@ Indices:
       OPTIONAL MATCH (s)<--(f:FILE)
       WITH
         coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id,
+        coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id_gs,
         coalesce(s.PT_ID, 'N/A') AS subject_id,
         coalesce(s.PT_ID, 'N/A') AS subject_id_gs,
         coalesce(s.PT_RACE_CD_1, 'N/A') AS race,
@@ -78,6 +81,7 @@ Indices:
         COLLECT(DISTINCT f.UUID) AS files
       RETURN
         clinical_trial_id,
+        clinical_trial_id_gs,
         subject_id,
         subject_id_gs,
         race,

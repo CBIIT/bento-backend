@@ -103,6 +103,7 @@ type GS_Subject {
     subject_id: String
     registering_institution: String
     disease_term: String
+    clinical_trial_id: String
 }
 
 type GS_File {

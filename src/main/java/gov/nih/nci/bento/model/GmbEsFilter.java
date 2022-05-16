@@ -292,12 +292,14 @@ public class GmbEsFilter implements DataFetcher{
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
-                GS_SEARCH_FIELD, List.of("subject_id_gs", "registering_institution_gs", "disease_term_gs"),
+                GS_SEARCH_FIELD, List.of(
+                        "subject_id_gs", "registering_institution_gs", "disease_term_gs", "clinical_trial_id_gs"),
                 GS_SORT_FIELD, "subject_id",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"subject_id", "subject_id_gs"},
                         new String[]{"registering_institution", "registering_institution_gs"},
-                        new String[]{"disease_term", "disease_term_gs"}
+                        new String[]{"disease_term", "disease_term_gs"},
+                        new String[]{"clinical_trial_id", "clinical_trial_id_gs"}
                 },
                 GS_CATEGORY_TYPE, "subject"
         ));

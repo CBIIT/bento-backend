@@ -12,6 +12,8 @@
   shell:
     cmd: >
       {{ etl_command }}
+    chdir:
+      "{{workspace}}"
   register: etl
 
 - name: show dataloader output

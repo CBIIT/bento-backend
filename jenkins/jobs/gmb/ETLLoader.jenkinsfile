@@ -69,7 +69,7 @@ pipeline {
  			SLACK_URL = "${SLACK_URL}"
  		}
  		when {
- 		    "${params.ETLOperation}" == "Load"
+ 		    expression {"${params.ETLOperation}" == "Load"}
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
@@ -90,7 +90,8 @@ pipeline {
      			SLACK_URL = "${SLACK_URL}"
      		}
      		when {
-     		    "${params.ETLOperation}" == "Transform"
+     		    expression {"${params.ETLOperation}" == "Transform"}
+
      		}
      		steps {
      			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

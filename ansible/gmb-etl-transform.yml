@@ -9,6 +9,6 @@
     - name: perform data transformation
       include_role:
         name: gmb-etl
-        tasks_from: tranform
+        tasks_from: transform
       vars:
         ansible_python_interpreter: /usr/bin/python3

@@ -83,7 +83,7 @@ Indices:
         type: keyword
       trial_arm:
         type: keyword
-      diagnosis:
+      disease:
         type: keyword
       gender:
         type: keyword
@@ -138,7 +138,7 @@ Indices:
         a.pubmed_id AS pubmed_id,
         a.arm_id+'_'+a.arm_drug AS trial_arm,
         a.arm_id AS arm_id,
-        c.disease AS diagnosis,
+        c.disease AS disease,
         c.gender AS gender,
         c.race AS race,
         c.ethnicity AS ethnicity,

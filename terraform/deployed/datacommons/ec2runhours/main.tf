@@ -5,7 +5,7 @@ module "lambda" {
   cloudwatch_event_rule_description = each.value.cloudwatch_event_rule_description
   cloudwatch_event_rule_name = each.value.cloudwatch_event_rule_name
   lambda_function_name = each.value.function_name
-  lambda_function_package_name = each.value.function_package_nane
+  lambda_function_package_name = "${path.module}/${each.value.function_package_nane}"
   region = var.region
   stack_name = var.stack_name
   tags = var.tags

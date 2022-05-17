@@ -17,7 +17,7 @@ variable "functions" {
   description = "functions to be deployed"
   type = map(object({
     function_name = string
-    function_package_nane = string
+    function_package_name = string
     cloudwatch_event_rule_description = string
     cloudwatch_event_rule_name = string
     cloudwatch_event_rule = string

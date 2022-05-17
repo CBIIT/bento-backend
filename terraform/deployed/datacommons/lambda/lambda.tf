@@ -17,7 +17,7 @@ resource "aws_iam_policy_attachment" "lambda_exec_policy_attachment" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  filename = "${path.module}/${var.lambda_function_package_name}"
+  filename = var.lambda_function_package_name
   function_name = "${var.stack_name}-${terraform.workspace}-${var.lambda_function_name}"
   role = aws_iam_role.lambda_role.arn
   handler = "${var.lambda_function_name}.handler"

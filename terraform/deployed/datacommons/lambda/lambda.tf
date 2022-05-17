@@ -23,7 +23,7 @@ resource "aws_lambda_function" "lambda" {
   handler = "${var.lambda_function_name}.handler"
   memory_size = 512
   timeout = 60
-  source_code_hash = filebase64sha256("${path.module}/${var.lambda_function_package_name}")
+  source_code_hash = filebase64sha256(var.lambda_function_package_name)
   runtime = "python3.8"
   tags = var.tags
 }

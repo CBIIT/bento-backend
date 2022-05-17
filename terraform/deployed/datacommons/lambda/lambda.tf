@@ -39,16 +39,16 @@ resource "aws_cloudwatch_event_rule" "event_rule" {
 
 resource "aws_cloudwatch_event_target" "rule_target" {
   for_each = var.functions
-  rule = aws_cloudwatch_event_rule.event_rule[0].name
+  rule = aws_cloudwatch_event_rule.event_rule.name
   target_id = "${var.stack_name}-${terraform.workspace}-${each.value.function_name}"
-  arn = aws_lambda_function.lambda[0].arn
+  arn = aws_lambda_function.lambda.arn
 }
 
 resource "aws_lambda_permission" "cloudwatch_invoke_lambda" {
   for_each = var.functions
   statement_id = "AllowInvocation${each.value.function_name}"
   action = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda[0].function_name
+  function_name = aws_lambda_function.lambda.function_name
   principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.event_rule[0].arn
+  source_arn = aws_cloudwatch_event_rule.event_rule.arn
 }

@@ -1,6 +1,7 @@
 resource "aws_iam_role" "lambda_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_policy.json
   name = "${var.stack_name}-${terraform.workspace}-lambda-role"
+  tags = var.tags
 }
 
 resource "aws_iam_policy" "lambda_iam_policy" {
@@ -24,13 +25,14 @@ resource "aws_lambda_function" "lambda" {
   timeout = 60
   source_code_hash = filebase64sha256("${path.module}/${var.lambda_function_package_name}")
   runtime = "python3.8"
-
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_rule" "event_rule" {
   name = "${var.stack_name}-${terraform.workspace}-${var.cloudwatch_event_rule_name}"
-  description = "start ec2 instances every 7am"
-  schedule_expression = "cron(0 7 ? * MON-FRI *)"
+  description = var.cloudwatch_event_rule_description
+  schedule_expression = var.cloudwatch_event_rule
+  tags = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "rule_target" {

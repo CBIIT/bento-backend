@@ -1,0 +1,112 @@
+pipeline {
+	agent {
+		node {
+			label 'docker-dataloader'
+		}
+	}
+	parameters {
+	extendedChoice(
+         name: 'ProjectName',
+         defaultValue: 'gmb',
+         description: 'Choose project',
+         type: 'PT_SINGLE_SELECT',
+         value: 'gmb' )
+    extendedChoice(
+            name: 'RaveEnvironment',
+            defaultValue: 'uat',
+            description: 'Choose the environment to build',
+            type: 'PT_SINGLE_SELECT',
+            value: 'test,uat,prod' )
+    extendedChoice(
+             name: 'ETLOperation',
+               defaultValue: 'Load',
+               description: 'Choose the type of ETL Operation',
+               type: 'PT_RADIO',
+               value: 'Load,Transform' )
+    string(defaultValue: "bento-rave-etl",
+                    description: 'S3 Bucket ETL',
+                    name: 'S3Bucket')
+    string(defaultValue: "2022-05-13T161413",
+            description: 'S3 Folder to load data from',
+            name: 'S3BucketSubFolder')
+    gitParameter(branchFilter: 'origin/(.*)',
+        defaultValue: 'main',
+        name: 'Tag',
+        type: 'PT_BRANCH_TAG',
+        quickFilterEnabled: false,
+        selectedValue: 'DEFAULT',
+        sortMode: 'ASCENDING_SMART',
+        tagFilter: '*',
+        useRepository: 'https://github.com/CBIIT/gmb-etl')
+  }
+  tools {
+  	maven 'Default'
+    jdk 'Default'
+  }
+
+  stages{
+  	stage('checkout'){
+  		steps {
+  			checkout([$class: 'GitSCM',
+  				branches: [[name: "${params.Tag}"]],
+  				doGenerateSubmoduleConfigurations:
+  				false,
+  				extensions: [],
+  				//[$class: 'RelativeTargetDirectory', relativeTargetDir: 'etl']
+  				submoduleCfg: [],
+                recursiveSubmodules: true,
+  				userRemoteConfigs:
+  				[[url: 'https://github.com/CBIIT/gmb-etl']]])
+          sh 'git submodule update --init'
+  			dir('icdc-devops'){
+  				git branch: 'master',
+    				url: 'https://github.com/CBIIT/icdc-devops.git'
+  			}
+  		}
+  	}
+  	stage('ETL loader'){
+ 		environment {
+ 			SLACK_URL = "${SLACK_URL}"
+ 		}
+ 		when {
+ 		    expression {"${params.ETLOperation}" == "Load"}
+ 		}
+ 		steps {
+ 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 					ansiblePlaybook(
+            			playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-etl.yml',
+            			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+            			extraVars: [
+                          rave_env: "${params.RaveEnvironment}",
+                          project_name: "${params.ProjectName}",
+                          bucket_name : "${params.S3Bucket}",
+                        ],
+            			colorized: true)
+ 			}
+ 		}
+    }
+    stage('ETL Transform'){
+     		environment {
+     			SLACK_URL = "${SLACK_URL}"
+     		}
+     		when {
+     		    expression {"${params.ETLOperation}" == "Transform"}
+
+     		}
+     		steps {
+     			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+     					ansiblePlaybook(
+                			playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-etl-transform.yml',
+                			inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+                			extraVars: [
+                              rave_env: "${params.RaveEnvironment}",
+                              project_name: "${params.ProjectName}",
+                              bucket_name : "${params.S3Bucket}",
+                              s3_bucket_subfolder: "${params.S3BucketSubFolder}",
+                            ],
+                			colorized: true)
+     			}
+     		}
+        }
+ }
+}

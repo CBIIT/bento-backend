@@ -1,0 +1,8 @@
+---
+# vars file for gmb-etl
+rave_env: "{{rave_env}}"
+rave_user: "{{ lookup('amazon.aws.aws_secret', 'rave/{{rave_env}}.rave_user', nested=true, region='us-east-1' ) }}"
+rave_password: "{{ lookup('amazon.aws.aws_secret', 'rave/{{rave_env}}.rave_password', nested=true, region='us-east-1' ) }}"
+bucket_name: "{{ bucket_name | default('bento-rave-etl') }}"
+s3_bucket_subfolder: "{{s3_bucket_subfolder | default('{{project_name}}')}}"
+

@@ -1,0 +1,21 @@
+- name: load config.yml file
+  template:
+    dest: "{{workspace}}/{{project_name}}_config.yml"
+    src: "{{workspace}}/{{project_name}}_config.yaml.j2"
+
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/requirements.txt"
+    executable: pip3
+
+- name: loader data
+  shell:
+    cmd: >
+      {{ etl_command }}
+    chdir:
+      "{{workspace}}"
+  register: etl
+
+- name: show dataloader output
+  debug:
+    msg: "{{etl.stdout_lines}}"

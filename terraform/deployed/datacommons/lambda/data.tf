@@ -14,6 +14,7 @@ data "aws_iam_policy_document" "lambda_assume_policy" {
 
 data "aws_iam_policy_document" "lambda_exec_role_policy" {
   statement {
+    effect = "Allow"
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
@@ -22,5 +23,15 @@ data "aws_iam_policy_document" "lambda_exec_role_policy" {
     resources = [
       "arn:aws:logs:*:*:*"
     ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeInstances",
+      "ec2:StartInstances",
+      "ec2:StopInstances",
+      "ec2:DescribeInstanceStatus"
+    ]
+    resources = ["*"]
   }
 }

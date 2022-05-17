@@ -19,10 +19,6 @@ data "aws_iam_policy_document" "lambda_exec_role_policy" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    principals {
-      identifiers = ["events.amazonaws.com", "delivery.logs.amazonaws.com"]
-      type        = "Service"
-    }
     resources = [
       "arn:aws:logs:*:*:*"
     ]

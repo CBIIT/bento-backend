@@ -11,23 +11,34 @@ variable "region" {
   description = "aws region to deploy"
   type = string
 }
-variable "lambda_function_package_name" {
-  description = "name of the lambda function"
-  type = string
-}
-variable "lambda_function_name" {
-  description = "name of the lambda function"
-  type = string
-}
-variable "cloudwatch_event_rule_name" {
-  description = "cloudwatch event rule name"
-  type = string
-}
-variable "cloudwatch_event_rule" {
-  description = "cloudwatch event rule"
-  type = string
-}
-variable "cloudwatch_event_rule_description" {
-  description = "cloudwatch event rule description"
-  type = string
+#variable "lambda_function_package_name" {
+#  description = "name of the lambda function"
+#  type = string
+#}
+#variable "lambda_function_name" {
+#  description = "name of the lambda function"
+#  type = string
+#}
+#variable "cloudwatch_event_rule_name" {
+#  description = "cloudwatch event rule name"
+#  type = string
+#}
+#variable "cloudwatch_event_rule" {
+#  description = "cloudwatch event rule"
+#  type = string
+#}
+#variable "cloudwatch_event_rule_description" {
+#  description = "cloudwatch event rule description"
+#  type = string
+#}
+
+variable "functions" {
+  description = "functions to be deployed"
+  type = map(object({
+    function_name = string
+    function_package_name = string
+    cloudwatch_event_rule_description = string
+    cloudwatch_event_rule_name = string
+    cloudwatch_event_rule = string
+  }))
 }

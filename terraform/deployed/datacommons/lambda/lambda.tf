@@ -17,34 +17,38 @@ resource "aws_iam_policy_attachment" "lambda_exec_policy_attachment" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  filename = var.lambda_function_package_name
-  function_name = "${var.stack_name}-${terraform.workspace}-${var.lambda_function_name}"
+  for_each = var.functions
+  filename = each.value.function_package_name
+  function_name = "${var.stack_name}-${terraform.workspace}-${each.value.function_name}"
   role = aws_iam_role.lambda_role.arn
-  handler = "${var.lambda_function_name}.handler"
+  handler = "${each.value.function_name}.handler"
   memory_size = 512
   timeout = 60
-  source_code_hash = filebase64sha256(var.lambda_function_package_name)
+  source_code_hash = filebase64sha256(each.value.function_package_name)
   runtime = "python3.8"
   tags = var.tags
 }
 
 resource "aws_cloudwatch_event_rule" "event_rule" {
-  name = "${var.stack_name}-${terraform.workspace}-${var.cloudwatch_event_rule_name}"
-  description = var.cloudwatch_event_rule_description
-  schedule_expression = var.cloudwatch_event_rule
+  for_each = var.functions
+  name = "${var.stack_name}-${terraform.workspace}-${each.value.cloudwatch_event_rule_name}"
+  description = each.value.cloudwatch_event_rule_description
+  schedule_expression = each.value.cloudwatch_event_rule
   tags = var.tags
 }
 
 resource "aws_cloudwatch_event_target" "rule_target" {
-  rule = aws_cloudwatch_event_rule.event_rule.name
-  target_id = "${var.stack_name}-${terraform.workspace}-${var.lambda_function_name}"
-  arn = aws_lambda_function.lambda.arn
+  for_each = var.functions
+  rule = aws_cloudwatch_event_rule.event_rule[0].name
+  target_id = "${var.stack_name}-${terraform.workspace}-${each.value.function_name}"
+  arn = aws_lambda_function.lambda[0].arn
 }
 
 resource "aws_lambda_permission" "cloudwatch_invoke_lambda" {
-  statement_id = "AllowInvocation${var.lambda_function_name}"
+  for_each = var.functions
+  statement_id = "AllowInvocation${each.value.function_name}"
   action = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda.function_name
+  function_name = aws_lambda_function.lambda[0].function_name
   principal = "events.amazonaws.com"
-  source_arn = aws_cloudwatch_event_rule.event_rule.arn
+  source_arn = aws_cloudwatch_event_rule.event_rule[0].arn
 }

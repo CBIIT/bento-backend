@@ -63,6 +63,7 @@
   debug:
     msg: "{{fileout}}"
 
+/*
 - name: list the backup files
   shell:
     "curl -s localhost:7171/backup/list/remote"
@@ -74,6 +75,7 @@
 - name: display the backup files
   debug:
     msg: "{{backups}}"
+*/
 
 - name: download the backup file
   command: curl -s localhost:7171/backup/download/{{backupfile}} -X POST

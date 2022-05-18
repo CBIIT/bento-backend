@@ -140,6 +140,7 @@ public class GmbEsFilter implements DataFetcher{
         data.put("subjectCountBySomaticPathogenicity", getGroupCount("somatic_pathogenicity", SUBJECTS_END_POINT, params));
         data.put("subjectCountByGermlinePathogenicity", getGroupCount("germline_pathogenicity", SUBJECTS_END_POINT, params));
         data.put("subjectCountByFileType", getGroupCount("file_type", FILES_END_POINT, params));
+        data.put("subjectCountByClinicalTrialId", getGroupCount("clinical_trial_id", SUBJECTS_END_POINT, params));
 
         data.put("filterSubjectCountByRace", getGroupCount("race", SUBJECTS_END_POINT, params));
         data.put("filterSubjectCountByDiseaseTerm", getGroupCount("disease_term", SUBJECTS_END_POINT, params));
@@ -156,6 +157,7 @@ public class GmbEsFilter implements DataFetcher{
         data.put("filterSubjectCountBySomaticPathogenicity", getGroupCount("somatic_pathogenicity", SUBJECTS_END_POINT, params));
         data.put("filterSubjectCountByGermlinePathogenicity", getGroupCount("germline_pathogenicity", SUBJECTS_END_POINT, params));
         data.put("filterSubjectCountByFileType", getGroupCount("file_type", FILES_END_POINT, params));
+        data.put("filterSubjectCountByClinicalTrialId", getGroupCount("clinical_trial_id", SUBJECTS_END_POINT, params));
 
         return data;
     }

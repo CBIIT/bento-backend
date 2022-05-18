@@ -117,7 +117,7 @@ Indices:
         type: keyword
       file_size:
         type: keyword
-      trial_id:
+      clinical_trial_id:
         type: keyword
       trial_short_name:
         type: keyword
@@ -188,7 +188,7 @@ Indices:
         f.FILE_FORMAT AS file_format,
         f.FILE_FORMAT AS file_format_gs,
         f.FILE_SIZE AS file_size,
-        ct.CLINICAL_TRIAL_ID AS trial_id,
+        ct.CLINICAL_TRIAL_ID AS clinical_trial_id,
         ct.CLINICAL_TRIAL_ID AS clinical_trial_id_gs,
         ct.CLINICAL_TRIAL_SHORT_NAME AS trial_short_name,
         s.ARM AS arm,

@@ -18,6 +18,7 @@ type SearchResultES {
     subjectCountBySomaticPathogenicity: [GroupCountES]
     subjectCountByGermlinePathogenicity: [GroupCountES]
     subjectCountByFileType: [GroupCountES]
+    subjectCountByClinicalTrialId: [GroupCountES]
 
     filterSubjectCountByRace: [GroupCountES]
     filterSubjectCountByDiseaseTerm: [GroupCountES]
@@ -34,6 +35,7 @@ type SearchResultES {
     filterSubjectCountBySomaticPathogenicity: [GroupCountES]
     filterSubjectCountByGermlinePathogenicity: [GroupCountES]
     filterSubjectCountByFileType: [GroupCountES]
+    filterSubjectCountByClinicalTrialId: [GroupCountES]
 }
 
 type SubjectIds{
@@ -168,7 +170,8 @@ type QueryType {
         outcome: [String] = [],
         somatic_pathogenicity: [String] = [],
         germline_pathogenicity: [String] = [],
-        file_type: [String] = []
+        file_type: [String] = [],
+        clinical_trial_id: [String] = []
     ): SearchResultES
 
     subjectOverview(
@@ -187,6 +190,7 @@ type QueryType {
         outcome: [String] = [],
         somatic_pathogenicity: [String] = [],
         germline_pathogenicity: [String] = [],
+        clinical_trial_id: [String] = [],
         file_type: [String] = []
         order_by: String = "",
         sort_direction: String = "ASC",
@@ -212,6 +216,7 @@ type QueryType {
         outcome: [String] = [],
         somatic_pathogenicity: [String] = [],
         germline_pathogenicity: [String] = [],
+        clinical_trial_id: [String] = [],
         file_type: [String] = []
         order_by: String = "",
         sort_direction: String = "ASC",

@@ -18,6 +18,7 @@ query:
           type: term
           option: integer
     resultType: global
+
   - name: globalSearchSample
     index:
       - samples
@@ -33,6 +34,7 @@ query:
         - field: tissue_type_gs
           type: wildcard
     resultType: global
+
   - name: globalSearchProgram
     index:
       - programs
@@ -48,6 +50,7 @@ query:
         - field: program_name
           type: wildcard
     resultType: global
+
   - name: globalSearchStudy
     index:
       - studies
@@ -63,6 +66,7 @@ query:
         - field: study_type
           type: wildcard
     resultType: global
+
   - name: globalSearchFile
     index:
       - files
@@ -79,6 +83,7 @@ query:
         - field: file_format_gs
           type: wildcard
     resultType: global
+
   # About Page
   # Always Set offset= 0 and default-size=10000
   - name: globalSearchAbout
@@ -97,6 +102,7 @@ query:
       preTag: $
       postTag: $
     resultType: global_about
+
   # Multiple ES Index Search
   # Always Set offset= 0 and default-size=10000
   - name: globalSearchModel

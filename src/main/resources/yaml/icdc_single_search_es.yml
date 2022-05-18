@@ -5,9 +5,9 @@
   # resultType: Declare Desired Return Type
 
 # Filter Type
-  # - default
+  # - default(filter query in Elasticsearch triggered to filter by graphQL input arguments)
     # Required: selectedField
-  # - table
+  # - table(including pagination)
     # Required: none
     # Optional: defaultSortField, alternativeSort
   # - aggregation
@@ -67,6 +67,7 @@ query:
       type: table
       defaultSortField: case_id
     resultType: default
+
 #    Change Elasticsearch Schema
   - name: sampleOverview
     index:
@@ -75,6 +76,7 @@ query:
       type: table
       defaultSortField: sample_ids
     resultType: default
+
   - name: fileOverview
     index:
       - files
@@ -87,6 +89,7 @@ query:
       dynamicField: case_id
       targetField: all_case_ids
     resultType: default
+
   - name: filesInListDesc
     index:
       - files
@@ -95,6 +98,7 @@ query:
       sortDirection: desc
       defaultSortField: file_name
     resultType: default
+
   - name: filesInList
     index:
       - files

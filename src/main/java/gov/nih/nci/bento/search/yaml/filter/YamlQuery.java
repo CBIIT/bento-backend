@@ -8,7 +8,7 @@ public class YamlQuery {
     private String name;
     private String[] index;
     private String resultType;
-    private YamlFilterType filterType;
+    private YamlFilter filter;
     private YamlDynamicFilter dynamicFilter;
     private YamlHighlight highlight;
 }

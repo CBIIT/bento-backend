@@ -1,10 +1,10 @@
-groups:
+queries:
   - name: searchSubjects
     query:
     - name: numberOfPrograms
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
 #        selectedField: program
         selectedField: programs
@@ -12,7 +12,7 @@ groups:
     - name: numberOfStudies
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: studies
 #        selectedField: study_info
@@ -20,14 +20,14 @@ groups:
     - name: numberOfSubjects
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: subject_id
       resultType: int_total_aggregation
     - name: numberOfSamples
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: sample_ids
 #        selectedField: sample_id
@@ -39,14 +39,14 @@ groups:
     - name: numberOfLabProcedures
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: lab_procedures
       resultType: int_total_aggregation
     - name: numberOfFiles
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: file_ids
 #        selectedField: file_id
@@ -57,7 +57,7 @@ groups:
     - name: subjectCountByProgram
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: programs
 #        selectedField: program
@@ -65,7 +65,7 @@ groups:
     - name: filterSubjectCountByProgram
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         # Filter query without selected field
 #        selectedField: program
@@ -75,7 +75,7 @@ groups:
     - name: subjectCountByStudy
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         # Filter query without selected field
         selectedField: studies
@@ -84,7 +84,7 @@ groups:
     - name: filterSubjectCountByStudy
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         # Filter query without selected field
         selectedField: studies
@@ -94,7 +94,7 @@ groups:
     - name: subjectCountByDiagnoses
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: diagnoses
 #        selectedField: diagnosis
@@ -102,7 +102,7 @@ groups:
     - name: filterSubjectCountByDiagnoses
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         # Filter query without selected field
         selectedField: diagnoses
@@ -112,7 +112,7 @@ groups:
     - name: subjectCountByRecurrenceScore
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: rc_scores
 #        selectedField: recurrence_score
@@ -120,7 +120,7 @@ groups:
     - name: filterSubjectCountByRecurrenceScore
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         # Filter query without selected field
         selectedField: rc_scores
@@ -130,7 +130,7 @@ groups:
     - name: subjectCountByTumorSize
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: tumor_sizes
 #        selectedField: tumor_size
@@ -138,7 +138,7 @@ groups:
     - name: filterSubjectCountByTumorSize
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         # Filter query without selected field
         selectedField: tumor_sizes
@@ -148,7 +148,7 @@ groups:
     - name: subjectCountByTumorGrade
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: tumor_grade
         #        selectedField: tumor_grade
@@ -156,7 +156,7 @@ groups:
     - name: filterSubjectCountByTumorGrade
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: tumor_grade
         #        selectedField: tumor_grade
@@ -165,14 +165,14 @@ groups:
     - name: subjectCountByErStatus
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: er_status
       resultType: aggregation
     - name: filterSubjectCountByErStatus
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: er_status
         filter: true
@@ -180,14 +180,14 @@ groups:
     - name: subjectCountByPrStatus
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: pr_status
       resultType: aggregation
     - name: filterSubjectCountByPrStatus
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: pr_status
         filter: true
@@ -195,7 +195,7 @@ groups:
     - name: subjectCountByChemotherapyRegimen
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: chemo_regimen
 #        selectedField: chemotherapy
@@ -203,7 +203,7 @@ groups:
     - name: filterSubjectCountByChemotherapyRegimen
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: chemo_regimen
         #        selectedField: chemotherapy
@@ -212,7 +212,7 @@ groups:
     - name: subjectCountByEndocrineTherapy
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: endo_therapies
         #        selectedField: endocrine_therapy
@@ -220,7 +220,7 @@ groups:
     - name: filterSubjectCountByEndocrineTherapy
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: endo_therapies
         #        selectedField: endocrine_therapy
@@ -229,7 +229,7 @@ groups:
     - name: subjectCountByMenopauseStatus
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: meno_status
         #        selectedField: menopause_status
@@ -237,7 +237,7 @@ groups:
     - name: filterSubjectCountByMenopauseStatus
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: meno_status
         #        selectedField: menopause_status
@@ -246,7 +246,7 @@ groups:
     - name: subjectCountByTissueType
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: tissue_type
         nestedPath: sample_info
@@ -254,7 +254,7 @@ groups:
     - name: filterSubjectCountByTissueType
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         filter: true
         selectedField: tissue_type
@@ -266,7 +266,7 @@ groups:
     - name: subjectCountByTissueComposition
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: composition
         nestedPath: sample_info
@@ -274,7 +274,7 @@ groups:
     - name: filterSubjectCountByTissueComposition
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         filter: true
         selectedField: composition
@@ -286,7 +286,7 @@ groups:
     - name: subjectCountByFileAssociation
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: association
         nestedPath: file_info
@@ -294,7 +294,7 @@ groups:
     - name: filterSubjectCountByFileAssociation
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: association
         filter: true
@@ -306,7 +306,7 @@ groups:
     - name: subjectCountByFileType
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: file_type
         nestedPath: file_info
@@ -314,7 +314,7 @@ groups:
     - name: filterSubjectCountByFileType
       index:
         - subjects
-      filterType:
+      filter:
         type: nested
         selectedField: file_type
         filter: true
@@ -326,7 +326,7 @@ groups:
     - name: armsByPrograms
       index:
         - subjects
-      filterType:
+      filter:
         type: sub_aggregation
         selectedField: programs
 #        selectedField: program
@@ -335,14 +335,14 @@ groups:
     - name: subjectCountByLabProcedures
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: lab_procedures
       resultType: aggregation
     - name: filterSubjectCountByLabProcedures
       index:
         - subjects
-      filterType:
+      filter:
         type: aggregation
         selectedField: lab_procedures
         filter: true
@@ -350,7 +350,7 @@ groups:
     - name: filterSubjectCountByAge
       index:
         - subjects
-      filterType:
+      filter:
         type: range
         selectedField: age_at_index
         filter: true

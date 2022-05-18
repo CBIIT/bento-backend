@@ -47,7 +47,7 @@ public class YamlQueryFactory {
         // Set Group Request API
         Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
         GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_BENTO.GROUP).getInputStream());
-        groupTypeQuery.getGroups().forEach(group->{
+        groupTypeQuery.getQueries().forEach(group->{
             String queryName = group.getName();
             result.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
         });
@@ -73,7 +73,7 @@ public class YamlQueryFactory {
         // Set Group Request API
         Yaml groupYaml = new Yaml(new Constructor(GroupTypeQuery.class));
         GroupTypeQuery groupTypeQuery = groupYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_ICDC.GROUP).getInputStream());
-        groupTypeQuery.getGroups().forEach(group->{
+        groupTypeQuery.getQueries().forEach(group->{
             String queryName = group.getName();
             result.put(queryName, env -> createGroupYamlQuery(group, esService.CreateQueryParam(env)));
         });
@@ -126,9 +126,9 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.RESULT_TYPE.INT_TOTAL_COUNT:
                 return typeMapper.getIntTotal();
             case Const.YAML_QUERY.RESULT_TYPE.STRING_LIST:
-                return typeMapper.getStrList(query.getFilterType().getSelectedField());
+                return typeMapper.getStrList(query.getFilter().getSelectedField());
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL_ABOUT:
-                return typeMapper.getHighLightFragments(query.getFilterType().getSelectedField(),
+                return typeMapper.getHighLightFragments(query.getFilter().getSelectedField(),
                         (source, text) -> Map.of(
                                 Const.BENTO_FIELDS.TYPE, Const.BENTO_FIELDS.ABOUT,
                                 Const.BENTO_FIELDS.PAGE, source.get(Const.BENTO_FIELDS.PAGE),
@@ -221,7 +221,7 @@ public class YamlQueryFactory {
 
     private SearchSourceBuilder getQueryFilter(QueryParam param, YamlQuery query) {
         // Set Arguments
-        YamlFilterType filterType = query.getFilterType();
+        YamlFilter filterType = query.getFilter();
         Map<String, Object> args = getDynamicFilter(param, query);
         switch (filterType.getType()) {
             case Const.YAML_QUERY.FILTER.AGGREGATION:
@@ -324,16 +324,16 @@ public class YamlQueryFactory {
                                 createGlobalConditionalQueries(param, query))
                 );
         // Set Sort
-        if (query.getFilterType().getDefaultSortField() !=null) builder.sort(query.getFilterType().getDefaultSortField(), SortOrder.DESC);
+        if (query.getFilter().getDefaultSortField() !=null) builder.sort(query.getFilter().getDefaultSortField(), SortOrder.DESC);
         // Set Highlight Query
         setGlobalHighlightQuery(query, builder);
         return builder;
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
-        if (query.getFilterType().getOptionalQuery() == null) return new ArrayList<>();
+        if (query.getFilter().getOptionalQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery() ;
+        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilter().getOptionalQuery() ;
         AtomicReference<String> filterString = new AtomicReference<>("");
         optionalQuerySets.forEach(option-> {
             if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
@@ -370,7 +370,7 @@ public class YamlQueryFactory {
 
     private BoolQueryBuilder createGlobalQuerySets(QueryParam param, YamlQuery query) {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilterType().getQuery();
+        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilter().getQuery();
         // Add Should Query
         globalQuerySets.forEach(globalQuery -> {
             switch (globalQuery.getType()) {
@@ -392,8 +392,8 @@ public class YamlQueryFactory {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilterType().getPrioritySort() == null) return orderKey;
-        Map<String, String> prioritySortMap = query.getFilterType().getPrioritySort();
+        if (query.getFilter().getPrioritySort() == null) return orderKey;
+        Map<String, String> prioritySortMap = query.getFilter().getPrioritySort();
         return prioritySortMap.getOrDefault(orderKey, "");
     }
 }

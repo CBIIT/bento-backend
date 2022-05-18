@@ -1,7 +1,7 @@
 # Query Parameters Required
   # index: Declare Elasticsearch Index Name
   # name: Declare GraphQl Query Name
-  # filterType: Declare Type of GraphQl Query
+  # filter: Declare Type of GraphQl Query
   # resultType: Declare Desired Return Type
 
 # Filter Type
@@ -79,7 +79,7 @@ query:
   - name: subjectOverview
     index:
       - subjects
-    filterType:
+    filter:
       type: table
       defaultSortField: subject_id_num
       # Declare alternative sort: key, value
@@ -89,7 +89,7 @@ query:
   - name: sampleOverview
     index:
       - samples
-    filterType:
+    filter:
       type: table
       defaultSortField: sample_id_num
       # Declare alternative sort: key, value
@@ -100,7 +100,7 @@ query:
   - name: fileOverview
     index:
       - files
-    filterType:
+    filter:
       type: table
       defaultSortField: file_name
       prioritySort:
@@ -110,7 +110,7 @@ query:
   - name: fileIDsFromList
     index:
       - files
-    filterType:
+    filter:
       type: default
 #      selectedField: file_id
       selectedField: file_ids
@@ -124,7 +124,7 @@ query:
   - name: filesInList
     index:
       - files
-    filterType:
+    filter:
       type: table
       defaultSortField: file_name
       # Return All Documents If Fields Contained Empty String
@@ -134,7 +134,7 @@ query:
   - name: findSubjectIdsInList
     index:
       - subjects
-    filterType:
+    filter:
       type: default
       caseInSensitive: true
       size: 10000

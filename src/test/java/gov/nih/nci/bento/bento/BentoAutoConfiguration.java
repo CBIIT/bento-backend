@@ -7,7 +7,7 @@ import gov.nih.nci.bento.search.query.filter.*;
 import gov.nih.nci.bento.search.yaml.GroupTypeQuery;
 import gov.nih.nci.bento.search.yaml.SingleTypeQuery;
 import gov.nih.nci.bento.search.yaml.filter.YamlQuery;
-import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
+import gov.nih.nci.bento.search.yaml.filter.YamlFilter;
 import gov.nih.nci.bento.search.yaml.filter.YamlGlobalFilterType;
 import gov.nih.nci.bento.search.yaml.filter.YamlHighlight;
 import gov.nih.nci.bento.search.result.TypeMapper;
@@ -64,7 +64,7 @@ public class BentoAutoConfiguration {
         GroupTypeQuery groupTypeQuery = yaml.load(new ClassPathResource(YAML_QUERY.FILE_NAMES_BENTO.GROUP).getInputStream());
         Map<String, DataFetcher> groupQueryMap = new HashMap<>();
 
-        groupTypeQuery.getGroups().forEach(group->{
+        groupTypeQuery.getQueries().forEach(group->{
             String queryName = group.getName();
             groupQueryMap.put(queryName, env -> createGroupQuery(group, esService.CreateQueryParam(env)));
         });
@@ -109,7 +109,7 @@ public class BentoAutoConfiguration {
 
     private SearchSourceBuilder getSourceBuilder(QueryParam param, YamlQuery query) {
         // Set Arguments
-        YamlFilterType filterType = query.getFilterType();
+        YamlFilter filterType = query.getFilter();
         switch (filterType.getType()) {
             case YAML_QUERY.FILTER.AGGREGATION:
                 return new AggregationFilter(
@@ -168,8 +168,8 @@ public class BentoAutoConfiguration {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilterType().getPrioritySort() == null) return orderKey;
-        Map<String, String> prioritySortMap = query.getFilterType().getPrioritySort();
+        if (query.getFilter().getPrioritySort() == null) return orderKey;
+        Map<String, String> prioritySortMap = query.getFilter().getPrioritySort();
         return prioritySortMap.getOrDefault(orderKey, "");
     }
 
@@ -185,7 +185,7 @@ public class BentoAutoConfiguration {
                                 createGlobalConditionalQueries(param, query))
                 );
         // Set Sort
-        if (query.getFilterType().getDefaultSortField() !=null) builder.sort(query.getFilterType().getDefaultSortField(), SortOrder.DESC);
+        if (query.getFilter().getDefaultSortField() !=null) builder.sort(query.getFilter().getDefaultSortField(), SortOrder.DESC);
         // Set Highlight Query
         setGlobalHighlightQuery(query, builder);
         return builder;
@@ -206,7 +206,7 @@ public class BentoAutoConfiguration {
 
     private BoolQueryBuilder createGlobalQuerySets(QueryParam param, YamlQuery query) {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilterType().getQuery();
+        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilter().getQuery();
         // Add Should Query
         globalQuerySets.forEach(globalQuery -> {
 
@@ -228,9 +228,9 @@ public class BentoAutoConfiguration {
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
-        if (query.getFilterType().getOptionalQuery() == null) return new ArrayList<>();
+        if (query.getFilter().getOptionalQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilterType().getOptionalQuery();
+        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilter().getOptionalQuery();
         AtomicReference<String> filterString = new AtomicReference<>("");
         optionalQuerySets.forEach(option-> {
 
@@ -290,7 +290,7 @@ public class BentoAutoConfiguration {
             case YAML_QUERY.RESULT_TYPE.INT_TOTAL_COUNT:
                 return typeMapper.getIntTotal();
             case YAML_QUERY.RESULT_TYPE.STRING_LIST:
-                return typeMapper.getStrList(query.getFilterType().getSelectedField());
+                return typeMapper.getStrList(query.getFilter().getSelectedField());
             case YAML_QUERY.RESULT_TYPE.GLOBAL_ABOUT:
                 return typeMapper.getHighLightFragments(Const.BENTO_FIELDS.CONTENT_PARAGRAPH,
                         (source, text) -> Map.of(

@@ -1,7 +1,7 @@
 # Query Parameters Required
   # index: Declare Elasticsearch Index Name
   # name: Declare GraphQl Query Name
-  # filterType: Declare Type of GraphQl Query
+  # filter: Declare Type of GraphQl Query
   # resultType: Declare Desired Return Type
 
 # Filter Type
@@ -65,7 +65,7 @@ query:
   - name: caseOverview
     index:
       - cases
-    filterType:
+    filter:
       type: table
       defaultSortField: case_id
     resultType: default
@@ -73,14 +73,14 @@ query:
   - name: sampleOverview
     index:
       - samples
-    filterType:
+    filter:
       type: table
       defaultSortField: sample_ids
     resultType: default
   - name: fileOverview
     index:
       - files
-    filterType:
+    filter:
       type: table
       defaultSortField: file_name
     dynamicFilter:
@@ -92,7 +92,7 @@ query:
   - name: filesInListDesc
     index:
       - files
-    filterType:
+    filter:
       type: table
       sortDirection: desc
       defaultSortField: file_name
@@ -100,7 +100,7 @@ query:
   - name: filesInList
     index:
       - files
-    filterType:
+    filter:
       type: table
       defaultSortField: file_name
     resultType: default

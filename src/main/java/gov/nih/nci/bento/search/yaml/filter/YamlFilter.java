@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Data
-public class YamlFilterType {
+public class YamlFilter {
     private String type;
     private String defaultSortField;
     private String selectedField;

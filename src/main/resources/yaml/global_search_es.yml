@@ -2,7 +2,7 @@ query:
   - name: globalSearchSubject
     index:
       - subjects
-    filterType:
+    filter:
       type: global
       # Default Sort
       defaultSortField: subject_id_num
@@ -21,7 +21,7 @@ query:
   - name: globalSearchSample
     index:
       - samples
-    filterType:
+    filter:
       type: global
       # Default Sort
       defaultSortField: subject_id_num
@@ -36,7 +36,7 @@ query:
   - name: globalSearchProgram
     index:
       - programs
-    filterType:
+    filter:
       type: global
       # Default Sort
       defaultSortField: program_id_kw
@@ -51,7 +51,7 @@ query:
   - name: globalSearchStudy
     index:
       - studies
-    filterType:
+    filter:
       type: global
       # Default Sort
       defaultSortField: study_id_kw
@@ -66,7 +66,7 @@ query:
   - name: globalSearchFile
     index:
       - files
-    filterType:
+    filter:
       type: global
       # Default Sort
       defaultSortField: file_id_num
@@ -84,7 +84,7 @@ query:
   - name: globalSearchAbout
     index:
       - about_page
-    filterType:
+    filter:
       type: global
       # Default Sort
       selectedField: content.paragraph
@@ -104,7 +104,7 @@ query:
       - model_properties
       - model_values
       - model_nodes
-    filterType:
+    filter:
       type: global
       # Default Sort
 #      selectedField:

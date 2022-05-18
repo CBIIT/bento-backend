@@ -11,17 +11,17 @@ public class Const {
     public static class YAML_QUERY {
 
         public static class FILE_NAMES_BENTO {
-            public static final String SINGLE = "yaml/single_query.yml";
-            public static final String GROUP = "yaml/group_query.yml";
-            public static final String GLOBAL = "yaml/global_query.yml";
+            public static final String SINGLE = "yaml/single_search_es.yml";
+            public static final String GROUP = "yaml/facet_search_es.yml";
+            public static final String GLOBAL = "yaml/global_search_es.yml";
             public static final String TEST = "yaml/test_es_query.yml";
 
         }
 
         public static class FILE_NAMES_ICDC {
-            public static final String SINGLE = "yaml/icdc_single_query.yml";
-            public static final String GROUP = "yaml/icdc_group_query.yml";
-            public static final String GLOBAL = "yaml/icdc_global_query.yml";
+            public static final String SINGLE = "yaml/icdc_single_search_es.yml";
+            public static final String GROUP = "yaml/icdc_facet_search_es.yml";
+            public static final String GLOBAL = "yaml/icdc_global_search_es.yml";
             public static final String TEST = "yaml/icdc_test_es_query.yml";
         }
 

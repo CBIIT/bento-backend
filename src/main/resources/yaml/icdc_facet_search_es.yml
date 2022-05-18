@@ -1,10 +1,10 @@
-groups:
+queries:
   - name: searchCases
     query:
     - name: numberOfStudies
       index:
         - cases
-      filterType:
+      filter:
         # Get total number of documents in ES index
         selectedField: study
         type: aggregation
@@ -12,21 +12,21 @@ groups:
     - name: numberOfCases
       index:
         - cases
-      filterType:
+      filter:
         # Get total number of documents in ES index
         type: number_of_docs
       resultType: int_total_count
     - name: numberOfSamples
       index:
         - samples
-      filterType:
+      filter:
         # Get total number of documents in ES index
         type: number_of_docs
       resultType: int_total_count
     - name: numberOfFiles
       index:
         - files
-      filterType:
+      filter:
         # Get total number of documents in ES index
         type: number_of_docs
       dynamicFilter:
@@ -39,7 +39,7 @@ groups:
     - name: filterCaseCountByStudyCode
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: study_code
@@ -49,7 +49,7 @@ groups:
     - name: numberOfStudyFiles
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         selectedField: study_files
       dynamicFilter:
@@ -61,7 +61,7 @@ groups:
     - name: numberOfPrograms
       index:
         - cases
-      filterType:
+      filter:
         type: nested
         selectedField: program
         nestedFields:
@@ -71,14 +71,14 @@ groups:
     - name: numberOfAliquots
       index:
         - cases
-      filterType:
+      filter:
         # Get total number of documents in ES index
         type: number_of_docs
       resultType: empty
     - name: volumeOfData
       index:
         - files
-      filterType:
+      filter:
         type: sum
         selectedField: file_size
       dynamicFilter:
@@ -90,28 +90,28 @@ groups:
     - name: caseCountByGender
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: sex
       resultType: icdc_aggregation
     - name: caseCountByBreed
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: breed
       resultType: icdc_aggregation
     - name: caseCountByBiobank
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: biobank
       resultType: icdc_aggregation
     - name: filterCaseCountByBiobank
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: biobank
@@ -119,28 +119,28 @@ groups:
     - name: caseCountByNeuteredStatus
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: neutered_status
       resultType: icdc_aggregation
     - name: caseCountByStageOfDisease
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: stage_of_disease
       resultType: icdc_aggregation
     - name: caseCountByDiseaseSite
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: disease_site
       resultType: icdc_aggregation
     - name: caseCountByDiagnosis
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: diagnosis
       resultType: icdc_aggregation
@@ -148,7 +148,7 @@ groups:
     - name: filterCaseCountByProgram
       index:
         - cases
-      filterType:
+      filter:
         type: nested
         selectedField: program
         filter: true
@@ -159,7 +159,7 @@ groups:
     - name: filterCaseCountByStudyType
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: study_type
@@ -167,7 +167,7 @@ groups:
     - name: filterCaseCountByDiagnosis
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: diagnosis
@@ -175,7 +175,7 @@ groups:
     - name: filterCaseCountByBreed
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: breed
@@ -183,7 +183,7 @@ groups:
     - name: filterCaseCountByDiseaseSite
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: disease_site
@@ -191,7 +191,7 @@ groups:
     - name: filterCaseCountByStageOfDisease
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: stage_of_disease
@@ -199,7 +199,7 @@ groups:
     - name: filterCaseCountByResponseToTreatment
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: response_to_treatment
@@ -207,7 +207,7 @@ groups:
     - name: filterCaseCountBySex
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: sex
@@ -215,7 +215,7 @@ groups:
     - name: filterCaseCountByNeuteredStatus
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: neutered_status
@@ -223,7 +223,7 @@ groups:
     - name: filterCaseCountBySampleType
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: sample_type
@@ -231,7 +231,7 @@ groups:
     - name: filterCaseCountBySamplePathology
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: sample_pathology
@@ -239,7 +239,7 @@ groups:
     - name: filterCaseCountBySampleSite
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: sample_site
@@ -247,7 +247,7 @@ groups:
     - name: filterCaseCountByFileAssociation
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         selectedField: file_association
         filter: true
@@ -260,7 +260,7 @@ groups:
     - name: filterCaseCountByFileType
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         selectedField: file_type
         filter: true
@@ -273,7 +273,7 @@ groups:
     - name: filterCaseCountByFileFormat
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         selectedField: file_format
         filter: true
@@ -286,7 +286,7 @@ groups:
     - name: filterCaseCountByStudyParticipation
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         filter: true
         selectedField: study_participation
@@ -294,7 +294,7 @@ groups:
     - name: caseCountByProgram
       index:
         - cases
-      filterType:
+      filter:
         type: nested
         selectedField: program
         nestedPath: program_info
@@ -304,35 +304,35 @@ groups:
     - name: caseCountByStudyCode
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: study_code
       resultType: icdc_aggregation
     - name: caseCountByStudyType
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: study_type
       resultType: icdc_aggregation
     - name: caseCountByStudyParticipation
       index:
         - cases
-      filterType:
+      filter:
         type: aggregation
         selectedField: study_participation
       resultType: icdc_aggregation
     - name: caseCountByFileFormat
       index:
         - files
-      filterType:
+      filter:
         type: aggregation
         selectedField: file_format
       resultType: icdc_aggregation
     - name: programsAndStudies
       index:
         - cases
-      filterType:
+      filter:
         type: sub_aggregation
         selectedField: program
         #        selectedField: program

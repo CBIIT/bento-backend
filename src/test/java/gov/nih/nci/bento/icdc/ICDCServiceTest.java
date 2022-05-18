@@ -2,22 +2,13 @@ package gov.nih.nci.bento.icdc;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.MultipleRequests;
-import gov.nih.nci.bento.classes.QueryResult;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
-import gov.nih.nci.bento.search.query.filter.NestedFilter;
-import gov.nih.nci.bento.search.query.filter.SumFilter;
 import gov.nih.nci.bento.search.result.TypeMapperImpl;
-import gov.nih.nci.bento.search.yaml.filter.YamlFilterType;
 import gov.nih.nci.bento.service.ESServiceImpl;
-import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,12 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static gov.nih.nci.bento.constants.Const.ICDC_FIELDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 
 @RunWith( SpringRunner.class )
 @SpringBootTest

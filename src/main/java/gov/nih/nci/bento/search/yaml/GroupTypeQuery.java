@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class GroupTypeQuery {
 
-    private List<Group> groups;
+    private List<Group> queries;
 
     @Data
     public static class Group {

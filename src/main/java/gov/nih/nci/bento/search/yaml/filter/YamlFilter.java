@@ -17,21 +17,21 @@ public class YamlFilter {
     private Set<String> nestedFields;
     private String sortDirection;
     private boolean filter;
-    private boolean caseInSensitive;
+    private boolean caseInsensitive;
     private int size;
-    private Map<String, String> prioritySort;
-    private Set<String> returnAllFields = new HashSet<>();
+    private Map<String, String> alternativeSort;
+    private Set<String> returnAllParameters = new HashSet<>();
 
     // Global Query Sets
     private List<YamlGlobalFilterType.GlobalQuerySet> query;
     // Desired type search query; boolean, integer
-    private List<YamlGlobalFilterType.GlobalQuerySet> optionalQuery;
+    private List<YamlGlobalFilterType.GlobalQuerySet> typeQuery;
 
     @Data
     public static  class GlobalQuerySet {
         private String field;
         private String type;
         private String option;
-        private boolean caseInSensitive;
+        private boolean caseInsensitive;
     }
 }

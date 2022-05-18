@@ -9,11 +9,11 @@ query:
       query:
         - field: subject_id
           type: wildcard
-          caseInSensitive: true
+          caseInsensitive: true
         - field: diagnosis_gs
           type: wildcard
-          caseInSensitive: true
-      optionalQuery:
+          caseInsensitive: true
+      typeQuery:
         - field: age_at_index
           type: term
           option: integer
@@ -75,7 +75,7 @@ query:
           type: wildcard
         - field: file_name
           type: wildcard
-          caseInSensitive: true
+          caseInsensitive: true
         - field: file_format_gs
           type: wildcard
     resultType: global
@@ -119,7 +119,7 @@ query:
           type: term
         - field: node_name
           type: term
-      optionalQuery:
+      typeQuery:
         - field: property_required
           type: match
           option: boolean

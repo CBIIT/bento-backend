@@ -25,14 +25,14 @@ public class BentoQueryFactory extends QueryFactory {
             if (args.get(key) instanceof String) {
                 String val = (String) args.get(key);
                 if (!val.equals("")) {
-                    QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(List.of(val), key) : QueryBuilders.termQuery(key, args.get(key));
+                    QueryBuilder builder = filterParam.isCaseInsensitive() ? getCaseInsensitiveQuery(List.of(val), key) : QueryBuilders.termQuery(key, args.get(key));
                     boolBuilder.filter(builder);
                 }
             } else {
                 List<String> list = (List<String>) args.get(key);
                 // Skip to Filter Nested Fields
                 if (list.size() > 0 && !filterParam.getNestedFields().contains(key)) {
-                    QueryBuilder builder = filterParam.isCaseInSensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
+                    QueryBuilder builder = filterParam.isCaseInsensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
                     boolBuilder.filter(builder);
                 }
             }

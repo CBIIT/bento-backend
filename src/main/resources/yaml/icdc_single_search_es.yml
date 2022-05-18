@@ -9,12 +9,10 @@
     # Required: selectedField
   # - table
     # Required: none
-    # Optional: defaultSortField, prioritySort
+    # Optional: defaultSortField, alternativeSort
   # - aggregation
     # Required: selectedField
     # Optional: filter
-  # - number_of_docs
-    # Required: none
   # - range
     # Required: selectedField
     # Optional: filter
@@ -25,7 +23,7 @@
       # query
         # Required: field, type
           # type includes elements with term, match, and wildcard
-    # Optional: optionalQuery
+    # Optional: typeQuery
       # query: same rules applied as required above
 
 # Return Type
@@ -60,7 +58,7 @@
   # global <-> global, global_multi_models
 
 # Detailed Explanation
-  # prioritySort: sort desired field alternatively, especially sorting texts containing number
+  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
 query:
   - name: caseOverview
     index:

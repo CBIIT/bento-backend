@@ -5,7 +5,7 @@ import gov.nih.nci.bento.classes.TableParam;
 import gov.nih.nci.bento.search.query.QueryFactory;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
-import static gov.nih.nci.bento.utility.ElasticUtil.getPrioritySortType;
+import static gov.nih.nci.bento.utility.ElasticUtil.getAlternativeSortType;
 import static gov.nih.nci.bento.utility.ElasticUtil.getSortDirection;
 
 public class TableFilter extends AbstractFilter {
@@ -23,7 +23,7 @@ public class TableFilter extends AbstractFilter {
                 )
                 .from(tableParam.getOffSet())
                 .sort(
-                        getPrioritySortType(param),
+                        getAlternativeSortType(param),
                         getSortDirection(param))
                 .size(tableParam.getPageSize());
     }

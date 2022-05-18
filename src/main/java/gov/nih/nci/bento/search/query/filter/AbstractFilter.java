@@ -55,7 +55,7 @@ public abstract class AbstractFilter {
         TableParam tableParam = param.getTableParam();
         if (tableParam !=null) {
             builder.size(tableParam.getPageSize());
-            builder.sort(ElasticUtil.getPrioritySortType(param),
+            builder.sort(ElasticUtil.getAlternativeSortType(param),
                     getSortDirection(param));
             builder.from(tableParam.getOffSet());
         }
@@ -75,12 +75,12 @@ public abstract class AbstractFilter {
     }
 
     private boolean isDesiredFieldsExisted(Map<String, Object> args, FilterParam param) {
-        Set<String> conditionFieldSet = param.getReturnAllFields();
+        Set<String> conditionFieldSet = param.getReturnAllParameters();
         return conditionFieldSet != null && conditionFieldSet.size() > 0 && conditionFieldSet.stream().allMatch(item->args.containsKey(item));
     }
 
     private List<List<String>> fillRequiredElements(Map<String, Object> args, FilterParam param) {
-        Set<String> conditionFieldSet = param.getReturnAllFields();
+        Set<String> conditionFieldSet = param.getReturnAllParameters();
         List<List<String>> values = new ArrayList<>();
         if (conditionFieldSet == null) return values;
         args.forEach((k, v) -> {

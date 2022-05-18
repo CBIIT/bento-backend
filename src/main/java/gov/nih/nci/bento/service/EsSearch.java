@@ -6,12 +6,11 @@ import gov.nih.nci.bento.search.result.TypeMapper;
 import graphql.schema.DataFetchingEnvironment;
 import org.elasticsearch.action.search.SearchRequest;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 public interface EsSearch {
     Map<String, Object> elasticMultiSend(List<MultipleRequests> requests);
-    <T> T elasticSend(SearchRequest request, TypeMapper<T> mapper) throws IOException;
+    <T> T elasticSend(SearchRequest request, TypeMapper<T> mapper);
     QueryParam CreateQueryParam(DataFetchingEnvironment env);
 }

@@ -6,8 +6,8 @@ import gov.nih.nci.bento.classes.QueryParam;
 import gov.nih.nci.bento.classes.TableParam;
 import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.filter.AggregationFilter;
+import gov.nih.nci.bento.search.query.filter.DefaultFilter;
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
-import gov.nih.nci.bento.search.query.filter.SearchCountFilter;
 import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperService;
 import gov.nih.nci.bento.utility.StrUtil;
@@ -66,7 +66,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(BentoGraphQLKEYS.NO_OF_SUBJECTS)
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SUBJECTS)
-                        .source(new SearchCountFilter(
+                        .source(new DefaultFilter(
                                 FilterParam.builder()
                                         .args(args)
                                         .build())
@@ -81,7 +81,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(BentoGraphQLKEYS.NO_OF_SAMPLES)
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.SAMPLES)
-                        .source(new SearchCountFilter(
+                        .source(new DefaultFilter(
                                 FilterParam.builder()
                                         .args(args)
                                         .build())
@@ -112,7 +112,7 @@ public class BentoQueryImpl implements BentoQuery {
                 .name(BentoGraphQLKEYS.NO_OF_FILES)
                 .request(new SearchRequest()
                         .indices(Const.BENTO_INDEX.FILES)
-                        .source(new SearchCountFilter(
+                        .source(new DefaultFilter(
                                 FilterParam.builder()
                                         .args(args)
                                         .build())

@@ -9,13 +9,13 @@ public class YamlGlobalFilterType {
     private String type;
     private String selectedField;
     private List<GlobalQuerySet> query;
-    private List<GlobalQuerySet> optionalQuery;
+    private List<GlobalQuerySet> typeQuery;
 
     @Data
     public static class GlobalQuerySet {
         private String field;
         private String type;
         private String option;
-        private boolean caseInSensitive;
+        private boolean caseInsensitive;
     }
 }

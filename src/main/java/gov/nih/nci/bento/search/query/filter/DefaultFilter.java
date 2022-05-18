@@ -1,6 +1,7 @@
 package gov.nih.nci.bento.search.query.filter;
 
 import gov.nih.nci.bento.classes.FilterParam;
+import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.QueryFactory;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -14,7 +15,7 @@ public class DefaultFilter extends AbstractFilter {
     SearchSourceBuilder getFilter(FilterParam param, QueryFactory bentoParam) {
         SearchSourceBuilder builder = new SearchSourceBuilder()
                 .query(bentoParam.getQuery());
-        if (param.getSize()!=0) builder.size(param.getSize());
+        builder.size(Const.ES_UNITS.MAX_SIZE);
         return builder;
     }
 }

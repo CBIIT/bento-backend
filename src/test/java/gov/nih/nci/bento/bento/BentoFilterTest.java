@@ -264,7 +264,7 @@ public class BentoFilterTest {
 
     @Test
     // TODO null or empty string
-    public void findSubjectIdsInList_Test() throws IOException {
+    public void findSubjectIdsInList_Test() {
         SearchSourceBuilder builder = new SearchSourceBuilder();
         builder.query(QueryBuilders.matchAllQuery());
         builder.size(10);
@@ -292,11 +292,6 @@ public class BentoFilterTest {
         assertThat(result.get(0), hasKey(BENTO_FIELDS.SUBJECT_ID));
         // Check Result as expected size
         assertThat(result.size(), equalTo(2));
-
-
-
-
-
     }
 
     @Test
@@ -316,7 +311,7 @@ public class BentoFilterTest {
                                 .source(new DefaultFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .returnAllFields(conditionFieldSet)
+                                                .returnAllParameters(conditionFieldSet)
                                                 .build())
                                         .getSourceFilter()))
                         .typeMapper(typeMapper.getQueryResult(Set.of(BENTO_FIELDS.SUBJECT_ID))).build()

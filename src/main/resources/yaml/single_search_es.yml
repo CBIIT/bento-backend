@@ -9,12 +9,10 @@
     # Required: selectedField
   # - table
     # Required: none
-    # Optional: defaultSortField, prioritySort
+    # Optional: defaultSortField, alternativeSort
   # - aggregation
     # Required: selectedField
     # Optional: filter
-  # - number_of_docs
-    # Required: none
   # - range
     # Required: selectedField
     # Optional: filter
@@ -25,7 +23,7 @@
       # query
         # Required: field, type
           # type includes elements with term, match, and wildcard
-    # Optional: optionalQuery
+    # Optional: typeQuery
       # query: same rules applied as required above
   # - nested
     # Required: defaultSortField, query
@@ -74,7 +72,7 @@
 
 
 # Detailed Explanation
-  # prioritySort: sort desired field alternatively, especially sorting texts containing number
+  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
 query:
   - name: subjectOverview
     index:
@@ -83,7 +81,7 @@ query:
       type: table
       defaultSortField: subject_id_num
       # Declare alternative sort: key, value
-      prioritySort:
+      alternativeSort:
         subject_id: subject_id_num
     resultType: default
   - name: sampleOverview
@@ -93,7 +91,7 @@ query:
       type: table
       defaultSortField: sample_id_num
       # Declare alternative sort: key, value
-      prioritySort:
+      alternativeSort:
         sample_id: sample_id_num
         subject_id: subject_id_num
     resultType: default
@@ -103,7 +101,7 @@ query:
     filter:
       type: table
       defaultSortField: file_name
-      prioritySort:
+      alternativeSort:
         sample_id: sample_id_num
         subject_id: subject_id_num
     resultType: default
@@ -115,7 +113,7 @@ query:
 #      selectedField: file_id
       selectedField: file_ids
       # Return All Documents If Fields Contained Empty String
-      returnAllFields:
+      returnAllParameters:
         - subject_ids
         - sample_ids
         - file_names
@@ -128,7 +126,7 @@ query:
       type: table
       defaultSortField: file_name
       # Return All Documents If Fields Contained Empty String
-      returnAllFields:
+      returnAllParameters:
         - file_ids
     resultType: default
   - name: findSubjectIdsInList
@@ -136,9 +134,8 @@ query:
       - subjects
     filter:
       type: default
-      caseInSensitive: true
-      size: 10000
+      caseInsensitive: true
       # Return All Documents If Fields Contained Empty String
-      returnAllFields:
+      returnAllParameters:
         - subject_ids
     resultType: default

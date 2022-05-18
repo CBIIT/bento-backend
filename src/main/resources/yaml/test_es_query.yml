@@ -366,7 +366,7 @@ query:
           "BENTO-CASE-99932", "BENTO-CASE-67043"
         ]
       },
-      "query": "query search($subject_ids: [String]) {\n  fileIDsFromList(subject_id: $subject_ids)\n}\n"
+      "query": "query search($subject_ids: [String]) {\n  fileIDsFromList(subject_ids: $subject_ids)\n}\n"
     }
   - name: Dashboard Search
     request: {

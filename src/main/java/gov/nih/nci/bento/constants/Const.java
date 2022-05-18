@@ -37,7 +37,6 @@ public class Const {
         public static class FILTER {
             public static final String AGGREGATION = "aggregation";
             public static final String TABLE = "table";
-            public static final String NO_OF_DOCUMENTS = "number_of_docs";
             public static final String RANGE = "range";
             public static final String SUB_AGGREAGATION = "sub_aggregation";
             public static final String DEFAULT = "default";

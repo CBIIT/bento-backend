@@ -86,7 +86,7 @@ public class YamlQueryFactory {
         return result;
     }
 
-    private Object createGroupYamlQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
+    private Object createGroupYamlQuery(GroupTypeQuery.Group group, QueryParam param) {
         logger.info("Group Search API Requested: " + group.getName());
         List<MultipleRequests> requests = new ArrayList<>();
         group.getQuery().forEach(q->{
@@ -164,7 +164,7 @@ public class YamlQueryFactory {
         return param.getSearchText().equals("") ? 0 :result;
     }
 
-    private Object createGlobalYamlQuery(QueryParam param, YamlQuery query) throws IOException {
+    private Object createGlobalYamlQuery(QueryParam param, YamlQuery query) {
         logger.info("ES Search Global API Requested: " + query.getName());
         Map<String, Object> result = new HashMap<>();
         // Set Bool Filter
@@ -183,7 +183,7 @@ public class YamlQueryFactory {
         return result;
     }
 
-    private Object createSingleYamlQuery(QueryParam param, YamlQuery query) throws IOException {
+    private Object createSingleYamlQuery(QueryParam param, YamlQuery query) {
         logger.info("ES Search API Requested: " + query.getName());
         // Set Rest API Request
         SearchRequest request = new SearchRequest();
@@ -237,16 +237,10 @@ public class YamlQueryFactory {
                         .args(args)
                         .queryParam(param)
                         .sortDirection(filterType.getSortDirection())
-                        .returnAllFields(filterType.getReturnAllFields())
+                        .returnAllParameters(filterType.getReturnAllParameters())
                         .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();
-            case Const.YAML_QUERY.FILTER.NO_OF_DOCUMENTS:
-                return new SearchCountFilter(
-                        FilterParam.builder()
-                                .args(args)
-                                .build())
-                        .getSourceFilter();
             case Const.YAML_QUERY.FILTER.RANGE:
                 return new RangeFilter(
                         FilterParam.builder()
@@ -266,8 +260,8 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.FILTER.DEFAULT:
                 return new DefaultFilter(FilterParam.builder()
                         .size(filterType.getSize())
-                        .returnAllFields(filterType.getReturnAllFields())
-                        .caseInSensitive(filterType.isCaseInSensitive())
+                        .returnAllParameters(filterType.getReturnAllParameters())
+                        .caseInsensitive(filterType.isCaseInsensitive())
                         .args(args).build()).getSourceFilter();
             case Const.YAML_QUERY.FILTER.NESTED:
                 return new NestedFilter(
@@ -331,11 +325,11 @@ public class YamlQueryFactory {
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
-        if (query.getFilter().getOptionalQuery() == null) return new ArrayList<>();
+        if (query.getFilter().getTypeQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilter().getOptionalQuery() ;
+        List<YamlGlobalFilterType.GlobalQuerySet> typeQuerySets = query.getFilter().getTypeQuery() ;
         AtomicReference<String> filterString = new AtomicReference<>("");
-        optionalQuerySets.forEach(option-> {
+        typeQuerySets.forEach(option-> {
             if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
                 filterString.set(StrUtil.getBoolText(param.getSearchText()));
             } else if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.INTEGER)) {
@@ -392,8 +386,8 @@ public class YamlQueryFactory {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilter().getPrioritySort() == null) return orderKey;
-        Map<String, String> prioritySortMap = query.getFilter().getPrioritySort();
-        return prioritySortMap.getOrDefault(orderKey, "");
+        if (query.getFilter().getAlternativeSort() == null) return orderKey;
+        Map<String, String> alternativeSortMap = query.getFilter().getAlternativeSort();
+        return alternativeSortMap.getOrDefault(orderKey, "");
     }
 }

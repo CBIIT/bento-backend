@@ -14,21 +14,21 @@ queries:
         - cases
       filter:
         # Get total number of documents in ES index
-        type: number_of_docs
+        type: default
       resultType: int_total_count
     - name: numberOfSamples
       index:
         - samples
       filter:
         # Get total number of documents in ES index
-        type: number_of_docs
+        type: default
       resultType: int_total_count
     - name: numberOfFiles
       index:
         - files
       filter:
         # Get total number of documents in ES index
-        type: number_of_docs
+        type: default
       dynamicFilter:
         index:
           - cases
@@ -73,7 +73,7 @@ queries:
         - cases
       filter:
         # Get total number of documents in ES index
-        type: number_of_docs
+        type: default
       resultType: empty
     - name: volumeOfData
       index:

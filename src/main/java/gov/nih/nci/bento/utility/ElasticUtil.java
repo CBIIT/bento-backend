@@ -17,7 +17,7 @@ public class ElasticUtil {
         return param.getSortDirection() !=null ? ElasticUtil.getSortType(param.getSortDirection()) : tableParam.getSortDirection();
     }
 
-    public static String getPrioritySortType(FilterParam param) {
+    public static String getAlternativeSortType(FilterParam param) {
         TableParam tableParam = param.getTableParam();
         // TODO CHECK
         if (param.getCustomOrderBy() != null && !param.getCustomOrderBy().equals("")) return param.getCustomOrderBy();

@@ -126,12 +126,6 @@ public class BentoAutoConfiguration {
                         .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();
-            case YAML_QUERY.FILTER.NO_OF_DOCUMENTS:
-                return new SearchCountFilter(
-                        FilterParam.builder()
-                                .args(param.getArgs())
-                                .build())
-                        .getSourceFilter();
             case YAML_QUERY.FILTER.RANGE:
                 return new RangeFilter(
                         FilterParam.builder()
@@ -168,9 +162,9 @@ public class BentoAutoConfiguration {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilter().getPrioritySort() == null) return orderKey;
-        Map<String, String> prioritySortMap = query.getFilter().getPrioritySort();
-        return prioritySortMap.getOrDefault(orderKey, "");
+        if (query.getFilter().getAlternativeSort() == null) return orderKey;
+        Map<String, String> alternativeSortMap = query.getFilter().getAlternativeSort();
+        return alternativeSortMap.getOrDefault(orderKey, "");
     }
 
     private SearchSourceBuilder createGlobalQuery(QueryParam param, YamlQuery query) {
@@ -228,11 +222,11 @@ public class BentoAutoConfiguration {
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
-        if (query.getFilter().getOptionalQuery() == null) return new ArrayList<>();
+        if (query.getFilter().getTypeQuery() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        List<YamlGlobalFilterType.GlobalQuerySet> optionalQuerySets = query.getFilter().getOptionalQuery();
+        List<YamlGlobalFilterType.GlobalQuerySet> typeQuerySets = query.getFilter().getTypeQuery();
         AtomicReference<String> filterString = new AtomicReference<>("");
-        optionalQuerySets.forEach(option-> {
+        typeQuerySets.forEach(option-> {
 
             if (option.getOption().equals(YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
                 filterString.set(StrUtil.getBoolText(param.getSearchText()));

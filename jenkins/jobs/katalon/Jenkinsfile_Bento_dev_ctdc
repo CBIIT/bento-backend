@@ -220,7 +220,8 @@ pipeline {
 				emailext(attachmentsPattern: 'results/*.zip',
                     body: 'Katalon Test Results',
                     subject: 'Katalon Test Results',
-                    to: "${BOX_EMAIL}")
+                    //to: "${BOX_EMAIL}")
+					to: "${EmailRecipients}")
 				
 				//script {
 

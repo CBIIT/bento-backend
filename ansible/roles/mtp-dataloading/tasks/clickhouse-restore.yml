@@ -63,11 +63,13 @@
   debug:
     msg: "{{fileout}}"
 
+- name: Download file with check (md5)
+  get_url:
+    url: localhost:7171/backup/list/remote
+  register: backups
+
 - name: list the backup files
   shell: 'curl -s localhost:7171/backup/list/remote'
-  args:
-    chdir: "{{clickhouse_path}}"
-    warn: false
   register: backups
 
 - name: display the backup files

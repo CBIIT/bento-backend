@@ -70,7 +70,7 @@
 
 - name: list the backup files
   shell: 'curl -s localhost:7171/backup/list/remote'
-    warn: false
+  warn: false
   register: backups
 
 - name: display the backup files

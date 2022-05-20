@@ -63,13 +63,14 @@
   debug:
     msg: "{{fileout}}"
 
-# - name: Download file with check (md5)
-#   get_url:
+# - name: run the curl 
+#   uri:
 #     url: localhost:7171/backup/list/remote
+#     method: GET
 #   register: backups
 
 - name: list the backup files
-  shell: 'curl -s localhost:7171/backup/list/remote'
+  shell: 'curl -s http://localhost:7171/backup/list/remote'
   ignore_errors: yes
   register: backups
 
@@ -78,10 +79,10 @@
     msg: "{{backups}}"
 
 - name: download the backup file
-  shell: 'curl -s localhost:7171/backup/download/{{backupfile}} -X POST'
+  shell: 'curl -s http://localhost:7171/backup/download/{{backupfile}} -X POST'
 
 - name: perform restore operation
-  shell: 'curl -s localhost:7171/backup/restore/{{backupfile}} -X POST'
+  shell: 'curl -s http://localhost:7171/backup/restore/{{backupfile}} -X POST'
 
 - name: checking tables
   shell:

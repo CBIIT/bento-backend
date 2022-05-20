@@ -107,7 +107,6 @@ pipeline {
                 playbook: '${WORKSPACE}/ansible/clickhouse-restore.yml', 
                 inventory: '${WORKSPACE}/ansible/hosts', 
                 credentialsId: 'server_ssh_key',
-                extras: '-vvvv',
                 extraVars: [
                     tier: "${params.Environment}",
                     backupfile: "${params.BackupFile}"

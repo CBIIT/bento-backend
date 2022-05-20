@@ -67,6 +67,7 @@
   uri:
     url: http://127.0.0.1:7171/backup/list/remote
     method: GET
+  ignore_errors: yes
   register: backups
 
 # - name: list the backup files
@@ -78,11 +79,33 @@
   debug:
     msg: "{{backups}}"
 
-- name: download the backup file
-  shell: 'curl -s http://localhost:7171/backup/download/{{backupfile}} -X POST'
+# - name: download the backup file
+#   shell: 'curl -s http://localhost:7171/backup/download/{{backupfile}} -X POST'
 
-- name: perform restore operation
-  shell: 'curl -s http://localhost:7171/backup/restore/{{backupfile}} -X POST'
+- name: download backup
+  uri:
+    url: http://127.0.0.1:7171/backup/download/{{backupfile}}
+    method: POST
+  ignore_errors: yes
+  register: backups
+
+- name: display the backup files
+  debug:
+    msg: "{{backups}}"
+
+- name: download backup
+  uri:
+    url: http://127.0.0.1:7171/backup/restore/{{backupfile}}
+    method: POST
+  ignore_errors: yes
+  register: backups
+
+- name: display the backup files
+  debug:
+    msg: "{{backups}}"
+
+# - name: perform restore operation
+#   shell: 'curl -s http://localhost:7171/backup/restore/{{backupfile}} -X POST'
 
 - name: checking tables
   shell:

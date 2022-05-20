@@ -63,16 +63,16 @@
   debug:
     msg: "{{fileout}}"
 
-# - name: run the curl 
-#   uri:
-#     url: localhost:7171/backup/list/remote
-#     method: GET
-#   register: backups
-
-- name: list the backup files
-  shell: 'curl -s http://localhost:7171/backup/list/remote'
-  ignore_errors: yes
+- name: run the curl 
+  uri:
+    url: http://127.0.0.1:7171/backup/list/remote
+    method: GET
   register: backups
+
+# - name: list the backup files
+#   shell: 'curl -s http://localhost:7171/backup/list/remote'
+#   ignore_errors: yes
+#   register: backups
 
 - name: display the backup files
   debug:

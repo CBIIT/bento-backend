@@ -155,7 +155,7 @@ schema {
 type QueryType {
 
     searchSubjects(
-        subject_id: [String] = [],
+        subject_ids: [String] = [],
         race: [String] = [],
         disease_term: [String] = [],
         registering_institution: [String] = [],
@@ -175,7 +175,7 @@ type QueryType {
     ): SearchResultES
 
     subjectOverview(
-        subject_id: [String] = [],
+        subject_ids: [String] = [],
         race: [String] = [],
         disease_term: [String] = [],
         registering_institution: [String] = [],
@@ -201,7 +201,7 @@ type QueryType {
     fileOverview(
         file_id: [String] = [],
         file_name: [String] = [],
-        subject_id: [String] = [],
+        subject_ids: [String] = [],
         race: [String] = [],
         disease_term: [String] = [],
         registering_institution: [String] = [],
@@ -252,7 +252,7 @@ type QueryType {
     idsLists: SubjectIds
 
     findSubjectIdsInList(
-        subject_id: [String] = [],
+        subject_ids: [String] = [],
         order_by: String = "",
         sort_direction: String = "ASC",
         first: Int = 10,

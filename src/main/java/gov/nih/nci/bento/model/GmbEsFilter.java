@@ -119,52 +119,132 @@ public class GmbEsFilter implements DataFetcher{
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
         int numberOfSubjects = sendCountRequest(query, SUBJECTS_COUNT_END_POINT);
         int numberOfFiles = sendCountRequest(query, FILES_COUNT_END_POINT);
+        int numberOfTrials = sendCountRequest(query, TRIALS_COUNT_END_POINT);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("numberOfTrials", getGroupCount("clinical_trial_id", SUBJECTS_END_POINT, params).size());
+        data.put("numberOfTrials", numberOfTrials);
         data.put("numberOfSubjects", numberOfSubjects);
         data.put("numberOfFiles", numberOfFiles);
 
-        data.put("subjectCountByRace", getGroupCount("race", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByDiseaseTerm", getGroupCount("disease_term", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByRegisteringInstitution", getGroupCount("registering_institution", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByPatientSubgroup", getGroupCount("patient_subgroup", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByStageAtEntry", getGroupCount("stage_at_entry", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByCauseOfDeath", getGroupCount("cause_of_death", SUBJECTS_END_POINT, params));
-        data.put("subjectCountBySitesOfDiseaseAtAutopsy", getGroupCount("sites_of_disease_at_autopsy", SUBJECTS_END_POINT, params));
-        data.put("subjectCountBySourceOfTheLabData", getGroupCount("source_of_the_lab_data", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByLabTest", getGroupCount("lab_test", SUBJECTS_END_POINT, params));
-        data.put("subjectCountBySystemOrganClass", getGroupCount("system_organ_class", SUBJECTS_END_POINT, params));
-        data.put("subjectCountBySerious", getGroupCount("serious", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByOutcome", getGroupCount("outcome", SUBJECTS_END_POINT, params));
-        data.put("subjectCountBySomaticPathogenicity", getGroupCount("somatic_pathogenicity", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByGermlinePathogenicity", getGroupCount("germline_pathogenicity", SUBJECTS_END_POINT, params));
-        data.put("subjectCountByFileType", getGroupCount("file_type", FILES_END_POINT, params));
-        data.put("subjectCountByClinicalTrialId", getGroupCount("clinical_trial_id", SUBJECTS_END_POINT, params));
+        final String AGG_NAME = "agg_name";
+        final String AGG_ENDPOINT = "agg_endpoint";
+        final String WIDGET_QUERY = "widgetQueryName";
+        final String FILTER_COUNT_QUERY = "filterCountQueryName";
+        final List<Map<String, String>> TERM_AGGS = new ArrayList<>();
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "race",
+                WIDGET_QUERY, "subjectCountByRace",
+                FILTER_COUNT_QUERY, "filterSubjectCountByRace",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "disease_term",
+                WIDGET_QUERY, "subjectCountByDiseaseTerm",
+                FILTER_COUNT_QUERY, "filterSubjectCountByDiseaseTerm",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "registering_institution",
+                WIDGET_QUERY, "subjectCountByRegisteringInstitution",
+                FILTER_COUNT_QUERY, "filterSubjectCountByRegisteringInstitution",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "patient_subgroup",
+                WIDGET_QUERY, "subjectCountByPatientSubgroup",
+                FILTER_COUNT_QUERY, "filterSubjectCountByPatientSubgroup",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "stage_at_entry",
+                WIDGET_QUERY, "subjectCountByStageAtEntry",
+                FILTER_COUNT_QUERY, "filterSubjectCountByStageAtEntry",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "cause_of_death",
+                WIDGET_QUERY, "subjectCountByCauseOfDeath",
+                FILTER_COUNT_QUERY, "filterSubjectCountByCauseOfDeath",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "cause_of_death",
+                WIDGET_QUERY, "subjectCountByCauseOfDeath",
+                FILTER_COUNT_QUERY, "filterSubjectCountByCauseOfDeath",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "sites_of_disease_at_autopsy",
+                WIDGET_QUERY, "subjectCountBySitesOfDiseaseAtAutopsy",
+                FILTER_COUNT_QUERY, "filterSubjectCountBySitesOfDiseaseAtAutopsy",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "source_of_the_lab_data",
+                WIDGET_QUERY, "subjectCountBySourceOfTheLabData",
+                FILTER_COUNT_QUERY, "filterSubjectCountBySourceOfTheLabData",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "lab_test",
+                WIDGET_QUERY, "subjectCountByLabTest",
+                FILTER_COUNT_QUERY, "filterSubjectCountByLabTest",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "system_organ_class",
+                WIDGET_QUERY, "subjectCountBySystemOrganClass",
+                FILTER_COUNT_QUERY, "filterSubjectCountBySystemOrganClass",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "serious",
+                WIDGET_QUERY, "subjectCountBySerious",
+                FILTER_COUNT_QUERY, "filterSubjectCountBySerious",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "outcome",
+                WIDGET_QUERY, "subjectCountByOutcome",
+                FILTER_COUNT_QUERY, "filterSubjectCountByOutcome",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "somatic_pathogenicity",
+                WIDGET_QUERY, "subjectCountBySomaticPathogenicity",
+                FILTER_COUNT_QUERY, "filterSubjectCountBySomaticPathogenicity",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "germline_pathogenicity",
+                WIDGET_QUERY, "subjectCountByGermlinePathogenicity",
+                FILTER_COUNT_QUERY, "filterSubjectCountByGermlinePathogenicity",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "file_type",
+                WIDGET_QUERY, "subjectCountByFileType",
+                FILTER_COUNT_QUERY, "filterSubjectCountByFileType",
+                AGG_ENDPOINT, FILES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "clinical_trial_id",
+                WIDGET_QUERY, "subjectCountByClinicalTrialId",
+                FILTER_COUNT_QUERY, "filterSubjectCountByClinicalTrialId",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
 
-        data.put("filterSubjectCountByRace", getGroupCount("race", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByDiseaseTerm", getGroupCount("disease_term", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByRegisteringInstitution", getGroupCount("registering_institution", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByPatientSubgroup", getGroupCount("patient_subgroup", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByStageAtEntry", getGroupCount("stage_at_entry", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByCauseOfDeath", getGroupCount("cause_of_death", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountBySitesOfDiseaseAtAutopsy", getGroupCount("sites_of_disease_at_autopsy", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountBySourceOfTheLabData", getGroupCount("source_of_the_lab_data", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByLabTest", getGroupCount("lab_test", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountBySystemOrganClass", getGroupCount("system_organ_class", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountBySerious", getGroupCount("serious", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByOutcome", getGroupCount("outcome", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountBySomaticPathogenicity", getGroupCount("somatic_pathogenicity", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByGermlinePathogenicity", getGroupCount("germline_pathogenicity", SUBJECTS_END_POINT, params));
-        data.put("filterSubjectCountByFileType", getGroupCount("file_type", FILES_END_POINT, params));
-        data.put("filterSubjectCountByClinicalTrialId", getGroupCount("clinical_trial_id", SUBJECTS_END_POINT, params));
+        for (Map<String, String> term : TERM_AGGS){
+            data.put(term.get(WIDGET_QUERY), subjectCountBy(term.get(AGG_NAME), term.get(AGG_ENDPOINT), params));
+            data.put(term.get(FILTER_COUNT_QUERY), filterSubjectCountBy(term.get(AGG_NAME), term.get(AGG_ENDPOINT), params));
+        }
 
         return data;
     }
 
     private List<Map<String, Object>> subjectOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"subject_id", "subject_id"},
+                new String[]{"subject_id", "subject_ids"},
                 new String[]{"race", "race"},
                 new String[]{"disease_term", "disease_term"},
                 new String[]{"stageAtEntry", "stage_at_entry"},
@@ -178,10 +258,10 @@ public class GmbEsFilter implements DataFetcher{
                 new String[]{"files", "files"}
         };
 
-        String defaultSort = "subject_id"; // Default sort order
+        String defaultSort = "subject_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("subject_id", "subject_id"),
+                Map.entry("subject_id", "subject_ids"),
                 Map.entry("race", "race"),
                 Map.entry("disease_term", "disease_term"),
                 Map.entry("stageAtEntry", "stage_at_entry"),
@@ -200,14 +280,14 @@ public class GmbEsFilter implements DataFetcher{
 
     private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"subject_id", "subject_id"},
+                new String[]{"subject_id", "subject_ids"},
                 new String[]{"trial_id", "clinical_trial_id"}
         };
 
-        String defaultSort = "subject_id"; // Default sort order
+        String defaultSort = "subject_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("subject_id", "subject_id"),
+                Map.entry("subject_id", "subject_ids"),
                 Map.entry("trial_id", "clinical_trial_id")
         );
 
@@ -243,7 +323,7 @@ public class GmbEsFilter implements DataFetcher{
     private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name"},
-                new String[]{"subject_id", "subject_id"},
+                new String[]{"subject_id", "subject_ids"},
                 new String[]{"description", "file_description"},
                 new String[]{"fileFormat", "file_format"},
                 new String[]{"size", "file_size"},
@@ -251,11 +331,11 @@ public class GmbEsFilter implements DataFetcher{
                 new String[]{"file_id", "file_id"}
         };
 
-        String defaultSort = "subject_id"; // Default sort order
+        String defaultSort = "subject_ids"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("file_name", "file_name"),
-                Map.entry("subject_id", "subject_id"),
+                Map.entry("subject_id", "subject_ids"),
                 Map.entry("description", "file_description"),
                 Map.entry("fileFormat", "file_format"),
                 Map.entry("size", "file_size"),
@@ -296,7 +376,7 @@ public class GmbEsFilter implements DataFetcher{
                 GS_RESULT_FIELD, "subjects",
                 GS_SEARCH_FIELD, List.of(
                         "subject_id_gs", "registering_institution_gs", "disease_term_gs", "clinical_trial_id_gs"),
-                GS_SORT_FIELD, "subject_id",
+                GS_SORT_FIELD, "subject_ids",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"subject_id", "subject_id_gs"},
                         new String[]{"registering_institution", "registering_institution_gs"},
@@ -482,7 +562,7 @@ public class GmbEsFilter implements DataFetcher{
 
     private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException{
         final String[][] properties = new String[][]{
-                new String[]{"subject_id", "subject_id"},
+                new String[]{"subject_id", "subject_ids"},
                 new String[]{"file_name", "file_name"},
                 new String[]{"fileType", "file_type"},
                 new String[]{"description", "file_description"},
@@ -495,7 +575,7 @@ public class GmbEsFilter implements DataFetcher{
         String defaultSort = "file_name";
 
         Map<String, String> mapping = Map.ofEntries(
-                Map.entry("subject_id", "subject_id"),
+                Map.entry("subject_id", "subject_ids"),
                 Map.entry("file_name", "file_name"),
                 Map.entry("fileType", "file_type"),
                 Map.entry("description", "file_description"),
@@ -517,7 +597,7 @@ public class GmbEsFilter implements DataFetcher{
 
     private Map<String, Object> idsLists() throws IOException {
         final String[][] PROPERTIES = new String[][]{
-                new String[]{"subject_id", "subject_id"}
+                new String[]{"subject_id", "subject_ids"}
         };
         Request request = new Request("GET", SUBJECTS_END_POINT);
         List<Map<String, Object>> response = esService.collectPage(request, new HashMap<String, Object>(), PROPERTIES, ESService.MAX_ES_SIZE, 0);
@@ -634,11 +714,22 @@ public class GmbEsFilter implements DataFetcher{
         return Map.of(sortOrder, sortDirection);
     }
 
+    private List<Map<String, Object>> subjectCountBy(String category, String endpoint, Map<String, Object> params)
+        throws IOException {
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE));
+        return getGroupCount(category, endpoint, query);
+    }
 
-
-    private List<Map<String, Object>> getGroupCount(String category, String endpoint, Map<String, Object> params)
+    private List<Map<String, Object>> filterSubjectCountBy(String category, String endpoint, Map<String, Object> params)
             throws IOException {
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, category));
+        return getGroupCount(category, endpoint, query);
+    }
+
+
+
+    private List<Map<String, Object>> getGroupCount(String category, String endpoint, Map<String, Object> query)
+            throws IOException {
         String[] AGG_NAMES = new String[] {category};
         query = esService.addAggregations(query, AGG_NAMES);
         Request request = new Request("GET", endpoint);

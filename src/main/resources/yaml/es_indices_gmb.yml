@@ -3,7 +3,7 @@ Indices:
   - index_name: subjects
     type: neo4j
     mapping:
-      subject_id: 
+      subject_ids:
         type: keyword
       race: 
         type: keyword
@@ -59,7 +59,7 @@ Indices:
       WITH
         coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id,
         coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id_gs,
-        coalesce(s.PT_ID, 'N/A') AS subject_id,
+        coalesce(s.PT_ID, 'N/A') AS subject_ids,
         coalesce(s.PT_ID, 'N/A') AS subject_id_gs,
         coalesce(s.PT_RACE_CD_1, 'N/A') AS race,
         coalesce(s.DZ_DX_NM, 'N/A') AS disease_term,
@@ -82,7 +82,7 @@ Indices:
       RETURN
         clinical_trial_id,
         clinical_trial_id_gs,
-        subject_id,
+        subject_ids,
         subject_id_gs,
         race,
         disease_term,
@@ -123,7 +123,7 @@ Indices:
         type: keyword
       arm:
         type: keyword
-      subject_id:
+      subject_ids:
         type: keyword
       race:
         type: keyword
@@ -192,7 +192,7 @@ Indices:
         ct.CLINICAL_TRIAL_ID AS clinical_trial_id_gs,
         ct.CLINICAL_TRIAL_SHORT_NAME AS trial_short_name,
         s.ARM AS arm,
-        s.PT_ID AS subject_id,
+        s.PT_ID AS subject_ids,
         s.PT_ID AS subject_id_gs,
         s.PT_RACE_CD_1 AS race,
         s.DZ_DX_NM AS disease_term,

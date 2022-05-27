@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
@@ -64,6 +66,8 @@ public class GmbEsFilter implements DataFetcher{
     final String GS_HIGHLIGHT_FIELDS = "highlight_fields";
     final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of();
+    final String HIGHLIGHT_KEY = "highlight";
+    final Pattern PATTERN = Pattern.compile("[^a-zA-Z\\d\\s]", Pattern.CASE_INSENSITIVE);
 
 
     @Autowired
@@ -512,6 +516,11 @@ public class GmbEsFilter implements DataFetcher{
             List<Map<String, Object>> objects = esService.collectPage(jsonObject, properties, highlights, (int)query.get("size"), 0);
 
             for (var object: objects) {
+                if (object instanceof HashMap && object.containsKey(HIGHLIGHT_KEY)){
+                    HashMap<String, String> map = (HashMap) object;
+                    Matcher matcher = PATTERN.matcher(map.get(HIGHLIGHT_KEY));
+                    map.put(HIGHLIGHT_KEY, matcher.replaceAll(""));
+                }
                 object.put(GS_CATEGORY_TYPE, category.get(GS_CATEGORY_TYPE));
             }
 

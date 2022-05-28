@@ -1,0 +1,3 @@
+[submodule "src/main/java/gov/nih/nci/bento"]
+	path = src/main/java/gov/nih/nci/bento
+	url = git@github.com:CBIIT/bento-backend-core.git

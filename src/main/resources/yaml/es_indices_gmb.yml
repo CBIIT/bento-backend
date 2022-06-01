@@ -57,16 +57,16 @@ Indices:
       OPTIONAL MATCH (s)<--(gv:GERMLINE_VARIANT)
       OPTIONAL MATCH (s)<--(f:FILE)
       WITH
-        coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id,
-        coalesce(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id_gs,
-        coalesce(s.PT_ID, 'N/A') AS subject_ids,
-        coalesce(s.PT_ID, 'N/A') AS subject_id_gs,
-        coalesce(s.PT_RACE_CD_1, 'N/A') AS race,
-        coalesce(s.DZ_DX_NM, 'N/A') AS disease_term,
-        coalesce(s.DZ_DX_NM, 'N/A') AS disease_term_gs,
-        coalesce(s.REG_INST_ID_CD, 'N/A') AS registering_institution,
-        coalesce(s.REG_INST_ID_CD, 'N/A') AS registering_institution_gs,
-        coalesce(s.PT_SUBGRP_ASSIGN_TP, 'N/A') AS patient_subgroup,
+        COALESCE(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id,
+        COALESCE(ct.CLINICAL_TRIAL_ID, 'N/A') AS clinical_trial_id_gs,
+        COALESCE(s.PT_ID, 'N/A') AS subject_ids,
+        COALESCE(s.PT_ID, 'N/A') AS subject_id_gs,
+        COALESCE(s.PT_RACE_CD_1, 'N/A') AS race,
+        COALESCE(s.DZ_DX_NM, 'N/A') AS disease_term,
+        COALESCE(s.DZ_DX_NM, 'N/A') AS disease_term_gs,
+        COALESCE(s.REG_INST_ID_CD, 'N/A') AS registering_institution,
+        COALESCE(s.REG_INST_ID_CD, 'N/A') AS registering_institution_gs,
+        COALESCE(s.PT_SUBGRP_ASSIGN_TP, 'N/A') AS patient_subgroup,
         COLLECT(DISTINCT e.DISEAS_STG) AS stage_at_entry,
         COLLECT(DISTINCT srv.DEATH_CAUS_CD) AS cause_of_death,
         COLLECT(DISTINCT srv.ATPSY_DZ_SITE_NM) AS sites_of_disease_at_autopsy,
@@ -179,37 +179,37 @@ Indices:
       OPTIONAL MATCH (s)<--(sv:SOMATIC_VARIANT)
       OPTIONAL MATCH (s)<--(gv:GERMLINE_VARIANT)
       RETURN DISTINCT
-        f.UUID AS file_id,
-        f.UUID AS file_id_gs,
-        f.FILE_NAME AS file_name,
-        f.FILE_NAME AS file_name_gs,
-        f.FILE_DESCRIPTION AS file_description,
-        f.FILE_DESCRIPTION AS file_description_gs,
-        f.FILE_FORMAT AS file_format,
-        f.FILE_FORMAT AS file_format_gs,
-        f.FILE_SIZE AS file_size,
-        ct.CLINICAL_TRIAL_ID AS clinical_trial_id,
-        ct.CLINICAL_TRIAL_ID AS clinical_trial_id_gs,
-        ct.CLINICAL_TRIAL_SHORT_NAME AS trial_short_name,
-        s.ARM AS arm,
-        s.PT_ID AS subject_ids,
-        s.PT_ID AS subject_id_gs,
-        s.PT_RACE_CD_1 AS race,
-        s.DZ_DX_NM AS disease_term,
-        s.REG_INST_ID_CD AS registering_institution,
-        s.PT_SUBGRP_ASSIGN_TP AS patient_subgroup,
-        e.DISEAS_STG AS stage_at_entry,
-        srv.DEATH_CAUS_CD AS cause_of_death,
-        srv.ATPSY_DZ_SITE_NM AS sites_of_disease_at_autopsy,
-        l.LAB_DATA_SRCE_NM AS source_of_the_lab_data,
-        l.LAB_TEST_NM AS lab_test,
-        ae.MEDDRA_SOC_TRM_NM AS system_organ_class,
-        ae.SAE_RSN AS serious,
-        ae.AE_OUTCOME AS outcome,
-        gv.GRMLN_VAR_PTHGNC_CAT AS germline_pathogenicity,
-        sv.SOMATIC_VAR_PTHGNC_CAT AS somatic_pathogenicity,
-        f.FILE_TYPE AS file_type,
-        f.MD5SUM AS md5sum
+        COALESCE(f.UUID, \"\") AS file_id,
+        COALESCE(f.UUID, \"\") AS file_id_gs,
+        COALESCE(f.FILE_NAME, \"\") AS file_name,
+        COALESCE(f.FILE_NAME, \"\") AS file_name_gs,
+        COALESCE(f.FILE_DESCRIPTION, \"\") AS file_description,
+        COALESCE(f.FILE_DESCRIPTION, \"\") AS file_description_gs,
+        COALESCE(f.FILE_FORMAT, \"\") AS file_format,
+        COALESCE(f.FILE_FORMAT, \"\") AS file_format_gs,
+        COALESCE(f.FILE_SIZE, \"\") AS file_size,
+        COALESCE(ct.CLINICAL_TRIAL_ID, \"\") AS clinical_trial_id,
+        COALESCE(ct.CLINICAL_TRIAL_ID, \"\") AS clinical_trial_id_gs,
+        COALESCE(ct.CLINICAL_TRIAL_SHORT_NAME, \"\") AS trial_short_name,
+        COALESCE(s.ARM, \"\") AS arm,
+        COALESCE(s.PT_ID, \"\") AS subject_ids,
+        COALESCE(s.PT_ID, \"\") AS subject_id_gs,
+        COALESCE(s.PT_RACE_CD_1, \"\") AS race,
+        COALESCE(s.DZ_DX_NM, \"\") AS disease_term,
+        COALESCE(s.REG_INST_ID_CD, \"\") AS registering_institution,
+        COALESCE(s.PT_SUBGRP_ASSIGN_TP, \"\") AS patient_subgroup,
+        COALESCE(e.DISEAS_STG, \"\") AS stage_at_entry,
+        COALESCE(srv.DEATH_CAUS_CD, \"\") AS cause_of_death,
+        COALESCE(srv.ATPSY_DZ_SITE_NM, \"\") AS sites_of_disease_at_autopsy,
+        COALESCE(l.LAB_DATA_SRCE_NM, \"\") AS source_of_the_lab_data,
+        COALESCE(l.LAB_TEST_NM, \"\") AS lab_test,
+        COALESCE(ae.MEDDRA_SOC_TRM_NM, \"\") AS system_organ_class,
+        COALESCE(ae.SAE_RSN, \"\") AS serious,
+        COALESCE(ae.AE_OUTCOME, \"\") AS outcome,
+        COALESCE(gv.GRMLN_VAR_PTHGNC_CAT, \"\") AS germline_pathogenicity,
+        COALESCE(sv.SOMATIC_VAR_PTHGNC_CAT, \"\") AS somatic_pathogenicity,
+        COALESCE(f.FILE_TYPE, \"\") AS file_type,
+        COALESCE(f.MD5SUM, \"\") AS md5sum
     "
   # Trials Index
   - index_name: trials
@@ -238,16 +238,16 @@ Indices:
     cypher_query: "
       MATCH(ct:CLINICALTRIAL)
       RETURN DISTINCT
-        ct.CLINICAL_TRIAL_SHORT_NAME AS trial_name,
-        ct.CLINICAL_TRIAL_SHORT_NAME AS trial_name_gs,
-        ct.CLINICAL_TRIAL_LONG_NAME AS trial_long_name,
-        ct.CLINICAL_TRIAL_LONG_NAME AS trial_long_name_gs,
-        ct.CLINICAL_TRIAL_ID AS trial_id,
-        ct.CLINICAL_TRIAL_ID AS trial_id_gs,
-        ct.CLINICAL_TRIAL_DESCRIPTION AS trial_description,
-        ct.CLINICAL_TRIAL_DESCRIPTION AS trial_description_gs,
-        ct.CLINICAL_TRIAL_TYPE AS trial_type,
-        ct.CLINICAL_TRIAL_TYPE AS trial_type_gs
+        COALESCE(ct.CLINICAL_TRIAL_SHORT_NAME, \"\") AS trial_name,
+        COALESCE(ct.CLINICAL_TRIAL_SHORT_NAME, \"\") AS trial_name_gs,
+        COALESCE(ct.CLINICAL_TRIAL_LONG_NAME, \"\") AS trial_long_name,
+        COALESCE(ct.CLINICAL_TRIAL_LONG_NAME, \"\") AS trial_long_name_gs,
+        COALESCE(ct.CLINICAL_TRIAL_ID, \"\") AS trial_id,
+        COALESCE(ct.CLINICAL_TRIAL_ID, \"\") AS trial_id_gs,
+        COALESCE(ct.CLINICAL_TRIAL_DESCRIPTION, \"\") AS trial_description,
+        COALESCE(ct.CLINICAL_TRIAL_DESCRIPTION, \"\") AS trial_description_gs,
+        COALESCE(ct.CLINICAL_TRIAL_TYPE, \"\") AS trial_type,
+        COALESCE(ct.CLINICAL_TRIAL_TYPE, \"\") AS trial_type_gs
     "
   # Sites Index
   - index_name: sites
@@ -269,12 +269,12 @@ Indices:
       MATCH (site:SITE)
       OPTIONAL MATCH (site)-->(ct:CLINICALTRIAL)
       RETURN DISTINCT
-        site.uuid AS site_id,
-        site.uuid AS site_id_gs,
-        site.REG_INST_ID AS site_name_gs,
-        site.EMAIL AS site_address_gs,
-        site.STATUS AS site_status_gs,
-        ct.CLINICAL_TRIAL_ID AS clinical_trial_id_gs
+        COALESCE(site.uuid, \"\") AS site_id,
+        COALESCE(site.uuid, \"\") AS site_id_gs,
+        COALESCE(site.REG_INST_ID, \"\") AS site_name_gs,
+        COALESCE(site.EMAIL, \"\") AS site_address_gs,
+        COALESCE(site.STATUS, \"\") AS site_status_gs,
+        COALESCE(ct.CLINICAL_TRIAL_ID, \"\") AS clinical_trial_id_gs
     "
   # About Page Index
   - index_name: about_page

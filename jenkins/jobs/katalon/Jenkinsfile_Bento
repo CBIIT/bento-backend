@@ -182,13 +182,11 @@ pipeline {
 								# Create the output files directory (required for writing excel files)
 								rm -rf OutputFiles && mkdir OutputFiles
 								
-								ls -la ${WORKSPACE}/Profiles/
-								
 								# Update profile filename
 								profile_file=$(basename $PROFILE_FILE)
 								profile_name="${profile_file%.*}"
 								
-								echo "projectPath=$WORKSPACE/$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
+								#echo "projectPath=$WORKSPACE/$KATALON_PRJ testSuitePath=$KATALON_SUITE_PATH executionProfile=$profile_name filename=$profile_file"
 								
 								# Run Katalon Tests
 								#katalonc -noSplash -runMode=console --config -webui.autoUpdateDrivers=true -projectPath="$WORKSPACE/$KATALON_PRJ" -retry=0 -testSuitePath="$KATALON_SUITE_PATH" -executionProfile="$profile_name" -browserType="$KATALON_BROWSER (headless)" -reportFolder="results" -reportFileName="$reportFile" -apiKey="$api_key" -orgID="$org_id"

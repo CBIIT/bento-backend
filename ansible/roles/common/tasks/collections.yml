@@ -1,8 +1,8 @@
 ---
 - name: install aws collection
-  command: /usr/local/bin/ansible-galaxy collection install {{item}}
+  command: /usr/local/bin/ansible-galaxy collection install {{item}} #--force-with-deps
   loop:
-    -  amazon.aws
+    #-  amazon.aws
     -  community.aws
     -  community.docker
     

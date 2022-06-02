@@ -7,7 +7,7 @@
   tasks:
     #install collections
     - name: install aws collection
-      command: ansible-galaxy collection install {{item}}
+      command: ansible-galaxy collection install {{item}} --force-with-deps
       loop:
         -  amazon.aws
         -  community.aws

@@ -119,6 +119,8 @@ Indices:
         type: search_as_you_type
       file_type_gs:
         type: search_as_you_type
+      file_format_gs:
+        type: search_as_you_type
       file_size_gs:
         type: search_as_you_type
       clinical_trial_id_gs:
@@ -145,6 +147,7 @@ Indices:
         f.file_type AS file_type,
         f.file_type AS file_type_gs,
         f.file_format AS file_format,
+        f.file_format AS file_format_gs,
         f.file_name AS file_name,
         f.file_name AS file_name_gs,
         head(labels(parent)) as association,

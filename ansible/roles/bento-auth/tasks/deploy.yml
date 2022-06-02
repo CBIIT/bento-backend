@@ -12,7 +12,7 @@
   community.aws.ecs_taskdefinition:
     containers:
     - name: auth
-      essential: true
+      essential: "true"
       image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
       environment:
         - name: VERSION
@@ -20,7 +20,7 @@
         - name: COOKIE_SECRET
           value: "{{cookie_secret}}"
         - name: SESSION_TIMEOUT
-          value: 1800
+          value: "1800"
         - name: IDP 
           value: "{{idp_provider}}"
         - name: CLIENT_ID

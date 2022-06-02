@@ -3,8 +3,13 @@
     name: common
     tasks_from: ecr-login
 
+- name: install collections
+  include_role:
+    name: common
+    tasks_from: collections
+
 - name: create task definition - {{project}} auth
-  ecs_taskdefinition:
+  community.aws.ecs_taskdefinition:
     containers:
     - name: auth
       essential: true

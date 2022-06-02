@@ -43,12 +43,12 @@
       logConfiguration:
         logDriver: syslog
         options:
-          syslog-address: tcp://{{ syslog_host }}:514
+          syslog-address: "tcp://{{ syslog_host }}:514"
           tag: "{{ app_name }}-auth"
           syslog-format: "rfc5424micro"
-    network_mode: bridge
+    network_mode: "bridge"
     family: "{{project}}-{{tier}}-auth"
-    state: present
+    state: "present"
     memory: '128'
     cpu: '128'
     region: "{{region}}"

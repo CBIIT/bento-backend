@@ -160,6 +160,12 @@ Indices:
         type: keyword
       file_names:
         type: keyword
+      file_id_gs:
+        type: search_as_you_type
+      file_name_gs:
+        type: search_as_you_type
+      file_type_gs:
+        type: search_as_you_type
 
       phs_accession:
         type: keyword
@@ -195,9 +201,11 @@ Indices:
           f.file_type AS file_types,
           samp.sample_id AS sample_ids,
           f.file_id AS file_ids,
+          f.file_id AS file_id_gs,
 
           samp.sample_id AS sample_id,
           f.file_name AS file_names,
+          f.file_name AS file_name_gs,
 
           s.phs_accession AS phs_accession,
           diag.primary_site AS site,
@@ -205,6 +213,7 @@ Indices:
           f.file_id AS file_id,
           f.file_name AS file_name,
           f.file_type AS file_type,
+          f.file_type AS file_type_gs,
           f.file_size AS file_size,
           f.md5sum AS md5sum
     "

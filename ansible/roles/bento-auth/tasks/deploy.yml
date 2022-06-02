@@ -11,32 +11,32 @@
 - name: create task definition - {{project}} auth
   community.aws.ecs_taskdefinition:
     containers:
-    - name: auth
+    - name: "auth"
       essential: "true"
       image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
-      environment:
-        - name: VERSION
-          value: "{{auth_version}}"
-        - name: COOKIE_SECRET
-          value: "{{cookie_secret}}"
-        - name: SESSION_TIMEOUT
-          value: "1800"
-        - name: IDP 
-          value: "{{idp_provider}}"
-        - name: CLIENT_ID
-          value: "{{idp_client_id}}"
-        - name: CLIENT_SECRET
-          value: "{{idp_client_secret}}"
-        - name: DATE
-          value: "{{ansible_date_time.date}}"
-        - name: PROJECT
-          value: "{{project}}"
-        - name: REDIRECT_URL
-          value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
-        - name: NEW_RELIC_LICENSE_KEY
-          value: "{{ newrelic_license_key }}"
-        - name: NEW_RELIC_APP_NAME
-          value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
+      # environment:
+      #   - name: VERSION
+      #     value: "{{auth_version}}"
+      #   - name: COOKIE_SECRET
+      #     value: "{{cookie_secret}}"
+      #   - name: SESSION_TIMEOUT
+      #     value: "1800"
+      #   - name: IDP 
+      #     value: "{{idp_provider}}"
+      #   - name: CLIENT_ID
+      #     value: "{{idp_client_id}}"
+      #   - name: CLIENT_SECRET
+      #     value: "{{idp_client_secret}}"
+      #   - name: DATE
+      #     value: "{{ansible_date_time.date}}"
+      #   - name: PROJECT
+      #     value: "{{project}}"
+      #   - name: REDIRECT_URL
+      #     value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
+      #   - name: NEW_RELIC_LICENSE_KEY
+      #     value: "{{ newrelic_license_key }}"
+      #   - name: NEW_RELIC_APP_NAME
+      #     value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
       portMappings:
       - containerPort: "8082"
         hostPort: "8082"

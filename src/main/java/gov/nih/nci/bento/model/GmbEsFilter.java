@@ -299,19 +299,7 @@ public class GmbEsFilter implements DataFetcher{
     }
 
     private List<String> fileIDsFromList(Map<String, Object> params) throws IOException {
-        //Remap parameter names to match elasticsearch fields
-        Map<String, String> mapping = Map.ofEntries(
-                Map.entry("subject_id", "subject_ids"),
-                Map.entry("file_name", "file_names")
-        );
-        Map<String, Object> mappedParams = new HashMap<>();
-        for (String key: mapping.keySet()){
-            String oldKey = mapping.get(key);
-            if (params.containsKey(oldKey)){
-                mappedParams.put(key, params.get(oldKey));
-            }
-        }
-        return collectFieldFromList(mappedParams, "file_id", FILES_END_POINT);
+                return collectFieldFromList(params, "file_id", FILES_END_POINT);
     }
 
     private List<String> collectFieldFromList(Map<String, Object> params, String collectField, String endpoint) throws IOException {

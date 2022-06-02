@@ -111,6 +111,8 @@ Indices:
         type: keyword
       file_name:
         type: keyword
+      file_names:
+        type: keyword
       file_description:
         type: keyword
       file_format:
@@ -182,6 +184,7 @@ Indices:
         f.UUID AS file_id,
         f.UUID AS file_id_gs,
         f.FILE_NAME AS file_name,
+        f.FILE_NAME AS file_names,
         f.FILE_NAME AS file_name_gs,
         f.FILE_DESCRIPTION AS file_description,
         f.FILE_DESCRIPTION AS file_description_gs,

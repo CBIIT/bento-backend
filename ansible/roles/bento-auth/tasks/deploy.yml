@@ -10,7 +10,6 @@
 
 - name: create task definition for {{project}}
   community.aws.ecs_taskdefinition:
-    network_mode: "bridge"
     family: "{{project}}-{{tier}}-auth"
     memory: 128
     cpu: 128
@@ -21,27 +20,27 @@
       essential: yes
       image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
       environment:
-      - name: VERSION
+      - name: "VERSION"
         value: "{{auth_version}}"
-      - name: COOKIE_SECRET
+      - name: "COOKIE_SECRET"
         value: "{{cookie_secret}}"
-      - name: SESSION_TIMEOUT
+      - name: "SESSION_TIMEOUT"
         value: "1800"
-      - name: IDP 
+      - name: "IDP" 
         value: "{{idp_provider}}"
-      - name: CLIENT_ID
+      - name: "CLIENT_ID"
         value: "{{idp_client_id}}"
-      - name: CLIENT_SECRET
+      - name: "CLIENT_SECRET"
         value: "{{idp_client_secret}}"
-      - name: DATE
+      - name: "DATE"
         value: "{{ansible_date_time.date}}"
-      - name: PROJECT
+      - name: "PROJECT"
         value: "{{project}}"
-      - name: REDIRECT_URL
+      - name: "REDIRECT_URL"
         value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
-      - name: NEW_RELIC_LICENSE_KEY
+      - name: "NEW_RELIC_LICENSE_KEY"
         value: "{{ newrelic_license_key }}"
-      - name: NEW_RELIC_APP_NAME
+      - name: "NEW_RELIC_APP_NAME"
         value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
       portMappings:
       - containerPort: 8082

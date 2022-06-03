@@ -50,7 +50,7 @@
         container_memory: 512
         container_cpu: 256
         container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
-        about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version | split('-') | first }}/src/content/prod/aboutPagesContent.yml{% else %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version | split('-') | first }}/src/content/{{ tier }}/aboutPagesContent.yml{% endif %}"
+        about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version | split('-') | first }}/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version | split('-') | first }}/src/content/{{ tier }}/aboutPagesContent.yaml{% endif %}"
         newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
         app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
         container_env:

@@ -1,5 +1,5 @@
 module "alb" {
-  source = "https://github.com/CBIIT/datacommons-devops/terraform/modules/loadbalancer"
+  source = "git::https://github.com/CBIIT/datacommons-devops/terraform/modules/loadbalancer"
   vpc_id = var.vpc_id
   alb_log_bucket_name = module.s3.bucket_name
   env = terraform.workspace
@@ -12,7 +12,7 @@ module "alb" {
 }
 
 module "s3" {
-  source = "https://github.com/CBIIT/datacommons-devops/terraform/modules/s3"
+  source = "git::https://github.com/CBIIT/datacommons-devops/terraform/modules/s3"
   bucket_name = local.alb_log_bucket_name
   enable_version = var.enable_version
   bucket_policy = data.aws_iam_policy_document.s3_policy.json

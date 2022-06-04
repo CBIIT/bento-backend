@@ -14,7 +14,7 @@ resource "aws_security_group_rule" "inbound_http" {
   from_port   = local.http_port
   protocol    = local.tcp_protocol
   to_port     = local.http_port
-  cidr_blocks = var.alb_allowed_ip_range
+  cidr_blocks = local.allowed_alb_ip_range
   security_group_id = aws_security_group.alb-sg.id
   type              = "ingress"
 }
@@ -23,7 +23,7 @@ resource "aws_security_group_rule" "inbound_https" {
   from_port   = local.https_port
   protocol    = local.tcp_protocol
   to_port     = local.https_port
-  cidr_blocks = var.alb_allowed_ip_range
+  cidr_blocks = local.allowed_alb_ip_range
   security_group_id = aws_security_group.alb-sg.id
   type              = "ingress"
 }

@@ -8,7 +8,7 @@ locals {
   all_ips      =  var.cloud_platform == "leidos" ? ["0.0.0.0/0"] : local.nih_ip_cidrs
   alb_subnet_ids = terraform.workspace == "prod" || terraform.workspace == "stage"  || var.cloud_platform == "leidos" ? var.public_subnet_ids : var.private_subnet_ids
   #app_url =  terraform.workspace == "prod" ? "${var.app_sub_domain}.${var.domain_name}" : "${var.app_sub_domain}-${terraform.workspace}.${var.domain_name}"
-  alb_allowed_ip_range = terraform.workspace == "prod" || terraform.workspace == "stage" || var.cloud_platform == "leidos"  ?  local.all_ips : local.nih_ip_cidrs
+  allowed_alb_ip_range = terraform.workspace == "prod" || terraform.workspace == "stage" || var.cloud_platform == "leidos"  ?  local.all_ips : local.nih_ip_cidrs
   alb_log_bucket_name = var.cloud_platform == "leidos" ? "${var.stack_name}-alb-${terraform.workspace}-access-logs" : "${var.stack_name}-${var.cloud_platform}-alb-${terraform.workspace}-access-logs"
   acm_certificate_issued_type = var.cloud_platform == "leidos" ? "AMAZON_ISSUED" : "IMPORTED"
 }

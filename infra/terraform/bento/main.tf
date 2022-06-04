@@ -21,3 +21,6 @@ module "s3" {
   tags = var.tags
   attach_bucket_policy = var.attach_bucket_policy
 }
+
+
+#security_groups  = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]

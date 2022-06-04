@@ -1,10 +1,10 @@
 #create alb security group
 resource "aws_security_group" "alb-sg" {
-  name   = "${var.stack_name}-${var.env}-alb-sg"
+  name   = "${var.stack_name}-${terraform.workspace}-alb-sg"
   vpc_id = var.vpc_id
   tags = merge(
   {
-    "Name" = format("%s-%s-alb-sg", var.stack_name, var.env)
+    "Name" = format("%s-%s-alb-sg", var.stack_name, terraform.workspace)
   },
   var.tags,
   )

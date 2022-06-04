@@ -64,3 +64,9 @@ variable "private_subnet_ids" {
   description = "Provide list private subnets to use in this VPC. Example 10.0.10.0/24,10.0.11.0/24"
   type = list(string)
 }
+
+variable "attach_bucket_policy" {
+  description = "set to true if you want bucket policy and provide value for policy variable"
+  type        = bool
+  default     = true
+}

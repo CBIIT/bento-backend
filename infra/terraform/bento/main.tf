@@ -19,4 +19,5 @@ module "s3" {
   enable_version = var.enable_version
   bucket_policy = data.aws_iam_policy_document.s3_policy.json
   tags = var.tags
+  attach_bucket_policy = var.attach_bucket_policy
 }

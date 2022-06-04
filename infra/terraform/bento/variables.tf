@@ -32,14 +32,7 @@ variable "certificate_domain_name" {
   description = "domain name for the ssl cert"
   type = string
 }
-variable "alb_allowed_ip_range" {
-  description = "allowed subnet range for alb"
-  type = list(string)
-}
-variable "alb_security_group_ids" {
-  description = "list of alb security groups"
-  type = list(string)
-}
+
 variable "cloud_platform" {
   description = "choose cloud platform to use. We have two - leidos or cloudone"
   default = "leidos"

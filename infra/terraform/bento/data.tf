@@ -36,3 +36,41 @@ data "aws_iam_policy_document" "s3_policy" {
     }
   }
 }
+
+data "aws_iam_policy_document" "task_execution_policy_document" {
+    statement {
+        effect = "Allow"
+        actions = [
+            "logs:CreateLogGroup",
+        ]
+        resources = [
+            "arn:aws:logs:*:*:*"
+        ]
+    }
+    statement {
+        effect = "Allow"
+        actions = [
+            "ecs:RunTask"
+        ]
+        resources = ["*"]
+    }
+    statement {
+      effect = "Allow"
+      actions = [
+          "iam:PassRole"
+      ]
+      condition {
+        test     = "StringLike"
+        values   = ["ecs-tasks.amazonaws.com"]
+        variable = "iam:PassedToService"
+      }
+    }
+    statement {
+        effect = "Allow"
+        actions = [
+            "kms:Decrypt",
+            "secretsmanager:GetSecretValue"
+        ]
+        resources = ["*"]
+    }
+}

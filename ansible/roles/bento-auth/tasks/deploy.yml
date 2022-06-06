@@ -11,8 +11,8 @@
 - name: create task definition for {{project}}
   community.aws.ecs_taskdefinition:
     family: "{{project}}-{{tier}}-auth"
-    memory: 128
-    cpu: 128
+    memory: "128"
+    cpu: "128"
     state: present
     region: "{{region}}"
     containers:
@@ -43,8 +43,8 @@
       - name: "NEW_RELIC_APP_NAME"
         value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
       portMappings:
-      - containerPort: 8082
-        hostPort: 8082
+      - containerPort: "8082"
+        hostPort: "8082"
       logConfiguration:
         logDriver: syslog
         options:

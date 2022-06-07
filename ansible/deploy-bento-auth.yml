@@ -9,6 +9,6 @@
       include_role:
         name: bento-auth
         tasks_from: deploy
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
+      # vars:
+      #   ansible_python_interpreter: /usr/bin/python3
     

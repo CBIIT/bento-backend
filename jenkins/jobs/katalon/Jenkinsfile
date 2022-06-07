@@ -234,7 +234,8 @@ pipeline {
 				}
 				
 				emailext(attachmentsPattern: 'results/*.zip',
-                    body: "Katalon Test Results - ${BUILD_TIMESTAMP}",
+                    //body: "Katalon Test Results - ${BUILD_TIMESTAMP}",
+					body: "Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}",
                     subject: 'Katalon Test Results - Box',
                     to: "${BOX_EMAIL}")
 				

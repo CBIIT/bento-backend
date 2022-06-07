@@ -52,7 +52,7 @@
   ecs_taskdefinition:
     containers:
     - name: auth
-      essential: "true"
+      essential: true
       image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
       environment:
         - name: VERSION
@@ -78,8 +78,8 @@
         - name: NEW_RELIC_APP_NAME
           value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
       portMappings:
-      - containerPort: "8082"
-        hostPort: "8082"
+      - containerPort: 8082
+        hostPort: 8082
       logConfiguration:
         logDriver: syslog
         options:
@@ -89,8 +89,8 @@
     network_mode: "bridge"
     family: "{{project}}-{{tier}}-auth"
     state: "present"
-    memory: "128"
-    cpu: "128"
+    memory: 128
+    cpu: 128
     region: "{{region}}"
   register: task_output
 

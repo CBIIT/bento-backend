@@ -3,50 +3,10 @@
     name: common
     tasks_from: ecr-login
 
-# - name: create task definition for {{project}}
-#   ecs_taskdefinition:
-#     family: "{{project}}-{{tier}}-auth"
-#     memory: "128"
-#     cpu: "128"
-#     state: present
-#     region: "{{region}}"
-#     containers:
-#     - name: "auth"
-#       essential: yes
-#       image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
-#       environment:
-#       - name: "VERSION"
-#         value: "{{auth_version}}"
-#       - name: "COOKIE_SECRET"
-#         value: "{{cookie_secret}}"
-#       - name: "SESSION_TIMEOUT"
-#         value: "1800"
-#       - name: "IDP" 
-#         value: "{{idp_provider}}"
-#       - name: "CLIENT_ID"
-#         value: "{{idp_client_id}}"
-#       - name: "CLIENT_SECRET"
-#         value: "{{idp_client_secret}}"
-#       - name: "DATE"
-#         value: "{{ansible_date_time.date}}"
-#       - name: "PROJECT"
-#         value: "{{project}}"
-#       - name: "REDIRECT_URL"
-#         value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
-#       - name: "NEW_RELIC_LICENSE_KEY"
-#         value: "{{ newrelic_license_key }}"
-#       - name: "NEW_RELIC_APP_NAME"
-#         value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
-#       portMappings:
-#       - containerPort: "8082"
-#         hostPort: "8082"
-#       logConfiguration:
-#         logDriver: syslog
-#         options:
-#           syslog-address: "tcp://{{ syslog_host }}:514"
-#           tag: "{{ app_name }}-auth"
-#           syslog-format: "rfc5424micro"
-#   register: task_output
+- name: get db ip
+  include_role:
+    name: common
+    tasks_from: neo4j-ip
 
 - name: create task definition - {{project}} auth
   ecs_taskdefinition:
@@ -55,6 +15,12 @@
       essential: true
       image: "{{ ecr_repo }}/{{project}}-auth:{{auth_version}}"
       environment:
+        - name: NEO4J_URI
+          value: "bolt://{{neo4j_ip}}:7687"
+        - name: NEO4J_USER
+          value: "{{neo4j_user}}"
+        - name: NEO4J_PASSWORD
+          value: "{{neo4j_password}}"
         - name: VERSION
           value: "{{auth_version}}"
         - name: COOKIE_SECRET

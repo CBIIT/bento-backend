@@ -174,7 +174,7 @@ pipeline {
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')
 				echo "Applying tag $Downloader_Tag to URL:  $gitURL"
 				git config user.email "jenkins@bento-tools.org"
-				git config user.name "Bento Jenkins"
+        git config user.name "Bento Jenkins"
 				git tag --no-sign -a ${Downloader_Tag}-icdc-${BUILD_NUMBER} -m "Jenkins tag: ${Downloader_Tag}-${BUILD_NUMBER}"
 				git push https://${git_token}:x-oauth-basic@${gitURL} --tags
 				

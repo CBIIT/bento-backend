@@ -120,7 +120,7 @@ pipeline {
        FILES_SLACK_URL = "${FILES_SLACK_URL}"
       }
   		steps{
-  		  node('cicd_microservice') {
+  		  
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 
@@ -157,7 +157,6 @@ pipeline {
 
 			}
 		  }
-  		}
   	}
   }
   post {

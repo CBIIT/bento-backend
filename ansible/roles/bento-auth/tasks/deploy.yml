@@ -3,11 +3,6 @@
     name: common
     tasks_from: ecr-login
 
-- name: get db ip
-  include_role:
-    name: common
-    tasks_from: neo4j-ip
-
 - name: create task definition - {{project}} auth
   ecs_taskdefinition:
     containers:

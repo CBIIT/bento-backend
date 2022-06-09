@@ -11,7 +11,7 @@
       command: ansible-galaxy collection install {{item}}
       loop:
         -  community.aws
-        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.0
+        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.1
 
     #get db ip
     - name: get db ip

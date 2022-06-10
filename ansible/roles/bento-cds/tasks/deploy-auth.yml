@@ -29,6 +29,12 @@
     container_cpu: "{{  auth_container_cpu  }}"
     ecs_cluster_name: "{{ auth_ecs_cluster_name }}"
     container_env:
+      - name: NEO4J_URI
+        value: "bolt://{{neo4j_ip}}:7687"
+      - name: NEO4J_USER
+        value: "{{neo4j_user}}"
+      - name: NEO4J_PASSWORD
+        value: "{{neo4j_password}}"
       - name: VERSION
         value: "{{auth_version}}"
       - name: COOKIE_SECRET

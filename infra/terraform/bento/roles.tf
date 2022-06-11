@@ -9,6 +9,7 @@ module "ecs_task_role" {
   trusted_role_services = [
       "ecs-tasks.amazonaws.com"
   ]
+  tags = var.tags
 }
 
 module "ecs_task_execution_role" {
@@ -22,4 +23,5 @@ module "ecs_task_execution_role" {
   add_custom_policy = true
   custom_role_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
   iam_policy  = data.aws_iam_policy_document.task_execution_policy_document.json
+  tags = var.tags
 }

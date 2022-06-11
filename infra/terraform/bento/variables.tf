@@ -86,3 +86,17 @@ variable "microservices" {
     path = string
   }))
 }
+variable "domain_name" {
+  description = "domain name for the application"
+  type = string
+}
+
+variable "application_subdomain" {
+  description = "subdomain of the app"
+  type = string
+}
+variable "force_destroy_bucket" {
+  description = "force destroy bucket"
+  default = true
+  type = bool
+}

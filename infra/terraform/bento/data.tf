@@ -60,6 +60,7 @@ data "aws_iam_policy_document" "task_execution_policy_document" {
         values   = ["ecs-tasks.amazonaws.com"]
         variable = "iam:PassedToService"
       }
+      resources = ["*"]
     }
     statement {
         effect = "Allow"

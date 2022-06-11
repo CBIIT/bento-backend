@@ -20,8 +20,20 @@ module "s3" {
   bucket_policy = data.aws_iam_policy_document.s3_policy.json
   tags = var.tags
   attach_bucket_policy = var.attach_bucket_policy
+  force_destroy_bucket = var.force_destroy_bucket
 }
 
-
-
-#security_groups  = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]
+module "ecs" {
+  source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/ecs"
+  stack_name = var.stack_name
+  tags = var.tags
+  vpc_id = var.vpc_id
+  ecs_subnet_ids = var.private_subnet_ids
+  application_url = local.application_url
+  env = terraform.workspace
+  microservices = var.microservices
+  alb_https_listener_arn = module.alb.alb_https_listener_arn
+  ecs_security_group_ids = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]
+  ecs_task_role_arn = module.ecs_task_role.iam_role_arn
+  ecs_execution_role_arn = module.ecs_task_execution_role.iam_role_arn
+}

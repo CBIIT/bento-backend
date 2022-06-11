@@ -7,8 +7,8 @@ private_subnet_ids = [
   "subnet-07d177a4d9df5cd32"
 ]
 vpc_id = "vpc-08f154f94dc8a0e34"
-stack_name = "bento"
-app_name = "bento"
+stack_name = "vote"
+app_name = "vote"
 domain_name = "bento-tools.org"
 
 tags = {
@@ -24,7 +24,7 @@ region = "us-east-1"
 fargate_security_group_ports = ["80","443","3306","7473","7474","9200","7687"]
 
 allowed_subnet_ip_block = ["172.18.0.0/16","172.16.0.219/32"]
-app_sub_domain = "cds"
+application_subdomain = "vote"
 elasticsearch_version = "OpenSearch_1.1"
 
 elasticsearch_instance_type = "t3.medium.elasticsearch"

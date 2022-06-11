@@ -13,4 +13,5 @@ locals {
   acm_certificate_issued_type = var.cloud_platform == "leidos" ? "AMAZON_ISSUED" : "IMPORTED"
   ecs_task_role_name = "${var.stack_name}-${terraform.workspace}-ecs-task-role"
   ecs_task_execution_role_name = "${var.stack_name}-${terraform.workspace}-ecs-task-execution-role"
+  application_url =  terraform.workspace == "prod" ? "${var.application_subdomain}.${var.domain_name}" : "${var.application_subdomain}-${terraform.workspace}.${var.domain_name}"
 }

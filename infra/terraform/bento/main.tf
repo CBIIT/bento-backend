@@ -43,7 +43,7 @@ module "ecr" {
    count = var.create_ecr_repos ? 1: 0
    source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/ecr"
    stack_name = var.stack_name
-   ecr_names = var.ecr_repo_names
+   ecr_repo_names = var.ecr_repo_names
    tags = var.tags
    env = terraform.workspace
 }

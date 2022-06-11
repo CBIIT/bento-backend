@@ -84,6 +84,7 @@ variable "microservices" {
     cpu = number
     memory = number
     path = string
+    number_container_replicas = number
   }))
 }
 variable "domain_name" {

@@ -41,6 +41,7 @@ microservices  = {
     cpu = 256
     memory = 512
     path = "/*"
+    number_container_replicas = 1
   },
   backend = {
     name = "backend"
@@ -51,6 +52,7 @@ microservices  = {
     cpu = 512
     memory = 1024
     path = "/v1/graphql/*"
+    number_container_replicas = 1
   },
   auth = {
     name = "auth"
@@ -61,6 +63,7 @@ microservices  = {
     cpu = 256
     memory = 512
     path = "/api/auth/*"
+    number_container_replicas = 1
   },
   files = {
     name = "files"
@@ -71,5 +74,6 @@ microservices  = {
     cpu = 256
     memory = 512
     path = "/api/files/*"
+    number_container_replicas = 1
   }
 }

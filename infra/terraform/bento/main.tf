@@ -22,27 +22,6 @@ module "s3" {
   attach_bucket_policy = var.attach_bucket_policy
 }
 
-module "ecs_service_role" {
-  source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/roles"
-  iam_role_name = local.ecs_service_role_name
-  iam_policy_description = "ecs service role"
-  add_custom_policy = true
-  iam_policy_document
 
-}
-
-module "ecs_task_execution_role" {
-  source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/roles"
-  iam_role_name = local.ecs_task_execution_role_name
-  custom_policy_name = "ecs-task-execution-policy"
-  iam_policy_description = "ecs task execution role"
-  trusted_role_services = [
-      "ecs-tasks.amazonaws.com"
-  ]
-  add_custom_policy = true
-  custom_role_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
-  iam_policy_document = data.aws_iam_policy_document.task_execution_policy_document.json
-
-}
 
 #security_groups  = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]

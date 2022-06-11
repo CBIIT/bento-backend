@@ -48,13 +48,6 @@ data "aws_iam_policy_document" "task_execution_policy_document" {
         ]
     }
     statement {
-        effect = "Allow"
-        actions = [
-            "ecs:RunTask"
-        ]
-        resources = ["*"]
-    }
-    statement {
       effect = "Allow"
       actions = [
           "iam:PassRole"
@@ -69,8 +62,32 @@ data "aws_iam_policy_document" "task_execution_policy_document" {
         effect = "Allow"
         actions = [
             "kms:Decrypt",
-            "secretsmanager:GetSecretValue"
+            "kms:GetPublicKey",
+            "kms:GenerateDataKey",
+            "kms:DescribeKey"
         ]
         resources = ["*"]
     }
+}
+data "aws_iam_policy_document" "ecs_task_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "es:ESHttpGet",
+      "s3:ListBucket",
+      "es:ESHttpDelete",
+      "s3:GetBucketAcl",
+      "es:ESCrossClusterGet",
+      "s3:PutObject",
+      "s3:GetObject",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPatch",
+      "s3:GetObjectVersionAcl",
+      "s3:GetBucketLocation",
+      "es:ESHttpPut",
+      "s3:GetObjectVersion"
+    ]
+    resources = ["*"]
+  }
 }

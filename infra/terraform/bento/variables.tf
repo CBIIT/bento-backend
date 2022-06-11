@@ -70,3 +70,19 @@ variable "attach_bucket_policy" {
   type        = bool
   default     = true
 }
+variable "fargate_security_group_ports" {
+  type = list(string)
+  description = "list of ports to allow when using ECS"
+}
+variable "microservices" {
+  type = map(object({
+    name = string
+    port = number
+    health_check_path = string
+    priority_rule_number = number
+    image_url = string
+    cpu = number
+    memory = number
+    path = string
+  }))
+}

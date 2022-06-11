@@ -1,7 +1,7 @@
 
 module "ecs_task_role" {
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/roles"
-  iam_role_name = local.ecs_service_role_name
+  iam_role_name = local.ecs_task_role_name
   custom_policy_name = "${var.stack_name}-${terraform.workspace}-ecs-task-policy"
   iam_policy_description = "${var.stack_name}-${terraform.workspace} ecs task policy"
   add_custom_policy = true

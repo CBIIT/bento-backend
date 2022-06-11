@@ -1,4 +1,7 @@
 data "aws_caller_identity" "current" {}
+data "aws_vpc" "vpc" {
+  id = var.vpc_id
+}
 data "aws_iam_policy_document" "s3_policy" {
   statement {
     sid = "allowalbaccount"

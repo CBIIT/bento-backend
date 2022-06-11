@@ -9,7 +9,6 @@ resource "aws_security_group" "alb-sg" {
   var.tags,
   )
 }
-
 resource "aws_security_group_rule" "inbound_http" {
   from_port   = local.http_port
   protocol    = local.tcp_protocol
@@ -18,7 +17,6 @@ resource "aws_security_group_rule" "inbound_http" {
   security_group_id = aws_security_group.alb-sg.id
   type              = "ingress"
 }
-
 resource "aws_security_group_rule" "inbound_https" {
   from_port   = local.https_port
   protocol    = local.tcp_protocol
@@ -27,7 +25,6 @@ resource "aws_security_group_rule" "inbound_https" {
   security_group_id = aws_security_group.alb-sg.id
   type              = "ingress"
 }
-
 resource "aws_security_group_rule" "all_outbound" {
   from_port   = local.any_port
   protocol    = local.any_protocol
@@ -36,18 +33,16 @@ resource "aws_security_group_rule" "all_outbound" {
   security_group_id = aws_security_group.alb-sg.id
   type              = "egress"
 }
-
 resource "aws_security_group" "fargate_sg" {
-  name = "${var.stack_name}-${var.env}-fargate-sg"
+  name = "${var.stack_name}-${terraform.workspace}-fargate-sg"
   vpc_id = var.vpc_id
   tags = merge(
   {
-    "Name" = format("%s-%s-fargate-sg",var.stack_name,var.env),
+    "Name" = format("%s-%s-fargate-sg",var.stack_name,terraform.workspace),
   },
   var.tags,
   )
 }
-
 resource "aws_security_group_rule" "all_outbound_fargate" {
   from_port = local.any_port
   protocol = local.any_protocol
@@ -56,7 +51,6 @@ resource "aws_security_group_rule" "all_outbound_fargate" {
   security_group_id = aws_security_group.fargate_sg.id
   type = "egress"
 }
-
 resource "aws_security_group_rule" "inbound_fargate" {
   for_each = toset(var.fargate_security_group_ports)
   from_port = each.key
@@ -66,30 +60,25 @@ resource "aws_security_group_rule" "inbound_fargate" {
   cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   type = "ingress"
 }
-
 resource "aws_security_group" "app_sg" {
-  name = "${var.stack_name}-${var.env}-app-sg"
+  name = "${var.stack_name}-${terraform.workspace}-app-sg"
   vpc_id = var.vpc_id
   tags = merge(
   {
-    "Name" = format("%s-%s-frontend-sg",var.stack_name,var.env),
+    "Name" = format("%s-%s-frontend-sg",var.stack_name,terraform.workspace),
   },
   var.tags,
   )
 }
-
 resource "aws_security_group_rule" "inbound_alb" {
   for_each = var.microservices
   from_port = each.value.port
   protocol = local.tcp_protocol
   to_port = each.value.port
   security_group_id = aws_security_group.app_sg.id
-  source_security_group_id = var.alb_security_group_ids
+  source_security_group_id = local.alb_subnet_ids
   type = "ingress"
 }
-
-
-
 resource "aws_security_group_rule" "all_outbound_frontend" {
   from_port = local.any_port
   protocol = local.any_protocol

@@ -37,3 +37,13 @@ module "ecs" {
   ecs_task_role_arn = module.ecs_task_role.iam_role_arn
   ecs_execution_role_arn = module.ecs_task_execution_role.iam_role_arn
 }
+
+#create ecr
+module "ecr" {
+   count = var.create_ecr_repos ? 1: 0
+   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/ecs"
+   stack_name = var.stack_name
+   ecr_names = var.ecr_repo_names
+   tags = var.tags
+   env = terraform.workspace
+}

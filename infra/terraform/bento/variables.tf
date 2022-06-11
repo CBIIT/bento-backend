@@ -101,3 +101,12 @@ variable "force_destroy_bucket" {
   default = true
   type = bool
 }
+variable "ecr_repo_names" {
+  description = "list of repo names"
+  type = list(string)
+}
+variable "create_ecr_repos" {
+  type = bool
+  default = false
+  description = "choose whether to create ecr repos or not"
+}

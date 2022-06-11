@@ -26,10 +26,10 @@ fargate_security_group_ports = ["80","443","3306","7473","7474","9200","7687"]
 allowed_subnet_ip_block = ["172.18.0.0/16","172.16.0.219/32"]
 application_subdomain = "vote"
 elasticsearch_version = "OpenSearch_1.1"
-
+create_ecr_repos = true
 elasticsearch_instance_type = "t3.medium.elasticsearch"
 create_es_service_role = false
-app_ecr_registry_names = ["backend","frontend","auth","files"]
+ecr_repo_names = ["backend","frontend","auth","files"]
 create_dns_record = true
 microservices  = {
   frontend = {

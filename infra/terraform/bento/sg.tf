@@ -90,7 +90,7 @@ resource "aws_security_group_rule" "all_outbound_app" {
 
 #security group for opensearch
 resource "aws_security_group" "opensearch_sg" {
-  count = var.create_opensearch_cluster
+  count = var.create_opensearch_cluster ? 1: 0
   name = "${var.stack_name}-${terraform.workspace}-opensearch-sg"
   vpc_id = var.vpc_id
   ingress {
@@ -102,7 +102,7 @@ resource "aws_security_group" "opensearch_sg" {
 }
 
 resource "aws_security_group_rule" "all_outbound_opensearch" {
-  count = var.create_opensearch_cluster
+  count = var.create_opensearch_cluster ? 1: 0
   from_port = local.any_port
   protocol = local.any_protocol
   to_port = local.any_port

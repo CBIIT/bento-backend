@@ -50,7 +50,7 @@ module "ecr" {
 
 #create opensearch
 module "opensearch" {
-  count = var.create_opensearch_cluster
+  count = var.create_opensearch_cluster ? 1: 0
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/opensearch"
   stack_name = var.stack_name
   tags = var.tags

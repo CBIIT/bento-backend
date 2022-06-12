@@ -58,5 +58,5 @@ module "opensearch" {
   env = terraform.workspace
   opensearch_subnet_ids = var.private_subnet_ids
   opensearch_version = var.opensearch_version
-  opensearch_security_group_ids = [aws_security_group.opensearch_sg[0].id]
+  opensearch_security_group_ids = [aws_security_group.opensearch_sg[count.index].id]
 }

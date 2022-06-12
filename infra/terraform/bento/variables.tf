@@ -123,7 +123,7 @@ variable "opensearch_ebs_volume_size" {
 variable "opensearch_instance_type" {
   description = "type of instance to be used to create the elasticsearch cluster"
   type = string
-  default = "t3.medium"
+  default = "t3.medium.elasticsearch"
 }
 variable "opensearch_version" {
   type = string

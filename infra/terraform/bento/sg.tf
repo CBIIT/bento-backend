@@ -107,6 +107,6 @@ resource "aws_security_group_rule" "all_outbound_opensearch" {
   protocol = local.any_protocol
   to_port = local.any_port
   cidr_blocks = local.all_ips
-  security_group_id = aws_security_group.opensearch_sg[count.index]
+  security_group_id = aws_security_group.opensearch_sg[count.index].id
   type = "egress"
 }

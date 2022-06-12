@@ -8,7 +8,6 @@ private_subnet_ids = [
 ]
 vpc_id = "vpc-08f154f94dc8a0e34"
 stack_name = "vote"
-app_name = "vote"
 domain_name = "bento-tools.org"
 
 tags = {
@@ -23,7 +22,6 @@ region = "us-east-1"
 
 fargate_security_group_ports = ["80","443","3306","7473","7474","9200","7687"]
 application_subdomain = "vote"
-elasticsearch_version = "OpenSearch_1.1"
 create_ecr_repos = true
 elasticsearch_instance_type = "t3.medium.elasticsearch"
 create_es_service_role = false

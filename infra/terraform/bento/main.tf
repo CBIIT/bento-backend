@@ -59,4 +59,5 @@ module "opensearch" {
   opensearch_subnet_ids = var.private_subnet_ids
   opensearch_version = var.opensearch_version
   opensearch_security_group_ids = [aws_security_group.opensearch_sg[count.index].id]
+  create_os_service_role = var.create_os_service_role
 }

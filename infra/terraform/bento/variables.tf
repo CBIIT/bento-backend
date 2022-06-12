@@ -135,3 +135,8 @@ variable "opensearch_allowed_ip_block" {
   type = list(string)
   default = []
 }
+variable "create_os_service_role" {
+  type = bool
+  default = false
+  description = "change this value to true if running this script for the first time"
+}

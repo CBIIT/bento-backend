@@ -110,3 +110,28 @@ variable "create_ecr_repos" {
   default = false
   description = "choose whether to create ecr repos or not"
 }
+variable "create_opensearch_cluster" {
+  description = "choose to create opensearch cluster or not"
+  type = bool
+  default = false
+}
+variable "opensearch_ebs_volume_size" {
+  description = "size of the ebs volume attached to the opensearch instance"
+  type = number
+  default = 200
+}
+variable "opensearch_instance_type" {
+  description = "type of instance to be used to create the elasticsearch cluster"
+  type = string
+  default = "t3.medium"
+}
+variable "opensearch_version" {
+  type = string
+  description = "specify es version"
+  default = "OpenSearch_1.1"
+}
+variable "opensearch_allowed_ip_block" {
+  description = "allowed ip block for the opensearch"
+  type = list(string)
+  default = []
+}

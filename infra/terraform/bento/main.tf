@@ -47,3 +47,17 @@ module "ecr" {
    tags = var.tags
    env = terraform.workspace
 }
+
+#create opensearch
+module "opensearch" {
+  count = var.create_opensearch_cluster
+  source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/opensearch"
+  stack_name = var.stack_name
+  tags = var.tags
+  vpc_id = var.vpc_id
+  opensearch_instance_type = var.opensearch_instance_type
+  env = terraform.workspace
+  opensearch_subnet_ids = var.private_subnet_ids
+  opensearch_version = var.opensearch_version
+  opensearch_security_group_ids = [aws_security_group.opensearch_sg[0].id]
+}

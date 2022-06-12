@@ -79,11 +79,34 @@ resource "aws_security_group_rule" "inbound_alb" {
   source_security_group_id = aws_security_group.alb-sg.id
   type = "ingress"
 }
-resource "aws_security_group_rule" "all_outbound_frontend" {
+resource "aws_security_group_rule" "all_outbound_app" {
   from_port = local.any_port
   protocol = local.any_protocol
   to_port = local.any_port
   cidr_blocks = local.all_ips
   security_group_id = aws_security_group.app_sg.id
+  type = "egress"
+}
+
+#security group for opensearch
+resource "aws_security_group" "opensearch_sg" {
+  count = var.create_opensearch_cluster
+  name = "${var.stack_name}-${terraform.workspace}-opensearch-sg"
+  vpc_id = var.vpc_id
+  ingress {
+    from_port = local.https_port
+    to_port = local.https_port
+    protocol = local.tcp_protocol
+    cidr_blocks = var.opensearch_allowed_ip_block
+  }
+}
+
+resource "aws_security_group_rule" "all_outbound_opensearch" {
+  count = var.create_opensearch_cluster
+  from_port = local.any_port
+  protocol = local.any_protocol
+  to_port = local.any_port
+  cidr_blocks = local.all_ips
+  security_group_id = aws_security_group.opensearch_sg.id
   type = "egress"
 }

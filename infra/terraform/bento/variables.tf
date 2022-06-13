@@ -130,7 +130,7 @@ variable "opensearch_version" {
   description = "specify es version"
   default = "OpenSearch_1.1"
 }
-variable "opensearch_allowed_ip_block" {
+variable "allowed_ip_blocks" {
   description = "allowed ip block for the opensearch"
   type = list(string)
   default = []
@@ -139,4 +139,58 @@ variable "create_os_service_role" {
   type = bool
   default = false
   description = "change this value to true if running this script for the first time"
+}
+variable "create_dns_record" {
+  description = "choose to create dns record or not"
+  type = bool
+  default = true
+}
+variable "bastion_host_security_group_id" {
+  description = "security group id of the bastion host"
+  type = string
+}
+variable "katalon_security_group_id" {
+  description = "security group id of the bastion host"
+  type = string
+}
+variable "db_iam_instance_profile_name" {
+  description = "name of iam_instance_profile to apply to this instance"
+  type = string
+  default = "bento-dev-ecs-instance-profile"
+}
+variable "db_subnet_id" {
+  description = "subnet id to launch db"
+  type = string
+  default = ""
+}
+
+variable "db_instance_volume_size" {
+  description = "volume size of the instances"
+  type = number
+  default = 100
+}
+variable "ssh_user" {
+  type = string
+  description = "name of the ec2 user"
+  default = "bento"
+}
+variable "db_private_ip" {
+  description = "private ip of the db instance"
+  type = string
+  default = "10.0.0.2"
+}
+variable "ssh_key_name" {
+  description = "name of the ssh key to manage the instances"
+  type = string
+  default = "devops"
+}
+variable "public_ssh_key_ssm_parameter_name" {
+  description = "name of the ssm parameter holding ssh key content"
+  default = "ssh_public_key"
+  type = string
+}
+variable "create_db_instance" {
+  description = "set this value if you want create db instance"
+  default = false
+  type = bool
 }

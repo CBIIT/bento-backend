@@ -61,3 +61,25 @@ module "opensearch" {
   opensearch_security_group_ids = [aws_security_group.opensearch_sg[count.index].id]
   create_os_service_role = var.create_os_service_role
 }
+
+module "dns" {
+  count = var.create_dns_record ? 1: 0
+  source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/route53"
+  env = terraform.workspace
+  alb_zone_id = module.dns.alb_zone_id
+  alb_dns_name = module.dns.alb_dns_name
+  application_subdomain = var.application_subdomain
+  domain_name = var.domain_name
+}
+
+module "neo4j" {
+  count = var.create_db_instance? 1: 0
+  source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/neo4j"
+  env = terraform.workspace
+  db_security_group_ids = [aws_security_group.database-sg.id]
+  vpc_id = var.vpc_id
+  db_subnet_id = var.db_subnet_id
+  db_instance_volume_size = var.db_instance_volume_size
+  iam_instance_profile_name = var.db_iam_instance_profile_name
+  public_ssh_key_ssm_parameter_name = var.public_ssh_key_ssm_parameter_name
+}

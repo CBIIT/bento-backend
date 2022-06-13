@@ -97,7 +97,7 @@ resource "aws_security_group" "opensearch_sg" {
     from_port = local.https_port
     to_port = local.https_port
     protocol = local.tcp_protocol
-    cidr_blocks = var.opensearch_allowed_ip_block
+    cidr_blocks = var.allowed_ip_blocks
   }
 }
 
@@ -109,4 +109,100 @@ resource "aws_security_group_rule" "all_outbound_opensearch" {
   cidr_blocks = local.all_ips
   security_group_id = aws_security_group.opensearch_sg[count.index].id
   type = "egress"
+}
+
+#create database security group
+resource "aws_security_group" "database-sg" {
+  count = var.create_db_instance ? 1 : 0
+  name = "${var.stack_name}-${terraform.workspace}-database-sg"
+  description = "${var.stack_name} database security group"
+  vpc_id = var.vpc_id
+  tags = merge(
+  {
+    "Name" = format("%s-%s",var.stack_name,"database-sg")
+  },
+  var.tags,
+  )
+}
+resource "aws_security_group_rule" "neo4j_http" {
+  count = var.create_db_instance ? 1 : 0
+  from_port = local.neo4j_http
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_http
+  cidr_blocks = var.allowed_ip_blocks
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+resource "aws_security_group_rule" "bastion_host_ssh" {
+  count = var.create_db_instance ? 1 : 0
+  from_port = local.bastion_port
+  protocol = local.tcp_protocol
+  to_port = local.bastion_port
+  source_security_group_id = var.bastion_host_security_group_id
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+resource "aws_security_group_rule" "neo4j_https" {
+  count = var.create_db_instance ? 1 : 0
+  from_port = local.neo4j_https
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_https
+  cidr_blocks = var.allowed_ip_blocks
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+
+resource "aws_security_group_rule" "neo4j_bolt" {
+  count = var.create_db_instance ? 1 : 0
+  from_port = local.neo4j_bolt
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_bolt
+  cidr_blocks = var.allowed_ip_blocks
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+
+resource "aws_security_group_rule" "all_outbound_db" {
+  count = var.create_db_instance ? 1 : 0
+  from_port = local.any_port
+  protocol = local.any_protocol
+  to_port = local.any_port
+  cidr_blocks = local.all_ips
+  security_group_id = aws_security_group.database-sg.id
+  type = "egress"
+}
+
+//Dataloader security rules
+resource "aws_security_group_rule" "dataloader_http" {
+  count = var.create_db_instance ? 1 : 0
+  from_port = local.neo4j_http
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_http
+  source_security_group_id = var.bastion_host_security_group_id
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+resource "aws_security_group_rule" "dataloader_bolt" {
+  from_port = local.neo4j_bolt
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_bolt
+  source_security_group_id = var.bastion_host_security_group_id
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+resource "aws_security_group_rule" "katalon_bolt" {
+  from_port = local.neo4j_bolt
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_bolt
+  source_security_group_id = var.katalon_security_group_id
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
+}
+resource "aws_security_group_rule" "katalon_http" {
+  from_port = local.neo4j_http
+  protocol = local.tcp_protocol
+  to_port = local.neo4j_http
+  source_security_group_id = var.katalon_security_group_id
+  security_group_id = aws_security_group.database-sg.id
+  type = "ingress"
 }

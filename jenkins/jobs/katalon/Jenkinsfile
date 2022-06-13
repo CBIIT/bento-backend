@@ -23,11 +23,7 @@ pipeline {
 			label "docker-katalon-ch"
             }
         }
-	environment { 
-        katalonVer = '7.2.6'
-		chromedriverVer = '83.0.4103.39'
-		geckodriverVer = '0.26.0'
-		}
+
     parameters {
 
     gitParameter(branchFilter: 'origin/(.*)', 
@@ -67,12 +63,11 @@ pipeline {
         name: 'EmailRecipients')
 
         }
+
     // options {
     // 	ansiColor('xterm')
     // }
-    tools {
-        jdk 'Default' 
-        }
+
     stages{
         stage('checkout'){
             steps {
@@ -92,55 +87,42 @@ pipeline {
                 }
 			steps {
                 script {
-                    switch("${params.Profile}") {
-                    case "DEV_ICDC":
-						WIKI_PAGE="289178264"
+				    switch("${params.Profile}") {
+                    case ~[\w\/]+ICDC$:
 						PROJECT="ICDC"
+						withCredentials([string(credentialsId: 'Sharepoint_Email', variable: 'results_email'),
+						  string(credentialsId: 'Sharepoint_Url_ICDC', variable: 'sharepoint_url')]) {
+                            RESULTS_URL="${sharepoint_url}"
+							RESULTS_EMAIL="${results_email}"
+                            }
+                        break
+					}
+					
+					switch("${params.Profile}") {
+                    case "DEV_ICDC":
 						TIER="DEV"
-						withCredentials([string(credentialsId: 'Box_Email_DEV_ICDC', variable: 'box_email'),
-						  string(credentialsId: 'Box_Url_DEV_ICDC', variable: 'box_url'),
-						  file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
-                            BOX_URL="${box_url}"
-							BOX_EMAIL="${box_email}"
+						withCredentials([file(credentialsId: 'Katalon_Dev_ICDC', variable: 'pass_file')]) {
 							PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                     case "QA_ICDC":
-						WIKI_PAGE="289178264"
-						PROJECT="ICDC"
 						TIER="QA"
-						withCredentials([string(credentialsId: 'Box_Email_QA_ICDC', variable: 'box_email'),
-						  string(credentialsId: 'Box_Url_QA_ICDC', variable: 'box_url'),
-						  file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
-                            BOX_URL="${box_url}"
-							BOX_EMAIL="${box_email}"
+						withCredentials([file(credentialsId: 'Katalon_QA_ICDC', variable: 'pass_file')]) {
 							PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                     case "STAGE_ICDC":
-						WIKI_PAGE="289178264"
-						PROJECT="ICDC"
 						TIER="STAGE"
-						withCredentials([string(credentialsId: 'Box_Email_STAGE_ICDC', variable: 'box_email'),
-						  string(credentialsId: 'Box_Url_STAGE_ICDC', variable: 'box_url'),
-						  file(credentialsId: 'Katalon_STAGE_ICDC', variable: 'pass_file')]) {
-                            BOX_URL="${box_url}"
-							BOX_EMAIL="${box_email}"
+						withCredentials([file(credentialsId: 'Katalon_STAGE_ICDC', variable: 'pass_file')]) {
 							PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
                     case "PROD_ICDC":
-						WIKI_PAGE="289178264"
-						PROJECT="ICDC"
 						TIER="PROD"
-						withCredentials([string(credentialsId: 'Box_Email_PROD_ICDC', variable: 'box_email'),
-						  string(credentialsId: 'Box_Url_PROD_ICDC', variable: 'box_url'),
-						  file(credentialsId: 'Katalon_PROD_ICDC', variable: 'pass_file')]) {
-                            BOX_URL="${box_url}"
-							BOX_EMAIL="${box_email}"
+						withCredentials([file(credentialsId: 'Katalon_PROD_ICDC', variable: 'pass_file')]) {
 							PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
@@ -152,8 +134,8 @@ pipeline {
 						withCredentials([string(credentialsId: 'Box_Email_QA_CTDC', variable: 'box_email'),
 						  string(credentialsId: 'Box_Url_QA_CTDC', variable: 'box_url'),
 						  file(credentialsId: 'Katalon_QA_CTDC', variable: 'pass_file')]) {
-                            BOX_URL="${box_url}"
-							BOX_EMAIL="${box_email}"
+                            RESULTS_URL="${box_url}"
+							RESULTS_EMAIL="${box_email}"
 							PROFILE="${pass_file}"
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
@@ -235,56 +217,58 @@ pipeline {
 				
 				emailext(attachmentsPattern: 'results/*.zip',
                     //body: "Katalon Test Results - ${BUILD_TIMESTAMP}",
+                    //subject: 'Katalon Test Results - Box',
+                    //to: "${BOX_EMAIL}")
 					body: "Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}",
-                    subject: 'Katalon Test Results - Box',
-                    to: "${BOX_EMAIL}")
+                    subject: 'Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}',
+                    to: "${RESULTS_EMAIL}")
 				
-				script {
-
-					withCredentials([usernamePassword(credentialsId: 'Katalon_wiki_results', passwordVariable: 'passwd', usernameVariable: 'user')]) {
-
-						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
-
-						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
-						resultsFile=$(basename results/*.zip)
-						project=''' + PROJECT + '''
-						tier=''' + TIER + '''
-						pageID=''' + WIKI_PAGE + '''
-						pageName="$project Automated Test Results"
-						creds="\'$user:$passwd\'"
-						
-						# get updated page text
-						totalTestCases="$(grep -c '<testcase' $inputFile)"
-						passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
-						failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
-						errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
-						pageMessage="<p>Test results from the latest Katalon Test on $project $tier: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
-						curlCMD="curl -D- -u $creds https://collaborate.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
-						pageText=$(eval $curlCMD)
-						pageMessage="$pageMessage $pageText </p>"
-						
-						# get page version
-						curlCMD="curl -D- -u $creds https://collaborate.nci.nih.gov/rest/api/content/$pageID?expand=version.number | grep -oP '(?<=number\\\":).*' | awk -F, '{print \\$1}'"
-						pageVer=$(eval $curlCMD)
-						pageVer="$((pageVer+1))"
-
-						# update page content
-						curlCMD="curl -u $creds -X PUT -H 'Content-Type: application/json' -d \'{\\\"id\\\":\\\"$pageID\\\",\\\"type\\\":\\\"page\\\",\\\"title\\\":\\\"$pageName\\\",\\\"body\\\":{\\\"storage\\\":{\\\"value\\\":\\\"$pageMessage\\\",\\\"representation\\\":\\\"storage\\\"}},\\\"version\\\":{\\\"number\\\":$pageVer}}\' https://collaborate.nci.nih.gov/rest/api/content/$pageID"
-						curlError=$(eval $curlCMD)
-						echo "Confluence Error:   $curlError"
-						
-						# add latest results as attachment
-						resultsURL="https://collaborate.nci.nih.gov/rest/api/content/$pageID/child/attachment"
-						resultsFile=$(basename results/*.html)
-						curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
-						curlError=$(eval $curlCMD)
-						echo "Confluence Error:   $curlError"
-
-						'''
-						
-						}
-					
-					}
+//				script {
+//
+//					withCredentials([usernamePassword(credentialsId: 'Katalon_wiki_results', passwordVariable: 'passwd', usernameVariable: 'user')]) {
+//
+//						sh label: 'Katalon-Results-Confluence', script: '''#!/bin/bash
+//
+//						inputFile=$(exec find $WORKSPACE/results -type f -name "*.xml")
+//						resultsFile=$(basename results/*.zip)
+//						project=''' + PROJECT + '''
+//						tier=''' + TIER + '''
+//						pageID=''' + WIKI_PAGE + '''
+//						pageName="$project Automated Test Results"
+//						creds="\'$user:$passwd\'"
+//
+//						# get updated page text
+//						totalTestCases="$(grep -c '<testcase' $inputFile)"
+//						passedTestCases="$(grep '<testcase' $inputFile | grep -c 'PASSED')"
+//						failedTestCases="$(grep '<testcase' $inputFile | grep -c 'FAILED')"
+//						errorTestCases="$(grep '<testcase' $inputFile | grep -c 'ERROR')"
+//						pageMessage="<p>Test results from the latest Katalon Test on $project $tier: $resultsFile  (browser tested: $Browser): <br /><br /> Total Tests Cases:     $totalTestCases <br /> Passed Test Cases:     $passedTestCases <br /> Failed Test Cases:     $failedTestCases <br /> Errored Test Cases:    $errorTestCases </p><p><br /></p><p>"
+//						curlCMD="curl -D- -u $creds https://collaborate.nci.nih.gov/rest/api/content/$pageID?expand=body.storage | grep -o -P '(?<=<p>).*(?=</p>)' | grep -o -P '(?=<ac).*'"
+//						pageText=$(eval $curlCMD)
+//						pageMessage="$pageMessage $pageText </p>"
+//
+//						# get page version
+//						curlCMD="curl -D- -u $creds https://collaborate.nci.nih.gov/rest/api/content/$pageID?expand=version.number | grep -oP '(?<=number\\\":).*' | awk -F, '{print \\$1}'"
+//						pageVer=$(eval $curlCMD)
+//						pageVer="$((pageVer+1))"
+//
+//						# update page content
+//						curlCMD="curl -u $creds -X PUT -H 'Content-Type: application/json' -d \'{\\\"id\\\":\\\"$pageID\\\",\\\"type\\\":\\\"page\\\",\\\"title\\\":\\\"$pageName\\\",\\\"body\\\":{\\\"storage\\\":{\\\"value\\\":\\\"$pageMessage\\\",\\\"representation\\\":\\\"storage\\\"}},\\\"version\\\":{\\\"number\\\":$pageVer}}\' https://collaborate.nci.nih.gov/rest/api/content/$pageID"
+//						curlError=$(eval $curlCMD)
+//						echo "Confluence Error:   $curlError"
+//
+//						# add latest results as attachment
+//						resultsURL="https://collaborate.nci.nih.gov/rest/api/content/$pageID/child/attachment"
+//						resultsFile=$(basename results/*.html)
+//						curlCMD="curl -D- -u $creds -X POST -H \\\"X-Atlassian-Token: nocheck\\\" -F \\\"file=@results/$resultsFile\\\" $resultsURL"
+//						curlError=$(eval $curlCMD)
+//						echo "Confluence Error:   $curlError"
+//
+//						'''
+//
+//						}
+//
+//					}
 					
 				script {
 				
@@ -329,12 +313,12 @@ pipeline {
 					EMAIL_BODY = sh (label: 'Get-Email-Body', script: '''#!/bin/bash
 
 					emailBody=''' + ERROR_OUTPUT + '''
-					boxUrl=''' + BOX_URL + '''
+					resultsUrl=''' + RESULTS_URL + '''
 					resultsFile=$(basename results/*.zip)
 					emailBody="<b> $emailBody"
 					emailBody=${emailBody/\\\\n\\\\n/</b><br><br>}
 					emailBody=${emailBody//\\\\n/<br>}
-					emailBody="$emailBody <br><br><br> The results of this test run can be found in Box:  <a href=\\\"$boxUrl\\\">$resultsFile</a>"
+					emailBody="$emailBody <br><br><br> The results of this test run can be found at:  <a href=\\\"$resultsUrl\\\">$resultsFile</a>"
 					echo $emailBody
 
 					''',
@@ -408,9 +392,9 @@ pipeline {
 								}
 
 						errorOutput=''' + ERROR_OUTPUT + '''
-						boxUrl=''' + BOX_URL + '''
+						resultsUrl=''' + RESULTS_URL + '''
 						resultsFile=$(basename results/*.zip)
-						errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found in Box:  <$boxUrl|$resultsFile>"
+						errorOutput="$errorOutput \\n\\n @<!channel> The results of this test run can be found at:  <$resultsUrl|$resultsFile>"
 						payload="\'{\\\"text\\\":\\\"$errorOutput\\\"}\'"
 						post_message_to_slack
 							'''

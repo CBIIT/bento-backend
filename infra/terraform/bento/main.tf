@@ -66,8 +66,8 @@ module "dns" {
   count = var.create_dns_record ? 1: 0
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/route53"
   env = terraform.workspace
-  alb_zone_id = module.dns.alb_zone_id
-  alb_dns_name = module.dns.alb_dns_name
+  alb_zone_id = module.alb.alb_zone_id
+  alb_dns_name = module.alb.alb_dns_name
   application_subdomain = var.application_subdomain
   domain_name = var.domain_name
 }
@@ -76,7 +76,7 @@ module "neo4j" {
   count = var.create_db_instance? 1: 0
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/neo4j"
   env = terraform.workspace
-  db_security_group_ids = [aws_security_group.database-sg.id]
+  db_security_group_ids = [aws_security_group.database-sg[count.index].id]
   vpc_id = var.vpc_id
   db_subnet_id = var.db_subnet_id
   db_instance_volume_size = var.db_instance_volume_size

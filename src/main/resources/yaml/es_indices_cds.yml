@@ -48,7 +48,7 @@ Indices:
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
-          s.study_acronym AS studies,
+          s.study_name AS studies,
           s.data_access_level AS accesses,
           s.experimental_strategy_and_data_subtypes AS experimental_strategies,
           s.phs_accession AS phs_accession,
@@ -58,7 +58,7 @@ Indices:
           COLLECT(DISTINCT f.file_type) AS file_types,
 
           p.participant_id AS subject_id_gs,
-          s.study_acronym AS study_gs,
+          s.study_name AS study_gs,
           COLLECT(DISTINCT diag.primary_site) AS site,
 
           COLLECT(DISTINCT samp.sample_type) AS analyte_type,
@@ -109,11 +109,11 @@ Indices:
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (s:study)<--(p:participant)
-      OPTIONAL MATCH (p)<--(samp:sample)
+      MATCH (p:participant)<--(samp:sample)
+      OPTIONAL MATCH (s:study)<--(p)
       OPTIONAL MATCH (samp)<--(f:file)
       RETURN
-          s.study_acronym AS studies,
+          s.study_name AS studies,
           s.data_access_level AS accesses,
           s.experimental_strategy_and_data_subtypes AS experimental_strategies,
           p.participant_id AS subject_ids,
@@ -180,19 +180,19 @@ Indices:
       file_type:
         type: keyword
       file_size:
-        type: integer
+        type: long
       md5sum:
         type: keyword
 
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (s:study)<--(p:participant)
-      OPTIONAL MATCH (p)<--(samp:sample)
+      MATCH (samp:sample)<--(f:file)
+      OPTIONAL MATCH (p:participant)<--(samp)
+      OPTIONAL MATCH (s:study)<--(p)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
-      OPTIONAL MATCH (samp)<--(f:file)
       RETURN
-          s.study_acronym AS studies,
+          s.study_name AS studies,
           s.data_access_level AS accesses,
           s.experimental_strategy_and_data_subtypes AS experimental_strategies,
           p.participant_id AS subject_ids,
@@ -235,7 +235,7 @@ Indices:
     cypher_query: "
       MATCH (s:study)
       RETURN
-        s.study_acronym AS study_code,
+        s.study_name AS study_code,
         s.phs_accession AS phs_accession,
         s.phs_accession AS phs_accession_kw,
         s.study_name AS study_name

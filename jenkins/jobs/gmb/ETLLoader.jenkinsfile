@@ -19,10 +19,10 @@ pipeline {
             value: 'test,uat,prod' )
     extendedChoice(
              name: 'ETLOperation',
-               defaultValue: 'Load',
+               defaultValue: 'Extract',
                description: 'Choose the type of ETL Operation',
                type: 'PT_RADIO',
-               value: 'Load,Transform' )
+               value: 'Extract,Transform' )
     string(defaultValue: "bento-rave-etl",
                     description: 'S3 Bucket ETL',
                     name: 'S3Bucket')
@@ -69,7 +69,7 @@ pipeline {
  			SLACK_URL = "${SLACK_URL}"
  		}
  		when {
- 		    expression {"${params.ETLOperation}" == "Load"}
+ 		    expression {"${params.ETLOperation}" == "Extract"}
  		}
  		steps {
  			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

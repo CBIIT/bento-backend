@@ -8,7 +8,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   policy = data.aws_iam_policy_document.s3_policy.json
 }
 
-resource "aws_s3_bucket_cors_configuration" "example" {
+resource "aws_s3_bucket_cors_configuration" "cors" {
   bucket = data.aws_s3_bucket.cloudfront_s3_bucket
 
   cors_rule {

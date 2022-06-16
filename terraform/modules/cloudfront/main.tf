@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     bucket          = data.aws_s3_bucket.cloudfront_log_bucket.bucket_domain_name
     prefix          = var.cloudfront_log_path_prefix_key
   }
-  ordered_cache_behavior {
+  default_cache_behavior {
     path_pattern = "/annotations/*"
     allowed_methods  = ["GET", "HEAD","OPTIONS"]
     cached_methods   = ["GET", "HEAD","OPTIONS"]
@@ -89,19 +89,6 @@ resource "aws_cloudfront_distribution" "distribution" {
   restrictions {
     geo_restriction {
       restriction_type = "none"
-    }
-  }
-
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD","OPTIONS"]
-    cached_methods   = ["GET", "HEAD","OPTIONS"]
-    target_origin_id = local.s3_origin_id
-   viewer_protocol_policy = "allow-all"
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
     }
   }
     tags = var.tags

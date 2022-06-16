@@ -64,7 +64,6 @@ resource "aws_cloudfront_distribution" "distribution" {
     prefix          = var.cloudfront_log_path_prefix_key
   }
   default_cache_behavior {
-    path_pattern = "/annotations/*"
     allowed_methods  = ["GET", "HEAD","OPTIONS"]
     cached_methods   = ["GET", "HEAD","OPTIONS"]
     target_origin_id = local.s3_origin_id

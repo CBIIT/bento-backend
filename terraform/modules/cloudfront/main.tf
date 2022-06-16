@@ -4,12 +4,12 @@ locals {
 
 #create s3 bucket policy
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = data.aws_s3_bucket.cloudfront_s3_bucket
+  bucket = data.aws_s3_bucket.cloudfront_s3_bucket.bucket
   policy = data.aws_iam_policy_document.s3_policy.json
 }
 
 resource "aws_s3_bucket_cors_configuration" "cors" {
-  bucket = data.aws_s3_bucket.cloudfront_s3_bucket
+  bucket = data.aws_s3_bucket.cloudfront_s3_bucket.bucket
 
   cors_rule {
     allowed_headers = [

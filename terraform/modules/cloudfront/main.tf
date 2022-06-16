@@ -2,6 +2,42 @@ locals {
   s3_origin_id = "${var.stack_name}-${var.env}-s3-origin-id"
 }
 
+#create s3 bucket policy
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = data.aws_s3_bucket.cloudfront_s3_bucket
+  policy = data.aws_iam_policy_document.s3_policy.json
+}
+
+resource "aws_s3_bucket_cors_configuration" "example" {
+  bucket = data.aws_s3_bucket.cloudfront_s3_bucket
+
+  cors_rule {
+    allowed_headers = [
+      "Authorization",
+      "Content-Range",
+      "Accept",
+      "Content-Type",
+      "Origin",
+      "Range",
+      "Access-Control-Allow-Origin"
+    ]
+    allowed_methods = ["GET", "HEAD"]
+    allowed_origins = [
+       "*.cancer.gov",
+       "*.cloudfront.net",
+       "github.com",
+       "raw.githubusercontent.com",
+    ]
+    expose_headers  = [
+      "Content-Range",
+      "Content-Length",
+      "ETag"
+    ]
+    max_age_seconds = 3000
+  }
+
+}
+
 # create origin access identity
 resource "aws_cloudfront_origin_access_identity" "origin_access" {
   comment =  var.cloudfront_origin_access_identity_description

@@ -27,7 +27,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     bucket          = data.aws_s3_bucket.cloudfront_log_bucket.bucket_domain_name
     prefix          = var.cloudfront_log_path_prefix_key
   }
-  cache_behavior {
+  ordered_cache_behavior {
     path_pattern = "/annotations/*"
     allowed_methods  = ["GET", "HEAD","OPTIONS"]
     cached_methods   = ["GET", "HEAD","OPTIONS"]

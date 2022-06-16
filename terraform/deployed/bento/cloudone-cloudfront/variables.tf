@@ -24,3 +24,8 @@ variable "cloudfront_log_path_prefix_key" {
   type = string
   default = "cloudfront/logs"
 }
+variable "region" {
+  description = "aws region to deploy"
+  type = string
+  default = "us-east-1"
+}

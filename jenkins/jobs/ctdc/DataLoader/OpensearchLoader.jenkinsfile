@@ -2,7 +2,7 @@ pipeline {
 	agent {
 		node {
 			//label 'data-loader'
-			label 'docker-dataloader'
+			label 'slave-ncias-d2320-c'
 		}
 	}
 	parameters {

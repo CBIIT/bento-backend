@@ -11,6 +11,8 @@
         - name: check file location
           command: which ansible-galaxy
           register: results
+          environment:
+            PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
       always:
         - name: echo results
           debug:

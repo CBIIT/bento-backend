@@ -3,14 +3,12 @@
   hosts: loader
   connection: local
   gather_facts: yes
-  #become: yes
+  become: yes
 
   tasks:
     #install collections
     - name: install aws collection
       command: ansible-galaxy collection install {{item}}
-#      environment:
-#            PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
       loop:
         -  amazon.aws
         -  community.aws
@@ -22,7 +20,7 @@
       include_role:
         name: bento.common.neo4j_ip
       vars:
-        ansible_python_interpreter: /usr/bin/python3
+        #ansible_python_interpreter: /usr/bin/python3
         tier: "{{ lookup('env','TIER') }}"
         project_name: ctdc
         database_name: "{{ project_name }}-{{ tier }}-neo4j-4"

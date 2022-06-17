@@ -22,6 +22,7 @@
       include_role:
         name: bento.common.neo4j_ip
       vars:
+        ansible_python_interpreter: /usr/bin/python3
         tier: "{{ lookup('env','TIER') }}"
         project_name: ctdc
         database_name: "{{ project_name }}-{{ tier }}-neo4j-4"

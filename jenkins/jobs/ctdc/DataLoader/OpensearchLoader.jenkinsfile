@@ -92,7 +92,8 @@ pipeline {
 			sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
-				branches: [[name: "master"]],
+				//branches: [[name: "master"]],
+				branches: [[name: "ctdc_cloudone"]],
 				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'RelativeTargetDirectory',
 				relativeTargetDir: 'icdc-devops']],

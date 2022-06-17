@@ -6,6 +6,26 @@
   become: yes
 
   tasks:
+    - name: test for ansible-galaxy
+      block:
+        - name: check file location
+          command: which ansible-galaxy
+          register: results
+      always:
+        - name: echo results
+          debug:
+            msg: "{{ results.stdout_lines }}"
+
+    - name: check path
+      block:
+        - name: check path
+          command: echo $PATH
+          register: results
+      always:
+        - name: echo results
+          debug:
+            msg: "{{ results.stdout_lines }}"
+    
     #install collections
     - name: install aws collection
       command: ansible-galaxy collection install {{item}}

@@ -416,6 +416,7 @@ pipeline {
   				ansiblePlaybook( 
             		playbook: '${WORKSPACE}/icdc-devops/ansible/agent-setup.yml', 
             		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+            		hostKeyChecking: false,
 					extraVars: [
                     env: "${params.Environment}",
 					app_type: 'database',

@@ -9,8 +9,8 @@
     #install collections
     - name: install aws collection
       command: ansible-galaxy collection install {{item}}
-      environment:
-            PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
+#      environment:
+#            PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
       loop:
         -  amazon.aws
         -  community.aws
@@ -21,8 +21,6 @@
     - name: get db ip
       include_role:
         name: bento.common.neo4j_ip
-      environment:
-            PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
       vars:
         ansible_python_interpreter: /usr/bin/python3
         tier: "{{ lookup('env','TIER') }}"
@@ -33,8 +31,6 @@
     - name: perform data loading
       include_role:
         name: bento.common.opensearch_loader
-      environment:
-            PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
       vars:
         ansible_python_interpreter: /usr/bin/python3
         project_name:  "{{ lookup('env','PROJECT_NAME') }}"

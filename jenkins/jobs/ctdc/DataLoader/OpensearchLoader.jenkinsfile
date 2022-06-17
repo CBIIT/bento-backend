@@ -118,8 +118,7 @@ pipeline {
 					extraVars: [
 					    ansible_python_interpreter: "/usr/bin/python3"
 					],
-            		colorized: true,
-					extras: '-vvv') 
+            		colorized: true) 
  			}
  		}
     }

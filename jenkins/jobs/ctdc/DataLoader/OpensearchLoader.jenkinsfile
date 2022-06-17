@@ -115,7 +115,7 @@ pipeline {
             	playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-opensearch-loader.yml',
 					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
 					extraVars: [
-						ansible_python_interpreter: /usr/bin/python3
+					    ansible_python_interpreter: "/usr/bin/python3"
 					],
             		colorized: true,
 					extras: '-vvv') 

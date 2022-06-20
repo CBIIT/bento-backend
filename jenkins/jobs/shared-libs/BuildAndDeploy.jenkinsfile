@@ -1,4 +1,4 @@
 @Library('datacommons-jenkins-shared-library') _
-buildApp node: cicd_microservice {
+buildApp node: "cicd_microservice" {
     echo "Hello"
 } 

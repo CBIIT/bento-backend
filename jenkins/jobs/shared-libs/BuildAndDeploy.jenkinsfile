@@ -5,4 +5,7 @@ buildApp(label: "cicd_microservice") {
     }
     gitCheckout checkoutDirectory: "bento-frontend", gitUrl: "https://github.com/CBIIT/bento-frontend", gitBranch: "${params.FrontendTag}"
     gitCheckout checkoutDirectory: "bento-backend", gitUrl: "https://github.com/CBIIT/bento-backend", gitBranch: "${params.BackendTag}"
+    stage("build"){
+        runAnsible playbook: '${WORKSPACE}/icdc-devops/ansible/gmb-deploy-auth.yml', inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',tier: "${params.Environment}", project_name: "${params.ProjectName}"
+    }
 }

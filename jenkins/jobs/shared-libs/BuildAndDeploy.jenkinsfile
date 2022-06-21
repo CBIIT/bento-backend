@@ -1,10 +1,10 @@
 @Library('datacommons-jenkins-shared-library') _
 buildApp(label: "cicd_microservice") {
-     projectProperties {
-          gitBranchParameter name: "BackendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-backend"
-          gitBranchParameter name: "FrontendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-frontend"
+     projectProperties(gitBranchParameter name: "FrontendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-frontend") {
+        //   gitBranchParameter name: "BackendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-backend"
+          
      }
 
     gitCheckout checkoutDirectory: "bento-frontend", gitUrl: "https://github.com/CBIIT/bento-frontend", gitBranch: "${params.FrontendTag}"
-    gitCheckout checkoutDirectory: "bento-backend", gitUrl: "https://github.com/CBIIT/bento-backend", gitBranch: "${params.BackendTag}"
+    //gitCheckout checkoutDirectory: "bento-backend", gitUrl: "https://github.com/CBIIT/bento-backend", gitBranch: "${params.BackendTag}"
 }

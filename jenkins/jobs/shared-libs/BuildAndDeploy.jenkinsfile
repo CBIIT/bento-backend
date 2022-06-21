@@ -2,7 +2,7 @@
 buildApp(label: "cicd_microservice") {
      projectProperties {
           gitBranchParameter name: "BackendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-backend"
-          gitBranchParameter name: "FrontendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-frontend"
+          //gitBranchParameter name: "FrontendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-frontend"
      }
    
     //gitCheckout checkoutDirectory: "bento-frontend", gitUrl: "https://github.com/CBIIT/bento-frontend", gitBranch: "${params.FrontendTag}"

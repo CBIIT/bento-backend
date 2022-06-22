@@ -20,7 +20,7 @@
       include_role:
         name: bento.common.neo4j_ip
       vars:
-        tier: "{{ lookup('env','TIER') }}"
+        tier: "{{ lookup('env','TIER')|upper }}"
         project_name: ctdc
         database_name: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.db_instance', nested=true, region='us-east-1' ) }}"
 

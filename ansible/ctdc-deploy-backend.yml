@@ -11,7 +11,7 @@
       loop:
         -  amazon.aws
         -  community.aws
-        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ctdc_troubleshooting
+        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
 
     #docker login
     - name: docker login
@@ -27,7 +27,7 @@
       vars:
         tier: "{{ lookup('env','TIER') }}"
         project_name: ctdc
-        database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
+        database_name: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.db_instance', nested=true, region='us-east-1' ) }}"
 
     #deploy backend
     - name: deploy stage for ctdc backend

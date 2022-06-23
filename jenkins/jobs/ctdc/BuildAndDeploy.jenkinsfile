@@ -32,7 +32,7 @@ pipeline {
   agent {
 	node {
       //label 'cicd_microservice'
-	  label 'cicd_ansible_4.0'
+	  label 'ctdc-docker'
 	}
   }
 	
@@ -82,7 +82,7 @@ pipeline {
 			changelog:false,
 			scm: [$class: 'GitSCM', 
 			//branches: [[name: '*/master']], 
-			branches: [[name: '*/ctdc_troubleshooting']], 
+			branches: [[name: '*/ctdc_cloudone']], 
 			doGenerateSubmoduleConfigurations: false, 
 			extensions: [[$class: 'DisableRemotePoll'],
 			[$class: 'PathRestriction', excludedRegions: '*'], 

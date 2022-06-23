@@ -110,7 +110,8 @@ pipeline {
 					extraVars: [
 						project_name: "ctdc"
 					],
-					colorized: true)
+					colorized: true,
+					extras: '-vvv')
 			}
 		  
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {

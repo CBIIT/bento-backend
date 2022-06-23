@@ -1,4 +1,4 @@
-- name: ctdc build pipeline
+- name: ctdc backend build pipeline
   hosts: bento
   connection: local
   gather_facts: no
@@ -13,7 +13,7 @@
         -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
 
     #docker login
-    - name: docker login
+    - name: ecr login
       include_role:
         name: bento.common.ecr_login
       vars:

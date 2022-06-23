@@ -123,10 +123,9 @@ public class GmbEsFilter implements DataFetcher{
         Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
         int numberOfSubjects = sendCountRequest(query, SUBJECTS_COUNT_END_POINT);
         int numberOfFiles = sendCountRequest(query, FILES_COUNT_END_POINT);
-        int numberOfTrials = sendCountRequest(query, TRIALS_COUNT_END_POINT);
 
         Map<String, Object> data = new HashMap<>();
-        data.put("numberOfTrials", numberOfTrials);
+        data.put("numberOfTrials", subjectCountBy("clinical_trial_id", SUBJECTS_END_POINT, params).size());
         data.put("numberOfSubjects", numberOfSubjects);
         data.put("numberOfFiles", numberOfFiles);
 

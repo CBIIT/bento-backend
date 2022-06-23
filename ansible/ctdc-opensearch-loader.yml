@@ -8,12 +8,12 @@
   tasks:
     #install collections
     - name: install aws collection
-      command: ansible-galaxy collection install --force {{item}}
+      command: ansible-galaxy collection install --force-with-deps {{item}}
       loop:
         -  amazon.aws
         -  community.aws
         -  community.docker
-        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ctdc_troubleshooting
+        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
 
     #get db ip
     - name: get db ip

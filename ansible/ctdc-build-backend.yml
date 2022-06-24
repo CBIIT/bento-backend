@@ -17,6 +17,7 @@
       include_role:
         name: bento.common.ecr_login
       vars:
+        ansible_python_interpreter: /usr/bin/python3
         region: us-east-1
 
     #build backend

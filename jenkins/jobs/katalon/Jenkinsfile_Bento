@@ -60,7 +60,7 @@ pipeline {
         defaultValue: 'QA_PROD', 
         description: 'Choose the profile to use', 
         type: 'PT_SINGLE_SELECT',
-        value: 'QA_PROD,PERF_PROD,BENTO_ICDC,BENTO_CTDC,CDS_QA,GMB_QA' )
+        value: 'QA_PROD,PERF_PROD,BENTO_ICDC,BENTO_CTDC,CDS_QA,GMB_QA,INS_DEV' )
 
 	string(defaultValue: "gayathri.radhakrishnan@nih.gov,laxmi.lolla@nih.gov,sohil.sohil@nih.gov", 
         description: 'Enter a list of email addresses to notify in case of test failures:', 
@@ -93,7 +93,7 @@ pipeline {
 			steps {
                 script {
                     switch("${params.Profile}") {
-					
+
 					// BENTO
                     case "QA_PROD":
 						WIKI_PAGE="442632045"
@@ -108,6 +108,7 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
+
 					case "PERF_PROD":
 						WIKI_PAGE="442632045"
 						PROJECT="Bento"
@@ -121,7 +122,7 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
-					
+
 					// BENTO_ICDC
 					case "BENTO_ICDC":
 						WIKI_PAGE="442632045"
@@ -136,7 +137,7 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
-					
+
 					// BENTO_CTDC
 					case "BENTO_CTDC":
 						WIKI_PAGE="442632045"
@@ -151,7 +152,7 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
-					
+
 					// CDS
 					case "CDS_QA":
 						WIKI_PAGE="442632045"
@@ -166,7 +167,7 @@ pipeline {
 							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
                             }
                         break
-					
+
 					// GMB
 					case "GMB_QA":
 						WIKI_PAGE="442632045"
@@ -175,6 +176,21 @@ pipeline {
 						withCredentials([string(credentialsId: 'Box_Email_BENTO_GMB', variable: 'box_email'),
 						  string(credentialsId: 'Box_Url_BENTO_GMB', variable: 'box_url'),
 						  file(credentialsId: 'Katalon_GMB_PROD', variable: 'pass_file')]) {
+                            BOX_EMAIL="${box_email}"
+							BOX_URL="${box_url}"
+							PROFILE="${pass_file}"
+							sh "cp ${pass_file} ${WORKSPACE}/Profiles/"
+                            }
+                        break
+
+					// INS
+					case "INS_DEV":
+						WIKI_PAGE="442632045"
+						PROJECT="Bento"
+						TIER="INS"
+						withCredentials([string(credentialsId: 'Box_Email_BENTO_INS', variable: 'box_email'),
+						  string(credentialsId: 'Box_Url_BENTO_INS', variable: 'box_url'),
+						  file(credentialsId: 'Katalon_INS_PROD', variable: 'pass_file')]) {
                             BOX_EMAIL="${box_email}"
 							BOX_URL="${box_url}"
 							PROFILE="${pass_file}"

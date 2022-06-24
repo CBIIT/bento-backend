@@ -2,7 +2,7 @@
   hosts: bento
   connection: local
   gather_facts: no
-  become: yes
+  #become: yes
 
   tasks:
     #install collections
@@ -11,8 +11,6 @@
       loop:
         -  community.docker
         -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
-      vars:
-        ansible_python_interpreter: /usr/bin/python3
 
     #docker login
     - name: ecr login

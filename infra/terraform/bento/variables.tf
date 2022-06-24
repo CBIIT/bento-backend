@@ -1,3 +1,4 @@
+
 variable "stack_name" {
   description = "name of the project"
   type = string
@@ -96,7 +97,7 @@ variable "application_subdomain" {
   description = "subdomain of the app"
   type = string
 }
-variable "force_destroy_bucket" {
+variable "s3_force_destroy" {
   description = "force destroy bucket"
   default = true
   type = bool
@@ -193,4 +194,14 @@ variable "create_db_instance" {
   description = "set this value if you want create db instance"
   default = false
   type = bool
+}
+
+variable "multi_az_enabled" {
+  description = "set to true to enable multi-az deployment"
+  type        = bool
+}
+
+variable "alb_certificate_arn" {
+  type        = string
+  description = "The ARN of the certificate to attach to the HTTPS ALB listener. If available, use a wildcard certificate"
 }

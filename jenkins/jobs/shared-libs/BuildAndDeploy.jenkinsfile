@@ -7,9 +7,6 @@ buildApp(label: "cicd_microservice") {
     gitCheckout checkoutDirectory: "bento-backend", gitUrl: "https://github.com/CBIIT/bento-backend", gitBranch: "${params.BackendTag}"
     gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
     stage("build"){
-        sh "ls -l ${WORKSPACE}"
-        runAnsible playbook: '${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml', inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',tier: "${params.Environment}", project_name: "${params.ProjectName}"{
-
-        }
+        runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", project_name: "${params.ProjectName}"
     }
 }

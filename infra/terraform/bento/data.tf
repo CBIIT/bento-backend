@@ -11,7 +11,8 @@ data "aws_iam_policy_document" "s3_policy" {
       type        = "AWS"
     }
     actions = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${local.alb_log_bucket_name}/*"]
+    #resources = ["arn:aws:s3:::${local.alb_log_bucket_name}/*"]
+    resources = ["arn:aws:s3:::${module.s3.bucket_name}/*"]
   }
   statement {
     sid = "allowalblogdelivery"
@@ -21,7 +22,8 @@ data "aws_iam_policy_document" "s3_policy" {
       type        = "Service"
     }
     actions = ["s3:PutObject"]
-    resources = ["arn:aws:s3:::${local.alb_log_bucket_name}/*"]
+    #resources = ["arn:aws:s3:::${local.alb_log_bucket_name}/*"]
+    resources = ["arn:aws:s3:::${module.s3.bucket_name}/*"]
     condition {
       test     = "StringEquals"
       values   = ["bucket-owner-full-control"]
@@ -32,7 +34,8 @@ data "aws_iam_policy_document" "s3_policy" {
     sid = "awslogdeliveryacl"
     effect = "Allow"
     actions = ["s3:GetBucketAcl"]
-    resources = ["arn:aws:s3:::${local.alb_log_bucket_name}"]
+    #resources = ["arn:aws:s3:::${local.alb_log_bucket_name}"]
+    resources = ["arn:aws:s3:::${module.s3.bucket_name}"]
     principals {
       identifiers = ["delivery.logs.amazonaws.com"]
       type        = "Service"

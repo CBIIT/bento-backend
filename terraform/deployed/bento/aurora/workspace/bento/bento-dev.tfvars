@@ -3,7 +3,7 @@ db_subnet_ids = [
   "subnet-07d177a4d9df5cd32"
 ]
 vpc_id = "vpc-08f154f94dc8a0e34"
-stack_name = "vote"
+stack_name = "bento"
 
 tags = {
   Project = "bento"

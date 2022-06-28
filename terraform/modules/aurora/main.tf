@@ -13,7 +13,7 @@ resource "aws_rds_cluster" "rds" {
   engine                              =  var.db_engine_type
   engine_version                      =  var.db_engine_version
   engine_mode                         =  var.db_engine_mode
-  database_name                       =  "${var.stack_name}-${var.env}-${var.db_engine_type}"
+  database_name                       =  var.stack_name
   master_username                     =  var.master_username
   master_password                     =  random_password.master_password.result
   final_snapshot_identifier           =  var.snapshot_identifier_prefix

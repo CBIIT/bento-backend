@@ -32,7 +32,7 @@ resource "aws_rds_cluster" "rds" {
     max_capacity =  var.max_capacity
     min_capacity =  var.min_capacity
   }
-  
+
   tags = var.tags
 
 }

@@ -35,7 +35,7 @@ resource "aws_rds_cluster" "rds" {
   }
 
   tags = var.tags
-  depends_on = [random_password.master_password]
+
 }
 
 
@@ -51,7 +51,7 @@ resource "random_password" "master_password" {
   length  = var.master_password_length
   special = false
   keepers = {
-    Name = aws_rds_cluster.rds.cluster_identifier
+    Name =  var.master_username
   }
 }
 

@@ -16,7 +16,7 @@ resource "aws_rds_cluster" "rds" {
   database_name                       =  "${var.stack_name}-${var.env}-${var.db_engine_type}"
   master_username                     =  var.master_username
   master_password                     =  random_password.master_password.result
-  final_snapshot_identifier           =  var.snapshot_identifier_prefix
+  //final_snapshot_identifier           =  var.snapshot_identifier_prefix
   skip_final_snapshot                 =  var.skip_final_snapshot
   backup_retention_period             =  var.backup_retention_period
   preferred_backup_window             =  var.backup_window
@@ -28,7 +28,7 @@ resource "aws_rds_cluster" "rds" {
   iam_roles                           =  [aws_iam_role.rds.name]
   enabled_cloudwatch_logs_exports     =  var.enabled_cloudwatch_logs_exports
   deletion_protection                 =  var.deletion_protection
-  db_subnet_group_name                =  aws_db_subnet_group.subnet_group.name
+  db_subnet_group_name                =  aws_db_subnet_group.subnet_group.nam
   serverlessv2_scaling_configuration {
     max_capacity =  var.max_capacity
     min_capacity =  var.min_capacity

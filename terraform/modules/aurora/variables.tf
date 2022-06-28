@@ -6,15 +6,6 @@ variable "stack_name" {
   description = "name of the project"
   type = string
 }
-variable "region" {
-  description = "aws region to deploy"
-  type = string
-}
-#Description : Terraform label module variables.
-variable "name" {
-  type        = string
-  description = "Name  (e.g. `app` or `cluster`)."
-}
 
 variable "env" {
   type        = string
@@ -27,22 +18,10 @@ variable "db_subnet_ids" {
   description = "list of subnet IDs to usee"
 }
 
-variable "replica_count" {
-  description = "number of read replica count"
-  type        = number
-  default     = 1
-}
-
-variable "db_instance_type" {
+variable "db_instance_class" {
   description = "Instance type to use for the db"
   type        = string
-  default     = ""
-}
-
-variable "database_name" {
-  description = "name of the database"
-  type        = string
-  default     = ""
+  default     = "db.serverless"
 }
 
 variable "master_username" {
@@ -52,17 +31,10 @@ variable "master_username" {
   sensitive   = true
 }
 
-variable "master_password" {
-  description = "password for the master username"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
-
 variable "snapshot_identifier_prefix" {
   type        = string
   default     = "bento"
-  description = "Final snapshot"
+  description = "final snapshot"
 }
 
 variable "skip_final_snapshot" {
@@ -101,191 +73,52 @@ variable "minor_version_upgrade" {
   default     = true
 }
 
-variable "db_parameter_group_name" {
-  type        = string
-  default     = "default.aurora5.6"
-  description = "The name of a DB parameter group to use."
-  sensitive   = true
-}
-
-variable "db_cluster_parameter_group_name" {
-  type        = string
-  default     = "default.aurora5.6"
-  description = "The name of a DB Cluster parameter group to use."
-  sensitive   = true
-}
-
-variable "db_engine" {
+variable "db_engine_type" {
   description = "Aurora database engine type"
   type        = string
   default     = "aurora-mysql"
 }
 
-variable "engine_version" {
+variable "db_engine_version" {
+  description = "aurora database engine version."
   type        = string
   default     = "5.6.10a"
-  description = "Aurora database engine version."
 }
 
-variable "engine_mode" {
+variable "db_engine_mode" {
   type        = string
   default     = "serverless"
   description = "The database engine mode."
 }
 
-variable "replica_scale_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to enable autoscaling for RDS Aurora (MySQL) read replicas."
-}
-
-variable "replica_scale_max" {
-  type        = number
-  default     = 0
-  description = "Maximum number of replicas to allow scaling."
-}
-
-variable "replica_scale_min" {
-  type        = number
-  default     = 2
-  description = "Minimum number of replicas to allow scaling."
-}
-
-variable "replica_scale_cpu" {
-  type        = number
-  default     = 70
-  description = "CPU usage to trigger autoscaling."
-}
-
-variable "replica_scale_in_cooldown" {
-  type        = number
-  default     = 300
-  description = "Cooldown in seconds before allowing further scaling operations after a scale in."
-}
-
-variable "replica_scale_out_cooldown" {
-  type        = number
-  default     = 300
-  description = "Cooldown in seconds before allowing further scaling operations after a scale out."
-}
-
-variable "performance_insights_enabled" {
-  type        = bool
-  default     = false
-  description = "Specifies whether Performance Insights is enabled or not."
-}
-
-variable "performance_insights_kms_key_id" {
-  type        = string
-  default     = ""
-  description = "The ARN for the KMS key to encrypt Performance Insights data."
-}
-
-variable "iam_database_authentication_enabled" {
-  type        = bool
-  default     = true
-  description = "Specifies whether IAM Database authentication should be enabled or not. Not all versions and instances are supported. Refer to the AWS documentation to see which versions are supported."
-}
-
-variable "aws_security_group" {
-  type        = list(string)
-  default     = []
-  description = "Specifies whether IAM Database authentication should be enabled or not. Not all versions and instances are supported. Refer to the AWS documentation to see which versions are supported."
-}
-
 variable "enabled_cloudwatch_logs_exports" {
+  description = "List of log types to export to cloudwatch."
   type        = list(string)
-  default     = []
-  description = "List of log types to export to cloudwatch. If omitted, no logs will be exported. The following log types are supported: audit, error, general, slowquery, postgresql (PostgreSQL)."
-}
-
-variable "availability_zone" {
-  type        = string
-  default     = ""
-  description = "The Availability Zone of the RDS instance."
-}
-
-
-variable "enabled_subnet_group" {
-  type        = bool
-  default     = true
-  description = "Set to false to prevent the module from creating any resources."
-}
-
-variable "enabled_rds_cluster" {
-  type        = bool
-  default     = true
-  description = "Set to false to prevent the module from creating any resources."
-}
-
-variable "postgresql_family" {
-  type        = string
-  default     = "aurora-postgresql13"
-  description = "The family of the DB parameter group."
-}
-
-variable "mysql_family" {
-  type        = string
-  default     = "aurora-mysql5.7"
-  description = "The family of the DB parameter group."
-}
-
-variable "enable" {
-  type        = bool
-  default     = true
-  description = "Set to false to prevent the module from creating any resources."
-}
-
-variable "postgresql_family_serverless" {
-  type        = string
-  default     = "aurora-postgresql10"
-  description = "The family of the DB parameter group."
-}
-
-variable "mysql_family_serverless" {
-  description = "The family of the DB parameter group."
-  type        = string
-  default     = "aurora5.6"
-}
-
-variable "enable_serverless" {
-  description = "use serverless mode"
-  type        = bool
-  default     = false
-}
-
-variable "db_iam_roles" {
-  description = "db iam roles"
-  type        = list(string)
-  default     = []
+  default     = ["audit", "error", "general", "slowquery", "postgresql"]
 }
 
 variable "availability_zones" {
+  description = "list of availability zones"
   type        = list(any)
   default     = []
-  description = "list of availability zones"
 }
-
 variable "enable_http_endpoint" {
-  description = "Enable HTTP endpoint for serverless."
+  description = "enable HTTP endpoint for serverless."
   type        = bool
-  default     = true
+  default     = false
 }
-
 variable "min_capacity" {
   description = "The minimum capacity."
   type        = number
   default     = 1
 }
-
 variable "storage_encrypted" {
+  description = "Enable underlying storage encryption."
   type        = bool
   default     = true
-  description = "Enable underlying storage encryption."
 }
-
 variable "allow_major_version_upgrade" {
-  description = "Enable to allow major engine version upgrades when changing engine versions. Defaults to `false`"
+  description = "Enable to allow major engine version upgrades when changing engine versions"
   type        = bool
   default     = false
 }
@@ -294,8 +127,23 @@ variable "max_capacity" {
   type        = number
   default     = 2
 }
-variable "db_port" {
+variable "master_password_length" {
+  description = "length of master user password"
+  type = number
+  default = 15
+}
+variable "vpc_id" {
   type        = string
-  default     = ""
-  description = "tcp port for the db"
+  description = "VPC ID the DB instance will be created in"
+}
+
+variable "secret_recovery_window_in_days" {
+  description = "number of days to keep secret after deletion"
+  type = number
+  default = 0
+}
+variable "allowed_ip_blocks" {
+  description = "allowed ip block for the rds ingress"
+  type = list(string)
+  default = []
 }

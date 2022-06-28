@@ -94,7 +94,7 @@ variable "db_engine_mode" {
 variable "enabled_cloudwatch_logs_exports" {
   description = "List of log types to export to cloudwatch."
   type        = list(string)
-  default     = ["audit", "error", "general", "slowquery", "postgresql"]
+  default     = ["audit", "error", "general", "slowquery"]
 }
 
 variable "availability_zones" {

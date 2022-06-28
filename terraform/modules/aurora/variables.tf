@@ -52,13 +52,13 @@ variable "deletion_protection" {
 variable "backup_retention_period" {
   description = "number of days to keep backup"
   type        = number
-  default     = 60
+  default     = 35
 }
 
 variable "backup_window" {
   description = "ideal time to perform backups."
   type        = string
-  default     = "00:00-05:00"
+  default     = "04:00-05:00"
 }
 
 variable "maintenance_window" {
@@ -94,7 +94,7 @@ variable "db_engine_mode" {
 variable "enabled_cloudwatch_logs_exports" {
   description = "List of log types to export to cloudwatch."
   type        = list(string)
-  default     = ["audit", "error", "general", "slowquery", "postgresql"]
+  default     = ["audit", "error", "general", "slowquery"]
 }
 
 variable "availability_zones" {
@@ -146,4 +146,9 @@ variable "allowed_ip_blocks" {
   description = "allowed ip block for the rds ingress"
   type = list(string)
   default = []
+}
+variable "database_name" {
+  description = "name of the database"
+  type = string
+  default = "bento"
 }

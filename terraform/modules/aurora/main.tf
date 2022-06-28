@@ -6,6 +6,7 @@ locals {
   rds_master_password = {
     password = random_password.master_password.result
   }
+  snapshot_name = "${var.stack_name}-${var.env}-${random_id.snapshot.hex}"
 }
 
 resource "aws_rds_cluster" "rds" {
@@ -13,19 +14,17 @@ resource "aws_rds_cluster" "rds" {
   engine                              =  var.db_engine_type
   engine_version                      =  var.db_engine_version
   engine_mode                         =  var.db_engine_mode
-  database_name                       =  "${var.stack_name}-${var.env}-${var.db_engine_type}"
+  database_name                       =   var.database_name
   master_username                     =  var.master_username
   master_password                     =  random_password.master_password.result
-  final_snapshot_identifier           =  var.snapshot_identifier_prefix
+  final_snapshot_identifier           =  local.snapshot_name
   skip_final_snapshot                 =  var.skip_final_snapshot
   backup_retention_period             =  var.backup_retention_period
   preferred_backup_window             =  var.backup_window
   preferred_maintenance_window        =  var.maintenance_window
   port                                =  local.db_port
-  snapshot_identifier                 =  var.snapshot_identifier_prefix
   storage_encrypted                   =  var.storage_encrypted
   allow_major_version_upgrade         =  var.allow_major_version_upgrade
-  iam_roles                           =  [aws_iam_role.rds.name]
   enabled_cloudwatch_logs_exports     =  var.enabled_cloudwatch_logs_exports
   deletion_protection                 =  var.deletion_protection
   db_subnet_group_name                =  aws_db_subnet_group.subnet_group.name
@@ -35,6 +34,7 @@ resource "aws_rds_cluster" "rds" {
   }
 
   tags = var.tags
+
 }
 
 
@@ -50,20 +50,9 @@ resource "random_password" "master_password" {
   length  = var.master_password_length
   special = false
   keepers = {
-    Name = aws_rds_cluster.rds.cluster_identifier
+    Name =  var.master_username
   }
 }
-
-resource "aws_iam_role" "rds" {
-  name = "${var.stack_name}-${var.env}-rds-monitoring-role"
-  assume_role_policy = data.aws_iam_policy_document.assumed_role_policy.json
-}
-
-resource "aws_iam_role_policy_attachment" "rds_policy_attachment" {
-  role       = aws_iam_role.rds.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
-}
-
 
 resource "aws_db_subnet_group" "subnet_group" {
   name       = "${var.stack_name}-${var.env}-rds-aurora-subnet-group"
@@ -88,6 +77,12 @@ resource "aws_security_group_rule" "rds_inbound" {
   security_group_id        = aws_security_group.rds.id
 }
 
+resource "random_id" "snapshot" {
+  byte_length = 3
+  keepers = {
+    Name = var.stack_name
+  }
+}
 resource "aws_security_group_rule" "egress" {
   description       = "allow all outgoing traffic"
   type              = "egress"

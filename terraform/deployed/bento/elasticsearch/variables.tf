@@ -38,3 +38,8 @@ variable "create_es_service_role" {
   default = false
   description = "change this value to true if running this script for the first time"
 }
+variable "backup_retention_period" {
+  description = "number of days to keep backup"
+  type        = number
+  default     = 3
+}

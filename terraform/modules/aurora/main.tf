@@ -24,7 +24,7 @@ resource "aws_rds_cluster" "rds" {
   port                                =  local.db_port
   storage_encrypted                   =  var.storage_encrypted
   allow_major_version_upgrade         =  var.allow_major_version_upgrade
-  iam_roles                           =  [aws_iam_role.rds.name]
+  iam_roles                           =  [aws_iam_role.rds.arn]
   enabled_cloudwatch_logs_exports     =  var.enabled_cloudwatch_logs_exports
   deletion_protection                 =  var.deletion_protection
   db_subnet_group_name                =  aws_db_subnet_group.subnet_group.name

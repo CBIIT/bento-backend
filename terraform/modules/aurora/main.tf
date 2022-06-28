@@ -28,7 +28,7 @@ resource "aws_rds_cluster" "rds" {
   iam_roles                           =  [aws_iam_role.rds.name]
   enabled_cloudwatch_logs_exports     =  var.enabled_cloudwatch_logs_exports
   deletion_protection                 =  var.deletion_protection
-  db_subnet_group_name                =  aws_db_subnet_group.subnet_group.nam
+  db_subnet_group_name                =  aws_db_subnet_group.subnet_group.name
   serverlessv2_scaling_configuration {
     max_capacity =  var.max_capacity
     min_capacity =  var.min_capacity

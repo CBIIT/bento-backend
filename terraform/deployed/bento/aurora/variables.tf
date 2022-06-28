@@ -53,3 +53,8 @@ variable "master_username" {
   default     = ""
   sensitive   = true
 }
+variable "database_name" {
+  description = "name of the database"
+  type = string
+  default = "bento"
+}

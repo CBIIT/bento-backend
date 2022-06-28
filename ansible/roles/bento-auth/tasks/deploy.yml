@@ -38,6 +38,48 @@
           value: "{{ newrelic_license_key }}"
         - name: NEW_RELIC_APP_NAME
           value: "{{stack_name}}-{{tier}}-auth-{{ansible_hostname}}"
+        # MySQL Configuration
+        - name: MYSQL_HOST
+          value: "{{mysql_host}}"
+        - name: MYSQL_PORT
+          value: 3306
+        - name: MYSQL_PASSWORD
+          value: "{{mysql_password}}"
+        - name: MYSQL_USER
+          value: "{{mysql_user}}"
+        - name: MYSQL_DATABASE
+          value: "{{mysql_database}}"
+        # Email Notification Config
+        - name: EMAIL_SMTP_HOST
+          value: email-smtp.us-east-1.amazonaws.com
+        - name: EMAIL_SMTP_PORT
+          value: 465
+        # If Sent From AWS SMTP
+        - name: EMAIL_USER
+          value: "{{email_user}}"
+        - name: EMAIL_PASSWORD
+          value: "{{email_user}}"
+        # NIH LOGIN Config
+        - name: NIH_CLIENT_ID
+          value: "{{nih_client_id}}"
+        - nameL: NIH_CLIENT_SECRET
+          value: "{{nih_client_secret}}"
+        - name: NIH_BASE_URL
+          value: https://stsstg.nih.gov
+        - name: NIH_REDIRECT_URL
+          value: https://bento-dev.bento-tools.org
+        - name: NIH_USERINFO_URL
+          value: https://stsstg.nih.gov/openid/connect/v1/userinfo
+        - name: NIH_AUTHORIZE_URL
+          value: https://stsstg.nih.gov/auth/oauth/v2/authorize
+        - name: NIH_TOKEN_URL
+          value: https://stsstg.nih.gov/auth/oauth/v2/token
+        - name: NIH_LOGOUT_URL
+          value: https://stsstg.nih.gov/connect/session/logout
+        - name: NIH_SCOPE
+          value: "openid email profile"
+        - name: NIH_PROMPT
+          value: login
       portMappings:
       - containerPort: 8082
         hostPort: 8082

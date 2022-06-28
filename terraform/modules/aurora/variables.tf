@@ -147,3 +147,8 @@ variable "allowed_ip_blocks" {
   type = list(string)
   default = []
 }
+variable "database_name" {
+  description = "name of the database"
+  type = string
+  default = "bento"
+}

@@ -52,7 +52,7 @@ variable "deletion_protection" {
 variable "backup_retention_period" {
   description = "number of days to keep backup"
   type        = number
-  default     = 60
+  default     = 35
 }
 
 variable "backup_window" {

@@ -16,13 +16,12 @@ resource "aws_rds_cluster" "rds" {
   database_name                       =  "${var.stack_name}-${var.env}-${var.db_engine_type}"
   master_username                     =  var.master_username
   master_password                     =  random_password.master_password.result
-  //final_snapshot_identifier           =  var.snapshot_identifier_prefix
+  final_snapshot_identifier           =  var.snapshot_identifier_prefix
   skip_final_snapshot                 =  var.skip_final_snapshot
   backup_retention_period             =  var.backup_retention_period
   preferred_backup_window             =  var.backup_window
   preferred_maintenance_window        =  var.maintenance_window
   port                                =  local.db_port
-  snapshot_identifier                 =  var.snapshot_identifier_prefix
   storage_encrypted                   =  var.storage_encrypted
   allow_major_version_upgrade         =  var.allow_major_version_upgrade
   iam_roles                           =  [aws_iam_role.rds.name]
@@ -33,7 +32,7 @@ resource "aws_rds_cluster" "rds" {
     max_capacity =  var.max_capacity
     min_capacity =  var.min_capacity
   }
-
+  
   tags = var.tags
 
 }

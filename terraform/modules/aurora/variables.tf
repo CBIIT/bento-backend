@@ -58,7 +58,7 @@ variable "backup_retention_period" {
 variable "backup_window" {
   description = "ideal time to perform backups."
   type        = string
-  default     = "00:00-05:00"
+  default     = "04:00-05:00"
 }
 
 variable "maintenance_window" {

@@ -35,6 +35,7 @@ resource "aws_rds_cluster" "rds" {
   }
 
   tags = var.tags
+  depends_on = [random_password.master_password]
 }
 
 

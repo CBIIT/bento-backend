@@ -62,7 +62,7 @@
         # NIH LOGIN Config
         - name: NIH_CLIENT_ID
           value: "{{nih_client_id}}"
-        - nameL: NIH_CLIENT_SECRET
+        - name: NIH_CLIENT_SECRET
           value: "{{nih_client_secret}}"
         - name: NIH_BASE_URL
           value: https://stsstg.nih.gov

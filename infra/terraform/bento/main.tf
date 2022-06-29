@@ -20,12 +20,16 @@ module "s3" {
   #enable_version = var.enable_version
   stack_name = var.stack_name
   env = terraform.workspace
-  bucket_policy = data.aws_iam_policy_document.s3_policy.json
+  #bucket_policy = data.aws_iam_policy_document.s3_policy.json
   tags = var.tags
   #attach_bucket_policy = var.attach_bucket_policy
   s3_force_destroy = var.s3_force_destroy
+  days_for_archive_tiering = 125
+  days_for_deep_archive_tiering = 180
+  s3_enable_access_logging = false
+  s3_access_log_bucket_id = ""
 }
-/*
+
 module "ecs" {
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/ecs"
   stack_name = var.stack_name
@@ -36,9 +40,10 @@ module "ecs" {
   env = terraform.workspace
   microservices = var.microservices
   alb_https_listener_arn = module.alb.alb_https_listener_arn
-  ecs_security_group_ids = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]
-  ecs_task_role_arn = module.ecs_task_role.iam_role_arn
-  ecs_execution_role_arn = module.ecs_task_execution_role.iam_role_arn
+  #ecs_security_group_ids = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]
+  #ecs_task_role_arn = module.ecs_task_role.iam_role_arn
+  #ecs_execution_role_arn = module.ecs_task_execution_role.iam_role_arn
+  target_account_cloudone = false
 }
 
 #create ecr
@@ -50,7 +55,6 @@ module "ecr" {
    tags = var.tags
    env = terraform.workspace
 }
-*/
 
 #create opensearch
 module "opensearch" {
@@ -66,15 +70,15 @@ module "opensearch" {
   automated_snapshot_start_hour = 23
   opensearch_ebs_volume_size    = 30
   opensearch_instance_count     = 2
-  opensearch_log_type           = "INDEX_SLOW_LOGS"
-  opensearch_logs_enabled       = true
+  opensearch_log_types           = ["INDEX_SLOW_LOGS"]
+  #opensearch_autotune_state       = "ENABLED"
   create_os_service_role        = var.create_os_service_role
   multi_az_enabled = var.multi_az_enabled
   vpc_id = var.vpc_id
-  opensearch_rollback_on_autotune_disable = "NO_ROLLBACK"
+  opensearch_autotune_rollback_type = "NO_ROLLBACK"
 }
 
-/*
+
 module "dns" {
   count = var.create_dns_record ? 1: 0
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/route53"
@@ -98,4 +102,4 @@ module "neo4j" {
   stack_name = var.stack_name
   db_private_ip = var.db_private_ip
   tags = var.tags
-}*/
+}

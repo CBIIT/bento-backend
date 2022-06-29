@@ -1,4 +1,4 @@
-
+/*
 module "ecs_task_role" {
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/roles"
   iam_role_name = local.ecs_task_role_name
@@ -25,3 +25,4 @@ module "ecs_task_execution_role" {
   iam_policy  = data.aws_iam_policy_document.task_execution_policy_document.json
   tags = var.tags
 }
+*/

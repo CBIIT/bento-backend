@@ -58,7 +58,7 @@ resource "aws_lb_target_group" "users_target_group" {
   )
 }
 
-resource "aws_security_group_rule" "inbound_auth_alb" {
+resource "aws_security_group_rule" "inbound_users_alb" {
   from_port = var.users_container_port
   protocol = local.tcp_protocol
   to_port = var.users_container_port

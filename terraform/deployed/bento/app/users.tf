@@ -7,9 +7,9 @@ resource "aws_ecs_service" "users_service" {
   deployment_minimum_healthy_percent = 0
   deployment_maximum_percent = 100
   load_balancer {
-    target_group_arn = aws_lb_target_group.auth_target_group.arn
-    container_name   = "auth"
-    container_port   = var.auth_container_port
+    target_group_arn = aws_lb_target_group.users_target_group.arn
+    container_name   = "users"
+    container_port   = var.users_container_port
   }
   depends_on = [module.alb]
 }
@@ -32,7 +32,7 @@ resource "aws_ecs_task_definition" "users" {
 #create alb target group
 resource "aws_lb_target_group" "users_target_group" {
   name = "${var.stack_name}-${terraform.workspace}-users"
-  port = var.auth_container_port
+  port = var.users_container_port
   protocol = "HTTP"
   vpc_id =  data.terraform_remote_state.network.outputs.vpc_id
   stickiness {
@@ -41,11 +41,11 @@ resource "aws_lb_target_group" "users_target_group" {
     enabled = true
   }
   health_check {
-    path = "/api/auth/ping"
+    path = "/api/users/ping"
     protocol = "HTTP"
     matcher = "200"
     interval = 15
-    port = var.auth_container_port
+    port = var.users_container_port
     timeout = 3
     healthy_threshold = 2
     unhealthy_threshold = 2
@@ -70,7 +70,7 @@ resource "aws_security_group_rule" "inbound_users_alb" {
 resource "aws_lb_listener_rule" "users_alb_listener_prod" {
   count =  terraform.workspace ==  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
-  priority = var.auth_rule_priority
+  priority = var.users_rule_priority
   action {
     type = "forward"
     target_group_arn = aws_lb_target_group.users_target_group.arn
@@ -91,7 +91,7 @@ resource "aws_lb_listener_rule" "users_alb_listener_prod" {
 resource "aws_lb_listener_rule" "users_alb_listener" {
   count =  terraform.workspace !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
-  priority = var.auth_rule_priority
+  priority = var.users_rule_priority
   action {
     type = "forward"
     target_group_arn = aws_lb_target_group.users_target_group.arn

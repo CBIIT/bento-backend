@@ -127,12 +127,17 @@ variable "fronted_rule_priority" {
 variable "downloader_rule_priority" {
   description = "priority number to assign to alb rule"
   type = number
-  default = 91
+  default = 93
 }
 variable "auth_rule_priority" {
   description = "priority number to assign to alb rule"
   type = number
   default = 89
+}
+variable "users_rule_priority" {
+  description = "priority number to assign to alb rule"
+  type = number
+  default = 88
 }
 variable "backend_rule_priority" {
   description = "priority number to assign to alb rule"

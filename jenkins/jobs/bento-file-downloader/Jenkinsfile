@@ -32,7 +32,7 @@ def sendSlackMessage() {
 pipeline { 
 	agent {
 		node {
-			label 'cicd_microservice'
+			label 'cicd_ansible_2.9'
 		}
 	}
 	parameters {
@@ -129,7 +129,7 @@ pipeline {
        FILES_SLACK_URL = "${FILES_SLACK_URL}"
       }
   		steps{
-  		  node('cicd_microservice') {
+  		  node('cicd_ansible_2.9') {
 		    checkout( changelog:false,
 				poll: false,
 				scm: [$class: 'GitSCM', 

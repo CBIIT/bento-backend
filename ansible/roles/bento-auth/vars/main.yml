@@ -22,3 +22,15 @@ idp_provider: "{{ idp_provider}}"
 idp_client_id: "{{ idp_client_id }}"
 idp_client_secret: "{{ idp_client_secret }}"
 cookie_secret: "{{ cookie_secret }}"
+#smtp
+email_user: "{{ lookup('amazon.aws.aws_secret', 'smtp.email_user', nested=true, region='us-east-1' ) }}"
+email_password: "{{ lookup('amazon.aws.aws_secret', 'smtp.email_password', nested=true, region='us-east-1' ) }}"
+#mysql
+mysql_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.mysql_host', nested=true, region='us-east-1' ) }}"
+mysql_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.mysql_user', nested=true, region='us-east-1' ) }}"
+mysql_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.mysql_password', nested=true, region='us-east-1' ) }}"
+mysql_database: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.mysql_database', nested=true, region='us-east-1' ) }}"
+
+#nih
+nih_client_id: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/nih.nih_client_id', nested=true, region='us-east-1' ) }}"
+nih_client_secret: "{{ lookup('amazon.aws.aws_secret', 'auth/provider/nih.nih_client_secret', nested=true, region='us-east-1' ) }}"

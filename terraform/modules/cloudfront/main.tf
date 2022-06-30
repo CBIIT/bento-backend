@@ -2,6 +2,42 @@ locals {
   s3_origin_id = "${var.stack_name}-${var.env}-s3-origin-id"
 }
 
+#create s3 bucket policy
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = data.aws_s3_bucket.cloudfront_s3_bucket.bucket
+  policy = data.aws_iam_policy_document.s3_policy.json
+}
+
+resource "aws_s3_bucket_cors_configuration" "cors" {
+  bucket = data.aws_s3_bucket.cloudfront_s3_bucket.bucket
+
+  cors_rule {
+    allowed_headers = [
+      "Authorization",
+      "Content-Range",
+      "Accept",
+      "Content-Type",
+      "Origin",
+      "Range",
+      "Access-Control-Allow-Origin"
+    ]
+    allowed_methods = ["GET", "HEAD"]
+    allowed_origins = [
+       "*.cancer.gov",
+       "*.cloudfront.net",
+       "github.com",
+       "raw.githubusercontent.com",
+    ]
+    expose_headers  = [
+      "Content-Range",
+      "Content-Length",
+      "ETag"
+    ]
+    max_age_seconds = 3000
+  }
+
+}
+
 # create origin access identity
 resource "aws_cloudfront_origin_access_identity" "origin_access" {
   comment =  var.cloudfront_origin_access_identity_description
@@ -27,8 +63,7 @@ resource "aws_cloudfront_distribution" "distribution" {
     bucket          = data.aws_s3_bucket.cloudfront_log_bucket.bucket_domain_name
     prefix          = var.cloudfront_log_path_prefix_key
   }
-  ordered_cache_behavior {
-    path_pattern = "/annotations/*"
+  default_cache_behavior {
     allowed_methods  = ["GET", "HEAD","OPTIONS"]
     cached_methods   = ["GET", "HEAD","OPTIONS"]
     target_origin_id = local.s3_origin_id
@@ -53,19 +88,6 @@ resource "aws_cloudfront_distribution" "distribution" {
   restrictions {
     geo_restriction {
       restriction_type = "none"
-    }
-  }
-
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD","OPTIONS"]
-    cached_methods   = ["GET", "HEAD","OPTIONS"]
-    target_origin_id = local.s3_origin_id
-   viewer_protocol_policy = "allow-all"
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
     }
   }
     tags = var.tags

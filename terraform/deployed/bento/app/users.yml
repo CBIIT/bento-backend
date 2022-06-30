@@ -1,0 +1,8 @@
+---
+- name: users
+  image: cbiitssrepo/bento-users:latest
+  essential: true
+  portMappings:
+    - protocol: tcp
+      containerPort: 8083
+      hostPort: 8083

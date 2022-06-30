@@ -81,8 +81,8 @@
         - name: NIH_PROMPT
           value: login
       portMappings:
-      - containerPort: 8082
-        hostPort: 8082
+      - containerPort: 8083
+        hostPort: 8083
       logConfiguration:
         logDriver: syslog
         options:

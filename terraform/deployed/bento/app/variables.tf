@@ -255,3 +255,8 @@ variable "redis_node_type" {
   type = string
   default =  "cache.t3.medium"
 }
+variable "users_container_port" {
+  description = "container port for users microservice"
+  type = number
+  default = 8083
+}

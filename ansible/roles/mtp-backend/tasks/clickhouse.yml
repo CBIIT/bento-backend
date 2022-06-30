@@ -1,0 +1,61 @@
+---
+# tasks file for roles/open-target-backend
+
+- name: add click house public rpm gpg key
+  rpm_key:
+    state: present
+    key: "{{item}}"
+  loop:
+    - https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
+
+- name: add clickhouse repo
+  yum_repository:
+    name: "{{item.name}}"
+    description: Clickhouse repo
+    file: external_repos
+    baseurl: "{{item.repo}}"
+  loop:
+    - {repo: 'https://repo.clickhouse.tech/rpm/stable/x86_64/',name: clickhouse}
+
+- name: install clickhouse
+  yum:
+    name:
+      - clickhouse-server 
+      - clickhouse-client
+
+- name: updating clickhouse-server config files
+  replace:
+    path: /etc/clickhouse-server/config.xml
+    regexp: '<!-- <listen_host>::</listen_host> -->'
+    replace: '<listen_host>::</listen_host> '
+
+- name: reload systemd config
+  systemd: daemon_reload=yes
+
+- name: enable and start clickhouse
+  service:
+    name: clickhouse-server
+    enabled: yes
+    state: started
+
+- name: install clickhouse-backup tool to build 
+  get_url:
+    url: https://github.com/AlexAkulov/clickhouse-backup/releases/download/v1.3.2/clickhouse-backup-linux-amd64.tar.gz
+    dest: /tmp
+    mode: 0775
+
+- name: unarchive the tool
+  unarchive:
+    src: /tmp/clickhouse-backup-linux-amd64.tar.gz
+    dest: /home/bento
+
+- name: listing the contents of the workspace after extracting
+  shell: ls
+  register: shell_result
+  args:
+    chdir: "/home/bento"
+
+- debug:
+        var: shell_result.stdout_lines
+
+    

@@ -24,15 +24,15 @@
           value: "1800"
         - name: IDP 
           value: "{{idp_provider}}"
-        - name: CLIENT_ID
+        - name: GOOGLE_CLIENT_ID
           value: "{{idp_client_id}}"
-        - name: CLIENT_SECRET
+        - name: GOOGLE_CLIENT_SECRET
           value: "{{idp_client_secret}}"
         - name: DATE
           value: "{{ansible_date_time.date}}"
         - name: PROJECT
           value: "{{project}}"
-        - name: REDIRECT_URL
+        - name: GOOGLE_REDIRECT_URL
           value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
         - name: NEW_RELIC_LICENSE_KEY
           value: "{{ newrelic_license_key }}"
@@ -80,6 +80,12 @@
           value: "openid email profile"
         - name: NIH_PROMPT
           value: login
+        - name: AUTHORIZATION_ENABLED
+        - value: "true"
+        - name: AUTHORIZATION_URL
+          value: "{% if tier == 'prod' %}https://bento-tools.org/api/users/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/users/graphql{% endif %}"
+        - name: EMAILS_ENABLED
+          value: "true"
       portMappings:
       - containerPort: 8082
         hostPort: 8082

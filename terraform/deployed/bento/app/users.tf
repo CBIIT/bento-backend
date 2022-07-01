@@ -83,7 +83,33 @@ resource "aws_lb_listener_rule" "users_alb_listener_prod" {
   }
   condition {
     path_pattern  {
-      values = ["/api/users/*"]
+      values = ["/api/users/version","/api/users/ping"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "users_alb_listener_prod_graphql" {
+  count =  terraform.workspace ==  "prod" ? 1:0
+  listener_arn = module.alb.alb_https_listener_arn
+  priority = var.users_rule_priority
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.users_target_group.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${lower(var.stack_name)}.${var.domain_name}"]
+    }
+  }
+  condition {
+    path_pattern  {
+      values = ["/api/users/graphql"]
+    }
+  }
+  condition {
+    source_ip {
+      values = [data.terraform_remote_state.network.outputs.cidr_block]
     }
   }
 }
@@ -104,8 +130,34 @@ resource "aws_lb_listener_rule" "users_alb_listener" {
   }
   condition {
     path_pattern  {
-      values = ["/api/users/*"]
+      values = ["/api/users/version","/api/users/ping"]
     }
   }
+}
 
+
+resource "aws_lb_listener_rule" "users_alb_listener_graphql" {
+  count =  terraform.workspace !=  "prod" ? 1:0
+  listener_arn = module.alb.alb_https_listener_arn
+  priority = var.users_rule_priority
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.users_target_group.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${lower(var.stack_name)}-${var.env}.${var.domain_name}"]
+    }
+  }
+  condition {
+    path_pattern  {
+      values = ["/api/users/graphql"]
+    }
+  }
+  condition {
+    source_ip {
+      values = [data.terraform_remote_state.network.outputs.cidr_block]
+    }
+  }
 }

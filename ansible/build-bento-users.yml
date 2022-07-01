@@ -1,0 +1,12 @@
+---
+- name: build stage of bento-users
+  hosts: bento
+  connection: local
+  gather_facts: no
+  become: yes
+    
+  tasks:
+    - name: This is a build stage of bento-users
+      include_role:
+        name: bento-users
+        tasks_from: build

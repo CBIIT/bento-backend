@@ -1,0 +1,105 @@
+- name: log into ecr
+  include_role:
+    name: common
+    tasks_from: ecr-login
+
+- name: create task definition - {{project}} users
+  ecs_taskdefinition:
+    containers:
+    - name: users
+      essential: true
+      image: "{{ ecr_repo }}/{{project}}-users:{{users_version}}"
+      environment:
+        - name: NEO4J_URI
+          value: "bolt://{{neo4j_ip}}:7687"
+        - name: NEO4J_USER
+          value: "{{neo4j_user}}"
+        - name: NEO4J_PASSWORD
+          value: "{{neo4j_password}}"
+        - name: VERSION
+          value: "{{users_version}}"
+        # Email Notification Config
+        - name: EMAIL_SMTP_HOST
+          value: email-smtp.us-east-1.amazonaws.com
+        - name: EMAIL_SMTP_PORT
+          value: 465
+        # If Sent From AWS SMTP
+        - name: EMAIL_USER
+          value: "{{email_user}}"
+        - name: EMAIL_PASSWORD
+          value: "{{email_user}}"
+        - name: EMAILS_ENABLED
+          value: "false"
+      portMappings:
+      - containerPort: 8083
+        hostPort: 8083
+      logConfiguration:
+        logDriver: syslog
+        options:
+          syslog-address: "tcp://{{ syslog_host }}:514"
+          tag: "{{ app_name }}-users"
+          syslog-format: "rfc5424micro"
+    network_mode: "bridge"
+    family: "{{project}}-{{tier}}-users"
+    state: "present"
+    memory: 128
+    cpu: 128
+    region: "{{region}}"
+  register: task_output
+
+############################################################################################################################
+
+#     Task Definition Queries
+
+############################################################################################################################
+
+- name: query task definition - bento users
+  ecs_taskdefinition_info:
+    task_definition: "{{project}}-{{tier}}-users"
+    region: "{{region}}" 
+  register: task_users
+
+############################################################################################################################
+
+#     Service Queries
+
+############################################################################################################################
+
+- name: query users service
+  ecs_service_info:
+    cluster: "{{project}}-{{tier}}"
+    service:  "{{project}}-{{tier}}-users"
+    details: true
+    region: "{{region}}"
+  register: service_users
+
+############################################################################################################################
+
+- name: set facts
+  set_fact:
+    users_revision: "{{task_users.revision}}"
+    task_users_name: "{{task_users.family}}"
+    lb_users: "{{service_users.services[0].loadBalancers}}"
+    role_arn: "{{service_users.services[0].roleArn}}"
+
+############################################################################################################################
+
+#     Update Services
+
+############################################################################################################################
+
+- name: update users service
+  ecs_service:
+    state: present
+    name: "{{project}}-{{tier}}-users"
+    cluster: "{{project}}-{{tier}}"
+    task_definition: "{{task_users_name}}:{{users_revision}}"
+    role: "{{role_arn}}"
+    force_new_deployment: yes
+    deployment_configuration:
+      minimum_healthy_percent: 0
+      maximum_percent: 100
+    desired_count: 1
+    load_balancers: "{{ lb_users}}"
+    region: "{{region}}"
+  register: service_users_output

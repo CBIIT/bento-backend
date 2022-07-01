@@ -127,12 +127,17 @@ variable "fronted_rule_priority" {
 variable "downloader_rule_priority" {
   description = "priority number to assign to alb rule"
   type = number
-  default = 91
+  default = 93
 }
 variable "auth_rule_priority" {
   description = "priority number to assign to alb rule"
   type = number
   default = 89
+}
+variable "users_rule_priority" {
+  description = "priority number to assign to alb rule"
+  type = number
+  default = 88
 }
 variable "backend_rule_priority" {
   description = "priority number to assign to alb rule"
@@ -254,4 +259,9 @@ variable "redis_node_type" {
   description = "redis instance type"
   type = string
   default =  "cache.t3.medium"
+}
+variable "users_container_port" {
+  description = "container port for users microservice"
+  type = number
+  default = 8083
 }

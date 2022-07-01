@@ -42,18 +42,13 @@ pipeline {
         description: 'Choose the environment to build', 
         type: 'PT_SINGLE_SELECT',
         value: 'sandbox,dev,test,qa,perf,icdc,prod')
-    extendedChoice( 
-        name: 'Project', 
-        defaultValue: 'bento', 
-        description: 'Choose project to build', 
+    extendedChoice(
+        name: 'Project',
+        defaultValue: 'bento',
+        description: 'Choose project to build',
         type: 'PT_SINGLE_SELECT',
         value: 'bento,gmb,icdc,ctdc,c3dc' )
-    extendedChoice( 
-        name: 'EnableAuthService', 
-        defaultValue: 'false', 
-        description: 'Choose enable auth services', 
-        type: 'PT_SINGLE_SELECT',
-        value: 'true,false' )
+
 
   }
   options {
@@ -68,7 +63,7 @@ pipeline {
 	  environment {
 	   FILES_SLACK_URL = "${FILES_SLACK_URL}"
        TIER = "${params.Environment}"
-	     DOWNLOADER_VERSION = "${params.Downloader_Tag}"
+	   USERS_VERSION = "${params.Users_Tag}"
       }
   		steps{
 		  node('cicd_ansible_2.9') {
@@ -85,17 +80,28 @@ pipeline {
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+      withCredentials([string(credentialsId: 'idp_google_client_secret', variable: 'IDP_CLIENT_SECRET'),
+        string(credentialsId: 'idp_google_client_id', variable: 'IDP_CLIENT_ID'),
+        string(credentialsId: 'cookie_secret', variable: 'COOKIE_SECRET')
+        ]){
+        wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
           ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-file-downloader.yml', 
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-users.yml',
                 inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+                extras: "-vvv",
                 extraVars: [
-                    auth_enabled: "${params.EnableAuthService}",
-                    project: "${params.Project}",
-                    tier: "${params.Environment}",
+                     tier: "${params.Environment}",
+                     project: "${params.Project}",
+                     project_name: "${params.Project}",
+                     idp_client_id: "${IDP_CLIENT_ID}",
+           idp_client_secret: "${IDP_CLIENT_SECRET}",
+           cookie_secret: "${COOKIE_SECRET}",
+           idp_provider: "google"
                     ],
           colorized: true)
         }
+
+      }
 		  }
   		}
   	}

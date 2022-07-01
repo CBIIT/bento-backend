@@ -109,7 +109,7 @@ resource "aws_lb_listener_rule" "users_alb_listener_prod_graphql" {
   }
   condition {
     source_ip {
-      values = [data.terraform_remote_state.network.outputs.cidr_block]
+      values = [data.terraform_remote_state.network.outputs.vpc_cidr_block]
     }
   }
 }
@@ -157,7 +157,7 @@ resource "aws_lb_listener_rule" "users_alb_listener_graphql" {
   }
   condition {
     source_ip {
-      values = [data.terraform_remote_state.network.outputs.cidr_block]
+      values = [data.terraform_remote_state.network.outputs.vpc_cidr_block]
     }
   }
 }

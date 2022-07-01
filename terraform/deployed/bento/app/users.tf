@@ -91,7 +91,7 @@ resource "aws_lb_listener_rule" "users_alb_listener_prod" {
 resource "aws_lb_listener_rule" "users_alb_listener_prod_graphql" {
   count =  terraform.workspace ==  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
-  priority = var.users_rule_priority
+  priority = 87
   action {
     type = "forward"
     target_group_arn = aws_lb_target_group.users_target_group.arn
@@ -139,7 +139,7 @@ resource "aws_lb_listener_rule" "users_alb_listener" {
 resource "aws_lb_listener_rule" "users_alb_listener_graphql" {
   count =  terraform.workspace !=  "prod" ? 1:0
   listener_arn = module.alb.alb_https_listener_arn
-  priority = var.users_rule_priority
+  priority = 87
   action {
     type = "forward"
     target_group_arn = aws_lb_target_group.users_target_group.arn

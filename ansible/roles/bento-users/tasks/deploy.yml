@@ -18,37 +18,6 @@
           value: "{{neo4j_password}}"
         - name: VERSION
           value: "{{users_version}}"
-        - name: COOKIE_SECRET
-          value: "{{cookie_secret}}"
-        - name: SESSION_TIMEOUT
-          value: "1800"
-        - name: IDP 
-          value: "{{idp_provider}}"
-        - name: CLIENT_ID
-          value: "{{idp_client_id}}"
-        - name: CLIENT_SECRET
-          value: "{{idp_client_secret}}"
-        - name: DATE
-          value: "{{ansible_date_time.date}}"
-        - name: PROJECT
-          value: "{{project}}"
-        - name: REDIRECT_URL
-          value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org{% endif %}"
-        - name: NEW_RELIC_LICENSE_KEY
-          value: "{{ newrelic_license_key }}"
-        - name: NEW_RELIC_APP_NAME
-          value: "{{stack_name}}-{{tier}}-users-{{ansible_hostname}}"
-        # MySQL Configuration
-        - name: MYSQL_HOST
-          value: "{{mysql_host}}"
-        - name: MYSQL_PORT
-          value: 3306
-        - name: MYSQL_PASSWORD
-          value: "{{mysql_password}}"
-        - name: MYSQL_USER
-          value: "{{mysql_user}}"
-        - name: MYSQL_DATABASE
-          value: "{{mysql_database}}"
         # Email Notification Config
         - name: EMAIL_SMTP_HOST
           value: email-smtp.us-east-1.amazonaws.com
@@ -59,27 +28,8 @@
           value: "{{email_user}}"
         - name: EMAIL_PASSWORD
           value: "{{email_user}}"
-        # NIH LOGIN Config
-        - name: NIH_CLIENT_ID
-          value: "{{nih_client_id}}"
-        - name: NIH_CLIENT_SECRET
-          value: "{{nih_client_secret}}"
-        - name: NIH_BASE_URL
-          value: https://stsstg.nih.gov
-        - name: NIH_REDIRECT_URL
-          value: https://bento-dev.bento-tools.org
-        - name: NIH_USERINFO_URL
-          value: https://stsstg.nih.gov/openid/connect/v1/userinfo
-        - name: NIH_usersORIZE_URL
-          value: https://stsstg.nih.gov/users/ousers/v2/usersorize
-        - name: NIH_TOKEN_URL
-          value: https://stsstg.nih.gov/users/ousers/v2/token
-        - name: NIH_LOGOUT_URL
-          value: https://stsstg.nih.gov/connect/session/logout
-        - name: NIH_SCOPE
-          value: "openid email profile"
-        - name: NIH_PROMPT
-          value: login
+        - name: EMAILS_ENABLED
+          value: "false"
       portMappings:
       - containerPort: 8083
         hostPort: 8083

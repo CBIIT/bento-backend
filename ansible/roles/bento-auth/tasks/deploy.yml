@@ -81,7 +81,7 @@
         - name: NIH_PROMPT
           value: login
         - name: AUTHORIZATION_ENABLED
-        - value: "true"
+          value: "true"
         - name: AUTHORIZATION_URL
           value: "{% if tier == 'prod' %}https://bento-tools.org/api/users/graphql{% else %}https://{{stack_name}}-{{ tier }}.bento-tools.org/api/users/graphql{% endif %}"
         - name: EMAILS_ENABLED

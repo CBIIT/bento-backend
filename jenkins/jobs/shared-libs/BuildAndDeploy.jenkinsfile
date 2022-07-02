@@ -12,7 +12,7 @@ buildApp(label: "cicd_microservice") {
     }
     stage("push tag"){
         def slackUrl = getSecret(secretName="notification/slack.icdc_slack_url")
-        prinln slackUrl
+        println slackUrl
         //tagRepo gitTag: "${params.FrontendTag}", gitUrl: "https://github.com/CBIIT/bento-frontend", checkoutDirectory: "vote-frontend"
         //tagRepo gitTag: "${params.BackendTag}", gitUrl: "https://github.com/CBIIT/bento-backend", checkoutDirectory: "bento-backend"
     }

@@ -7,11 +7,13 @@ buildApp(label: "cicd_microservice") {
     gitCheckout checkoutDirectory: "bento-backend", gitUrl: "https://github.com/CBIIT/bento-backend", gitBranch: "${params.BackendTag}"
     gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
     setEnvValues(){}
-    stage("build"){    
+    stage("build"){  
+        echo "Hello"  
         //runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
     }
     stage("push tag"){
         def slackUrl = getSecret(secretName="notification/slack.icdc_slack_url")
+        echo "Helloworld"
         println slackUrl
         //tagRepo gitTag: "${params.FrontendTag}", gitUrl: "https://github.com/CBIIT/bento-frontend", checkoutDirectory: "vote-frontend"
         //tagRepo gitTag: "${params.BackendTag}", gitUrl: "https://github.com/CBIIT/bento-backend", checkoutDirectory: "bento-backend"

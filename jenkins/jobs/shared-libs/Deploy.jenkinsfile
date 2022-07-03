@@ -1,0 +1,22 @@
+@Library('datacommons-jenkins-shared-library') _
+deployApp(label: "cicd_microservice") {
+    deployProperties(ecrRepoName: "vote-frontend",parameterName: "FrontendTag") {
+    }
+    gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
+    setEnvValues(){}
+    stage("deploy"){
+        echo "Hello Deploying" 
+        //runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
+    }
+    stage("send slack"){
+        def slackUrl = getSecret("notification/slack","icdc_slack_url")
+        sendSlackMessage([
+            emojiIcon: ":jenkins:",
+            slackUrl: slackUrl,
+            title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+            fallback: "Bento Jenkins Build",
+            footer: "bento devops",
+            text: "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} :beer:\n Details at: ${env.BUILD_URL}console",
+        ])  
+    }
+}

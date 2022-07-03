@@ -17,7 +17,6 @@ buildApp(label: "cicd_microservice") {
             slackUrl=slackUrl,
             title="Jenkins Job Alert - ${currentBuild.currentResult}",
             fallback="Bento Jenkins Build",
-            color="${BUILD_COLORS[currentBuild.currentResult]}",
             foote="bento devops"
         )  
 

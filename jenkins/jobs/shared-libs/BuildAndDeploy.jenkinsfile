@@ -12,8 +12,7 @@ buildApp(label: "cicd_microservice") {
         //runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
     }
     stage("push tag"){
-        def slackUrl = getSecret("notification/slack")
-        echo "Helloworld"
+        def slackUrl = getSecret("notification/slack","icdc_slack_url")
         println slackUrl
         //tagRepo gitTag: "${params.FrontendTag}", gitUrl: "https://github.com/CBIIT/bento-frontend", checkoutDirectory: "vote-frontend"
         //tagRepo gitTag: "${params.BackendTag}", gitUrl: "https://github.com/CBIIT/bento-backend", checkoutDirectory: "bento-backend"

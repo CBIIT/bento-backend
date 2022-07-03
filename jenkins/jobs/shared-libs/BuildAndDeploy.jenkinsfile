@@ -14,10 +14,12 @@ buildApp(label: "cicd_microservice") {
     stage("push tag"){
         def slackUrl = getSecret("notification/slack","icdc_slack_url")
         sendSlackMessage([
+            emojiIcon: ":jenkins:",
             slackUrl: slackUrl,
             title: "Jenkins Job Alert - ${currentBuild.currentResult}",
             fallback: "Bento Jenkins Build",
-            footer: "bento devops"
+            footer: "bento devops",
+            text: "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} :beer:\n Details at: ${env.BUILD_URL}console",
         ])  
 
         //tagRepo gitTag: "${params.FrontendTag}", gitUrl: "https://github.com/CBIIT/bento-frontend", checkoutDirectory: "vote-frontend"

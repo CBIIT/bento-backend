@@ -18,6 +18,10 @@
           value: "{{neo4j_password}}"
         - name: VERSION
           value: "{{users_version}}"
+        - name: COOKIE_SECRET
+          value: "{{cookie_secret}}"
+        - name: SESSION_TIMEOUT
+          value: "1800"
         # MySQL Configuration
         - name: MYSQL_HOST
           value: "{{mysql_host}}"

@@ -7,16 +7,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-@Service
-public class ESFilterDataFetcher {
-    private static final Logger logger = LogManager.getLogger(ESFilterDataFetcher.class);
+public class BentoEsFilter implements DataFetcher {
+    private static final Logger logger = LogManager.getLogger(BentoEsFilter.class);
 
     // parameters used in queries
     final String PAGE_SIZE = "first";
@@ -65,6 +63,7 @@ public class ESFilterDataFetcher {
 
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
+    @Override
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")

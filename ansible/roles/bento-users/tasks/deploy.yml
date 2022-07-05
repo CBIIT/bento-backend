@@ -18,6 +18,21 @@
           value: "{{neo4j_password}}"
         - name: VERSION
           value: "{{users_version}}"
+        - name: COOKIE_SECRET
+          value: "{{cookie_secret}}"
+        - name: SESSION_TIMEOUT
+          value: "1800"
+        # MySQL Configuration
+        - name: MYSQL_HOST
+          value: "{{mysql_host}}"
+        - name: MYSQL_PORT
+          value: 3306
+        - name: MYSQL_PASSWORD
+          value: "{{mysql_password}}"
+        - name: MYSQL_USER
+          value: "{{mysql_user}}"
+        - name: MYSQL_DATABASE
+          value: "{{mysql_database}}"
         # Email Notification Config
         - name: EMAIL_SMTP_HOST
           value: email-smtp.us-east-1.amazonaws.com

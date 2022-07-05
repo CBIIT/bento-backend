@@ -21,7 +21,7 @@ region: "us-east-1"
 idp_provider: "{{ idp_provider}}"
 idp_client_id: "{{ idp_client_id }}"
 idp_client_secret: "{{ idp_client_secret }}"
-cookie_secret: "{{ cookie_secret }}"
+cookie_secret: "{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.cookie_secret', nested=true, region='us-east-1' ) }}"
 #smtp
 email_user: "{{ lookup('amazon.aws.aws_secret', 'smtp.email_user', nested=true, region='us-east-1' ) }}"
 email_password: "{{ lookup('amazon.aws.aws_secret', 'smtp.email_password', nested=true, region='us-east-1' ) }}"

@@ -1,0 +1,12 @@
+@Library('datacommons-jenkins-shared-library') _
+deployApp(label: "cicd_microservice") {
+    deployProperties(ecrRepoName: "vote-frontend",parameterName: "EcrImageTag") {
+    }
+    gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
+    // env.FE_VERSION="${params.EcrImageTag}"
+    stage("deploy"){
+        echo "Hello Deploying" 
+        //runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
+    }
+    notify secretPath: "notification/slack", secretName: "icdc_slack_url"
+}

@@ -7,8 +7,22 @@ buildApp(label: "cicd_microservice") {
     gitCheckout checkoutDirectory: "bento-backend", gitUrl: "https://github.com/CBIIT/bento-backend", gitBranch: "${params.BackendTag}"
     gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
     setEnvValues(){}
-    stage("build"){    
-        sh "aws secretsmanager get-secret-value  --secret-id github/pat --region us-east-1 | jq --raw-output .SecretString | jq -r .token"  
+    stage("build"){  
+        echo "Hello"  
         //runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
+    }
+    stage("push tag"){
+        def slackUrl = getSecret("notification/slack","icdc_slack_url")
+        sendSlackMessage([
+            emojiIcon: ":jenkins:",
+            slackUrl: slackUrl,
+            title: "Jenkins Job Alert - ${currentBuild.currentResult}",
+            fallback: "Bento Jenkins Build",
+            footer: "bento devops",
+            text: "Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} :beer:\n Details at: ${env.BUILD_URL}console",
+        ])  
+
+        //tagRepo gitTag: "${params.FrontendTag}", gitUrl: "https://github.com/CBIIT/bento-frontend", checkoutDirectory: "vote-frontend"
+        //tagRepo gitTag: "${params.BackendTag}", gitUrl: "https://github.com/CBIIT/bento-backend", checkoutDirectory: "bento-backend"
     }
 }

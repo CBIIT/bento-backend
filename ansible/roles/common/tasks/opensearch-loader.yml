@@ -28,7 +28,7 @@
   template:
     dest: "{{workspace}}/config/es_indices_bento.yml"
     src: "{{ indices_file }}"
-
+    remote_src: yes
 
 - name: update server config file
   template:

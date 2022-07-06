@@ -40,6 +40,10 @@ public class ConfigurationDAO {
 	private boolean redisEnabled;
 	@Value("${redis.use_cluster}")
 	private boolean redisUseCluster;
+
+	@Value("${authenticated}")
+	private boolean authenticated;
+
 	@Value("${redis.host}")
 	private String redisHost;
 	@Value("${redis.port}")
@@ -185,5 +189,13 @@ public class ConfigurationDAO {
 
 	public void setRedisSchemaFile(String redisSchemaFile) {
 		this.redisSchemaFile = redisSchemaFile;
+	}
+
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
+
+	public void setAuthenticated(boolean authenticated) {
+		this.authenticated = authenticated;
 	}
 }

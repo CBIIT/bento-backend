@@ -76,7 +76,7 @@ pipeline {
 				relativeTargetDir: 'ins-frontend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/INS-WebService']]])
+				[[url: 'https://github.com/CBIIT/INS-WebPortal']]])
 			
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Backend_Branch}"]],
@@ -85,7 +85,7 @@ pipeline {
 				relativeTargetDir: 'ins-backend']],
 				submoduleCfg: [],
 				userRemoteConfigs: 
-				[[url: 'https://github.com/CBIIT/INS-WebPortal']]])
+				[[url: 'https://github.com/CBIIT/INS-WebService']]])
             dir('ins-model'){
                             git branch: "${params.Model_Branch}",
                             url: 'https://github.com/CBIIT/INS-ETL'

@@ -12,3 +12,18 @@ schema_file: "bento-extended.graphql"
 es_schema_file: "es-schema.graphql"
 about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"
 app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
+
+react_app_auth_service_api: 
+  dev: "https://bento-dev.bento-tools.org/api/auth/"
+  qa: "https://bento-qa.bento-tools.org/api/auth/"
+  perf: "https://bento-perf.bento-tools.org/api/auth/"
+  prod: "https://bento-tools.org/api/auth/"
+
+react_app_user_service_api: 
+  dev: "https://bento-dev.bento-tools.org/api/users/"
+  qa: "https://bento-qa.bento-tools.org/api/users/"
+  perf: "https://bento-perf.bento-tools.org/api/users/"
+  prod: "https://bento-tools.org/api/users/"
+
+react_app_nih_client_id: "{{ lookup('aws_ssm', 'nih_client_id', region='us-east-1') }}"
+react_app_nih_auth_url: "{{ lookup('aws_ssm', 'nih_auth_url', region='us-east-1') }}"

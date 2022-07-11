@@ -1,5 +1,5 @@
 ---
-- name: include etl mode
+- name: include etl task
   include_role:
     name: common
     tasks_from: etl

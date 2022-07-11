@@ -22,6 +22,6 @@
         model_file1: "{{workspace}}/ins-model/dataloader/model-desc/ins_model_file.yaml"
         model_file2: "{{workspace}}/ins-model/dataloader/model-desc/ins_model_properties.yaml"
         property_file: "{{workspace}}/ins-model/dataloader/model-desc/props-ins.yml"
-        about_file: "{{ workspace }}/ins-frontend/src/content/{{ tier }}/aboutPagesContent.yaml"
+        about_file: "{{ workspace }}/ins-frontend/src/content/dev/aboutPagesContent.yaml"
         indices_file: "{{ workspace }}/ins-backend/src/main/resources/yaml/es_indices_bento.yml"
         # ansible_python_interpreter: /bin/python3

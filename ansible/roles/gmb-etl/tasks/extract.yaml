@@ -1,0 +1,7 @@
+---
+- name: include etl task
+  include_role:
+    name: common
+    tasks_from: etl
+  vars:
+    etl_command: "python3 {{workspace}}/{{project_name}}-extraction.py {{workspace}}/{{project_name}}_config.yml --extract-only"

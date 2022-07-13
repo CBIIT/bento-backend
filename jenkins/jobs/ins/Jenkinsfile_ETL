@@ -117,6 +117,16 @@ pipeline {
                   env.PROJECT         = "ins"
                   env.SPLIT           = "${params.SplitTransactions}"
                 }
+              case "demo":
+                withCredentials([usernamePassword(credentialsId: "ins_${params.Environment}_neo4j_user", passwordVariable: 'neo4j_password', usernameVariable: 'neo4j_user')]) {
+                  env.S3_FOLDER       = "${params.S3Folder}"
+                  env.TIER            = "${params.Environment}"
+                  env.WIPE_DB         = "${params.WipeDB}"
+                  env.NEO4J_PASSWORD  = "${neo4j_password}"
+                  env.CHEAT_MODE      = "${params.CheatMode}"
+                  env.PROJECT         = "ins"
+                  env.SPLIT           = "${params.SplitTransactions}"
+                }
               break
               default:
                 withCredentials([usernamePassword(credentialsId: 'docker-login', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USER')]) {

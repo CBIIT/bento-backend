@@ -1,6 +1,6 @@
 @Library('datacommons-jenkins-shared-library') _
 deployApp(label: "cicd_microservice") {
-    deployProperties parameterName: "DeployTag", repoName: cds-backend
+    deployProperties parameterName: "DeployTag", repoName: "cds-backend"
     def additionalParams = [
         booleanParam(name: 'boolean_param', defaultValue: false),
         choice(choices: ['ONE', 'TWO'], name: 'PARAMETER_01')

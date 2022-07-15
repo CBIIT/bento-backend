@@ -2,7 +2,7 @@
 deployApp(label: "cicd_microservice") {
     deployProperties test: "Name"
     def additionalParams = [
-        booleanParam(name: 'boolean_param', defaultValue: false)
+        booleanParam(name: 'boolean_param', defaultValue: false),
         choice(choices: ['ONE', 'TWO'], name: 'PARAMETER_01')
     ]
     addParameters additionalParams: additionalParams

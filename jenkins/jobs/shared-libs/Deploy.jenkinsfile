@@ -1,7 +1,6 @@
 @Library('datacommons-jenkins-shared-library') _
 deployApp(label: "cicd_microservice") {
-    deployProperties(test: "Name") {
-    }
+    deployProperties test: "Name"
     gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
     notify secretPath: "notification/slack", secretName: "icdc_slack_url"
 }

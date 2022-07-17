@@ -53,7 +53,7 @@ resource "aws_security_group_rule" "app_inbound" {
   protocol = local.tcp_protocol
   to_port = each.value.port
   security_group_id = module.ecs.app_security_group_id
-  source_security_group_id = module.alb.alb_securitygroup-id
+  source_security_group_id = module.alb.alb_securitygroup_id
   type = "ingress"
   depends_on = [
       module.alb

@@ -3,8 +3,6 @@ module "alb" {
   vpc_id = var.vpc_id
   alb_log_bucket_name = module.s3.bucket_name
   env = terraform.workspace
-  #certificate_domain_name = var.certificate_domain_name
-  #acm_certificate_issued_type = local.acm_certificate_issued_type
   alb_internal = var.internal_alb
   alb_type = var.lb_type
   alb_subnet_ids = local.alb_subnet_ids

@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "ecs_task_policy" {
 
 
 data "aws_acm_certificate" "amazon_issued" {
-  domain      =  var.domain_name
+  domain      =  var.certificate_domain_name
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }

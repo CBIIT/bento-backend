@@ -201,3 +201,13 @@ variable "multi_az_enabled" {
   type        = bool
   default = false
 }
+variable "opensearch_instance_count" {
+  description = "the number of data nodes to provision for each instance in the cluster"
+  type        = number
+  default     = 1
+}
+variable "automated_snapshot_start_hour" {
+  description = "hour when automated snapshot to be taken"
+  type        = number
+  default     = 23
+}

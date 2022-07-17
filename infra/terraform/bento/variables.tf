@@ -201,9 +201,3 @@ variable "multi_az_enabled" {
   type        = bool
   default = false
 }
-
-variable "create_app_security_group" {
-  description = "create application security group"
-  type = bool
-  default = false
-}

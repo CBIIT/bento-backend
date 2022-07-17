@@ -36,7 +36,6 @@ module "ecs" {
   env = terraform.workspace
   microservices = var.microservices
   alb_https_listener_arn = module.alb.alb_https_listener_arn
-  create_app_security_group = var.create_app_security_group
   target_account_cloudone = false
 }
 

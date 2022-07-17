@@ -27,7 +27,7 @@
         ansible_python_interpreter: /usr/bin/python3
         workspace: "{{ lookup('env','WORKSPACE') }}"
         build_number: "{{ lookup('env','BUILD_NUMBER')}}"
-        project_name: "{{ lookup('env','PROJECT_NAME') }}"
+        project_name: "{{ project_name }}"
         image_version: "{{ lookup('env','FE_VERSION') }}"
         container_name: "frontend"
         container_build_path: "{{ workspace }}/{{ project_name }}-frontend"

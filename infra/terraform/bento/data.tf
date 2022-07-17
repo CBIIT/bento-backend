@@ -98,3 +98,10 @@ data "aws_iam_policy_document" "ecs_task_policy" {
     resources = ["*"]
   }
 }
+
+
+data "aws_acm_certificate" "amazon_issued" {
+  domain      =  var.domain_name
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}

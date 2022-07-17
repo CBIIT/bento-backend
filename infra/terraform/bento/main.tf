@@ -6,12 +6,11 @@ module "alb" {
   #certificate_domain_name = var.certificate_domain_name
   #acm_certificate_issued_type = local.acm_certificate_issued_type
   alb_internal = var.internal_alb
-  #alb_security_group_ids = [aws_security_group.alb.id]
   alb_type = var.lb_type
   alb_subnet_ids = local.alb_subnet_ids
   tags = var.tags
   stack_name = var.stack_name
-  alb_certificate_arn = var.alb_certificate_arn
+  alb_certificate_arn = data.aws_acm_certificate.amazon_issued.arn
 }
 
 module "s3" {

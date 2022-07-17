@@ -199,11 +199,7 @@ variable "create_db_instance" {
 variable "multi_az_enabled" {
   description = "set to true to enable multi-az deployment"
   type        = bool
-}
-
-variable "alb_certificate_arn" {
-  type        = string
-  description = "The ARN of the certificate to attach to the HTTPS ALB listener. If available, use a wildcard certificate"
+  default = false
 }
 
 variable "create_app_security_group" {

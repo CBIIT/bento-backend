@@ -14,7 +14,7 @@ locals {
   alb_subnet_ids = terraform.workspace == "prod" || terraform.workspace == "stage"  || var.cloud_platform == "leidos" ? var.public_subnet_ids : var.private_subnet_ids
   #app_url =  terraform.workspace == "prod" ? "${var.app_sub_domain}.${var.domain_name}" : "${var.app_sub_domain}-${terraform.workspace}.${var.domain_name}"
   allowed_alb_ip_range = terraform.workspace == "prod" || terraform.workspace == "stage" || var.cloud_platform == "leidos"  ?  local.all_ips : local.nih_ip_cidrs
-  alb_log_bucket_name = var.cloud_platform == "leidos" ? "${var.stack_name}-alb-${terraform.workspace}-access-logs" : "${var.stack_name}-${var.cloud_platform}-alb-${terraform.workspace}-access-logs"
+  alb_log_bucket_name = var.cloud_platform == "leidos" ? "alb-access-logs" : "${var.cloud_platform}-alb-access-logs"
   acm_certificate_issued_type = var.cloud_platform == "leidos" ? "AMAZON_ISSUED" : "IMPORTED"
   ecs_task_role_name = "${var.stack_name}-${terraform.workspace}-ecs-task-role"
   ecs_task_execution_role_name = "${var.stack_name}-${terraform.workspace}-ecs-task-execution-role"

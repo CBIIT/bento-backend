@@ -22,7 +22,6 @@ module "s3" {
   days_for_deep_archive_tiering = 180
   s3_enable_access_logging = false
   s3_access_log_bucket_id = ""
-  s3_bucket_policy = data.aws_iam_policy_document.s3_alb_policy.json
 }
 
 module "ecs" {

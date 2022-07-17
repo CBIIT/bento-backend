@@ -73,7 +73,6 @@ resource "aws_security_group_rule" "app_outbound" {
 #create opensearch ingress rule
 resource "aws_security_group_rule" "opensearch_inbound" {
   count = var.create_opensearch_cluster ? 1: 0
-  name = "${var.stack_name}-${terraform.workspace}-opensearch-sg"
   from_port = local.https_port
   protocol = local.tcp_protocol
   to_port = local.https_port

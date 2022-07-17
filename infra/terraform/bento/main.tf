@@ -65,8 +65,8 @@ module "opensearch" {
   multi_az_enabled = var.multi_az_enabled
   vpc_id = var.vpc_id
   opensearch_autotune_rollback_type = "NO_ROLLBACK"
+  create_cloudwatch_log_policy = var.create_cloudwatch_log_policy
 }
-
 
 module "dns" {
   count = var.create_dns_record ? 1: 0

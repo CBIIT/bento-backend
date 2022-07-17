@@ -84,6 +84,7 @@ opensearch_version = "OpenSearch_1.2"
 allowed_ip_blocks = ["172.18.0.0/16","172.16.0.219/32"]
 create_os_service_role = false
 opensearch_instance_count = 1
+create_cloudwatch_log_policy = true
 
 
 #neo4j db

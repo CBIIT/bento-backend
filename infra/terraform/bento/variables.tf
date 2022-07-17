@@ -211,3 +211,8 @@ variable "automated_snapshot_start_hour" {
   type        = number
   default     = 23
 }
+variable "create_cloudwatch_log_policy" {
+  description = "Due cloudwatch log policy limits, this should be option, we can use an existing policy"
+  default = false
+  type = bool
+}

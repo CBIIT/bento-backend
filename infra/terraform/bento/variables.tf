@@ -205,3 +205,9 @@ variable "alb_certificate_arn" {
   type        = string
   description = "The ARN of the certificate to attach to the HTTPS ALB listener. If available, use a wildcard certificate"
 }
+
+variable "create_app_security_group" {
+  description = "create application security group"
+  type = bool
+  default = false
+}

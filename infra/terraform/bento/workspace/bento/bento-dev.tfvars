@@ -9,7 +9,7 @@ private_subnet_ids = [
 vpc_id = "vpc-08f154f94dc8a0e34"
 stack_name = "vote"
 
-
+create_app_security_group = true
 tags = {
   Project = "bento"
   CreatedWith = "Terraform"

@@ -17,12 +17,9 @@ module "alb" {
 module "s3" {
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/s3"
   bucket_name = local.alb_log_bucket_name
-  #enable_version = var.enable_version
   stack_name = var.stack_name
   env = terraform.workspace
-  #bucket_policy = data.aws_iam_policy_document.s3_policy.json
   tags = var.tags
-  #attach_bucket_policy = var.attach_bucket_policy
   s3_force_destroy = var.s3_force_destroy
   days_for_archive_tiering = 125
   days_for_deep_archive_tiering = 180
@@ -40,9 +37,7 @@ module "ecs" {
   env = terraform.workspace
   microservices = var.microservices
   alb_https_listener_arn = module.alb.alb_https_listener_arn
-  #ecs_security_group_ids = [aws_security_group.app_sg.id,aws_security_group.fargate_sg.id]
-  #ecs_task_role_arn = module.ecs_task_role.iam_role_arn
-  #ecs_execution_role_arn = module.ecs_task_execution_role.iam_role_arn
+  create_app_security_group = var.create_app_security_group
   target_account_cloudone = false
 }
 
@@ -66,12 +61,10 @@ module "opensearch" {
   env = terraform.workspace
   opensearch_subnet_ids = var.private_subnet_ids
   opensearch_version = var.opensearch_version
-  #opensearch_security_group_ids = [aws_security_group.os.id]
   automated_snapshot_start_hour = 23
   opensearch_ebs_volume_size    = 30
   opensearch_instance_count     = 2
   opensearch_log_types           = ["INDEX_SLOW_LOGS"]
-  #opensearch_autotune_state       = "ENABLED"
   create_os_service_role        = var.create_os_service_role
   multi_az_enabled = var.multi_az_enabled
   vpc_id = var.vpc_id
@@ -93,7 +86,6 @@ module "neo4j" {
   count = var.create_db_instance? 1: 0
   source = "git::https://github.com/CBIIT/datacommons-devops.git//terraform/modules/neo4j"
   env = terraform.workspace
-  db_security_group_ids = [aws_security_group.database-sg[count.index].id]
   vpc_id = var.vpc_id
   db_subnet_id = var.db_subnet_id
   db_instance_volume_size = var.db_instance_volume_size

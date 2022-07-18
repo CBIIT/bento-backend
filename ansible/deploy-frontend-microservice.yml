@@ -39,7 +39,7 @@
         container_memory: 512
         container_cpu: 256
         container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
-        about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version | split('-') | first }}/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version | split('-') | first }}/src/content/{{ tier }}/aboutPagesContent.yaml{% endif %}"
+        about_content_url: "https://raw.githubusercontent.com/CBIIT/bento-frontend/master/src/content/{{ tier }}/aboutPagesContent.yaml"
         newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
         app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
         container_env:

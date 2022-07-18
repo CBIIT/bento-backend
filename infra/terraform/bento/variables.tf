@@ -199,9 +199,20 @@ variable "create_db_instance" {
 variable "multi_az_enabled" {
   description = "set to true to enable multi-az deployment"
   type        = bool
+  default = false
 }
-
-variable "alb_certificate_arn" {
-  type        = string
-  description = "The ARN of the certificate to attach to the HTTPS ALB listener. If available, use a wildcard certificate"
+variable "opensearch_instance_count" {
+  description = "the number of data nodes to provision for each instance in the cluster"
+  type        = number
+  default     = 1
+}
+variable "automated_snapshot_start_hour" {
+  description = "hour when automated snapshot to be taken"
+  type        = number
+  default     = 23
+}
+variable "create_cloudwatch_log_policy" {
+  description = "Due cloudwatch log policy limits, this should be option, we can use an existing policy"
+  default = false
+  type = bool
 }

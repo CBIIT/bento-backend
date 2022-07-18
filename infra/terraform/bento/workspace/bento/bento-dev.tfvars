@@ -9,7 +9,6 @@ private_subnet_ids = [
 vpc_id = "vpc-08f154f94dc8a0e34"
 stack_name = "vote"
 
-
 tags = {
   Project = "bento"
   CreatedWith = "Terraform"
@@ -80,10 +79,12 @@ microservices  = {
 #opensearch
 create_opensearch_cluster = true
 opensearch_ebs_volume_size = 200
-opensearch_instance_type = "t3.medium.elasticsearch"
+opensearch_instance_type = "t3.medium.search"
 opensearch_version = "OpenSearch_1.2"
 allowed_ip_blocks = ["172.18.0.0/16","172.16.0.219/32"]
 create_os_service_role = false
+opensearch_instance_count = 1
+create_cloudwatch_log_policy = false
 
 
 #neo4j db

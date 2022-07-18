@@ -1,236 +1,192 @@
-#create alb security group
-#resource "aws_security_group" "alb-sg" {
-#  name   = "${var.stack_name}-${terraform.workspace}-alb-sg"
-#  vpc_id = var.vpc_id
-#  tags = merge(
-#  {
-#    "Name" = format("%s-%s-alb-sg", var.stack_name, terraform.workspace)
-#  },
-#  var.tags,
-#  )
-#}
-resource "aws_security_group_rule" "inbound_http" {
+#create alb http ingress
+resource "aws_security_group_rule" "alb_http_inbound" {
   from_port   = local.http_port
   protocol    = local.tcp_protocol
   to_port     = local.http_port
   cidr_blocks = local.allowed_alb_ip_range
-  security_group_id = module.alb.alb_securitygroup-id
+  security_group_id = module.alb.alb_securitygroup_id
   type              = "ingress"
-
   depends_on = [
     module.alb
   ]
 }
-resource "aws_security_group_rule" "inbound_https" {
+#create alb https ingress
+resource "aws_security_group_rule" "alb_https_inbound" {
   from_port   = local.https_port
   protocol    = local.tcp_protocol
   to_port     = local.https_port
   cidr_blocks = local.allowed_alb_ip_range
-  security_group_id = module.alb.alb_securitygroup-id
+  security_group_id = module.alb.alb_securitygroup_id
   type              = "ingress"
   depends_on = [
       module.alb
     ]
 }
+#create alb egress
 resource "aws_security_group_rule" "all_outbound" {
   from_port   = local.any_port
   protocol    = local.any_protocol
   to_port     = local.any_port
   cidr_blocks = local.all_ips
-  security_group_id = module.alb.alb_securitygroup-id
+  security_group_id = module.alb.alb_securitygroup_id
   type              = "egress"
   depends_on = [
       module.alb
     ]
 }
-resource "aws_security_group" "fargate_sg" {
-  name = "${var.stack_name}-${terraform.workspace}-fargate-sg"
-  vpc_id = var.vpc_id
-  tags = merge(
-  {
-    "Name" = format("%s-%s-fargate-sg",var.stack_name,terraform.workspace),
-  },
-  var.tags,
-  )
-}
-resource "aws_security_group_rule" "all_outbound_fargate" {
-  from_port = local.any_port
-  protocol = local.any_protocol
-  to_port = local.any_port
-  cidr_blocks = local.all_ips
-  security_group_id = aws_security_group.fargate_sg.id
-  type = "egress"
-}
+
+#create ecs ingress sg
 resource "aws_security_group_rule" "inbound_fargate" {
   for_each = toset(var.fargate_security_group_ports)
   from_port = each.key
   protocol = local.tcp_protocol
   to_port = each.key
-  security_group_id = aws_security_group.fargate_sg.id
+  security_group_id = module.ecs.ecs_security_group_id
   cidr_blocks = [data.aws_vpc.vpc.cidr_block]
   type = "ingress"
 }
-resource "aws_security_group" "app_sg" {
-  name = "${var.stack_name}-${terraform.workspace}-app-sg"
-  vpc_id = var.vpc_id
-  tags = merge(
-  {
-    "Name" = format("%s-%s-frontend-sg",var.stack_name,terraform.workspace),
-  },
-  var.tags,
-  )
-}
-resource "aws_security_group_rule" "inbound_alb" {
+
+#create app ingress
+resource "aws_security_group_rule" "app_inbound" {
   for_each = var.microservices
   from_port = each.value.port
   protocol = local.tcp_protocol
   to_port = each.value.port
-  security_group_id = aws_security_group.app_sg.id
-  source_security_group_id = module.alb.alb_securitygroup-id
+  security_group_id = module.ecs.app_security_group_id
+  source_security_group_id = module.alb.alb_securitygroup_id
   type = "ingress"
   depends_on = [
       module.alb
   ]
 }
-resource "aws_security_group_rule" "all_outbound_app" {
+
+#creeate app egress rule
+resource "aws_security_group_rule" "app_outbound" {
   from_port = local.any_port
   protocol = local.any_protocol
   to_port = local.any_port
   cidr_blocks = local.all_ips
-  security_group_id = aws_security_group.app_sg.id
+  security_group_id = module.ecs.app_security_group_id
   type = "egress"
 }
 
-#security groups for ecs
-resource "aws_security_group_rule" "nih_network_ingress" {
-  security_group_id = module.ecs.ecs_security_group_id    #aws_security_group.ecs.id
-  description       = "Allow ingress network access to the ECS security group specified by CIDR Blocks"
-  type              = "ingress"
-  protocol          = "tcp"
-  from_port         = 80
-  to_port           = 80
-  source_security_group_id = module.alb.alb_securitygroup-id
-
-}
-
-#security group for opensearch
-resource "aws_security_group" "opensearch_sg" {
+#create opensearch ingress rule
+resource "aws_security_group_rule" "opensearch_inbound" {
   count = var.create_opensearch_cluster ? 1: 0
-  name = "${var.stack_name}-${terraform.workspace}-opensearch-sg"
-  vpc_id = var.vpc_id
-  ingress {
-    from_port = local.https_port
-    to_port = local.https_port
-    protocol = local.tcp_protocol
-    cidr_blocks = var.allowed_ip_blocks
-  }
+  from_port = local.https_port
+  protocol = local.tcp_protocol
+  to_port = local.https_port
+  security_group_id = module.opensearch[count.index].opensearch_security_group_id
+  type = "ingress"
+  cidr_blocks = var.allowed_ip_blocks
 }
 
-resource "aws_security_group_rule" "all_outbound_opensearch" {
+#create opensearch egres rule
+resource "aws_security_group_rule" "opensearch_outbound" {
   count = var.create_opensearch_cluster ? 1: 0
   from_port = local.any_port
   protocol = local.any_protocol
   to_port = local.any_port
   cidr_blocks = local.all_ips
-  security_group_id = aws_security_group.opensearch_sg[count.index].id
+  security_group_id = module.opensearch[count.index].opensearch_security_group_id
   type = "egress"
 }
 
-#create database security group
-resource "aws_security_group" "database-sg" {
-  count = var.create_db_instance ? 1 : 0
-  name = "${var.stack_name}-${terraform.workspace}-database-sg"
-  description = "${var.stack_name} database security group"
-  vpc_id = var.vpc_id
-  tags = merge(
-  {
-    "Name" = format("%s-%s",var.stack_name,"database-sg")
-  },
-  var.tags,
-  )
-}
+
+#create neo4j http ingress rule
 resource "aws_security_group_rule" "neo4j_http" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_http
   protocol = local.tcp_protocol
   to_port = local.neo4j_http
   cidr_blocks = var.allowed_ip_blocks
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
+
+#create bastion host ingress rule
 resource "aws_security_group_rule" "bastion_host_ssh" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.bastion_port
   protocol = local.tcp_protocol
   to_port = local.bastion_port
   source_security_group_id = var.bastion_host_security_group_id
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
+
+#create neo4j https ingress rule
 resource "aws_security_group_rule" "neo4j_https" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_https
   protocol = local.tcp_protocol
   to_port = local.neo4j_https
   cidr_blocks = var.allowed_ip_blocks
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
 
+#create neo4j bolt https ingress rule
 resource "aws_security_group_rule" "neo4j_bolt" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_bolt
   protocol = local.tcp_protocol
   to_port = local.neo4j_bolt
   cidr_blocks = var.allowed_ip_blocks
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
 
-resource "aws_security_group_rule" "all_outbound_db" {
+#create neo4j egress rule
+resource "aws_security_group_rule" "neo4j_outbound" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.any_port
   protocol = local.any_protocol
   to_port = local.any_port
   cidr_blocks = local.all_ips
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "egress"
 }
 
-//Dataloader security rules
-resource "aws_security_group_rule" "dataloader_http" {
+#create dataloader http ingress rule
+resource "aws_security_group_rule" "dataloader_http_inbound" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_http
   protocol = local.tcp_protocol
   to_port = local.neo4j_http
   source_security_group_id = var.bastion_host_security_group_id
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
-resource "aws_security_group_rule" "dataloader_bolt" {
+
+#create dataloader bolt ingress rule
+resource "aws_security_group_rule" "dataloader_bolt_inbound" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_bolt
   protocol = local.tcp_protocol
   to_port = local.neo4j_bolt
   source_security_group_id = var.bastion_host_security_group_id
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
-resource "aws_security_group_rule" "katalon_bolt" {
+
+#create katalon bolt ingress rule
+resource "aws_security_group_rule" "katalon_bolt_inbound" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_bolt
   protocol = local.tcp_protocol
   to_port = local.neo4j_bolt
   source_security_group_id = var.katalon_security_group_id
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }
-resource "aws_security_group_rule" "katalon_http" {
+#create katalon http ingress rule
+resource "aws_security_group_rule" "katalon_http_inbound" {
   count = var.create_db_instance ? 1 : 0
   from_port = local.neo4j_http
   protocol = local.tcp_protocol
   to_port = local.neo4j_http
   source_security_group_id = var.katalon_security_group_id
-  security_group_id = aws_security_group.database-sg[count.index].id
+  security_group_id = module.neo4j[count.index].db_security_group_id
   type = "ingress"
 }

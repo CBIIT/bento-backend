@@ -1,6 +1,6 @@
 @Library('datacommons-jenkins-shared-library') _
 buildApp(label: "cicd_microservice") {
-    projectProperties(name: "FrontendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-frontend") {
+    buildProperties(name: "FrontendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-frontend") {
         gitBranchParameter name: "BackendTag", remoteRepoUrl: "https://github.com/CBIIT/bento-backend"
     }
     gitCheckout checkoutDirectory: "vote-frontend", gitUrl: "https://github.com/CBIIT/bento-frontend", gitBranch: "${params.FrontendTag}"
@@ -9,6 +9,9 @@ buildApp(label: "cicd_microservice") {
     setEnvValues(){}
     stage("build"){  
         runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/build-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
+    }
+    stage("deploy"){
+        
     }
     stage("tag repos"){
         tagRepo gitTag: "${params.FrontendTag}", gitUrl: "https://github.com/CBIIT/bento-frontend", checkoutDirectory: "vote-frontend"

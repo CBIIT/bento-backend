@@ -51,6 +51,8 @@ services:
       REACT_APP_BE_VERSION: "{{ bento_api_version }}"
       REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
       REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
+	  REACT_APP_LANDING_DATA: "{{ react_app_landing_data[tier] }}"
+	  REACT_APP_NEWS_DATA: "{{ react_app_news_data[tier] }}"
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-frontend"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"

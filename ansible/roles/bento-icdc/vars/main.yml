@@ -58,3 +58,16 @@ frontend_url: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/{% else %
 ##ES###
 es_schema_file: "es-schema-icdc.graphql"
 es_host: "{{ lookup('env','ES_HOST') }}"
+
+## Static Content ##
+react_app_landing_data:
+  dev: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/develop/landingView.yaml"
+  qa: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/qa/landingView.yaml"
+  stage: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/stage/landingView.yaml"
+  prod: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/production/landingView.yaml"
+
+react_app_news_data:
+  dev: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/develop/newsView.yaml"
+  qa: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/qa/newsView.yaml"
+  stage: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/stage/newsView.yaml"
+  prod: "https://raw.githubusercontent.com/CBIIT/bento-icdc-static-content/production/newsView.yaml"

@@ -1,5 +1,5 @@
-- name: ctdc deploy pipeline
-  hosts: bento
+- name: deploy frontend microservice
+  hosts: all
   connection: local
   gather_facts: no
   become: yes
@@ -20,17 +20,8 @@
       vars:
         region: us-east-1
 
-    #get db ip
-    - name: get db ip
-      include_role:
-        name: bento.common.neo4j_ip
-      vars:
-        tier: "{{ lookup('env','TIER') }}"
-        project_name: "{{project_name}}"
-        database_name: "{{ project_name }}-{{ tier }}-neo4j-4"
-
     #deploy frontend
-    - name: deploy stage for ctdc frontend
+    - name: deploy stage for frontend microservice
       include_role:
         name: bento.common.ecs
       vars:
@@ -41,28 +32,36 @@
         frontend_version: "{{ lookup('env','FE_VERSION') }}"
         backend_version: "{{ lookup('env','BE_VERSION') }}"
         image_version: "{{ frontend_version }}"
-        tier: "{{ lookup('env','TIER') }}"
-        ecs_cluster_name: "{{ project_name }}-{{ tier }}"
+        tier: "{{ tier }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}-ecs"
         sumo_collector_endpoint: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_endpoint', nested=true, region='us-east-1' ) }}"
         sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_token_fe', nested=true, region='us-east-1' ) }}"
         container_port: 80
         container_memory: 512
         container_cpu: 256
         container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
-        about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version | split('-') | first }}/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/bento-ctdc-frontend/{{ frontend_version | split('-') | first }}/src/content/{{ tier }}/aboutPagesContent.yaml{% endif %}"
+        about_content_url: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version | split('-') | first }}/src/content/prod/aboutPagesContent.yaml{% else %}https://raw.githubusercontent.com/CBIIT/bento-frontend/{{ frontend_version | split('-') | first }}/src/content/{{ tier }}/aboutPagesContent.yaml{% endif %}"
         newrelic_license_key: "{{ lookup('aws_ssm', 'newrelic_license_key', region='us-east-1' ) }}"
         app_google_client_id: "{{ lookup('aws_ssm', '/bento/auth/provider/client/google/id', region='us-east-1') }}"
         container_env:
           - name: REACT_APP_BACKEND_API
             value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/v1/graphql/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/v1/graphql/{% endif %}"
           - name: REACT_APP_FILE_SERVICE_API
-            value: "{% if tier == 'prod' %}https://bento-tools.org/api/files/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
+            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/files/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/files/{% endif %}"
           - name: REACT_APP_BE_VERSION
             value: "{{ backend_version }}"
           - name: REACT_APP_FE_VERSION
             value: "{{ frontend_version }}"
           - name: REACT_APP_ABOUT_CONTENT_URL
             value: "{{ about_content_url }}"
+          - name: REACT_APP_AUTH_SERVICE_API
+            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/auth/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/auth/}"
+          - name: REACT_APP_USER_SERVICE_API
+            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/users/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/users/}"
+          - name: REACT_APP_NIH_CLIENT_ID
+            value: "{{ react_app_nih_client_id }}"
+          - name: REACT_APP_NIH_AUTH_URL
+            value: "{{ react_app_nih_auth_url }}"
           - name: NEW_RELIC_LICENSE_KEY
             value: "{{ newrelic_license_key }}"
           - name: NEW_RELIC_APP_NAME
@@ -78,5 +77,4 @@
           - name: REACT_APP_GOOGLE_CLIENT_ID
             value: "{{ app_google_client_id }}"
           - name: REACT_APP_AUTH_API
-            value: "{% if tier == 'prod' %}https://bento-tools.org{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org{% endif %}"
- 
+            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org{% endif %}"

@@ -1,15 +1,10 @@
 @Library('datacommons-jenkins-shared-library') _
 deployApp(label: "cicd_microservice") {
-    deployProperties parameterName: "DeployTag", repoName: "cds-auth"
-    def additionalParams = [
-        booleanParam(name: 'boolean_param', defaultValue: false),
-        choice(choices: ['ONE', 'TWO'], name: 'PARAMETER_01')
-    ]
-
-        
-    
-       
-    
+    deployProperties parameterName: "FrontendTag", repoName: "vote-frontend"
     gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
+    setEnvValues(){}
+    stage("deploy"){  
+        runAnsible playbook: "${WORKSPACE}/icdc-devops/ansible/deploy-frontend-microservice.yml", inventory: "${WORKSPACE}/icdc-devops/ansible/hosts", tier: "${params.Environment}", projectName: "${params.ProjectName}"
+    }
     notify secretPath: "notification/slack", secretName: "icdc_slack_url"
 }

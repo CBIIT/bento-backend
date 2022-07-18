@@ -1,6 +1,6 @@
 @Library('datacommons-jenkins-shared-library') _
 deployApp(label: "cicd_microservice") {
-    deployProperties parameterName: "FrontendTag", repoName: "vote-frontend"
+    deployProperties parameterName: "FrontendTag", repoName: "bento-frontend"
     gitCheckout checkoutDirectory: "icdc-devops", gitUrl: "https://github.com/CBIIT/icdc-devops", gitBranch: "master"
     setEnvValues(){}
     stage("deploy"){  

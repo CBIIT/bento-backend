@@ -9,8 +9,7 @@
     - name: install aws collection
       command: ansible-galaxy collection install {{item}}
       loop:
-        -  amazon.aws
-        -  community.aws
+        - community.docker
         -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,main
 
     #docker login

@@ -54,9 +54,9 @@
           - name: REACT_APP_ABOUT_CONTENT_URL
             value: "{{ about_content_url }}"
           - name: REACT_APP_AUTH_SERVICE_API
-            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/auth/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/auth/}"
+            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/auth/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/auth/{% endif %}"
           - name: REACT_APP_USER_SERVICE_API
-            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/users/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/users/}"
+            value: "{% if tier == 'prod' %}https://{{project_name}}.bento-tools.org/api/users/{% else %}https://{{ project_name }}-{{ tier }}.bento-tools.org/api/users/{% endif %}"
           - name: REACT_APP_NIH_CLIENT_ID
             value: "{{ react_app_nih_client_id }}"
           - name: REACT_APP_NIH_AUTH_URL

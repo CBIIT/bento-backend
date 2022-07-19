@@ -308,6 +308,15 @@ pipeline {
     success {
 
     script {
+	  if ("${params.Test_Params}"?.trim()) {
+		echo 'Run Bento Katalon Tests'
+		def params = "[${params.Test_Params}]"
+		def list_params = evaluate(params)
+		build quietPeriod: 300, wait: false, job: '_default/_lower/Test_Automation/Katalon_Prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
+	    }
+	  }
+
+    script {
       withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
         sh label: 'GIT-Tag Backend', script: '''#!/bin/bash
 
@@ -319,14 +328,14 @@ pipeline {
         git push https://${git_token}:x-oauth-basic@${gitURL} --tags
         
         '''
-      
+
         }
       }
-    
+
     script {
       withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
         sh label: 'GIT-Tag Frontend', script: '''#!/bin/bash
-        
+
         cd ${WORKSPACE}/icdc-frontend
         gitURL=$(git config remote.origin.url | sed 's|^.*//||')
         echo "Applying tag $Frontend_Tag to URL:  $gitURL"
@@ -336,24 +345,16 @@ pipeline {
         git push https://${git_token}:x-oauth-basic@${gitURL} --tags
         
         '''
-      
+
         }
       }
-    
-    script {
-	  if ("${params.Test_Params}"?.trim()) {
-		echo 'Run Bento Katalon Tests'
-		def params = "[${params.Test_Params}]"
-		def list_params = evaluate(params)
-		build quietPeriod: 300, wait: false, job: '_default/_lower/Test_Automation/Katalon_Prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
-	    }
-	  }
+
 
     }
     cleanup {
-  
+
     cleanWs()
-    
+
   }
   }
 }

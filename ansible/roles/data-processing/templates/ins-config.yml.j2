@@ -12,8 +12,8 @@ Config:
 
   # Schema files' locations, usually two file, can be overridden by -s/--schema argument
   schema:
-    - {{workspace}}/data_loading/model-desc/ins_model_file.yaml
-    - {{workspace}}/data_loading/model-desc/ins_model_properties.yaml
+    - {{workspace}}/dataloader/model-desc/ins_model_file.yaml
+    - {{workspace}}/dataloader/model-desc/ins_model_properties.yaml
 
   # Plugin can be used to create additional nodes and relationships
   plugins:
@@ -24,7 +24,7 @@ Config:
       class: IndividualCreator
 
   # Property file location, props-icdc.yml, props-ctdc.yml etc. can be overridden by --prop-file argument
-  prop_file: {{workspace}}/data_loading/model-desc/props-ins.yml
+  prop_file: {{workspace}}/dataloader/model-desc/props-ins.yml
 
   # Skip validations, aka. Cheat Mode, can be overridden by -c/--cheat-mode argument
   cheat_mode: false
@@ -48,4 +48,4 @@ Config:
   # Loading mode, can be UPSERT_MODE, NEW_MODE or DELETE_MODE, default is UPSERT_MODE, can be overridden by -m/--mode argument
   loading_mode: UPSERT_MODE
   # Location of dataset, can be overridden by --dataset argument
-  dataset: {{workspace}}/data
+  dataset: {{workspace}}/dataloader/data

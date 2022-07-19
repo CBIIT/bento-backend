@@ -40,12 +40,12 @@
 
 - name: update settings
   template:
-    dest: "{{workspace}}/data_loading/config/config.yml"
+    dest: "{{workspace}}/dataloader/config/config.yml"
     src: ins-config.yml.j2
 
 - name: pip install requirements
   pip:
-    requirements: "{{workspace}}/data_loading/requirements.txt"
+    requirements: "{{workspace}}/dataloader/requirements.txt"
     executable: pip3
 
 
@@ -55,7 +55,7 @@
       python3
       loader.py 
       config/config.yml
-    chdir: "{{workspace}}/data_loading"
+    chdir: "{{workspace}}/dataloader"
   register: data_loader
 
 - name: show dataloader output

@@ -1,0 +1,58 @@
+---
+# DEBUG
+- name: show vars
+  debug:
+    msg: "{{project_name}}"
+
+- name: show vars
+  debug:
+    msg: "{{tier}}"
+
+#- name: Lookup secret
+#  debug:
+#    msg: "{{ query('aws_secret', 'bento/ctdc/qa.neo4j_password', bypath=true, nested=true, region='us-east-1') }} "
+
+#- name: Lookup secret
+#  debug:
+#    msg: "{{ query('aws_secret', 'bento.{{project_name}}.{{tier}}.neo4j_password', region='us-east-1') }} "
+
+- name: show vars
+  debug:
+    msg: "{{es_host}}"
+    
+- name: show vars
+  debug:
+    msg: "{{neo4j_password}}"
+
+- name: update indices file
+  template:
+    dest: "{{workspace}}/dataloader/config/es_indices_bento.yml"
+    src: "{{ indices_file }}"
+    remote_src: yes
+
+- name: update server config file
+  template:
+    dest: "{{workspace}}/dataloader/config/es_loader.yml"
+    src: "{{workspace}}/dataloader/config/es_loader.yml.j2"
+
+# - name: install python3
+#   yum:
+#     name: python3
+#     state: installed
+
+- name: pip install requirements
+  pip:
+    requirements: "{{workspace}}/dataloader/requirements.txt"
+    executable: pip3
+
+
+- name: load data
+  shell:
+    cmd: >
+      python3 dataloader/es_loader.py {{indices_file}} dataloader/config/es_loader.yml
+    chdir: "{{workspace}}"
+  register: data_loader
+
+- name: show dataloader output
+  debug:
+    msg: "{{data_loader}}"

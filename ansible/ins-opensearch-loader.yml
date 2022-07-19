@@ -16,7 +16,7 @@
     - name: seed opensearch
       include_role:
         name: common
-        tasks_from: opensearch-loader
+        tasks_from: opensearch-loader-ins
       vars:
         es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
         model_file1: "{{workspace}}/dataloader/model-desc/ins_model_file.yaml"

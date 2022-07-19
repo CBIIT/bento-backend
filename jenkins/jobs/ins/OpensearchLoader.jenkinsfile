@@ -75,7 +75,7 @@ pipeline {
   				false, extensions: [], submoduleCfg: [], 
                 recursiveSubmodules: true,
   				userRemoteConfigs: 
-  				[[url: 'ttps://github.com/CBIIT/INS-ETL']]])
+  				[[url: 'https://github.com/CBIIT/INS-ETL']]])
 
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Branch}"]],

@@ -19,9 +19,15 @@
         tasks_from: opensearch-loader
       vars:
         es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
-        model_file1: "{{workspace}}/ins-model/dataloader/model-desc/ins_model_file.yaml"
-        model_file2: "{{workspace}}/ins-model/dataloader/model-desc/ins_model_properties.yaml"
-        property_file: "{{workspace}}/ins-model/dataloader/model-desc/props-ins.yml"
+        model_file1: "{{workspace}}/dataloader/model-desc/ins_model_file.yaml"
+        model_file2: "{{workspace}}/dataloader/model-desc/ins_model_properties.yaml"
+        property_file: "{{workspace}}/dataloader/model-desc/props-ins.yml"
         about_file: "{{ workspace }}/ins-frontend/src/content/dev/aboutPagesContent.yaml"
-        indices_file: "{{ workspace }}/ins-model/dataloader/config/es_indices_bento.yml"
+        indices_file: "{{ workspace }}/dataloader/config/es_indices_bento.yml"
+        # es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{project_name}}/{{tier}}.es_host', nested=true, region='us-east-1' ) }}"
+        # model_file1: "{{workspace}}/ins-model/dataloader/model-desc/ins_model_file.yaml"
+        # model_file2: "{{workspace}}/ins-model/dataloader/model-desc/ins_model_properties.yaml"
+        # property_file: "{{workspace}}/ins-model/dataloader/model-desc/props-ins.yml"
+        # about_file: "{{ workspace }}/ins-frontend/src/content/dev/aboutPagesContent.yaml"
+        # indices_file: "{{ workspace }}/ins-model/dataloader/config/es_indices_bento.yml"
         # ansible_python_interpreter: /bin/python3

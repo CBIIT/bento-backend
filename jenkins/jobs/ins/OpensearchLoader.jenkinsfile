@@ -17,15 +17,15 @@ pipeline {
             description: 'Choose the environment to build',
             type: 'PT_SINGLE_SELECT',
             value: 'dev,qa,stage,prod,demo' )
-    gitParameter(branchFilter: 'origin/(.*)', 
-        defaultValue: 'master',
-        name: 'Dataloader_Branch', 
-        type: 'PT_BRANCH_TAG',
-        quickFilterEnabled: false, 
-        selectedValue: 'DEFAULT', 
-        sortMode: 'ASCENDING_SMART', 
-        tagFilter: '*', 
-        useRepository: 'https://github.com/CBIIT/icdc-dataloader')
+    // gitParameter(branchFilter: 'origin/(.*)', 
+    //     defaultValue: 'master',
+    //     name: 'Dataloader_Branch', 
+    //     type: 'PT_BRANCH_TAG',
+    //     quickFilterEnabled: false, 
+    //     selectedValue: 'DEFAULT', 
+    //     sortMode: 'ASCENDING_SMART', 
+    //     tagFilter: '*', 
+    //     useRepository: 'https://github.com/CBIIT/icdc-dataloader')
     gitParameter(branchFilter: 'origin/(.*)', 
         defaultValue: 'master', 
         name: 'Backend_Branch', 
@@ -61,13 +61,21 @@ pipeline {
   stages {
   	stage('checkout'){
   		steps {
-  			checkout([$class: 'GitSCM', 
-  				branches: [[name: "${params.Dataloader_Branch}"]], 
+  			// checkout([$class: 'GitSCM', 
+  			// 	branches: [[name: "${params.Dataloader_Branch}"]], 
+  			// 	doGenerateSubmoduleConfigurations: 
+  			// 	false, extensions: [], submoduleCfg: [], 
+        //         recursiveSubmodules: true,
+  			// 	userRemoteConfigs: 
+  			// 	[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+
+        checkout([$class: 'GitSCM', 
+  				branches: [[name: "${params.Model_Branch}"]], 
   				doGenerateSubmoduleConfigurations: 
   				false, extensions: [], submoduleCfg: [], 
                 recursiveSubmodules: true,
   				userRemoteConfigs: 
-  				[[url: 'https://github.com/CBIIT/icdc-dataloader']]])
+  				[[url: 'ttps://github.com/CBIIT/INS-ETL']]])
 
 			checkout([$class: 'GitSCM',
 				branches: [[name: "${params.Frontend_Branch}"]],
@@ -86,11 +94,11 @@ pipeline {
 				submoduleCfg: [],
 				userRemoteConfigs: 
 				[[url: 'https://github.com/CBIIT/INS-WebService']]])
-            dir('ins-model'){
-                            git branch: "${params.Model_Branch}",
-                            url: 'https://github.com/CBIIT/INS-ETL'
-                        }
-			sh 'git submodule update --init'
+      //       dir('ins-model'){
+      //                       git branch: "${params.Model_Branch}",
+      //                       url: 'https://github.com/CBIIT/INS-ETL'
+      //                   }
+			// sh 'git submodule update --init'
   			
 			checkout([$class: 'GitSCM',
 				branches: [[name: "master"]],

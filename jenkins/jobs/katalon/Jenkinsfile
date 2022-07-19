@@ -88,7 +88,7 @@ pipeline {
 			steps {
                 script {
 				    switch("${params.Profile}") {
-                    case ~[\\w\\/]+ICDC$:
+                    case ~/[\\w\\/]+ICDC$/:
 						PROJECT="ICDC"
 						withCredentials([string(credentialsId: 'Sharepoint_Email', variable: 'results_email'),
 						  string(credentialsId: 'Sharepoint_Url_ICDC', variable: 'sharepoint_url')]) {

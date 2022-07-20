@@ -219,7 +219,7 @@
 
 - name: move dist from frontend to temp build
   copy:
-    src: "{{ container_build_path }}/dist"
+    src: "{{workspace}}/icdc-frontend/dist"
     dest: "{{workspace}}/build"
     remote_src: yes
     directory_mode: yes

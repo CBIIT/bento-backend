@@ -6,7 +6,7 @@ def sendSlackMessage() {
   beer_image = ":beer:"
   long epoch = System.currentTimeMillis()/1000
   def BUILD_COLORS = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
-  
+
   def slack = JsonOutput.toJson(
       [
             icon_emoji: jenkins_image,
@@ -36,12 +36,18 @@ pipeline {
 		}
 	}
 	parameters {
-    extendedChoice( 
-        name: 'Environment', 
-        defaultValue: 'dev', 
-        description: 'Choose the environment to build', 
+    extendedChoice(
+        name: 'Environment',
+        defaultValue: 'dev',
+        description: 'Choose the environment to build',
         type: 'PT_SINGLE_SELECT',
         value: 'demo,dev,qa,stage,prod' )
+    extendedChoice(
+        name: 'DataModelBranch',
+        defaultValue: 'develop',
+        description: 'Choose Data Model branch to build',
+        type: 'PT_SINGLE_SELECT',
+        value: 'develop,master')
 	booleanParam(
    		defaultValue: true,
 		description: 'Flush the Redis cache',
@@ -55,19 +61,19 @@ pipeline {
 		description: 'The set of parameters to use for test automation - if left blank no tests will be run',
 		name: 'Test_Params')
 
-//	gitParameter(branchFilter: 'origin/(.*)', 
-//        defaultValue: 'integration', 
-//        name: 'Frontend_Image', 
+//	gitParameter(branchFilter: 'origin/(.*)',
+//        defaultValue: 'integration',
+//        name: 'Frontend_Image',
 //        type: 'PT_BRANCH_TAG',
-//        quickFilterEnabled: false, 
-//        selectedValue: 'DEFAULT', 
-//        sortMode: 'ASCENDING_SMART', 
-//        tagFilter: '*', 
+//        quickFilterEnabled: false,
+//        selectedValue: 'DEFAULT',
+//        sortMode: 'ASCENDING_SMART',
+//        tagFilter: '*',
 //        useRepository: 'https://github.com/CBIIT/bento-frontend')
 //
 //	The Frontend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
 //	The GUI definition for this parameter should follow Environment and use the following values:
-//	
+//
 //	Script:
 //		env_value = Environment
 //		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-frontend.git").execute()
@@ -91,28 +97,28 @@ pipeline {
 //			}
 //
 //		return tagnames
-//		
+//
 //	Fallback Script:
 //		return ['integration']
-//		
+//
 //		NOTE: this sets the default frontend branch to "integration" and is required for builds triggered from SCM polling.
-//		
+//
 //	Referenced parameters:
 //		Environment
 
-//    gitParameter(branchFilter: 'origin/(.*)', 
-//        defaultValue: 'Integration', 
-//        name: 'Backend_Image', 
+//    gitParameter(branchFilter: 'origin/(.*)',
+//        defaultValue: 'Integration',
+//        name: 'Backend_Image',
 //        type: 'PT_BRANCH_TAG',
-//        quickFilterEnabled: false, 
-//        selectedValue: 'DEFAULT', 
-//        sortMode: 'ASCENDING_SMART', 
-//        tagFilter: '*', 
+//        quickFilterEnabled: false,
+//        selectedValue: 'DEFAULT',
+//        sortMode: 'ASCENDING_SMART',
+//        tagFilter: '*',
 //        useRepository: 'https://github.com/CBIIT/bento-backend')
 //
 //	The Backend_Image parameter has been replaced in this job by a GUI parameter due to the fact that type "active choice reactive parameter" is not supported.
 //	The GUI definition for this parameter should follow Frontend_Image and use the following values:
-//	
+//
 //	Script:
 //		front_tag = Frontend_Image
 //		def gettags = ("git ls-remote -h -t https://github.com/CBIIT/bento-backend.git").execute()
@@ -134,12 +140,12 @@ pipeline {
 //		  }
 //
 //		return tagnames
-//		
+//
 //	Fallback Script:
 //		return ['Integration']
-//		
+//
 //		NOTE: this sets the default backend branch to "Integration" and is required for builds triggered from SCM polling. The branch defined here should math the default for Frontend_Image
-//		
+//
 //	Referenced parameters:
 //		Frontend_Image
 
@@ -148,8 +154,8 @@ pipeline {
   	ansiColor('xterm')
   }
   tools {
-  	maven 'Default' 
-    jdk 'Default' 
+  	maven 'Default'
+    jdk 'Default'
   }
   stages{
   	stage('checkout'){
@@ -157,20 +163,20 @@ pipeline {
 
   			checkout( changelog:false,
 				poll: false,
-				scm: [$class: 'GitSCM', 
-				branches: [[name: '*/master']], 
-				doGenerateSubmoduleConfigurations: false, 
+				scm: [$class: 'GitSCM',
+				branches: [[name: '*/master']],
+				doGenerateSubmoduleConfigurations: false,
 				extensions: [[$class: 'DisableRemotePoll'],
-				[$class: 'PathRestriction', excludedRegions: '*'], 
-				[$class: 'RelativeTargetDirectory', 
-				relativeTargetDir: 'icdc-devops']], 
-				submoduleCfg: [], 
-				userRemoteConfigs: 
+				[$class: 'PathRestriction', excludedRegions: '*'],
+				[$class: 'RelativeTargetDirectory',
+				relativeTargetDir: 'icdc-devops']],
+				submoduleCfg: [],
+				userRemoteConfigs:
 				[[url: 'https://github.com/CBIIT/icdc-devops.git']]
 				])
-        
+
         }
- 
+
   	}
     stage('Set Environment'){
       environment {
@@ -178,11 +184,11 @@ pipeline {
         VERSION = "${params.Frontend_Tag}"
       }
         steps {
-          
+
 		  script {
             currentBuild.displayName = "Tag: ${VERSION}  Environment: ${params.Environment}"
             }
-		  
+
 		  script {
             switch("${params.Environment}") {
               case "sandbox":
@@ -192,7 +198,7 @@ pipeline {
                   env.BEARER = "${BEARER}"
                   env.TIER  = "sandbox"env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  
+
                 }
               break
               case "dev":
@@ -203,7 +209,7 @@ pipeline {
                   env.TIER  = "dev"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                 
+
                 }
               break
               case "qa":
@@ -214,7 +220,7 @@ pipeline {
                   env.TIER  = "qa"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-				  
+
                 }
               break
               case "stage":
@@ -225,7 +231,7 @@ pipeline {
                   env.TIER  = "stage"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  
+
                 }
               break
               case "prod":
@@ -236,7 +242,7 @@ pipeline {
                   env.TIER  = "prod"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  
+
                 }
               break
               case "demo":
@@ -247,7 +253,7 @@ pipeline {
                   env.TIER  = "demo"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  
+
                 }
               break
               default:
@@ -258,7 +264,7 @@ pipeline {
                   env.TIER  = "dev"
 				  env.NEO4J_USER = "${NEO4J_USER}"
                   env.NEO4J_PASS  = "${NEO4J_PASS}"
-                  
+
                 }
               break
             }
@@ -270,19 +276,19 @@ pipeline {
            expression {
               params.Environment == "prod" || params.Environment == "stage"
            }
-          
+
       }
       steps {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
         withCredentials([string(credentialsId: 'git_credential_token',variable: 'git_token'),
         ]) {
 
-          ansiblePlaybook( 
-                  playbook: '${WORKSPACE}/icdc-devops/ansible/git-copy.yml', 
-                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+          ansiblePlaybook(
+                  playbook: '${WORKSPACE}/icdc-devops/ansible/git-copy.yml',
+                  inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                   colorized: true,
                   extraVars: [ project: "icdc"]
-                  ) 
+                  )
         }
       }
     }
@@ -308,9 +314,9 @@ pipeline {
          file(credentialsId: 'ansible_host_file', variable: 'host_file'),
          ]){
              sh "cp ${host_file} ${WORKSPACE}/icdc-devops/ansible/hosts"
-             ansiblePlaybook( 
-                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml', 
-                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+             ansiblePlaybook(
+                playbook: '${WORKSPACE}/icdc-devops/ansible/deploy-bento-icdc.yml',
+                inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
                 credentialsId: 'commonsdocker',
                 extraVars: [
                     tier: "${params.Environment}",
@@ -320,14 +326,15 @@ pipeline {
                     backend_version: "${params.Backend_Tag}",
                     backend_git_tag: "${params.Backend_Tag}",
                     frontend_git_tag: "${params.Frontend_Tag}",
-					enable_redis_filter: "${params.Enable_Redis_Filter}"
+					enable_redis_filter: "${params.Enable_Redis_Filter}",
+					 data_model_branch: "${params.DataModelBranch}",
                     ],
                 become: true,
                 hostKeyChecking: false,
                 colorized: true)
            }
-           
-          
+
+
         }
       }
     }
@@ -336,14 +343,14 @@ pipeline {
 	  when {
 		expression { params.Flush_Redis }
 		}
-	
+
  	  environment {
 		TIER = "${params.Environment}"
 		}
 
 	  steps{
 		wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-			
+
 			script {
               sh label: 'database-hosts', script: '''#!/bin/bash
                 echo "Creating inventory file"
@@ -353,10 +360,10 @@ pipeline {
               '''
 
             }
-			
-			ansiblePlaybook( 
-               playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml', 
-               inventory: '${WORKSPACE}/icdc-devops/ansible/redis_hosts', 
+
+			ansiblePlaybook(
+               playbook: '${WORKSPACE}/icdc-devops/ansible/redis_icdc.yml',
+               inventory: '${WORKSPACE}/icdc-devops/ansible/redis_hosts',
                credentialsId: 'commonsdocker',
 			   colorized: true)
 			}
@@ -366,7 +373,7 @@ pipeline {
   }
   post {
     always {
-      
+
       sendSlackMessage()
 
     }
@@ -381,13 +388,13 @@ pipeline {
 				build quietPeriod: 300, wait: false, job: '_default/_lower/Test_Automation/Katalon_Prod', parameters: [gitParameter(name: 'Tag', value: list_params['Tag']), string(name: 'KatalonSuite', value: list_params['KatalonSuite']), extendedChoice(name: 'Profile', value: list_params['Profile']), string(name: 'EmailRecipients', value: list_params['Email'])]
 			}
 		}
-		
+
 	}
 
 	cleanup {
-	
+
 		cleanWs()
-    
+
 	 }
   }
 }

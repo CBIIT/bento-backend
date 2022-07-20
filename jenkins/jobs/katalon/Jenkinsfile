@@ -217,7 +217,7 @@ pipeline {
 				
 				emailext(attachmentsPattern: 'results/*.zip',
 					body: "Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}",
-                    subject: 'Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}',
+                    subject: "Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}",
                     to: "${RESULTS_EMAIL}")
 				
 //				script {

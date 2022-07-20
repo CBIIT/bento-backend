@@ -43,7 +43,7 @@ pipeline {
          defaultValue: 'ins',
          description: 'Choose the project to build',
          type: 'PT_SINGLE_SELECT',
-         value: 'cds,bento,gmb,icdc')
+         value: 'cds,bento,gmb,icdc,ins')
     extendedChoice( 
         name: 'Environment', 
         defaultValue: 'dev', 

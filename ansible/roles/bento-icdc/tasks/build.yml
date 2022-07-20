@@ -1,4 +1,9 @@
 ---
+- name: create docker build directory
+  file:
+    path: "{{workspace}}/build"
+    state : directory
+
 - name: set sandbox environment facts
   set_fact:
     neo4j_ip: "{{ lookup('env','NEO4J_ICDC_SANDBOX_IP') }}"
@@ -57,7 +62,7 @@
 
 ##################################################################################
 
-- name: remove the application_example.properties file 
+- name: remove the application_example.properties file
   file:
     path: "{{workspace}}/src/main/resources/application_example.properties"
     state: absent
@@ -148,7 +153,7 @@
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-backend
-    
+
     tag: "{{backend_version}}"
     push: yes
     force_source: yes
@@ -183,13 +188,25 @@
   copy:
     remote_src: yes
     src: '{{workspace}}/icdc-devops/docker/dockerfiles/icdc-nginx.conf'
-    dest: '{{workspace}}/icdc-frontend/nginx.conf'
+    dest: '{{workspace}}/build/nginx.conf'
+
+#- name: copy  nginx conf
+#  copy:
+#    remote_src: yes
+#    src: '{{workspace}}/icdc-devops/docker/dockerfiles/icdc-nginx.conf'
+#    dest: '{{workspace}}/icdc-frontend/nginx.conf'
 
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
-    dest: "{{workspace}}/icdc-frontend/nginx-entrypoint.sh"
+    dest: "{{workspace}}/build/nginx-entrypoint.sh"
     mode: 0755
+
+#- name: copy entrypoint.sh to workspace
+#  copy:
+#    src: "nginx-entrypoint.sh"
+#    dest: "{{workspace}}/icdc-frontend/nginx-entrypoint.sh"
+#    mode: 0755
 
 - name: run npm install in {{workspace}}/icdc-frontend/
   command: "{{item}}"
@@ -197,28 +214,38 @@
     chdir: "{{workspace}}/icdc-frontend"
   loop:
     - npm install npm@7.7.6 -g
-    - npm set progress=false
-    - npm install --silent
-    #- npm install
-    - npm run build --silent
-    #- npm run build
+    - npm install
+    - npm run build
+
+- name: move dist from frontend to temp build
+  copy:
+    src: "{{workspace}}/icdc-frontend/dist"
+    dest: "{{workspace}}/build"
+    remote_src: yes
+    directory_mode: yes
 
 - name: copy env to dist
   copy:
-    # remote_src: yes
     src: inject.template.js
-    dest: "{{workspace}}/icdc-frontend/dist/inject.template.js"
+    dest: "{{workspace}}/build/dist/inject.template.js"
     mode: 0755
-          
+
+#- name: copy env to dist
+#  copy:
+#    # remote_src: yes
+#    src: inject.template.js
+#    dest: "{{workspace}}/icdc-frontend/dist/inject.template.js"
+#    mode: 0755
+
 - name: build cbiitssrepo/icdc-frontend image
   docker_image:
     build:
-      path: "{{workspace}}/icdc-frontend"
+      path: "{{workspace}}/build"
       dockerfile: "{{workspace}}/icdc-devops/docker/dockerfiles/frontend-icdc-dockerfile"
       pull: yes
       nocache: yes
     name: ncidockerhub.nci.nih.gov/icdc/icdc-frontend
-  
+
     tag: "{{frontend_version}}"
     push: yes
     force_source: yes
@@ -243,4 +270,3 @@
     client_key: /local/home/commonsdocker/.docker/jenkinskey.pem
     tls_hostname: "{{tls_hostname}}"
     docker_host: "{{docker_host}}"
-

@@ -88,7 +88,7 @@ pipeline {
 			steps {
                 script {
 				    switch("${params.Profile}") {
-                    case ~/[\\w\\/]+ICDC$/:
+                    case ~/[\w\/]+ICDC$/:
 						PROJECT="ICDC"
 						withCredentials([string(credentialsId: 'Sharepoint_Email', variable: 'results_email'),
 						  string(credentialsId: 'Sharepoint_Url_ICDC', variable: 'sharepoint_url')]) {
@@ -216,9 +216,6 @@ pipeline {
 				}
 				
 				emailext(attachmentsPattern: 'results/*.zip',
-                    //body: "Katalon Test Results - ${BUILD_TIMESTAMP}",
-                    //subject: 'Katalon Test Results - Box',
-                    //to: "${BOX_EMAIL}")
 					body: "Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}",
                     subject: 'Katalon Test Results - ${PROJECT}.${TIER}.${BUILD_NUMBER}',
                     to: "${RESULTS_EMAIL}")

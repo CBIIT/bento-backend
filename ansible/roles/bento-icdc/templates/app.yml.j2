@@ -9,8 +9,6 @@ services:
     image: ncidockerhub.nci.nih.gov/icdc/icdc-backend:{{backend_version}}
     environment:
       NEO4J_URL: bolt://{{ neo4j_ip }}:7687
-      PROJECT: "ICDC"
-      ES_HOST: "{{es_host}}"
       NEO4J_USER: "{{ neo4j_user }}"
       NEO4J_PASSWORD: "{{ neo4j_password }}"
       NEO4J_GRAPHQL_ENDPOINT: http://{{ neo4j_ip }}:7474/graphql/
@@ -37,7 +35,7 @@ services:
 
 ##########################################################
 # frontend container
-##########################################################   
+##########################################################
 
   bento-frontend:
     container_name: frontend
@@ -51,17 +49,15 @@ services:
       REACT_APP_BE_VERSION: "{{ bento_api_version }}"
       REACT_APP_FE_VERSION: "{{ backend_frontend_version }}"
       REACT_APP_GA_TRACKING_ID: "{{ backend_google_analytics_id }}"
-      REACT_APP_LANDING_DATA: "{{ react_app_landing_data[tier] }}"
-      REACT_APP_NEWS_DATA: "{{ react_app_news_data[tier] }}"
       NEW_RELIC_LICENSE_KEY: "{{ newrelic_license_key }}"
       NEW_RELIC_APP_NAME: "{{ app_name }}-frontend"
       NEW_RELIC_DISTRIBUTED_TRACING_ENABLED: "true"
       NEW_RELIC_HOST: "gov-collector.newrelic.com"
       NEW_RELIC_NO_CONFIG_FILE: "true"
-      REACT_APP_DATA_MODEL: "{{react_app_model_url}}"
-      REACT_APP_DATA_MODEL_PROPS: "{{react_app_model_props_url}}"
+      REACT_APP_DATA_MODEL: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/icdc-model-tool/{{data_model_branch | default('master')}}/model-desc/icdc-model.yml{% else %}https://raw.githubusercontent.com/CBIIT/icdc-model-tool/{{data_model_branch | default('develop')}}/model-desc/icdc-model.yml{% endif %}"
+      REACT_APP_DATA_MODEL_PROPS: "{% if tier == 'prod' %}https://raw.githubusercontent.com/CBIIT/icdc-model-tool/{{data_model_branch | default('master')}}/model-desc/icdc-model-props.yml{% else %}https://raw.githubusercontent.com/CBIIT/icdc-model-tool/{{data_model_branch | default('develop')}}/model-desc/icdc-model-props.yml{% endif %}"
       NEW_RELIC_LABELS: "Project:{{ project }};Environment:{{ tier }}"
-      REACT_APP_FILE_SERVICE_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/{% endif %}"        
+      REACT_APP_FILE_SERVICE_API: "{% if tier == 'prod' %}https://caninecommons.cancer.gov/api/files/{% else %}https://caninecommons-{{ tier }}.cancer.gov/api/files/{% endif %}"
     volumes:
       - "/local/content/k9dc/nginx:/var/log/nginx"
     ports:
@@ -74,12 +70,10 @@ services:
   #  container_name: data-dictionary
   #  image: ncidockerhub.nci.nih.gov/icdc/data-dictionary:changedBaseRoute-28
   #  environment:
-  #    REACT_APP_MODEL_URL: "{{react_app_model_url}}" 
-  #    REACT_APP_MODEL_PROPS_URL: "{{react_app_model_props_url}}"      
+  #    REACT_APP_MODEL_URL: "{{react_app_model_url}}"
+  #    REACT_APP_MODEL_PROPS_URL: "{{react_app_model_props_url}}"
   #  volumes:
   #    - "/local/content/k9dc/data-dictionary:/var/log/nginx"
   #  ports:
   #    - "81:81"
   #  restart: always
-    
-

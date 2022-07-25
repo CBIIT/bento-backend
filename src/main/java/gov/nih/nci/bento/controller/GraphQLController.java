@@ -8,6 +8,7 @@ import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.ESFilterDataFetcher;
 import gov.nih.nci.bento.model.Neo4jDataFetcher;
+import gov.nih.nci.bento.service.Authentication;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -60,6 +61,12 @@ public class GraphQLController {
 	@Autowired
 	private ESFilterDataFetcher esFilterDataFetcher;
 
+	private final Authentication authentication;
+
+	public GraphQLController(Authentication fileAuthentication) {
+		this.authentication = fileAuthentication;
+	}
+
 
 	private Gson gson = new GsonBuilder().serializeNulls().create();
 	private GraphQL graphql;
@@ -100,6 +107,11 @@ public class GraphQLController {
 		Map<String, Object> variables;
 		String operation;
 		try{
+			// check authenticated user
+			if (!authentication.getFileAuth(httpEntity)) {
+				HttpStatus status = HttpStatus.UNAUTHORIZED;
+				return logAndReturnError(status, ApiError.jsonApiError(status, "File access is unauthorized"));
+			}
 			query = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			JsonElement rawVar = jsonObject.get("variables");
 			variables = gson.fromJson(rawVar, Map.class);

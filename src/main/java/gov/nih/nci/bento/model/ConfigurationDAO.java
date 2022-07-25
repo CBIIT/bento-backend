@@ -63,6 +63,21 @@ public class ConfigurationDAO {
 	@Value("${es.scheme}")
 	private String esScheme;
 
+	@Value("${authenticated}")
+	private boolean authenticated;
+
+	// File Authorization URL
+	@Value("${file.auth.url}")
+	private String fileAuthUrl;
+
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
+
+	public String getFileAuthUrl() {
+		return fileAuthUrl;
+	}
+
 	public boolean getEsSignRequests() {
 		return esSignRequests;
 	}

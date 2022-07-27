@@ -57,11 +57,19 @@ public class ConfigurationDAO {
 	@Value("${redis.filter.init_queries_file}")
 	private String redisFilterInitQueriesFile;
 
+	// File Authorization URL
+	@Value("${file.auth.url}")
+	private String fileAuthUrl;
+
 	//Testing
 	@Value("${test.queries_file}")
 	private String testQueriesFile;
 
 	//Getters and Setters
+	public String getFileAuthUrl() {
+		return fileAuthUrl;
+	}
+
 	public String getNeo4jUrl() {
 		return neo4jUrl;
 	}

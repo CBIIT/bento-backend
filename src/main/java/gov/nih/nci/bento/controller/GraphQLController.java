@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.service.FileAuthentication;
 import gov.nih.nci.bento.service.Neo4jDataFetcher;
 import gov.nih.nci.bento.service.RedisFilterDataFetcher;
 import gov.nih.nci.bento.service.RedisService;
@@ -32,13 +33,11 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -67,9 +66,13 @@ public class GraphQLController {
 	@Autowired
 	private RedisFilterDataFetcher redisFilterDataFetcher;
 
-
+	private final FileAuthentication fileAuthentication;
 	private Gson gson = new GsonBuilder().serializeNulls().create();
 	private GraphQL graphql;
+
+	public GraphQLController(FileAuthentication fileAuthentication) {
+		this.fileAuthentication = fileAuthentication;
+	}
 
 	@PostConstruct
 	public void init() throws IOException {
@@ -107,38 +110,12 @@ public class GraphQLController {
 		return logAndReturnError(status, error);
 	}
 
-	@CrossOrigin
+//	@CrossOrigin
 	@RequestMapping(value = "/v1/graphql/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	@ResponseBody
 	public ResponseEntity<String> getGraphQLResponse(HttpEntity<String> httpEntity, HttpServletResponse response){
 
 		logger.info("hit end point:/v1/graphql/");
-		// check authenticated user
-
-//
-//
-//	Bento backend needs a new configuration variable
-//	in application.properties or environment variable. When enabled, backend will call bento-auth service's /authenticated API
-//	(forward cookies to bento-auth) to validate if a user has login before retrieving/returning any data to the caller.
-//
-		if (config.isAuthenticated()) {
-			if (httpEntity.getHeaders().containsKey("cookie")) {
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-				headers.add("cookie", String.valueOf(httpEntity.getHeaders().get("cookie")));
-
-				HttpEntity<String> request = new HttpEntity<>("", headers);
-				String fooResourceUrl = "http://localhost:4010/api/auth/authenticated";
-
-				RestTemplate restTemplate = new RestTemplate();
-				ResponseEntity<String> res = restTemplate.postForEntity(
-						fooResourceUrl, request , String.class);
-
-				Gson gson = new Gson();
-				JsonObject jsonObject = gson.fromJson(res.getBody(), JsonObject.class);
-				System.out.println(jsonObject.get("status"));
-			}
-		}
 
 		// Get graphql query from request
 		String reqBody = httpEntity.getBody().toString();
@@ -148,6 +125,9 @@ public class GraphQLController {
 		Map<String, Object> variables;
 		String operation;
 		try{
+			// check authenticated user
+			if (!fileAuthentication.getFileAuth(httpEntity))
+				return logAndReturnError(HttpStatus.UNAUTHORIZED, ApiError.jsonApiError(HttpStatus.UNAUTHORIZED, "File access is unauthorized"));
 			query = new String(jsonObject.get("query").getAsString().getBytes(), "UTF-8");
 			JsonElement rawVar = jsonObject.get("variables");
 			variables = gson.fromJson(rawVar, Map.class);

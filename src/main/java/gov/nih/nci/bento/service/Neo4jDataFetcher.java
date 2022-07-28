@@ -17,6 +17,8 @@ import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.exceptions.AuthenticationException;
+import org.neo4j.driver.exceptions.ServiceUnavailableException;
 import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.DataFetchingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,15 @@ public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor 
                 logger.info("Cache Disabled: Executing query");
                 return executeQuery(session, cypher, transformedParams);
             }
+        } catch (ServiceUnavailableException e) {
+            logger.error(e);
+            throw new Exception("Neo4j database is not available");
+        } catch (AuthenticationException e) {
+            logger.error(e);
+            throw new Exception("Neo4j authentication error");
+        } catch (Exception e) {
+            logger.error(e);
+            throw new Exception("Fetch data failed");
         }
     }
 

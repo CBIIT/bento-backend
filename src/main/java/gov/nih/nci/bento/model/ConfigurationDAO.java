@@ -39,6 +39,12 @@ public class ConfigurationDAO {
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;
 
+	//Enable authentication check
+	@Value("${auth.enabled}")
+	private boolean authEnabled;
+	@Value("${auth.endpoint}")
+	private String authEndpoint;
+
 	//Neo4j
 	@Value("${neo4j.url}")
 	private String neo4jUrl;
@@ -192,6 +198,10 @@ public class ConfigurationDAO {
 		return testQueriesFile;
 	}
 
+	public boolean getAuthEnabled() {return authEnabled;}
+
+	public String getAuthEndpoint() {return authEndpoint;}
+
 	//Setters
 	public void setNeo4jUrl(String neo4jUrl) {
 		this.neo4jUrl = neo4jUrl;
@@ -245,4 +255,9 @@ public class ConfigurationDAO {
 		this.testQueriesFile = testQueriesFile;
 	}
 
+	public void setAuthEnabled(boolean authEnabled) {
+		this.authEnabled = authEnabled;
+	}
+
+	public void setAuthEndpoint(String authEndpoint) {this.authEndpoint = authEndpoint;}
 }

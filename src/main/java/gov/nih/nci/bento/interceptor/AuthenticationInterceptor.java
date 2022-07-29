@@ -35,7 +35,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             try {
                 //Extract the cookies from the request then verify that there is at least 1 cookie
                 Cookie[] cookies = request.getCookies();
-                if (cookies.length > 0) {
+                if (cookies != null) {
                     //Create a request to the authentication endpoint
                     URL url = new URL(config.getAuthEndpoint());
                     con = (HttpURLConnection) url.openConnection();

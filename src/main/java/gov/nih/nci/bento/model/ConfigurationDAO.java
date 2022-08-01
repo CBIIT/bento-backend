@@ -42,7 +42,7 @@ public class ConfigurationDAO {
 	//Enable authentication check
 	@Value("${auth.enabled}")
 	private boolean authEnabled;
-	@Value("${auth.endpoint}")
+	@Value("${auth_endpoint:}")
 	private String authEndpoint;
 
 	//Neo4j

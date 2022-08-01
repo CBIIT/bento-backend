@@ -27,7 +27,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(final HttpServletRequest request, HttpServletResponse response, final Object handler) throws IOException {
-        //TODO all of the error catching
         //Verify that the request is not for the version endpoint and that request authentication is enabled
         if (config.getAuthEnabled() && !request.getServletPath().equals("/version")){
             HttpURLConnection con = null;
@@ -37,7 +36,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 Cookie[] cookies = request.getCookies();
                 if (cookies != null) {
                     //Create a request to the authentication endpoint
-                    URL url = new URL(config.getAuthEndpoint());
+                    URL url = new URL(config.getAuthEndpoint()+"/authenticated");
                     con = (HttpURLConnection) url.openConnection();
                     con.setConnectTimeout(5000);
                     con.setReadTimeout(5000);

@@ -13,7 +13,7 @@ import java.util.*;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-public class IcdcEsFilter implements DataFetcher {
+public class IcdcEsFilter extends AbstractESDataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
 
     // parameters used in queries

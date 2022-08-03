@@ -20,8 +20,6 @@ import org.neo4j.driver.Session;
 import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.DataFetchingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
@@ -37,10 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service("neo4jDataFetcher")
-@DependsOn({"redisService"})
-public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
-    private static final Logger logger = LogManager.getLogger(Neo4jDataFetcher.class);
+public abstract class AbstractNeo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
+    private static final Logger logger = LogManager.getLogger(AbstractNeo4jDataFetcher.class);
 
     private int cacheHits = 0;
     private int cacheMisses = 0;

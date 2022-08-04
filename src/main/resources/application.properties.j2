@@ -1,6 +1,12 @@
 #API Version
 bento.api.version={{bento_api_version}}
 
+# Project
+project = {{project}}
+
+#Authentication
+auth.enabled={{auth_enabled}}
+
 #Spring
 spring.mvc.throw-exception-if-no-handler-found=true
 spring.mvc.view.prefix=/WEB-INF/
@@ -15,7 +21,7 @@ error.redirect_url=http://localhost/error.html
 
 #GraphQL
 graphql.schema=graphql/{{schema_file}}
-graphql.es_schema = graphql/es-schema.graphql
+graphql.es_schema = graphql/{{es_schema_file}}
 
 #Query Restrictions
 allow_graphql_query = true

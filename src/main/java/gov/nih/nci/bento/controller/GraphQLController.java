@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import gov.nih.nci.bento.error.ApiError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.ESFilterDataFetcher;
+import gov.nih.nci.bento.model.DataFetcher;
 import gov.nih.nci.bento.model.Neo4jDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class GraphQLController {
 	@Autowired
 	private Neo4jDataFetcher dataFetcherInterceptor;
 	@Autowired
-	private ESFilterDataFetcher esFilterDataFetcher;
+	private DataFetcher esFilterDataFetcher;
 
 
 	private Gson gson = new GsonBuilder().serializeNulls().create();
@@ -68,9 +69,9 @@ public class GraphQLController {
 	@RequestMapping(value = "/version", method = {RequestMethod.GET}, produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	public ResponseEntity<String> getVersion(HttpEntity<String> httpEntity, HttpServletResponse response){
 		logger.info("Hit end point:/version");
-		String versionString = "Bento API Version: "+config.getBentoApiVersion();
+		String versionString = config.getBentoApiVersion();
 		logger.info(versionString);
-		return ResponseEntity.ok(versionString);
+		return ResponseEntity.ok(gson.toJson(Map.of("version", versionString)));
 	}
 
 	@CrossOrigin

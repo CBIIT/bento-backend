@@ -1,8 +1,13 @@
 package gov.nih.nci.bento.model;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 /**
  * The Configuration Bean, reads configuration setting from classpath:application.properties.
@@ -10,10 +15,35 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:application.properties")
 public class ConfigurationDAO {
+	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
+
+	@Autowired
+	private Environment env;
+
+	@Bean
+	public DataFetcher dataFetcher() {
+	    String project = env.getProperty("project", "bento").toLowerCase();
+	    switch (project) {
+			case "icdc":
+				return new IcdcEsFilter();
+			case "bento":
+				return new BentoEsFilter();
+			default:
+				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
+				return new BentoEsFilter();
+		}
+	}
+
 
 	//API Version
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;
+
+	//Enable authentication check
+	@Value("${auth.enabled}")
+	private boolean authEnabled;
+	@Value("${auth_endpoint:}")
+	private String authEndpoint;
 
 	//Neo4j
 	@Value("${neo4j.url}")
@@ -168,6 +198,10 @@ public class ConfigurationDAO {
 		return testQueriesFile;
 	}
 
+	public boolean getAuthEnabled() {return authEnabled;}
+
+	public String getAuthEndpoint() {return authEndpoint;}
+
 	//Setters
 	public void setNeo4jUrl(String neo4jUrl) {
 		this.neo4jUrl = neo4jUrl;
@@ -221,4 +255,9 @@ public class ConfigurationDAO {
 		this.testQueriesFile = testQueriesFile;
 	}
 
+	public void setAuthEnabled(boolean authEnabled) {
+		this.authEnabled = authEnabled;
+	}
+
+	public void setAuthEndpoint(String authEndpoint) {this.authEndpoint = authEndpoint;}
 }

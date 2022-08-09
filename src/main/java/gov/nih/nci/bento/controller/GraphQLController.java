@@ -11,7 +11,6 @@ import gov.nih.nci.bento.graphql.BuildBentoGraphQL;
 import gov.nih.nci.bento.model.AbstractESDataFetcher;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import gov.nih.nci.bento.model.PrivateNeo4jDataFetcher;
-import gov.nih.nci.bento.model.PublicNeo4jDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -27,11 +26,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
@@ -86,21 +81,10 @@ public class GraphQLController {
 	}
 
 	@CrossOrigin
-	@RequestMapping(value = "/v1/graphql/", method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PUT,
+	@RequestMapping(value = {"/v1/graphql/", "/v1/public-graphql/"}, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PUT,
 			RequestMethod.DELETE, RequestMethod.TRACE, RequestMethod.OPTIONS, RequestMethod.PATCH},
 			produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-	public ResponseEntity<String> getPrivateGraphQLResponseByGET(HttpEntity<String> httpEntity,
-			HttpServletResponse response) {
-		HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
-		String error = ApiError.jsonApiError(new ApiError(status, "API will only accept POST requests"));
-		return logAndReturnError(status, error);
-	}
-
-	@CrossOrigin
-	@RequestMapping(value = "/v1/public-graphql/", method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.PUT,
-			RequestMethod.DELETE, RequestMethod.TRACE, RequestMethod.OPTIONS, RequestMethod.PATCH},
-			produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
-	public ResponseEntity<String> getPublicGraphQLResponseByGET(HttpEntity<String> httpEntity,
+	public ResponseEntity<String> getGraphQLResponseByGET(HttpEntity<String> httpEntity,
 			HttpServletResponse response) {
 		HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
 		String error = ApiError.jsonApiError(new ApiError(status, "API will only accept POST requests"));

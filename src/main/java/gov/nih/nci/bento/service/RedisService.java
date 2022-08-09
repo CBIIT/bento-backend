@@ -253,14 +253,14 @@ public class RedisService {
     }
 
     private boolean connect() {
-        if (!config.getRedisEnabled()) {
+        if (!config.isRedisEnabled()) {
             logger.warn("Redis not connected, connection disabled in Bento configuration");
             return false;
         }
         try {
             String host = config.getRedisHost();
             int port = config.getRedisPort();
-            useCluster = config.getRedisUseCluster();
+            useCluster = config.isRedisUseCluster();
             ttl = config.getRedisTTL();
 
             if (host.isBlank()) {

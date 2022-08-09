@@ -51,8 +51,6 @@ public class GraphQLController {
 	@Autowired
 	private PrivateNeo4jDataFetcher privateNeo4jDataFetcher;
 	@Autowired
-	private PublicNeo4jDataFetcher publicNeo4JDataFetcher;
-	@Autowired
 	@Qualifier("privateESDataFetcher")
 	private AbstractESDataFetcher privateESDataFetcher;
 	@Autowired
@@ -65,7 +63,7 @@ public class GraphQLController {
 
 	@PostConstruct
 	public void initGraphQL() throws IOException {
-        if (config.getEsFilterEnabled()){
+        if (config.isEsFilterEnabled()){
 			publicGraphQL = BuildBentoGraphQL.buildGraphQLWithES(config.getPublicSchemaFile(),
 					config.getPublicEsSchemaFile(), privateNeo4jDataFetcher, publicESDataFetcher);
 			privateGraphQL = BuildBentoGraphQL.buildGraphQLWithES(config.getSchemaFile(), config.getEsSchemaFile(),

@@ -2,7 +2,6 @@ package gov.nih.nci.bento.interceptor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gov.nih.nci.bento.error.BentoGraphQLException;
 import gov.nih.nci.bento.error.BentoGraphqlError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.logging.log4j.LogManager;
@@ -11,8 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,10 +21,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
     private static final Logger logger = LogManager.getLogger(AuthenticationInterceptor.class);

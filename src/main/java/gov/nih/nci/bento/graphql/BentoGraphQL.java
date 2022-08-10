@@ -89,7 +89,7 @@ public class BentoGraphQL {
         return publicGraphQL;
     }
 
-    public graphql.GraphQL getPrivateGraphQL() {
+    public GraphQL getPrivateGraphQL() {
         return privateGraphQL;
     }
 

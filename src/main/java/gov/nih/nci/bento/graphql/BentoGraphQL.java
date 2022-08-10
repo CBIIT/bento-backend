@@ -1,6 +1,5 @@
 package gov.nih.nci.bento.graphql;
 
-import gov.nih.nci.bento.controller.GraphQLController;
 import gov.nih.nci.bento.model.AbstractESDataFetcher;
 import gov.nih.nci.bento.model.AbstractNeo4jDataFetcher;
 import gov.nih.nci.bento.model.ConfigurationDAO;
@@ -22,8 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -77,14 +74,14 @@ public class BentoGraphQL {
                             "PublicESDataFetcher class");
                     publicESDataFetcher = new PublicESDataFetcher(esService);
             }
-            this.publicGraphQL = BentoGraphQL.buildGraphQLWithES(config.getPublicSchemaFile(),
+            this.publicGraphQL = buildGraphQLWithES(config.getPublicSchemaFile(),
                     config.getPublicEsSchemaFile(), publicNeo4JDataFetcher, publicESDataFetcher);
-            this.privateGraphQL = BentoGraphQL.buildGraphQLWithES(config.getSchemaFile(), config.getEsSchemaFile(),
+            this.privateGraphQL = buildGraphQLWithES(config.getSchemaFile(), config.getEsSchemaFile(),
                     privateNeo4jDataFetcher, privateESDataFetcher);
         }
         else{
-            this.publicGraphQL = BentoGraphQL.buildGraphQL(config.getPublicSchemaFile(), publicNeo4JDataFetcher);
-            this.privateGraphQL = BentoGraphQL.buildGraphQL(config.getSchemaFile(), privateNeo4jDataFetcher);
+            this.publicGraphQL = buildGraphQL(config.getPublicSchemaFile(), publicNeo4JDataFetcher);
+            this.privateGraphQL = buildGraphQL(config.getSchemaFile(), privateNeo4jDataFetcher);
         }
     }
 
@@ -96,12 +93,12 @@ public class BentoGraphQL {
         return privateGraphQL;
     }
 
-    private static GraphQL buildGraphQL(String neo4jSchemaFile, AbstractNeo4jDataFetcher privateNeo4JDataFetcher) throws IOException {
+    private GraphQL buildGraphQL(String neo4jSchemaFile, AbstractNeo4jDataFetcher privateNeo4JDataFetcher) throws IOException {
         GraphQLSchema neo4jSchema = getNeo4jSchema(neo4jSchemaFile, privateNeo4JDataFetcher);
         return GraphQL.newGraphQL(neo4jSchema).build();
     }
 
-    private static GraphQL buildGraphQLWithES(String neo4jSchemaFile, String esSchemaFile,
+    private GraphQL buildGraphQLWithES(String neo4jSchemaFile, String esSchemaFile,
             AbstractNeo4jDataFetcher privateNeo4JDataFetcher, AbstractESDataFetcher esBentoDataFetcher) throws IOException {
         GraphQLSchema neo4jSchema = getNeo4jSchema(neo4jSchemaFile, privateNeo4JDataFetcher);
         GraphQLSchema esSchema = getEsSchema(esSchemaFile, esBentoDataFetcher);
@@ -109,7 +106,7 @@ public class BentoGraphQL {
         return GraphQL.newGraphQL(mergedSchema).build();
     }
 
-    private static GraphQLSchema getNeo4jSchema(String schema, AbstractNeo4jDataFetcher dataFetcher) throws IOException {
+    private GraphQLSchema getNeo4jSchema(String schema, AbstractNeo4jDataFetcher dataFetcher) throws IOException {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         Resource resource = resourceLoader.getResource("classpath:" + schema);
         File schemaFile = resource.getFile();
@@ -119,13 +116,13 @@ public class BentoGraphQL {
         return neo4jSchema;
     }
 
-    private static GraphQLSchema getEsSchema(String esSchema, AbstractESDataFetcher bentoDataFetcher) throws IOException {
+    private GraphQLSchema getEsSchema(String esSchema, AbstractESDataFetcher bentoDataFetcher) throws IOException {
         File schemaFile = new DefaultResourceLoader().getResource("classpath:" + esSchema).getFile();
         TypeDefinitionRegistry schemaParser = new SchemaParser().parse(schemaFile);
         return new SchemaGenerator().makeExecutableSchema(schemaParser, bentoDataFetcher.buildRuntimeWiring());
     }
 
-    private static GraphQLSchema mergeSchema(GraphQLSchema schema1, GraphQLSchema schema2) {
+    private GraphQLSchema mergeSchema(GraphQLSchema schema1, GraphQLSchema schema2) {
         String QUERY_TYPE_NAME = "Query";
         String MUTATION_TYPE_NAME = "Mutation";
         String SUBSCRIPTION_TYPE_NAME = "Subscription";
@@ -165,7 +162,7 @@ public class BentoGraphQL {
         return builder.build();
     }
 
-    private static HashMap<String, GraphQLNamedType> removeQueryMutationSubscription(
+    private HashMap<String, GraphQLNamedType> removeQueryMutationSubscription(
             HashMap<String, GraphQLNamedType> allTypes, GraphQLSchema schema){
         try{
             String name = schema.getQueryType().getName();
@@ -186,7 +183,7 @@ public class BentoGraphQL {
         return allTypes;
     }
 
-    private static GraphQLNamedType mergeType(GraphQLObjectType type1, GraphQLObjectType type2) {
+    private GraphQLNamedType mergeType(GraphQLObjectType type1, GraphQLObjectType type2) {
         if (type1 == null) {
             return type2;
         }

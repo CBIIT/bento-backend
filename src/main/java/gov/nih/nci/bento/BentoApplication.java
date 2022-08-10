@@ -8,11 +8,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 @SpringBootApplication
 public class BentoApplication extends SpringBootServletInitializer {
-	
-	
-	  private static final Logger logger = LogManager.getLogger(BentoApplication.class);
-	  
-	  
+	private static final Logger logger = LogManager.getLogger(BentoApplication.class);
+
 	public static void main(String[] args) {
 		SpringApplication.run(BentoApplication.class, args);
 	}
@@ -20,10 +17,8 @@ public class BentoApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		logger.info("Server started");
-        
+
 		return application.sources(BentoApplication.class);
-		
+
 	}
-
-
 }

@@ -39,7 +39,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, HttpServletResponse response, final Object handler) throws IOException {
         //Verify that the request is not for the version endpoint and that request authentication is enabled
-        if (config.getAuthEnabled() && Arrays.asList(PRIVATE_ENDPOINTS).contains(request.getServletPath())){
+        if (config.isAuthEnabled() && Arrays.asList(PRIVATE_ENDPOINTS).contains(request.getServletPath())){
             HttpURLConnection con = null;
             HashMap<String, Object> errorInfo = new HashMap<>();
             try {
@@ -133,9 +133,12 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private HttpServletResponse logAndReturnError(String message, int responseCode, Exception ex, HttpServletResponse response) throws IOException {
+    private HttpServletResponse logAndReturnError(String message, int responseCode, Exception ex,
+            HttpServletResponse response) throws IOException {
         logger.error(message);
-        logger.error(ex);
+        if (ex != null){
+            logger.error(ex);
+        }
         BentoGraphqlError bentoGraphqlError = new BentoGraphqlError(Arrays.asList(new String[]{message}));
         response.getWriter().write(gson.toJson(bentoGraphqlError));
         response.setStatus(responseCode);

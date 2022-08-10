@@ -54,10 +54,13 @@ public abstract class AbstractESDataFetcher {
     protected final String GS_HIGHLIGHT_FIELDS = "highlight_fields";
     protected final String GS_HIGHLIGHT_DELIMITER = "$";
     protected final Set<String> RANGE_PARAMS = Set.of("age_at_index");
-    protected final Gson gson = new GsonBuilder().serializeNulls().create();
+    protected final Gson gson;
+    protected final ESService esService;
 
-    @Autowired
-    ESService esService;
+    public AbstractESDataFetcher(ESService esService){
+        this.esService = esService;
+        this.gson = new GsonBuilder().serializeNulls().create();
+    }
 
     // abstract methods
     public abstract RuntimeWiring buildRuntimeWiring();

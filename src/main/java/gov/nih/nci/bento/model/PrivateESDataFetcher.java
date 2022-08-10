@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,8 +16,9 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 public class PrivateESDataFetcher extends AbstractESDataFetcher {
     private static final Logger logger = LogManager.getLogger(PrivateESDataFetcher.class);
 
-    @Autowired
-    ESService esService;
+    public PrivateESDataFetcher(ESService esService) {
+        super(esService);
+    }
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

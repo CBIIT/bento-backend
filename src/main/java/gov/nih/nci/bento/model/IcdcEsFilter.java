@@ -56,11 +56,9 @@ public class IcdcEsFilter extends AbstractESDataFetcher {
     final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
-
-    @Autowired
-    ESService esService;
-
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    public IcdcEsFilter(ESService esService) {
+        super(esService);
+    }
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

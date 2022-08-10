@@ -42,13 +42,17 @@ public abstract class AbstractNeo4jDataFetcher implements AutoCloseable, DataFet
     private int cacheMisses = 0;
 
     private Driver driver;
-    @Autowired
-    private ConfigurationDAO config;
-    @Autowired
-    private RedisService redisService;
 
-    @PostConstruct
-    public void connect() {
+    private final ConfigurationDAO config;
+    private final RedisService redisService;
+
+    protected AbstractNeo4jDataFetcher(ConfigurationDAO config, RedisService redisService) {
+        this.config = config;
+        this.redisService = redisService;
+        connect();
+    }
+
+    private void connect() {
         String uri = config.getNeo4jUrl();
         String user = config.getNeo4jUser();
         String password = config.getNeo4jPassword();

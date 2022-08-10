@@ -1,7 +1,16 @@
 package gov.nih.nci.bento.graphql;
 
+import gov.nih.nci.bento.controller.GraphQLController;
 import gov.nih.nci.bento.model.AbstractESDataFetcher;
+import gov.nih.nci.bento.model.AbstractNeo4jDataFetcher;
+import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.model.IcdcEsFilter;
+import gov.nih.nci.bento.model.PrivateESDataFetcher;
 import gov.nih.nci.bento.model.PrivateNeo4jDataFetcher;
+import gov.nih.nci.bento.model.PublicESDataFetcher;
+import gov.nih.nci.bento.model.PublicNeo4jDataFetcher;
+import gov.nih.nci.bento.service.ESService;
+import gov.nih.nci.bento.service.RedisService;
 import graphql.GraphQL;
 import graphql.schema.GraphQLNamedType;
 import graphql.schema.GraphQLObjectType;
@@ -9,33 +18,98 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.neo4j.graphql.SchemaBuilder;
 import org.neo4j.graphql.SchemaConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 
-public class BuildBentoGraphQL {
+@Component
+public class BentoGraphQL {
 
-    public static GraphQL buildGraphQL(String neo4jSchemaFile, PrivateNeo4jDataFetcher privateNeo4JDataFetcher) throws IOException {
+    private static final Logger logger = LogManager.getLogger(BentoGraphQL.class);
+
+    private final GraphQL privateGraphQL;
+    private final GraphQL publicGraphQL;
+
+    public BentoGraphQL(ConfigurationDAO config, ESService esService, RedisService redisService) throws IOException {
+        PublicNeo4jDataFetcher publicNeo4JDataFetcher = new PublicNeo4jDataFetcher(config, redisService);
+        PrivateNeo4jDataFetcher privateNeo4jDataFetcher = new PrivateNeo4jDataFetcher(config, redisService);
+        AbstractESDataFetcher privateESDataFetcher;
+        AbstractESDataFetcher publicESDataFetcher;
+
+        switch (config.getProject()) {
+            case "icdc":
+                privateESDataFetcher = new IcdcEsFilter(esService);
+                break;
+            case "bento":
+                privateESDataFetcher = new PrivateESDataFetcher(esService);
+                break;
+            default:
+                logger.warn("Project \"" + config.getProject() + "\" is not supported! Use default " +
+                        "PrivateESDataFetcher class");
+                privateESDataFetcher = new PrivateESDataFetcher(esService);
+        }
+
+        if (config.isEsFilterEnabled()){
+            switch (config.getProject()) {
+                //TODO add public ICDC ES data fetcher once that class is written
+                /*
+                case "icdc":
+                    publicESDataFetcher =  new IcdcEsFilter();
+                    break;
+                */
+                case "bento":
+                    publicESDataFetcher = new PublicESDataFetcher(esService);
+                    break;
+                default:
+                    logger.warn("Project \"" + config.getProject() + "\" is not supported! Use default " +
+                            "PublicESDataFetcher class");
+                    publicESDataFetcher = new PublicESDataFetcher(esService);
+            }
+            this.publicGraphQL = BentoGraphQL.buildGraphQLWithES(config.getPublicSchemaFile(),
+                    config.getPublicEsSchemaFile(), publicNeo4JDataFetcher, publicESDataFetcher);
+            this.privateGraphQL = BentoGraphQL.buildGraphQLWithES(config.getSchemaFile(), config.getEsSchemaFile(),
+                    privateNeo4jDataFetcher, privateESDataFetcher);
+        }
+        else{
+            this.publicGraphQL = BentoGraphQL.buildGraphQL(config.getPublicSchemaFile(), publicNeo4JDataFetcher);
+            this.privateGraphQL = BentoGraphQL.buildGraphQL(config.getSchemaFile(), privateNeo4jDataFetcher);
+        }
+    }
+
+    public GraphQL getPublicGraphQL() {
+        return publicGraphQL;
+    }
+
+    public graphql.GraphQL getPrivateGraphQL() {
+        return privateGraphQL;
+    }
+
+    private static GraphQL buildGraphQL(String neo4jSchemaFile, AbstractNeo4jDataFetcher privateNeo4JDataFetcher) throws IOException {
         GraphQLSchema neo4jSchema = getNeo4jSchema(neo4jSchemaFile, privateNeo4JDataFetcher);
         return GraphQL.newGraphQL(neo4jSchema).build();
     }
 
-    public static GraphQL buildGraphQLWithES(String neo4jSchemaFile, String esSchemaFile,
-            PrivateNeo4jDataFetcher privateNeo4JDataFetcher, AbstractESDataFetcher esBentoDataFetcher) throws IOException {
+    private static GraphQL buildGraphQLWithES(String neo4jSchemaFile, String esSchemaFile,
+            AbstractNeo4jDataFetcher privateNeo4JDataFetcher, AbstractESDataFetcher esBentoDataFetcher) throws IOException {
         GraphQLSchema neo4jSchema = getNeo4jSchema(neo4jSchemaFile, privateNeo4JDataFetcher);
         GraphQLSchema esSchema = getEsSchema(esSchemaFile, esBentoDataFetcher);
         GraphQLSchema mergedSchema = mergeSchema(neo4jSchema, esSchema);
         return GraphQL.newGraphQL(mergedSchema).build();
     }
 
-    private static GraphQLSchema getNeo4jSchema(String schema, PrivateNeo4jDataFetcher dataFetcher) throws IOException {
+    private static GraphQLSchema getNeo4jSchema(String schema, AbstractNeo4jDataFetcher dataFetcher) throws IOException {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         Resource resource = resourceLoader.getResource("classpath:" + schema);
         File schemaFile = resource.getFile();

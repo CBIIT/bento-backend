@@ -1,19 +1,17 @@
 package gov.nih.nci.bento.model;
 
-import com.google.gson.*;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.*;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-public class IcdcEsFilter implements DataFetcher {
+public class IcdcEsFilter extends AbstractESDataFetcher {
     private static final Logger logger = LogManager.getLogger(IcdcEsFilter.class);
 
     // parameters used in queries
@@ -56,11 +54,9 @@ public class IcdcEsFilter implements DataFetcher {
     final String GS_HIGHLIGHT_DELIMITER = "$";
     final Set<String> RANGE_PARAMS = Set.of("age_at_index");
 
-
-    @Autowired
-    ESService esService;
-
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    public IcdcEsFilter(ESService esService) {
+        super(esService);
+    }
 
     @Override
     public RuntimeWiring buildRuntimeWiring() {

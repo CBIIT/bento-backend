@@ -1,5 +1,8 @@
 package gov.nih.nci.bento.interceptor;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import gov.nih.nci.bento.error.BentoGraphqlError;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,10 +21,14 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
     private static final Logger logger = LogManager.getLogger(AuthenticationInterceptor.class);
+    private static final String[] PRIVATE_ENDPOINTS = {"/v1/graphql/"};
+
+    private Gson gson = new GsonBuilder().serializeNulls().create();
 
     @Autowired
     private ConfigurationDAO config;
@@ -28,7 +36,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, HttpServletResponse response, final Object handler) throws IOException {
         //Verify that the request is not for the version endpoint and that request authentication is enabled
-        if (config.getAuthEnabled() && !request.getServletPath().equals("/version")){
+        if (config.isAuthEnabled() && Arrays.asList(PRIVATE_ENDPOINTS).contains(request.getServletPath())){
             HttpURLConnection con = null;
             HashMap<String, Object> errorInfo = new HashMap<>();
             try {
@@ -70,7 +78,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     }
                 }
                 //If there are no cookies or the response code is not OK (200) then update the response
-                logErrorAndUpdateResponse(
+                logAndReturnError(
                         "You must be logged in to use this API",
                         HttpStatus.UNAUTHORIZED.value(),
                         null,
@@ -78,7 +86,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 );
             }
             catch (JSONException|UnsupportedEncodingException ex){
-                logErrorAndUpdateResponse(
+                logAndReturnError(
                         "An error occurred while parsing the response from the authentication service",
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         ex,
@@ -86,7 +94,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 );
             }
             catch (IOException ex) {
-                logErrorAndUpdateResponse(
+                logAndReturnError(
                         "An error occurred while querying the authentication service",
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         ex,
@@ -94,7 +102,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 );
             }
             catch (Exception ex){
-                logErrorAndUpdateResponse(
+                logAndReturnError(
                         "An error occurred while verifying that the user is authenticated",
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         ex,
@@ -122,15 +130,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private HttpServletResponse logErrorAndUpdateResponse(
-            String message, int responseCode, Exception ex, HttpServletResponse response) throws IOException {
+    private HttpServletResponse logAndReturnError(String message, int responseCode, Exception ex,
+            HttpServletResponse response) throws IOException {
         logger.error(message);
         if (ex != null){
             logger.error(ex);
         }
-        response.getWriter().write(message);
+        BentoGraphqlError bentoGraphqlError = new BentoGraphqlError(Arrays.asList(new String[]{message}));
+        response.getWriter().write(gson.toJson(bentoGraphqlError));
         response.setStatus(responseCode);
         return response;
     }
-
 }

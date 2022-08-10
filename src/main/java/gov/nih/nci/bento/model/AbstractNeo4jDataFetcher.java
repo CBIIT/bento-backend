@@ -19,11 +19,7 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.graphql.Cypher;
 import org.neo4j.graphql.DataFetchingInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,22 +33,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service("neo4jDataFetcher")
-@DependsOn({"redisService"})
-public class Neo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
-    private static final Logger logger = LogManager.getLogger(Neo4jDataFetcher.class);
+public abstract class AbstractNeo4jDataFetcher implements AutoCloseable, DataFetchingInterceptor {
+    private static final Logger logger = LogManager.getLogger(AbstractNeo4jDataFetcher.class);
 
     private int cacheHits = 0;
     private int cacheMisses = 0;
 
     private Driver driver;
-    @Autowired
-    private ConfigurationDAO config;
-    @Autowired
-    private RedisService redisService;
 
-    @PostConstruct
-    public void connect() {
+    private final ConfigurationDAO config;
+    private final RedisService redisService;
+
+    protected AbstractNeo4jDataFetcher(ConfigurationDAO config, RedisService redisService) {
+        this.config = config;
+        this.redisService = redisService;
+        connect();
+    }
+
+    private void connect() {
         String uri = config.getNeo4jUrl();
         String user = config.getNeo4jUser();
         String password = config.getNeo4jPassword();

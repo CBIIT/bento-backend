@@ -48,6 +48,13 @@ public class GraphQLController {
 	}
 
 	@CrossOrigin
+	@RequestMapping(value = "/ping", method = {RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
+	public ResponseEntity<String> ping(HttpEntity<String> httpEntity, HttpServletResponse response){
+		return ResponseEntity.ok("pong");
+	}
+
+	@CrossOrigin
 	@RequestMapping(value = "/version", method = {RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE + "; charset=utf-8")
 	public ResponseEntity<String> getVersion(HttpEntity<String> httpEntity, HttpServletResponse response){

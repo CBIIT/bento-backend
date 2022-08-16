@@ -1,0 +1,262 @@
+type SearchResultES {
+    numberOfTrials: Int
+    numberOfSubjects: Int
+    numberOfFiles: Int
+
+    subjectCountByRace: [GroupCountES]
+    subjectCountByDiseaseTerm: [GroupCountES]
+    subjectCountByRegisteringInstitution: [GroupCountES]
+    subjectCountByPatientSubgroup: [GroupCountES]
+    subjectCountByStageAtEntry: [GroupCountES]
+    subjectCountByCauseOfDeath: [GroupCountES]
+    subjectCountBySitesOfDiseaseAtAutopsy: [GroupCountES]
+    subjectCountBySourceOfTheLabData: [GroupCountES]
+    subjectCountByLabTest: [GroupCountES]
+    subjectCountBySystemOrganClass: [GroupCountES]
+    subjectCountBySerious: [GroupCountES]
+    subjectCountByOutcome: [GroupCountES]
+    subjectCountBySomaticPathogenicity: [GroupCountES]
+    subjectCountByGermlinePathogenicity: [GroupCountES]
+    subjectCountByFileType: [GroupCountES]
+    subjectCountByClinicalTrialId: [GroupCountES]
+
+    filterSubjectCountByRace: [GroupCountES]
+    filterSubjectCountByDiseaseTerm: [GroupCountES]
+    filterSubjectCountByRegisteringInstitution: [GroupCountES]
+    filterSubjectCountByPatientSubgroup: [GroupCountES]
+    filterSubjectCountByStageAtEntry: [GroupCountES]
+    filterSubjectCountByCauseOfDeath: [GroupCountES]
+    filterSubjectCountBySitesOfDiseaseAtAutopsy: [GroupCountES]
+    filterSubjectCountBySourceOfTheLabData: [GroupCountES]
+    filterSubjectCountByLabTest: [GroupCountES]
+    filterSubjectCountBySystemOrganClass: [GroupCountES]
+    filterSubjectCountBySerious: [GroupCountES]
+    filterSubjectCountByOutcome: [GroupCountES]
+    filterSubjectCountBySomaticPathogenicity: [GroupCountES]
+    filterSubjectCountByGermlinePathogenicity: [GroupCountES]
+    filterSubjectCountByFileType: [GroupCountES]
+    filterSubjectCountByClinicalTrialId: [GroupCountES]
+}
+
+type SubjectIds{
+    subject_ids: [String]
+}
+
+type GroupCountES {
+    group: String
+    subjects: Int
+}
+
+type SubjectOverviewES {
+    subject_id: String
+    race: String
+    disease_term: String
+    stageAtEntry: String
+    causeOfDeath: String
+    sitesOfDiseaseAtAutopsy: String
+    sourceOfTheLabData: String
+    labTest: String
+    systemOrganClass: String
+    serious: String
+    outcome: String
+    files: [String]
+}
+
+type FileOverviewES {
+    file_name: String
+    subject_id: String
+    description: String
+    fileFormat: String
+    size: String
+    fileType: String
+    file_id: String
+    md5sum: String
+}
+
+type GlobalSearchResult {
+    trial_count: Int
+    trials: [GS_Trial]
+
+    subject_count: Int
+    subjects: [GS_Subject]
+
+    file_count: Int
+    files: [GS_File]
+
+    site_count: Int
+    sites: [GS_Site]
+
+    about_count: Int
+    about_page: [GS_About]
+
+    model_count: Int
+    model: [GS_Model]
+}
+
+type GS_Trial {
+    clinical_trial_id: String
+    clinical_trial_short_name: String
+    clinical_trial_long_name: String
+    clinical_trial_description: String
+    clinical_trial_type: String
+}
+
+type GS_Subject {
+    subject_id: String
+    registering_institution: String
+    disease_term: String
+    clinical_trial_id: String
+}
+
+type GS_File {
+    file_id: String
+    file_name: String
+    file_description: String
+    clinical_trial_id: String
+    subject_id: String
+    file_format: String
+}
+
+type GS_Site {
+    site_id: String
+    site_name: String
+    site_address: String
+    site_status: String
+    clinical_trial_id: String
+}
+
+type GS_Model {
+    type: String
+    node_name: String
+    property_name: String
+    property_description: String
+    property_required: String
+    property_type: String
+    value: String
+    highlight: String
+}
+
+type GS_About {
+    page: String
+    title: String
+    type: String
+    text: String
+}
+
+type SubjectTrial{
+    subject_id: String
+    trial_id: String
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+
+    searchSubjects(
+        subject_ids: [String] = [],
+        race: [String] = [],
+        disease_term: [String] = [],
+        registering_institution: [String] = [],
+        patient_subgroup: [String] = [],
+        stage_at_entry: [String] = [],
+        cause_of_death: [String] = [],
+        sites_of_disease_at_autopsy: [String] = [],
+        source_of_the_lab_data: [String] = [],
+        lab_test: [String] = [],
+        system_organ_class: [String] = [],
+        serious: [String] = [],
+        outcome: [String] = [],
+        somatic_pathogenicity: [String] = [],
+        germline_pathogenicity: [String] = [],
+        file_type: [String] = [],
+        clinical_trial_id: [String] = []
+    ): SearchResultES
+
+    subjectOverview(
+        subject_ids: [String] = [],
+        race: [String] = [],
+        disease_term: [String] = [],
+        registering_institution: [String] = [],
+        patient_subgroup: [String] = [],
+        stage_at_entry: [String] = [],
+        cause_of_death: [String] = [],
+        sites_of_disease_at_autopsy: [String] = [],
+        source_of_the_lab_data: [String] = [],
+        lab_test: [String] = [],
+        system_organ_class: [String] = [],
+        serious: [String] = [],
+        outcome: [String] = [],
+        somatic_pathogenicity: [String] = [],
+        germline_pathogenicity: [String] = [],
+        clinical_trial_id: [String] = [],
+        file_type: [String] = []
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectOverviewES]
+
+    fileOverview(
+        file_id: [String] = [],
+        file_name: [String] = [],
+        subject_ids: [String] = [],
+        race: [String] = [],
+        disease_term: [String] = [],
+        registering_institution: [String] = [],
+        patient_subgroup: [String] = [],
+        stage_at_entry: [String] = [],
+        cause_of_death: [String] = [],
+        sites_of_disease_at_autopsy: [String] = [],
+        source_of_the_lab_data: [String] = [],
+        lab_test: [String] = [],
+        system_organ_class: [String] = [],
+        serious: [String] = [],
+        outcome: [String] = [],
+        somatic_pathogenicity: [String] = [],
+        germline_pathogenicity: [String] = [],
+        clinical_trial_id: [String] = [],
+        file_type: [String] = []
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverviewES]
+
+    globalSearch(
+        input: String,
+        first: Int = 10, 
+        offset: Int = 0
+    ): GlobalSearchResult
+
+    fileIdsFromFileName(
+        file_name: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC"
+    ): [FileOverviewES]
+
+    fileIDsFromList(
+        file_names: [String] = [""],
+        subject_ids: [String] = [""],
+    ): [String]
+
+    filesInList(
+        file_id: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [FileOverviewES]
+
+    idsLists: SubjectIds
+
+    findSubjectIdsInList(
+        subject_ids: [String] = [],
+        order_by: String = "",
+        sort_direction: String = "ASC",
+        first: Int = 10,
+        offset: Int = 0
+    ): [SubjectTrial]
+    
+}

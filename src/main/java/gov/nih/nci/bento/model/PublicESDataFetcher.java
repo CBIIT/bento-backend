@@ -23,13 +23,9 @@ public class PublicESDataFetcher extends AbstractESDataFetcher {
                 .type(newTypeWiring("QueryType")
                         .dataFetcher("publicGlobalSearch", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return publicGlobalSearch(args);
+                            return globalSearch(args);
                         })
                 )
                 .build();
-    }
-
-    private Map<String, Object> publicGlobalSearch(Map<String, Object> params) throws IOException {
-        return getSearchCategoriesResult(params, initPublicSearchCategories());
     }
 }

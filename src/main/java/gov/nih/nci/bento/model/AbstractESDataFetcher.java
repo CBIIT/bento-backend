@@ -64,7 +64,11 @@ public abstract class AbstractESDataFetcher {
     // abstract methods
     public abstract RuntimeWiring buildRuntimeWiring();
 
-    protected List<Map<String, Object>> initPublicSearchCategories(){
+    protected Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
+        return getSearchCategoriesResult(params, initSearchCategories());
+    }
+
+    protected List<Map<String, Object>> initSearchCategories(){
         List<Map<String, Object>> searchCategories = new ArrayList<>();
         searchCategories.add(Map.of(
                 GS_END_POINT, PROGRAMS_END_POINT,
@@ -136,6 +140,74 @@ public abstract class AbstractESDataFetcher {
                         new String[]{"highlight", "value"}
                 },
                 GS_CATEGORY_TYPE, "value"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, STUDIES_END_POINT,
+                GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "study_count",
+                GS_RESULT_FIELD, "studies",
+                GS_SEARCH_FIELD, List.of("study_id", "study_name", "study_type"),
+                GS_SORT_FIELD, "study_id_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"study_id", "study_id"},
+                        new String[]{"study_type", "study_type"},
+                        new String[]{"study_code", "study_code"},
+                        new String[]{"study_name", "study_name"}
+                },
+                GS_CATEGORY_TYPE, "study"
+
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, SUBJECTS_END_POINT,
+                GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "subject_count",
+                GS_RESULT_FIELD, "subjects",
+                GS_SEARCH_FIELD, List.of("subject_id_gs", "diagnosis_gs", "age_at_index_gs"),
+                GS_SORT_FIELD, "subject_id_num",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"subject_id", "subject_id_gs"},
+                        new String[]{"program_code", "programs"},
+                        new String[]{"study", "study_acronym"},
+                        new String[]{"diagnosis", "diagnoses"},
+                        new String[]{"age", "age_at_index"}
+                },
+                GS_CATEGORY_TYPE, "subject"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, SAMPLES_END_POINT,
+                GS_COUNT_ENDPOINT, SAMPLES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "sample_count",
+                GS_RESULT_FIELD, "samples",
+                GS_SEARCH_FIELD, List.of("sample_id_gs", "sample_anatomic_site_gs", "tissue_type_gs"),
+                GS_SORT_FIELD, "sample_id_num",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"subject_id", "subject_ids"},
+                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"diagnosis", "diagnoses"},
+                        new String[]{"sample_anatomic_site", "sample_anatomic_site"},
+                        new String[]{"tissue_type", "tissue_type"}
+                },
+                GS_CATEGORY_TYPE, "sample"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, FILES_END_POINT,
+                GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "file_count",
+                GS_RESULT_FIELD, "files",
+                GS_SEARCH_FIELD, List.of("file_id_gs", "file_name_gs", "file_format_gs"),
+                GS_SORT_FIELD, "file_id_num",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_id", "program_id"},
+                        new String[]{"subject_id", "subject_ids"},
+                        new String[]{"sample_id", "sample_ids"},
+                        new String[]{"file_name", "file_names"},
+                        new String[]{"file_format", "file_format"},
+                        new String[]{"file_id", "file_ids"}
+                },
+                GS_CATEGORY_TYPE, "file"
         ));
         return searchCategories;
     }

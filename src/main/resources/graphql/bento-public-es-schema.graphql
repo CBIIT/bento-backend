@@ -32,6 +32,11 @@ type PublicGlobalSearchResult {
 
     model_count: Int
     model: [GS_Model]
+
+    study_count: Int
+    subject_count: Int
+    sample_count: Int
+    file_count: Int
 }
 
 schema {

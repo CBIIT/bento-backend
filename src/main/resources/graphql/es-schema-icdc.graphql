@@ -209,6 +209,7 @@ schema {
 
 type QueryType {
     searchCases (
+        case_ids: [String] = [],
         program: [String] = [],
         study: [String] = [],
         study_type: [String] = [],
@@ -232,6 +233,7 @@ type QueryType {
     ): SearchResult
 
     caseOverview (
+        case_ids: [String] = [],
         program: [String] = [],
         study: [String] = [],
         study_type: [String] = [],
@@ -259,6 +261,8 @@ type QueryType {
     ): [CaseOverviewES]
 
     sampleOverview(
+        case_ids: [String] = [],
+        sample_ids: [String] = [],
         program: [String] = [],
         study: [String] = [],
         study_type: [String] = [],
@@ -286,6 +290,9 @@ type QueryType {
     ): [SampleOverviewES]
 
     fileOverview(
+        case_ids: [String] = [],
+        sample_ids: [String] = [],
+        file_uuids: [String] = [],
         program: [String] = [],
         study: [String] = [],
         study_type: [String] = [],

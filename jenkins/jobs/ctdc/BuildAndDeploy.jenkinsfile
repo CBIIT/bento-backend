@@ -31,8 +31,8 @@ pipeline {
 
   agent {
 	node {
-      //label 'ctdc-docker'
-	  label 'slave-ncias-d2879-c'
+      label 'ctdc-docker'
+	  //label 'slave-ncias-d2879-c'
 	}
   }
 	

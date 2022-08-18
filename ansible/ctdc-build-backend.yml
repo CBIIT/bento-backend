@@ -3,6 +3,7 @@
   connection: local
   gather_facts: no
   #become: yes
+  become: yes
 
   tasks:
     #install collections
@@ -10,14 +11,15 @@
       command: ansible-galaxy collection install {{item}}
       loop:
         -  community.docker
-        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
+        #-  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
+        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.1
 
     #docker login
     - name: ecr login
       include_role:
         name: bento.common.ecr_login
       vars:
-        ansible_python_interpreter: /usr/bin/python3
+        #ansible_python_interpreter: /usr/bin/python3
         region: us-east-1
 
     #build backend

@@ -1,8 +1,9 @@
 - name: ctdc backend build pipeline
-  hosts: bento
+  #hosts: bento
+  hosts: ctdc-local
   connection: local
   gather_facts: no
-  #become: yes
+  become: yes
   become: yes
 
   tasks:
@@ -12,7 +13,6 @@
       loop:
         -  community.docker
         -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.2
-        #-  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,collections_v1.1
 
     #docker login
     - name: ecr login

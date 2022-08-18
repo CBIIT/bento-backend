@@ -1,24 +1,32 @@
 package gov.nih.nci.bento.service;
 
-import com.google.gson.*;
+import com.amazonaws.auth.AWS4Signer;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import gov.nih.nci.bento.model.ConfigurationDAO;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.client.*;
-import com.amazonaws.auth.AWS4Signer;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opensearch.client.Request;
+import org.opensearch.client.Response;
+import org.opensearch.client.RestClient;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service("ESService")
 public class ESService {
@@ -31,19 +39,24 @@ public class ESService {
 
     private static final Logger logger = LogManager.getLogger(RedisService.class);
 
-    @Autowired
-    private ConfigurationDAO config;
 
+    private final ConfigurationDAO config;
     private RestClient client;
+    private final Gson gson;
 
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    public ESService(ConfigurationDAO config){
+        this.config = config;
+        this.gson = new GsonBuilder().serializeNulls().create();
+        logger.info("Initializing Elasticsearch client");
+        client = searchClient("es", "us-east-1");
+    }
 
     // Base on host name to use signed request (AWS) or not (local)
     public RestClient searchClient(String serviceName, String region) {
         String host = config.getEsHost().trim();
         String scheme = config.getEsScheme();
         int port = config.getEsPort();
-        if (config.getEsSignRequests()) {
+        if (config.isEsSignRequests()) {
             AWS4Signer signer = new AWS4Signer();
             signer.setServiceName(serviceName);
             signer.setRegionName(region);
@@ -53,12 +66,6 @@ public class ESService {
             var lowLevelBuilder = RestClient.builder(new HttpHost(host, port, scheme));
             return lowLevelBuilder.build();
         }
-    }
-
-    @PostConstruct
-    public void init() {
-        logger.info("Initializing Elasticsearch client");
-        client = searchClient("es", "us-east-1");
     }
 
     @PreDestroy

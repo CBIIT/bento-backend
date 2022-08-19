@@ -1,8 +1,6 @@
 ARG ECR_REPO
 ARG PROJECT
 
-RUN echo ${PROJECT}
-
 FROM ${ECR_REPO}/${PROJECT}-backend:release
 MAINTAINER icdc devops team
 

@@ -2,6 +2,6 @@
 # vars file for build-image
 project: "ctdc"
 workspace: "{{ lookup('env','WORKSPACE') }}"
-docker_user: "{{ lookup('env','DOCKER_USER') }}"
-docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
+#docker_user: "{{ lookup('env','DOCKER_USER') }}"
+#docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"
 region: us-east-1

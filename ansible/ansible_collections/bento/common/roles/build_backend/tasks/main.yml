@@ -54,7 +54,7 @@
     build:
       args:
         ECR_REPO: "{{ container_registry_url }}"
-        PROJECT: "{{ project }}"
+        PROJECT: "{{ project_name }}"
       path: "{{ workspace }}"
       dockerfile: "{{ dockerfile_path }}"
       pull: yes

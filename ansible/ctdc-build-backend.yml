@@ -1,6 +1,5 @@
 - name: ctdc backend build pipeline
-  #hosts: bento
-  hosts: ctdc-local
+  hosts: bento
   connection: local
   gather_facts: no
   become: yes

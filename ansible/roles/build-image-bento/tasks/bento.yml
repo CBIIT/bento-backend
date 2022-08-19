@@ -53,7 +53,7 @@
       pull: yes
       nocache: yes
     #name: "{{ dockerhub_path }}/bento-{{ item | dirname | basename }}"
-    name: "{{ ecr_repo }}/bento-{{ item | dirname | basename }}"
+    name: "{{ ecr_repo }}/{{ project }}-{{ item | dirname | basename }}"
     tag: "release"
     push: yes
     force_source: yes

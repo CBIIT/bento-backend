@@ -1,6 +1,6 @@
 ---
 # vars file for build-image
-project: "bento"
+project: "ctdc"
 workspace: "{{ lookup('env','WORKSPACE') }}"
 docker_user: "{{ lookup('env','DOCKER_USER') }}"
 docker_password: "{{ lookup('env','DOCKER_PASSWORD') }}"

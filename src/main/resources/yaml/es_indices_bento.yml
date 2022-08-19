@@ -357,22 +357,44 @@ Indices:
         type: search_as_you_type
       program_id:
         type: search_as_you_type
-      program_id_kw:
-        type: keyword
       program_file_names:
         type: search_as_you_type
       program_name:
         type: search_as_you_type
-
+      program_code_kw:
+        type: keyword
+      program_id_kw:
+        type: keyword
+      program_name_kw:
+        type: keyword
+      start_date:
+        type: keyword
+      end_date:
+        type: keyword
+      pubmed_id:
+        type: keyword
+      num_studies:
+        type: integer
+      num_subjects:
+        type: integer
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (p:program)
       OPTIONAL MATCH (p)<--(pf:file)
+      OPTIONAL MATCH (p)<--(s:study)
+      OPTIONAL MATCH (s)<--(ss:study_subject)
       RETURN DISTINCT
         p.program_acronym AS program_code,
+        p.program_acronym AS program_code_kw,
         p.program_id AS program_id,
         p.program_id AS program_id_kw,
         p.program_name AS program_name,
+        p.program_name AS program_name_kw,
+        p.start_date AS start_date,
+        p.end_date AS end_date,
+        p.pubmed_id AS pubmed_id,
+        COUNT(DISTINCT s) AS num_studies,
+        COUNT(DISTINCT ss) AS num_subjects,
         COLLECT(DISTINCT pf.file_name) AS program_file_names
       "
   - index_name: studies

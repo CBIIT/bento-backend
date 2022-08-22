@@ -103,15 +103,15 @@ pipeline {
 			TIER = "${params.Environment}"
 		}
 		steps {
-			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-				ansiblePlaybook(  			
-					playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-backend.yml', 
-					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-					extraVars: [
-						project_name: "ctdc"
-					],
-					colorized: true)
-			}
+			//wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+			//	ansiblePlaybook(  			
+			//		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-backend.yml', 
+			//		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+			//		extraVars: [
+			//			project_name: "ctdc"
+			//		],
+			//		colorized: true)
+			//}
 		  
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				ansiblePlaybook(  			
@@ -120,7 +120,8 @@ pipeline {
 					extraVars: [
 						project_name: "ctdc",
 					],
-					colorized: true)
+					colorized: true,
+					extras: '-vvv')
 			}
 		  
         }

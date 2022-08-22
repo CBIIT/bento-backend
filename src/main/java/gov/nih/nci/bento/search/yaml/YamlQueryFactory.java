@@ -112,10 +112,14 @@ public class YamlQueryFactory {
                 return typeMapper.getICDCAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.AGGREGATION:
                 return typeMapper.getAggregate();
-            case Const.YAML_QUERY.RESULT_TYPE.INT_TOTAL_AGGREGATION:
-                return typeMapper.getAggregateTotalCnt();
-            case Const.YAML_QUERY.RESULT_TYPE.NESTED_INT_TOTAL_AGGREGATION:
-                return typeMapper.getNestedAggregateTotalCnt();
+            case Const.YAML_QUERY.RESULT_TYPE.INT:
+                if (query.getFilter().getMethod().equals("count_bucket_keys")) {
+                    return typeMapper.getAggregateTotalCnt();
+                } else if (query.getFilter().getMethod().equals("nested_count")) {
+                    return typeMapper.getNestedAggregateTotalCnt();
+                }
+                throw new IllegalArgumentException("This is an illegal type of int return type value as query configuration file");
+
             case Const.YAML_QUERY.RESULT_TYPE.RANGE:
                 return typeMapper.getRange();
             case Const.YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:
@@ -228,7 +232,7 @@ public class YamlQueryFactory {
                 return new AggregationFilter(
                         FilterParam.builder()
                                 .args(args)
-                                .isExcludeFilter(filterType.isFilter())
+                                .isExcludeFilter(filterType.isIgnoreSelectedField())
                                 .selectedField(filterType.getSelectedField())
                                 .build())
                         .getSourceFilter();
@@ -267,10 +271,10 @@ public class YamlQueryFactory {
                 return new NestedFilter(
                         FilterParam.builder()
                                 .args(args)
-                                .isExcludeFilter(filterType.isFilter())
+                                .isExcludeFilter(filterType.isIgnoreSelectedField())
                                 .selectedField(filterType.getSelectedField())
                                 .nestedPath(filterType.getNestedPath())
-                                .nestedFields(filterType.getNestedFields())
+                                .nestedParameters(filterType.getNestedParameters())
                                 .build())
                         .getSourceFilter();
             case Const.YAML_QUERY.FILTER.GLOBAL:

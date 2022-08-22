@@ -42,10 +42,10 @@ public class NestedFilter extends AbstractFilter {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
         // Multiple nested fields
         // for the purpose of total number of aggregation & filter inner fields
-        Set<String> nestedFields = new HashSet<>(filterParam.getNestedFields());
-        removeFilterField(filterParam, nestedFields);
+        Set<String> nestedParameters = new HashSet<>(filterParam.getNestedParameters());
+        removeFilterField(filterParam, nestedParameters);
         filterParam.getArgs().forEach((k,v)->{
-            if (nestedFields.contains(k)) {
+            if (nestedParameters.contains(k)) {
                 List<String> list = filterParam.getArgs().containsKey(k) ? (List<String>) filterParam.getArgs().get(k) : new ArrayList<>();
                 if (list.size() > 0) {
                     list.forEach(l->
@@ -57,9 +57,9 @@ public class NestedFilter extends AbstractFilter {
         return boolQueryBuilder;
     }
 
-    private void removeFilterField(FilterParam filterParam, Set<String> nestedFields) {
-        if (filterParam.isExcludeFilter() && nestedFields.contains(filterParam.getSelectedField())) {
-            nestedFields.remove(filterParam.getSelectedField());
+    private void removeFilterField(FilterParam filterParam, Set<String> nestedParameters) {
+        if (filterParam.isExcludeFilter() && nestedParameters.contains(filterParam.getSelectedField())) {
+            nestedParameters.remove(filterParam.getSelectedField());
         }
     }
 }

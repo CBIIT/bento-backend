@@ -60,7 +60,7 @@ public class BentoFilterTest {
                                                 .nestedPath("sample_info")
                                                 .isExcludeFilter(true)
                                                 // List filter fields
-                                                .nestedFields(Set.of("composition"))
+                                                .nestedParameters(Set.of("composition"))
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -75,7 +75,7 @@ public class BentoFilterTest {
                                                 .selectedField("composition")
                                                 .nestedPath("sample_info")
                                                 // List filter fields
-                                                .nestedFields(Set.of("composition"))
+                                                .nestedParameters(Set.of("composition"))
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -116,7 +116,7 @@ public class BentoFilterTest {
                                                 .nestedPath("file_info")
                                                 .isExcludeFilter(true)
                                                 // List filter fields
-                                                .nestedFields(Set.of("file_type"))
+                                                .nestedParameters(Set.of("file_type"))
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -147,7 +147,7 @@ public class BentoFilterTest {
                                                 .selectedField("file_id")
                                                 .nestedPath("file_info")
                                                 // List filter fields
-                                                .nestedFields(Set.of("file_type"))
+                                                .nestedParameters(Set.of("file_type"))
                                                 .build())
                                         .getSourceFilter()
                                 ))
@@ -177,7 +177,7 @@ public class BentoFilterTest {
                                                 .selectedField("association")
                                                 .nestedPath("file_info")
                                                 // List filter fields
-                                                .nestedFields(Set.of("file_type"))
+                                                .nestedParameters(Set.of("file_type"))
                                                 .build())
                                         .getSourceFilter()
                                 ))

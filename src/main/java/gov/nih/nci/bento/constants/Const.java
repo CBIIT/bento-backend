@@ -50,7 +50,7 @@ public class Const {
             // TODO Tobe deleted
             public static final String ICDC_AGGREGATION = "icdc_aggregation";
             public static final String AGGREGATION = "aggregation";
-            public static final String INT_TOTAL_AGGREGATION = "int_total_aggregation";
+            public static final String INT = "int";
             public static final String RANGE = "range";
             public static final String ARM_PROGRAM = "arm_program";
 
@@ -66,7 +66,6 @@ public class Const {
             public static final String SUM_AGG = "sum";
             // TO BE DELETED
             public static final String ICDC_NESTED_LIST = "icdc_nested_list";
-            public static final String NESTED_INT_TOTAL_AGGREGATION = "nested_int_total_count";
             public static final String ICDC_ARM_PROGRAM = "icdc_arm_program";
             public static final String EMPTY = "empty";
         }

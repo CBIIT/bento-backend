@@ -31,14 +31,14 @@
         # Required: type, selectedField, nestedPath
           # selectedField: declare a target field in aggregation search
           # nestedPath: declare a root path in nested document
-    # Optional: nestedFields
-      # nestedFields: declare number of fields to search. Multiple fields
+    # Optional: nestedParameters
+      # nestedParameters: declare number of fields to search. Multiple fields
       # on the purpose of total number of documents filtering multiple nested fields
 
 # Return Type
   # - default @return List<Map<String, Object>>
   # - aggregation @return List<Map<String, Object>>
-  # - int_total_aggregation @return Integer
+  # - int @return Integer
   # - range @return Map<String, Object>
     # ex) {lowerBound: 0.00, upperBound: 0.00, subjects: XXX}
   # - arm_program @return List<Map<String, Object>>
@@ -65,7 +65,7 @@
   # default <-> default, str_list
   # table <-> default
   # sub_aggregation <-> arm_program
-  # aggregation <-> aggregation, int_total_aggregation, int_total_count
+  # aggregation <-> aggregation, int(int_total_aggregation, int_total_count)
   # range <-> range
   # global <-> global, global_multi_models
   # nested <-> nested_list, nested_total

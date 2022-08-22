@@ -31,7 +31,7 @@ public class BentoQueryFactory extends QueryFactory {
             } else {
                 List<String> list = (List<String>) args.get(key);
                 // Skip to Filter Nested Fields
-                if (list.size() > 0 && !filterParam.getNestedFields().contains(key)) {
+                if (list.size() > 0 && !filterParam.getNestedParameters().contains(key)) {
                     QueryBuilder builder = filterParam.isCaseInsensitive() ? getCaseInsensitiveQuery(list, key) : QueryBuilders.termsQuery(key, (List<String>) args.get(key));
                     boolBuilder.filter(builder);
                 }

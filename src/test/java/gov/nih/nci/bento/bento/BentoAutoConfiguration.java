@@ -85,7 +85,7 @@ public class BentoAutoConfiguration {
 
     private Object createGroupQuery(GroupTypeQuery.Group group, QueryParam param) throws IOException {
         List<MultipleRequests> requests = new ArrayList<>();
-        group.getQuery().forEach(q->{
+        group.getReturnFields().forEach(q->{
             MultipleRequests multipleRequest = MultipleRequests.builder()
                     .name(q.getName())
                     .request(new SearchRequest()
@@ -115,7 +115,7 @@ public class BentoAutoConfiguration {
                 return new AggregationFilter(
                         FilterParam.builder()
                                 .args(param.getArgs())
-                                .isExcludeFilter(filterType.isFilter())
+                                .isExcludeFilter(filterType.isIgnoreSelectedField())
                                 .selectedField(filterType.getSelectedField())
                                 .build())
                         .getSourceFilter();
@@ -275,8 +275,15 @@ public class BentoAutoConfiguration {
                 return typeMapper.getList(param.getReturnTypes());
             case YAML_QUERY.RESULT_TYPE.AGGREGATION:
                 return typeMapper.getAggregate();
-            case YAML_QUERY.RESULT_TYPE.INT_TOTAL_AGGREGATION:
-                return typeMapper.getAggregateTotalCnt();
+            case YAML_QUERY.RESULT_TYPE.INT:
+
+                if (query.getFilter().getMethod().equals("count_bucket_keys")) {
+                    return typeMapper.getAggregateTotalCnt();
+                } else if (query.getFilter().getMethod().equals("nested_count")) {
+                    return typeMapper.getNestedAggregateTotalCnt();
+                }
+                throw new IllegalArgumentException("Illegal int return types");
+
             case YAML_QUERY.RESULT_TYPE.RANGE:
                 return typeMapper.getRange();
             case YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:

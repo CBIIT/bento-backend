@@ -13,6 +13,6 @@ public class GroupTypeQuery {
     @Data
     public static class Group {
         private String name;
-        private List<YamlQuery> query;
+        private List<YamlQuery> returnFields;
     }
 }

@@ -1,6 +1,6 @@
 queries:
   - name: searchSubjects
-    query:
+    returnFields:
     - name: numberOfPrograms
       index:
         - subjects

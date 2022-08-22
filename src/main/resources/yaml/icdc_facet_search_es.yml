@@ -1,6 +1,6 @@
 queries:
   - name: searchCases
-    query:
+    returnFields:
     - name: numberOfStudies
       index:
         - cases

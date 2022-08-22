@@ -89,7 +89,7 @@ public class YamlQueryFactory {
     private Object createGroupYamlQuery(GroupTypeQuery.Group group, QueryParam param) {
         logger.info("Group Search API Requested: " + group.getName());
         List<MultipleRequests> requests = new ArrayList<>();
-        group.getQuery().forEach(q->{
+        group.getReturnFields().forEach(q->{
             MultipleRequests multipleRequest = MultipleRequests.builder()
                     .name(q.getName())
                     .request(new SearchRequest()

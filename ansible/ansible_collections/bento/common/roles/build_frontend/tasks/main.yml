@@ -1,3 +1,32 @@
+#- name: create docker build directory
+#  file: 
+#    path: "{{ workspace }}/build"
+#    state : directory
+#
+#- name: copy  nginx conf
+#  copy:
+#    remote_src: yes
+#    src: "{{ workspace }}/icdc-devops/docker/dockerfiles/nginx.conf"
+#    dest: "{{ container_build_path }}/nginx.conf"
+#
+#- name: copy entrypoint.sh to workspace
+#  copy:
+#    src: "nginx-entrypoint.sh"
+#    dest: "{{ container_build_path }}/nginx-entrypoint.sh"
+#    mode: 0755
+
+- name: run npm install in {{ workspace }}/{{ project_name }}-frontend/
+  command: "{{ item }}"
+  args:
+    chdir: "{{ container_build_path }}"
+    warn: false
+  environment:
+    CI: false
+  loop:
+    - npm set progress=false
+    - npm install --silent
+    - npm run build --silent
+
 - name: create docker build directory
   file: 
     path: "{{ workspace }}/build"
@@ -7,26 +36,13 @@
   copy:
     remote_src: yes
     src: "{{ workspace }}/icdc-devops/docker/dockerfiles/nginx.conf"
-    dest: "{{ container_build_path }}/nginx.conf"
+    dest: "{{ workspace }}/build/nginx.conf"
 
 - name: copy entrypoint.sh to workspace
   copy:
     src: "nginx-entrypoint.sh"
-    dest: "{{ container_build_path }}/nginx-entrypoint.sh"
+    dest: "{{ workspace }}/build/nginx-entrypoint.sh"
     mode: 0755
-
-- name: run npm install in {{ workspace }}/{{ project_name }}-frontend/
-  command: "{{ item }}"
-  args:
-    chdir: "{{ container_build_path }}"
-    warn: false
-  environment:
-    CI: false
-    #NODE_OPTIONS: "--max-old-space-size=1024"
-  loop:
-    - npm set progress=false
-    - npm install --silent
-    - npm run build --silent
 
 - name: move dist from frontend to temp build
   copy: 

@@ -372,11 +372,17 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
 
         List<Map<String, Object>> result = overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
         final String ACL_KEY = "acl";
-        for(Map<String, Object> resultElement: result){
-            String acl = (String) resultElement.get(ACL_KEY);
-            String[] acls = acl.replaceAll("\\]|\\[|'", "").split(",");
-            resultElement.put(ACL_KEY, acls);
+        try{
+            for(Map<String, Object> resultElement: result){
+                String acl = (String) resultElement.get(ACL_KEY);
+                String[] acls = acl.replaceAll("\\]|\\[|'|\"", "").split(",");
+                resultElement.put(ACL_KEY, acls);
+            }
         }
+        catch(ClassCastException | NullPointerException ex){
+            logger.error("Error occurred when splitting acl into String array");
+        }
+
         return result;
     }
 

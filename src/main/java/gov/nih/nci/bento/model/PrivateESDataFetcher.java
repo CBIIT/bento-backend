@@ -3,24 +3,28 @@ package gov.nih.nci.bento.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import gov.nih.nci.bento.constants.Const;
+import gov.nih.nci.bento.model.search.MultipleRequests;
+import gov.nih.nci.bento.model.search.filter.DefaultFilter;
+import gov.nih.nci.bento.model.search.filter.FilterParam;
+import gov.nih.nci.bento.model.search.mapper.TypeMapperImpl;
+import gov.nih.nci.bento.model.search.mapper.TypeMapperService;
+import gov.nih.nci.bento.model.search.query.QueryParam;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.action.search.SearchRequest;
 import org.opensearch.client.Request;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 public class PrivateESDataFetcher extends AbstractESDataFetcher {
     private static final Logger logger = LogManager.getLogger(PrivateESDataFetcher.class);
-
+    private final TypeMapperService typeMapper = new TypeMapperImpl();
     public PrivateESDataFetcher(ESService esService) {
         super(esService);
     }
@@ -61,8 +65,32 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return findSubjectIdsInList(args);
                         })
+                        .dataFetcher("subjectsInList", env ->
+                            subjectsInList(esService.CreateQueryParam(env))
+                        )
                 )
                 .build();
+    }
+
+    private List<Map<String, Object>> subjectsInList(QueryParam param) {
+        List<MultipleRequests> requests = List.of(
+                MultipleRequests.builder()
+                        .name("TEST01")
+                        .request(new SearchRequest()
+                                .indices(Const.BENTO_INDEX.SUBJECTS)
+                                .source(new DefaultFilter(
+                                        FilterParam.builder()
+                                                .args(param.getArgs())
+                                                .selectedField("subject_id")
+                                                .build())
+                                        .getSourceFilter()
+                                )
+                        )
+                        .typeMapper(typeMapper.getList(param.getReturnTypes()))
+                        .build());
+
+        Map<String, Object> result = esService.elasticMultiSend(requests);
+        return (List<Map<String, Object>>) result.get("TEST01");
     }
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {

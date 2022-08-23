@@ -361,6 +361,8 @@ type QueryType {
     ): [FileDetail]
 
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
-
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
+    subjectsInList(subject_ids: [String] = []): [SubjectOverview]
+    filesOfSubjects(subject_ids: [String] = []): [FileDetail]
+    samplesForSubjectId(subject_ids: [String] = []): [SampleOverview]
 }

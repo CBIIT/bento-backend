@@ -81,7 +81,13 @@ public class ConfigurationDAO {
 	@Value("${es.sign.requests:true}")
 	private boolean esSignRequests;
 
+	@Value("${es.service_name}")
+	private String serviceName;
+	@Value("${es.region}")
+	private String region;
+
 	//Testing
 	@Value("${test.queries_file}")
 	private String testQueriesFile;
+
 }

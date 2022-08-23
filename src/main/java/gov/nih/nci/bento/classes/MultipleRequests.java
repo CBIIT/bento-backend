@@ -3,7 +3,7 @@ package gov.nih.nci.bento.classes;
 import gov.nih.nci.bento.search.result.TypeMapper;
 import lombok.Builder;
 import lombok.Getter;
-import org.elasticsearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchRequest;
 @Getter
 public class MultipleRequests {
 

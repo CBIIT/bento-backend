@@ -2,7 +2,7 @@ package gov.nih.nci.bento.utility;
 
 import gov.nih.nci.bento.classes.FilterParam;
 import gov.nih.nci.bento.classes.TableParam;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.search.sort.SortOrder;
 
 public class ElasticUtil {
 

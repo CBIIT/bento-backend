@@ -6,8 +6,8 @@ import gov.nih.nci.bento.constants.Const;
 import gov.nih.nci.bento.search.query.BentoQueryFactory;
 import gov.nih.nci.bento.search.query.QueryFactory;
 import gov.nih.nci.bento.utility.ElasticUtil;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.search.builder.SearchSourceBuilder;
 
 import java.util.*;
 

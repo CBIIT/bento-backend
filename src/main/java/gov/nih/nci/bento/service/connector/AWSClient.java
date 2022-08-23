@@ -7,8 +7,8 @@ import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestHighLevelClient;
 
 public class AWSClient extends AbstractClient {
 

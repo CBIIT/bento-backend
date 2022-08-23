@@ -5,7 +5,7 @@ import gov.nih.nci.bento.utility.ElasticUtil;
 import graphql.schema.*;
 import lombok.Builder;
 import lombok.Getter;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.search.sort.SortOrder;
 
 import java.util.HashSet;
 import java.util.List;

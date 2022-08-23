@@ -1,6 +1,6 @@
 package gov.nih.nci.bento.search.result;
 
-import org.elasticsearch.common.text.Text;
+import org.opensearch.common.text.Text;
 import java.util.Map;
 
 public interface HighLightMapper {

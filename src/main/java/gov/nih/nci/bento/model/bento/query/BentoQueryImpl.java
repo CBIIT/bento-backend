@@ -12,11 +12,11 @@ import gov.nih.nci.bento.search.query.filter.SubAggregationFilter;
 import gov.nih.nci.bento.search.result.TypeMapperService;
 import gov.nih.nci.bento.utility.StrUtil;
 import lombok.RequiredArgsConstructor;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.index.query.*;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.opensearch.search.sort.SortOrder;
 
 import java.util.Arrays;
 import java.util.List;

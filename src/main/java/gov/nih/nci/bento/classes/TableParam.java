@@ -2,7 +2,7 @@ package gov.nih.nci.bento.classes;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.elasticsearch.search.sort.SortOrder;
+import org.opensearch.search.sort.SortOrder;
 
 @Getter
 public class TableParam {

@@ -2,7 +2,7 @@ package gov.nih.nci.bento.service.connector;
 
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import lombok.RequiredArgsConstructor;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestHighLevelClient;
 
 @RequiredArgsConstructor
 public abstract class AbstractClient {

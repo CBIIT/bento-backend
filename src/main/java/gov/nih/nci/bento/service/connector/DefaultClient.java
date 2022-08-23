@@ -2,8 +2,8 @@ package gov.nih.nci.bento.service.connector;
 
 import gov.nih.nci.bento.config.ConfigurationDAO;
 import org.apache.http.HttpHost;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestHighLevelClient;
 
 public class DefaultClient extends AbstractClient {
 

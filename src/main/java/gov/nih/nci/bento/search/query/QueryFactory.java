@@ -1,9 +1,9 @@
 package gov.nih.nci.bento.search.query;
 
 import gov.nih.nci.bento.search.query.filter.RangeFilter;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.opensearch.index.query.BoolQueryBuilder;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
 
 import java.util.ArrayList;
 import java.util.List;

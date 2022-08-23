@@ -11,6 +11,7 @@ import org.opensearch.client.Request;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +62,78 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return findSubjectIdsInList(args);
                         })
+                        .dataFetcher("idsLists", env -> idsLists())
+                        .dataFetcher("programInfo", env -> programInfo())
                 )
                 .build();
+    }
+
+    private Map<String, String[]> idsLists() throws IOException {
+        /*
+        Index properties map definition template:
+        Map.of(
+            <ES Index Endpoint>, new String[][]{
+                    new String[]{<Return Label>, <ES Index property name>}
+            },
+        */
+        Map<String, String[][]> indexProperties = Map.of(
+            SUBJECT_IDS_END_POINT, new String[][]{
+                    new String[]{"subjectIds", "subject_ids"}
+            },
+            SAMPLES_END_POINT, new String[][]{
+                    new String[]{"sampleIds", "sample_ids"}
+            },
+            FILES_END_POINT, new String[][]{
+                    new String[]{"fileIds", "file_ids"},
+                    new String[]{"fileNames", "file_names"}
+            }
+        );
+        //Generic Query
+        Map<String, Object> query = esService.buildListQuery();
+        //Results Map
+        Map<String, String[]> results = new HashMap<>();
+        //Iterate through each index properties map and make a request to each endpoint then format the results as
+        // String arrays
+        for (String endpoint: indexProperties.keySet()){
+            Request request = new Request("GET", endpoint);
+            String[][] properties = indexProperties.get(endpoint);
+            List<Map<String, Object>> result = esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE,
+                    0);
+            Map<String, List<String>> indexResults = new HashMap<>();
+            Arrays.asList(properties).forEach(x -> indexResults.put(x[0], new ArrayList<>()));
+            for(Map<String, Object> resultElement: result){
+                for(String key: indexResults.keySet()){
+                    indexResults.get(key).add((String) resultElement.get(key));
+                }
+            }
+            for(String key: indexResults.keySet()){
+                results.put(key, indexResults.get(key).toArray(new String[indexResults.size()]));
+            }
+        }
+        return results;
+    }
+
+    private List<Map<String, Object>> programInfo() throws IOException {
+        /*
+            Properties definition template:
+            String[][] properties = new String[][]{
+                new String[]{ <Return Label>, <ES Index property name>}
+            };
+        */
+        String[][] properties = new String[][]{
+            new String[]{"program_acronym", "program_code_kw"},
+            new String[]{"program_id", "program_id_kw"},
+            new String[]{"program_name", "program_name_kw"},
+            new String[]{"start_date", "start_date"},
+            new String[]{"end_date", "end_date"},
+            new String[]{"pubmed_id", "pubmed_id"},
+            new String[]{"num_studies", "num_studies"},
+            new String[]{"num_subjects", "num_subjects"}
+        };
+        //Generic Query
+        Map<String, Object> query = esService.buildListQuery();
+        Request request = new Request("GET", PROGRAMS_END_POINT);
+        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
     }
 
     private Map<String, Object> searchSubjects(Map<String, Object> params) throws IOException {

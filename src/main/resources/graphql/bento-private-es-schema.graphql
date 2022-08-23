@@ -247,6 +247,24 @@ type SubjectResult {
     program_id: String
 }
 
+type IdsListsES {
+    subjectIds: [String]
+    sampleIds: [String]
+    fileIds: [String]
+    fileNames: [String]
+}
+
+type ProgramInfo {
+    program_acronym: String
+    program_id: String
+    program_name: String
+    start_date: String
+    end_date: String
+    pubmed_id: String
+    num_studies: Int
+    num_subjects: Int
+}
+
 schema {
     query: QueryType
 }
@@ -363,4 +381,8 @@ type QueryType {
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
+
+    idsLists: IdsListsES
+
+    programInfo: [ProgramInfo]
 }

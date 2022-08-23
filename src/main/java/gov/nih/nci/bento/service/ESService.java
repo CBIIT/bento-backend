@@ -98,6 +98,10 @@ public class ESService {
         return buildListQuery(params, excludedParams, false);
     }
 
+    public Map<String, Object> buildListQuery() {
+        return buildListQuery(Map.of(), Set.of(), true);
+    }
+
     public Map<String, Object> buildListQuery(Map<String, Object> params, Set<String> excludedParams, boolean ignoreCase) {
         Map<String, Object> result = new HashMap<>();
 

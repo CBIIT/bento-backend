@@ -1,20 +1,3 @@
-#- name: create docker build directory
-#  file: 
-#    path: "{{ workspace }}/build"
-#    state : directory
-#
-#- name: copy  nginx conf
-#  copy:
-#    remote_src: yes
-#    src: "{{ workspace }}/icdc-devops/docker/dockerfiles/nginx.conf"
-#    dest: "{{ container_build_path }}/nginx.conf"
-#
-#- name: copy entrypoint.sh to workspace
-#  copy:
-#    src: "nginx-entrypoint.sh"
-#    dest: "{{ container_build_path }}/nginx-entrypoint.sh"
-#    mode: 0755
-
 - name: run npm install in {{ workspace }}/{{ project_name }}-frontend/
   command: "{{ item }}"
   args:
@@ -61,13 +44,11 @@
   copy:
     remote_src: yes
     src: "{{ dockerfile_path }}"
-    #dest: "{{ container_build_path }}/Dockerfile"
     dest: "{{ workspace }}/build/Dockerfile"
 
 - name: build {{ project_name }}-{{container_name}} image
   community.docker.docker_image:
     build:
-      #path: "{{ container_build_path }}"
       path: "{{ workspace }}/build"
       pull: yes
       nocache: yes

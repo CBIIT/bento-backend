@@ -40,8 +40,8 @@
             Retry_Limit: "2"
     launch_type: FARGATE
     network_mode: awsvpc
-    execution_role_arn: "arn:aws:iam::{{ account }}:role/{{ project_name }}-{{ tier }}-task-execution-role"
-    task_role_arn: "arn:aws:iam::{{ account }}:role/{{ project_name }}-{{ tier }}-task-role"
+    execution_role_arn: "arn:aws:iam::{{ account }}:role/{{ execution_role }}"
+    task_role_arn: "arn:aws:iam::{{ account }}:role/{{ task_role }}"
     family: "{{ project_name }}-{{ tier }}-{{ container_name }}"
     memory: "{{ container_memory }}"
     cpu: "{{ container_cpu }}"

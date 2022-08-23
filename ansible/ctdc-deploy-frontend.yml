@@ -39,11 +39,12 @@
         region: us-east-1
         container_name: "frontend"
         frontend_version: "{{ lookup('env','FE_VERSION') }}"
-        #frontend_branch: "{{ lookup('env','FE_BRANCH') }}"
         backend_version: "{{ lookup('env','BE_VERSION') }}"
         image_version: "{{ frontend_version }}"
         tier: "{{ lookup('env','TIER') }}"
         ecs_cluster_name: "{{ project_name }}-{{ tier }}"
+        execution_role: "power-user-ctdc-ecs-task-execution-role-dev"
+        task_role: "power-user-ctdc-ecs-task-role-dev"
         sumo_collector_endpoint: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_endpoint', nested=true, region='us-east-1' ) }}"
         sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_token_fe', nested=true, region='us-east-1' ) }}"
         container_port: 80

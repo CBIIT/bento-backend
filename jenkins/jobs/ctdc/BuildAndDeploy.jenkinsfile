@@ -103,15 +103,15 @@ pipeline {
 			TIER = "${params.Environment}"
 		}
 		steps {
-//			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-//				ansiblePlaybook(  			
-//					playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-backend.yml', 
-//					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
-//					extraVars: [
-//						project_name: "ctdc"
-//					],
-//					colorized: true)
-//			}
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+				ansiblePlaybook(  			
+					playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-build-backend.yml', 
+					inventory: '${WORKSPACE}/icdc-devops/ansible/hosts',
+					extraVars: [
+						project_name: "ctdc"
+					],
+					colorized: true)
+			}
 		  
 			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
 				ansiblePlaybook(  			
@@ -127,33 +127,33 @@ pipeline {
         }
   	}
 	
-//	stage('deploy'){
-//		environment {
-//			SLACK_URL = "${SLACK_URL}"
-//			TIER = "${params.Environment}"
-//			FE_BRANCH = "${params.Frontend_Tag}"
-//			FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
-//			BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
-//			SLACK_CHANNEL = "#system-alerts"
-//			URL_DOMAIN = "bento-tools.org"
-//		}
-// 		steps{
-//			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-// 				ansiblePlaybook( 
-//          		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-backend.yml', 
-//            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-//					colorized: true)
-// 			}
-//			
-//			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
-//  				ansiblePlaybook( 
-//            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-frontend.yml', 
-//            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
-//					colorized: true)
-// 			}
-//
-//		}
-// 	}
+	stage('deploy'){
+		environment {
+			SLACK_URL = "${SLACK_URL}"
+			TIER = "${params.Environment}"
+			FE_BRANCH = "${params.Frontend_Tag}"
+			FE_VERSION = "${params.Frontend_Tag}-${BUILD_NUMBER}"
+			BE_VERSION = "${params.Backend_Tag}-${BUILD_NUMBER}"
+			SLACK_CHANNEL = "#system-alerts"
+			URL_DOMAIN = "bento-tools.org"
+		}
+ 		steps{
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+ 				ansiblePlaybook( 
+          		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-backend.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+					colorized: true)
+ 			}
+			
+			wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+  				ansiblePlaybook( 
+            		playbook: '${WORKSPACE}/icdc-devops/ansible/ctdc-deploy-frontend.yml', 
+            		inventory: '${WORKSPACE}/icdc-devops/ansible/hosts', 
+					colorized: true)
+ 			}
+
+		}
+ 	}
 	
   }
   

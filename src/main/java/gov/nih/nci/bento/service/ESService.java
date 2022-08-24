@@ -2,16 +2,18 @@ package gov.nih.nci.bento.service;
 
 import com.google.gson.*;
 import gov.nih.nci.bento.model.ConfigurationDAO;
+import gov.nih.nci.bento.model.search.MultipleRequests;
 import gov.nih.nci.bento.service.connector.AWSClient;
 import gov.nih.nci.bento.service.connector.AbstractClient;
 import gov.nih.nci.bento.service.connector.DefaultClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.client.Request;
-import org.opensearch.client.Response;
-import org.opensearch.client.RestClient;
-import org.opensearch.client.RestHighLevelClient;
+import org.jetbrains.annotations.NotNull;
+import org.opensearch.OpenSearchException;
+import org.opensearch.action.search.MultiSearchRequest;
+import org.opensearch.action.search.MultiSearchResponse;
+import org.opensearch.client.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
@@ -26,14 +28,11 @@ public class ESService {
     public static final int MAX_ES_SIZE = 10000;
 
     private static final Logger logger = LogManager.getLogger(RedisService.class);
-
-    private final ConfigurationDAO config;
     private RestClient client;
     private final RestHighLevelClient restHighLevelClient;
     private final Gson gson;
 
     public ESService(ConfigurationDAO config){
-        this.config = config;
         this.gson = new GsonBuilder().serializeNulls().create();
         logger.info("Initializing Elasticsearch client");
         // Base on host name to use signed request (AWS) or not (local)
@@ -56,6 +55,31 @@ public class ESService {
             throw new IOException(msg);
         }
         return getJSonFromResponse(response);
+    }
+
+    public <T> Map<String, T> elasticMultiSend(@NotNull List<MultipleRequests> requests) throws IOException {
+        try {
+            MultiSearchRequest multiRequests = new MultiSearchRequest();
+            requests.forEach(r->multiRequests.add(r.getRequest()));
+
+            MultiSearchResponse response = restHighLevelClient.msearch(multiRequests, RequestOptions.DEFAULT);
+            return getMultiResponse(response.getResponses(), requests);
+        }
+        catch (IOException | OpenSearchException e) {
+            logger.error(e.toString());
+            throw new IOException(e.toString());
+        }
+    }
+
+    private <T> Map<String, T> getMultiResponse(MultiSearchResponse.Item[] response, List<MultipleRequests> requests) {
+        Map<String, T> result = new HashMap<>();
+        final int[] index = {0};
+        List.of(response).forEach(item->{
+            MultipleRequests req = requests.get(index[0]);
+            result.put(req.getName(), (T) req.getTypeMapper().get(item.getResponse()));
+            index[0] += 1;
+        });
+        return result;
     }
 
     public JsonObject getJSonFromResponse(Response response) throws IOException {

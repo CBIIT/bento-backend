@@ -11,7 +11,8 @@
       loop:
         -  community.docker
         #-  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ctdc_troubleshooting
-        -  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ctdc_cloudone
+        #-  git+https://github.com/CBIIT/icdc-devops.git#/ansible/ansible_collections/bento/common/,ctdc_cloudone
+        -  git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,ctdc
 
     #docker login
     - name: ecr login

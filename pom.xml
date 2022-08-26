@@ -193,15 +193,20 @@
 			<version>13.0</version>
 		</dependency>
 
-        <!-- OpenSearch Java High level REST API -->
+        <!-- OpenSearch Java REST API -->
         <!-- https://mvnrepository.com/artifact/org.opensearch.client/opensearch-rest-client -->
         <dependency>
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-rest-client</artifactId>
             <version>1.2.4</version>
         </dependency>
+		<dependency>
+			<groupId>org.opensearch.client</groupId>
+			<artifactId>opensearch-rest-high-level-client</artifactId>
+			<version>2.2.0</version>
+		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.amazonaws.auth/aws-java-sdk -->
+		<!-- https://mvnrepository.com/artifact/com.amazonaws.auth/aws-java-sdk -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>

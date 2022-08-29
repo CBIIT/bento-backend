@@ -145,7 +145,7 @@ pipeline {
 	success {
 
 		script {
-			withCredentials([string(credentialsId: 'git_credential', variable: 'git_token')]) {
+			withCredentials([string(credentialsId: 'git_credential_token', variable: 'git_token')]) {
 				sh label: 'GIT-Tag Downloader', script: '''#!/bin/bash
 				cd ${WORKSPACE}/bento-files
 				gitURL=$(git config remote.origin.url | sed 's|^.*//||')

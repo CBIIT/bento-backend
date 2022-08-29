@@ -23,7 +23,7 @@
       # query
         # Required: field, type
           # type includes elements with term, match, and wildcard
-    # Optional: typeQuery
+    # Optional: typedSearch
       # query: same rules applied as required above
 
 # Return Type

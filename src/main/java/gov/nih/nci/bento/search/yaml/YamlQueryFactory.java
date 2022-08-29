@@ -41,7 +41,7 @@ public class YamlQueryFactory {
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_BENTO.SINGLE).getInputStream());
         Map<String, graphql.schema.DataFetcher> result = new HashMap<>();
-        singleTypeQuery.getQuery().forEach(q->
+        singleTypeQuery.getQueries().forEach(q->
             result.put(q.getName(), env -> createSingleYamlQuery(esService.CreateQueryParam(env), q))
         );
         // Set Group Request API
@@ -54,7 +54,7 @@ public class YamlQueryFactory {
         // Set Global Search Request API
         Yaml globalYaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery globalQuery = globalYaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_BENTO.GLOBAL).getInputStream());
-        globalQuery.getQuery().forEach(q->
+        globalQuery.getQueries().forEach(q->
             result.put(q.getName(), env -> createGlobalYamlQuery(esService.CreateQueryParam(env), q))
         );
         return result;
@@ -67,7 +67,7 @@ public class YamlQueryFactory {
         Yaml yaml = new Yaml(new Constructor(SingleTypeQuery.class));
         SingleTypeQuery singleTypeQuery = yaml.load(new ClassPathResource(Const.YAML_QUERY.FILE_NAMES_ICDC.SINGLE).getInputStream());
         Map<String, graphql.schema.DataFetcher> result = new HashMap<>();
-        singleTypeQuery.getQuery().forEach(q->
+        singleTypeQuery.getQueries().forEach(q->
                 result.put(q.getName(), env -> createSingleYamlQuery(esService.CreateQueryParam(env), q))
         );
         // Set Group Request API
@@ -329,9 +329,9 @@ public class YamlQueryFactory {
     }
 
     private List<QueryBuilder> createGlobalConditionalQueries(QueryParam param, YamlQuery query) {
-        if (query.getFilter().getTypeQuery() == null) return new ArrayList<>();
+        if (query.getFilter().getTypedSearch() == null) return new ArrayList<>();
         List<QueryBuilder> conditionalList = new ArrayList<>();
-        List<YamlGlobalFilterType.GlobalQuerySet> typeQuerySets = query.getFilter().getTypeQuery() ;
+        List<YamlGlobalFilterType.GlobalQuerySet> typeQuerySets = query.getFilter().getTypedSearch() ;
         AtomicReference<String> filterString = new AtomicReference<>("");
         typeQuerySets.forEach(option-> {
             if (option.getOption().equals(Const.YAML_QUERY.QUERY_TERMS.BOOLEAN)) {
@@ -368,7 +368,7 @@ public class YamlQueryFactory {
 
     private BoolQueryBuilder createGlobalQuerySets(QueryParam param, YamlQuery query) {
         BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
-        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilter().getQuery();
+        List<YamlGlobalFilterType.GlobalQuerySet> globalQuerySets = query.getFilter().getSearches();
         // Add Should Query
         globalQuerySets.forEach(globalQuery -> {
             switch (globalQuery.getType()) {

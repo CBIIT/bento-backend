@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class SingleTypeQuery {
 
-    private List<YamlQuery> query;
+    private List<YamlQuery> queries;
 }

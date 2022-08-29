@@ -24,9 +24,9 @@ public class YamlFilter {
     private Set<String> returnAllParameters = new HashSet<>();
 
     // Global Query Sets
-    private List<YamlGlobalFilterType.GlobalQuerySet> query;
+    private List<YamlGlobalFilterType.GlobalQuerySet> searches;
     // Desired type search query; boolean, integer
-    private List<YamlGlobalFilterType.GlobalQuerySet> typeQuery;
+    private List<YamlGlobalFilterType.GlobalQuerySet> typedSearch;
 
     @Data
     public static  class GlobalQuerySet {

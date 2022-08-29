@@ -1,4 +1,4 @@
-query:
+queries:
   - name: globalSearchSubject
     index:
       - subjects
@@ -6,14 +6,14 @@ query:
       type: global
       # Default Sort
       defaultSortField: subject_id_num
-      query:
+      searches:
         - field: subject_id
           type: wildcard
           caseInsensitive: true
         - field: diagnosis_gs
           type: wildcard
           caseInsensitive: true
-      typeQuery:
+      typedSearch:
         - field: age_at_index
           type: term
           option: integer
@@ -26,7 +26,7 @@ query:
       type: global
       # Default Sort
       defaultSortField: subject_id_num
-      query:
+      searches:
         - field: sample_id_gs
           type: wildcard
         - field: sample_anatomic_site_gs
@@ -42,7 +42,7 @@ query:
       type: global
       # Default Sort
       defaultSortField: program_id_kw
-      query:
+      searches:
         - field: program_id
           type: wildcard
         - field: program_code
@@ -58,7 +58,7 @@ query:
       type: global
       # Default Sort
       defaultSortField: study_id_kw
-      query:
+      searches:
         - field: study_id
           type: wildcard
         - field: study_name
@@ -74,7 +74,7 @@ query:
       type: global
       # Default Sort
       defaultSortField: file_id_num
-      query:
+      searches:
         - field: file_id_gs
           type: wildcard
         - field: file_name
@@ -93,7 +93,7 @@ query:
       type: global
       # Default Sort
       selectedField: content.paragraph
-      query:
+      searches:
         - field: content.paragraph
           type: match
     highlight:
@@ -114,7 +114,7 @@ query:
       type: global
       # Default Sort
 #      selectedField:
-      query:
+      searches:
         - field: value.keyword
           type: wildcard
         - field: property_name
@@ -125,7 +125,7 @@ query:
           type: term
         - field: node_name
           type: term
-      typeQuery:
+      typedSearch:
         - field: property_required
           type: match
           option: boolean

@@ -16,7 +16,8 @@ queries:
         - field: age_at_index
           type: term
           option: integer
-    resultType: global
+    result:
+      type: global
   - name: globalSearchSample
     index:
       - samples
@@ -31,7 +32,8 @@ queries:
           type: term
         - field: tissue_type_gs
           type: term
-    resultType: global
+    result:
+      type: global
   - name: globalSearchProgram
     index:
       - programs
@@ -46,7 +48,8 @@ queries:
           type: term
         - field: program_name
           type: wildcard
-    resultType: global
+    result:
+      type: global
   - name: globalSearchStudy
     index:
       - studies
@@ -61,7 +64,8 @@ queries:
           type: term
         - field: study_type
           type: term
-    resultType: global
+    result:
+      type: global
   - name: globalSearchFile
     index:
       - files
@@ -77,7 +81,8 @@ queries:
           caseInsensitive: true
         - field: file_format_gs
           type: term
-    resultType: global
+    result:
+      type: global
   # About Page
   # Always Set offset= 0 and default-size=10000
   - name: globalSearchAbout
@@ -95,7 +100,8 @@ queries:
         - content.paragraph
       preTag: $
       postTag: $
-    resultType: global_about
+    result:
+      type: global_about
   # Multiple ES Index Search
   # Always Set offset= 0 and default-size=10000
   - name: globalSearchModel
@@ -131,4 +137,5 @@ queries:
         - value
         - node_name
       fragmentSize: 1
-    resultType: global_multi_models
+    result:
+      type: global_multi_models

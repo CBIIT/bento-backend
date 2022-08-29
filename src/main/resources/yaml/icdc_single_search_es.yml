@@ -66,7 +66,8 @@ query:
     filter:
       type: table
       defaultSortField: case_id
-    resultType: default
+    result:
+      type: default
 
 #    Change Elasticsearch Schema
   - name: sampleOverview
@@ -75,7 +76,8 @@ query:
     filter:
       type: table
       defaultSortField: sample_ids
-    resultType: default
+    result:
+      type: default
 
   - name: fileOverview
     index:
@@ -88,7 +90,8 @@ query:
         - cases
       dynamicField: case_id
       targetField: all_case_ids
-    resultType: default
+    result:
+      type: default
 
   - name: filesInListDesc
     index:
@@ -97,7 +100,8 @@ query:
       type: table
       sortDirection: desc
       defaultSortField: file_name
-    resultType: default
+    result:
+      type: default
 
   - name: filesInList
     index:
@@ -105,4 +109,5 @@ query:
     filter:
       type: table
       defaultSortField: file_name
-    resultType: default
+    result:
+      type: default

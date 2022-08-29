@@ -270,20 +270,22 @@ public class BentoAutoConfiguration {
 
     private TypeMapper getTypeMapper(QueryParam param, YamlQuery query) {
         // Set Result Type
-        switch (query.getResultType()) {
+        String method = query.getResult().getMethod();
+        switch (query.getResult().getType()) {
             case YAML_QUERY.RESULT_TYPE.DEFAULT:
                 return typeMapper.getList(param.getReturnTypes());
-            case YAML_QUERY.RESULT_TYPE.AGGREGATION:
+            case YAML_QUERY.RESULT_TYPE.GROUP_COUNT:
                 return typeMapper.getAggregate();
             case YAML_QUERY.RESULT_TYPE.INT:
-
-                if (query.getFilter().getMethod().equals("count_bucket_keys")) {
+                if (method.equals("count_bucket_keys")) {
                     return typeMapper.getAggregateTotalCnt();
-                } else if (query.getFilter().getMethod().equals("nested_count")) {
+                } else if (method.equals("nested_count")) {
                     return typeMapper.getNestedAggregateTotalCnt();
                 }
                 throw new IllegalArgumentException("Illegal int return types");
-
+            case Const.YAML_QUERY.RESULT_TYPE.FLOAT:
+                if (query.getResult().getMethod().equals(Const.YAML_QUERY.RESULT_TYPE.SUM_AGG)) return typeMapper.getSumAggregate();
+                throw new IllegalArgumentException("This is an illegal type of int return type value as query configuration file");
             case YAML_QUERY.RESULT_TYPE.RANGE:
                 return typeMapper.getRange();
             case YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:

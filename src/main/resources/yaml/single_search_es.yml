@@ -83,7 +83,8 @@ queries:
       # Declare alternative sort: key, value
       alternativeSort:
         subject_id: subject_id_num
-    resultType: default
+    result:
+      type: default
 
   - name: sampleOverview
     index:
@@ -95,7 +96,8 @@ queries:
       alternativeSort:
         sample_id: sample_id_num
         subject_id: subject_id_num
-    resultType: default
+    result:
+      type: default
 
   - name: fileOverview
     index:
@@ -106,7 +108,8 @@ queries:
       alternativeSort:
         sample_id: sample_id_num
         subject_id: subject_id_num
-    resultType: default
+    result:
+      type: default
 
   - name: fileIDsFromList
     index:
@@ -121,7 +124,8 @@ queries:
         - sample_ids
         - file_names
     # Return as List<String>
-    resultType: str_list
+    result:
+      type: str_list
 
   - name: filesInList
     index:
@@ -132,7 +136,8 @@ queries:
       # Return All Documents If Fields Contained Empty String
       returnAllParameters:
         - file_ids
-    resultType: default
+    result:
+      type: default
 
   - name: findSubjectIdsInList
     index:
@@ -143,4 +148,5 @@ queries:
       # Return All Documents If Fields Contained Empty String
       returnAllParameters:
         - subject_ids
-    resultType: default
+    result:
+      type: default

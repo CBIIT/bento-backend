@@ -104,22 +104,24 @@ public class YamlQueryFactory {
 
     private TypeMapper getReturnType(QueryParam param, YamlQuery query) {
         // Set Result Type
-
-        switch (query.getResultType()) {
+        String method = query.getResult().getMethod();
+        switch (query.getResult().getType()) {
             case Const.YAML_QUERY.RESULT_TYPE.DEFAULT:
                 return typeMapper.getList(param.getReturnTypes());
             case Const.YAML_QUERY.RESULT_TYPE.ICDC_AGGREGATION:
                 return typeMapper.getICDCAggregate();
-            case Const.YAML_QUERY.RESULT_TYPE.AGGREGATION:
+            case Const.YAML_QUERY.RESULT_TYPE.GROUP_COUNT:
                 return typeMapper.getAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.INT:
-                if (query.getFilter().getMethod().equals("count_bucket_keys")) {
+                if (method.equals("count_bucket_keys")) {
                     return typeMapper.getAggregateTotalCnt();
-                } else if (query.getFilter().getMethod().equals("nested_count")) {
+                } else if (method.equals("nested_count")) {
                     return typeMapper.getNestedAggregateTotalCnt();
                 }
-                throw new IllegalArgumentException("This is an illegal type of int return type value as query configuration file");
-
+                throw new IllegalArgumentException("Automatic GraphQL mapper: Illegal int return types");
+            case Const.YAML_QUERY.RESULT_TYPE.FLOAT:
+                if (query.getResult().getMethod().equals(Const.YAML_QUERY.RESULT_TYPE.SUM_AGG)) return typeMapper.getSumAggregate();
+                throw new IllegalArgumentException("Automatic GraphQL mapper: Illegal float return types");
             case Const.YAML_QUERY.RESULT_TYPE.RANGE:
                 return typeMapper.getRange();
             case Const.YAML_QUERY.RESULT_TYPE.ARM_PROGRAM:
@@ -151,8 +153,6 @@ public class YamlQueryFactory {
                 return typeMapper.getIntTotalNestedAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL_MULTIPLE_MODEL:
                 return typeMapper.getMapWithHighlightedFields(param.getGlobalSearchResultTypes());
-            case Const.YAML_QUERY.RESULT_TYPE.SUM_AGG:
-                return typeMapper.getSumAggregate();
             case Const.YAML_QUERY.RESULT_TYPE.EMPTY:
                 return response -> 0;
             default:

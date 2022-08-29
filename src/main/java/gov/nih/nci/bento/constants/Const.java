@@ -49,7 +49,7 @@ public class Const {
             public static final String DEFAULT = "default";
             // TODO Tobe deleted
             public static final String ICDC_AGGREGATION = "icdc_aggregation";
-            public static final String AGGREGATION = "aggregation";
+            public static final String GROUP_COUNT = "group_count";
             public static final String INT = "int";
             public static final String RANGE = "range";
             public static final String ARM_PROGRAM = "arm_program";
@@ -68,6 +68,7 @@ public class Const {
             public static final String ICDC_NESTED_LIST = "icdc_nested_list";
             public static final String ICDC_ARM_PROGRAM = "icdc_arm_program";
             public static final String EMPTY = "empty";
+            public static final String FLOAT = "float";
         }
     }
 

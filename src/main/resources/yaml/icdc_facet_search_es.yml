@@ -8,22 +8,25 @@ queries:
         # Get total number of documents in ES index
         selectedField: study
         type: aggregation
+      result:
+        type: int
         method: count_bucket_keys
-      resultType: int
     - name: numberOfCases
       index:
         - cases
       filter:
         # Get total number of documents in ES index
         type: default
-      resultType: int_total_count
+      result:
+        type: int_total_count
     - name: numberOfSamples
       index:
         - samples
       filter:
         # Get total number of documents in ES index
         type: default
-      resultType: int_total_count
+      result:
+        type: int_total_count
     - name: numberOfFiles
       index:
         - files
@@ -35,7 +38,8 @@ queries:
           - cases
         dynamicField: case_id
         targetField: all_case_ids
-      resultType: int_total_count
+      result:
+        type: int_total_count
 #      TODO WITHOUT Access CODE
     - name: filterCaseCountByStudyCode
       index:
@@ -44,7 +48,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: study_code
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
 # TODO change selected_field
 
     - name: numberOfStudyFiles
@@ -58,8 +63,9 @@ queries:
           - cases
         dynamicField: case_id
         targetField: all_case_ids
+      result:
+        type: int
         method: count_bucket_keys
-      resultType: int
     - name: numberOfPrograms
       index:
         - cases
@@ -69,6 +75,9 @@ queries:
         nestedParameters:
           - program
         nestedPath: program_info
+      result:
+        type: int
+        method: nested_count
       resultType: nested_int_total_count
     - name: numberOfAliquots
       index:
@@ -76,7 +85,8 @@ queries:
       filter:
         # Get total number of documents in ES index
         type: default
-      resultType: empty
+      result:
+        type: empty
     - name: volumeOfData
       index:
         - files
@@ -88,28 +98,33 @@ queries:
           - cases
         dynamicField: case_id
         targetField: all_case_ids
-      resultType: sum
+      result:
+        type: float
+        method: sum
     - name: caseCountByGender
       index:
         - cases
       filter:
         type: aggregation
         selectedField: sex
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByBreed
       index:
         - cases
       filter:
         type: aggregation
         selectedField: breed
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByBiobank
       index:
         - cases
       filter:
         type: aggregation
         selectedField: biobank
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByBiobank
       index:
         - cases
@@ -117,21 +132,24 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: biobank
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByNeuteredStatus
       index:
         - cases
       filter:
         type: aggregation
         selectedField: neutered_status
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByStageOfDisease
       index:
         - cases
       filter:
         type: aggregation
         selectedField: stage_of_disease
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByDiseaseSite
       index:
         - cases
@@ -145,7 +163,8 @@ queries:
       filter:
         type: aggregation
         selectedField: diagnosis
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
 
     - name: filterCaseCountByProgram
       index:
@@ -157,7 +176,8 @@ queries:
         nestedPath: program_info
         nestedParameters:
           - program
-      resultType: icdc_nested_list
+      result:
+        type: icdc_nested_list
     - name: filterCaseCountByStudyType
       index:
         - cases
@@ -173,7 +193,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: diagnosis
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByBreed
       index:
         - cases
@@ -181,7 +202,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: breed
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByDiseaseSite
       index:
         - cases
@@ -189,7 +211,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: disease_site
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByStageOfDisease
       index:
         - cases
@@ -197,7 +220,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: stage_of_disease
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByResponseToTreatment
       index:
         - cases
@@ -205,7 +229,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: response_to_treatment
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountBySex
       index:
         - cases
@@ -213,7 +238,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: sex
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByNeuteredStatus
       index:
         - cases
@@ -221,7 +247,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: neutered_status
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountBySampleType
       index:
         - files
@@ -229,7 +256,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: sample_type
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountBySamplePathology
       index:
         - files
@@ -237,7 +265,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: sample_pathology
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountBySampleSite
       index:
         - files
@@ -245,7 +274,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: sample_site
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByFileAssociation
       index:
         - files
@@ -258,7 +288,8 @@ queries:
           - cases
         dynamicField: case_id
         targetField: all_case_ids
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByFileType
       index:
         - files
@@ -271,7 +302,8 @@ queries:
           - cases
         dynamicField: case_id
         targetField: all_case_ids
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByFileFormat
       index:
         - files
@@ -284,7 +316,8 @@ queries:
           - cases
         dynamicField: case_id
         targetField: all_case_ids
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: filterCaseCountByStudyParticipation
       index:
         - cases
@@ -292,7 +325,8 @@ queries:
         type: aggregation
         ignoreSelectedField: true
         selectedField: study_participation
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByProgram
       index:
         - cases
@@ -302,35 +336,40 @@ queries:
         nestedPath: program_info
         nestedParameters:
           - program
-      resultType: icdc_nested_list
+      result:
+        type: icdc_nested_list
     - name: caseCountByStudyCode
       index:
         - cases
       filter:
         type: aggregation
         selectedField: study_code
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByStudyType
       index:
         - cases
       filter:
         type: aggregation
         selectedField: study_type
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByStudyParticipation
       index:
         - cases
       filter:
         type: aggregation
         selectedField: study_participation
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: caseCountByFileFormat
       index:
         - files
       filter:
         type: aggregation
         selectedField: file_format
-      resultType: icdc_aggregation
+      result:
+        type: icdc_aggregation
     - name: programsAndStudies
       index:
         - cases
@@ -340,4 +379,5 @@ queries:
         #        selectedField: program
         subAggSelectedField: study
 #      TODO Duplicate Arm Program
-      resultType: icdc_arm_program
+      result:
+        type: icdc_arm_program

@@ -16,7 +16,6 @@ public class YamlFilter {
     private String nestedPath;
     private Set<String> nestedParameters;
     private String sortDirection;
-    private String method;
     private boolean ignoreSelectedField;
     private boolean caseInsensitive;
     private int size;

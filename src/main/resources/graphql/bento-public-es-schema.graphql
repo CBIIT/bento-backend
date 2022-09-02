@@ -44,5 +44,12 @@ schema {
 }
 
 type QueryType {
+    numberOfPrograms: Int
+    numberOfStudies: Int
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfLabProcedures: Int
+    numberOfFiles: Int
+
     publicGlobalSearch (input: String, first: Int = 10, offset: Int = 0): PublicGlobalSearchResult
 }

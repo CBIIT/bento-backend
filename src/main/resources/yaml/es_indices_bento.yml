@@ -431,6 +431,45 @@ Indices:
         COLLECT(DISTINCT sf.file_name) AS study_file_names
       "
 
+  - index_name: lab_procedures
+    type: neo4j
+    mapping:
+      laboratory_procedure_id:
+        type: keyword
+      laboratory_procedure_type:
+        type: keyword
+      laboratory_procedure_target_type:
+        type: keyword
+      test_name:
+        type: keyword
+      instrument_name:
+        type: keyword
+      instrument_model:
+        type: keyword
+      instrument_version:
+        type: keyword
+      software_name:
+        type: keyword
+      software_version:
+        type: keyword
+      reagent_description:
+        type: keyword
+    cypher_query:
+      "
+        MATCH (lp:laboratory_procedure)
+        RETURN 
+          lp.laboratory_procedure_id AS laboratory_procedure_id,
+          lp.laboratory_procedure_type AS laboratory_procedure_type,
+          lp.laboratory_procedure_target_type AS laboratory_procedure_target_type,
+          lp.test_name AS test_name,
+          lp.instrument_name AS instrument_name,
+          lp.instrument_model AS instrument_model,
+          lp.instrument_version AS instrument_version,
+          lp.software_name AS software_name,
+          lp.software_version AS software_version,
+          lp.reagent_description AS reagent_description
+      "
+
   - index_name: about_page
     type: about_file
     # type mapping for each property of the index

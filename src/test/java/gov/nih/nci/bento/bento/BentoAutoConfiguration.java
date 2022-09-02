@@ -119,8 +119,8 @@ public class BentoAutoConfiguration {
                                 .selectedField(filterType.getSelectedField())
                                 .build())
                         .getSourceFilter();
-            case YAML_QUERY.FILTER.TABLE:
-                return new TableFilter(FilterParam.builder()
+            case YAML_QUERY.FILTER.PAGINATION:
+                return new PaginationFilter(FilterParam.builder()
                         .args(param.getArgs())
                         .queryParam(param)
                         .customOrderBy(getIntCustomOrderBy_Test(param, query))
@@ -162,8 +162,8 @@ public class BentoAutoConfiguration {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilter().getAlternativeSort() == null) return orderKey;
-        Map<String, String> alternativeSortMap = query.getFilter().getAlternativeSort();
+        if (query.getFilter().getAlternativeSortField() == null) return orderKey;
+        Map<String, String> alternativeSortMap = query.getFilter().getAlternativeSortField();
         return alternativeSortMap.getOrDefault(orderKey, "");
     }
 
@@ -272,7 +272,7 @@ public class BentoAutoConfiguration {
         // Set Result Type
         String method = query.getResult().getMethod();
         switch (query.getResult().getType()) {
-            case YAML_QUERY.RESULT_TYPE.DEFAULT:
+            case YAML_QUERY.RESULT_TYPE.OBJECT_ARRAY:
                 return typeMapper.getList(param.getReturnTypes());
             case YAML_QUERY.RESULT_TYPE.GROUP_COUNT:
                 return typeMapper.getAggregate();
@@ -292,7 +292,7 @@ public class BentoAutoConfiguration {
                 return typeMapper.getArmProgram();
             case YAML_QUERY.RESULT_TYPE.INT_TOTAL_COUNT:
                 return typeMapper.getIntTotal();
-            case YAML_QUERY.RESULT_TYPE.STRING_LIST:
+            case YAML_QUERY.RESULT_TYPE.STRING_ARRAY:
                 return typeMapper.getStrList(query.getFilter().getSelectedField());
             case YAML_QUERY.RESULT_TYPE.GLOBAL_ABOUT:
                 return typeMapper.getHighLightFragments(Const.BENTO_FIELDS.CONTENT_PARAGRAPH,

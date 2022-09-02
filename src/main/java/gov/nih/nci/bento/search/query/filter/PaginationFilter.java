@@ -8,9 +8,9 @@ import org.opensearch.search.builder.SearchSourceBuilder;
 import static gov.nih.nci.bento.utility.ElasticUtil.getAlternativeSortType;
 import static gov.nih.nci.bento.utility.ElasticUtil.getSortDirection;
 
-public class TableFilter extends AbstractFilter {
+public class PaginationFilter extends AbstractFilter {
 
-    public TableFilter(FilterParam param) {
+    public PaginationFilter(FilterParam param) {
         super(param);
     }
 

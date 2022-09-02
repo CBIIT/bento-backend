@@ -24,14 +24,14 @@ public class FilterParam {
     private TableParam tableParam;
     private final String nestedPath;
     private final Set<String> nestedParameters;
-    private final Set<String> returnAllParameters;
+    private final Set<String> ignoreIfEmpty;
 
 
     @Builder
     public FilterParam(Map<String, Object> args, String selectedField, String subAggSelectedField,
                        boolean isExcludeFilter, QueryParam queryParam, String defaultSortField, String customOrderBy,
                        boolean isRangeFilter, String nestedPath, Set<String> nestedParameters,
-                       boolean caseInsensitive, int size, Set<String> returnAllParameters, String sortDirection) {
+                       boolean caseInsensitive, int size, Set<String> ignoreIfEmpty, String sortDirection) {
         this.args = args;
         this.selectedField = selectedField;
         this.subAggSelectedField = subAggSelectedField;
@@ -44,7 +44,7 @@ public class FilterParam {
         this.nestedParameters = nestedParameters != null ? nestedParameters : new HashSet<>();
         this.caseInsensitive = caseInsensitive;
         this.size = size;
-        this.returnAllParameters = returnAllParameters;
+        this.ignoreIfEmpty = ignoreIfEmpty;
         this.sortDirection = sortDirection;
         if (queryParam != null) this.tableParam = queryParam.getTableParam();
     }

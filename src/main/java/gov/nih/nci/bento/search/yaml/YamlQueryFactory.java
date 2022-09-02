@@ -106,7 +106,7 @@ public class YamlQueryFactory {
         // Set Result Type
         String method = query.getResult().getMethod();
         switch (query.getResult().getType()) {
-            case Const.YAML_QUERY.RESULT_TYPE.DEFAULT:
+            case Const.YAML_QUERY.RESULT_TYPE.OBJECT_ARRAY:
                 return typeMapper.getList(param.getReturnTypes());
             case Const.YAML_QUERY.RESULT_TYPE.ICDC_AGGREGATION:
                 return typeMapper.getICDCAggregate();
@@ -131,7 +131,7 @@ public class YamlQueryFactory {
                 return typeMapper.getICDCArmProgram();
             case Const.YAML_QUERY.RESULT_TYPE.INT_TOTAL_COUNT:
                 return typeMapper.getIntTotal();
-            case Const.YAML_QUERY.RESULT_TYPE.STRING_LIST:
+            case Const.YAML_QUERY.RESULT_TYPE.STRING_ARRAY:
                 return typeMapper.getStrList(query.getFilter().getSelectedField());
             case Const.YAML_QUERY.RESULT_TYPE.GLOBAL_ABOUT:
                 return typeMapper.getHighLightFragments(query.getFilter().getSelectedField(),
@@ -236,12 +236,12 @@ public class YamlQueryFactory {
                                 .selectedField(filterType.getSelectedField())
                                 .build())
                         .getSourceFilter();
-            case Const.YAML_QUERY.FILTER.TABLE:
-                return new TableFilter(FilterParam.builder()
+            case Const.YAML_QUERY.FILTER.PAGINATION:
+                return new PaginationFilter(FilterParam.builder()
                         .args(args)
                         .queryParam(param)
                         .sortDirection(filterType.getSortDirection())
-                        .returnAllParameters(filterType.getReturnAllParameters())
+                        .ignoreIfEmpty(filterType.getIgnoreIfEmpty())
                         .customOrderBy(getIntCustomOrderBy_Test(param, query))
                         .defaultSortField(filterType.getDefaultSortField())
                         .build()).getSourceFilter();
@@ -264,7 +264,7 @@ public class YamlQueryFactory {
             case Const.YAML_QUERY.FILTER.DEFAULT:
                 return new DefaultFilter(FilterParam.builder()
                         .size(filterType.getSize())
-                        .returnAllParameters(filterType.getReturnAllParameters())
+                        .ignoreIfEmpty(filterType.getIgnoreIfEmpty())
                         .caseInsensitive(filterType.isCaseInsensitive())
                         .args(args).build()).getSourceFilter();
             case Const.YAML_QUERY.FILTER.NESTED:
@@ -390,8 +390,8 @@ public class YamlQueryFactory {
 
     private String getIntCustomOrderBy_Test(QueryParam param, YamlQuery query) {
         String orderKey = param.getTableParam().getOrderBy();
-        if (query.getFilter().getAlternativeSort() == null) return orderKey;
-        Map<String, String> alternativeSortMap = query.getFilter().getAlternativeSort();
+        if (query.getFilter().getAlternativeSortField() == null) return orderKey;
+        Map<String, String> alternativeSortMap = query.getFilter().getAlternativeSortField();
         return alternativeSortMap.getOrDefault(orderKey, "");
     }
 }

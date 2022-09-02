@@ -311,7 +311,7 @@ public class BentoFilterTest {
                                 .source(new DefaultFilter(
                                         FilterParam.builder()
                                                 .args(args)
-                                                .returnAllParameters(conditionFieldSet)
+                                                .ignoreIfEmpty(conditionFieldSet)
                                                 .build())
                                         .getSourceFilter()))
                         .typeMapper(typeMapper.getQueryResult(Set.of(BENTO_FIELDS.SUBJECT_ID))).build()

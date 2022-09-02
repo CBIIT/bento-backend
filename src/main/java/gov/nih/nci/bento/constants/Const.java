@@ -36,7 +36,7 @@ public class Const {
 
         public static class FILTER {
             public static final String AGGREGATION = "aggregation";
-            public static final String TABLE = "table";
+            public static final String PAGINATION = "pagination";
             public static final String RANGE = "range";
             public static final String SUB_AGGREAGATION = "sub_aggregation";
             public static final String DEFAULT = "default";
@@ -46,7 +46,7 @@ public class Const {
         }
 
         public static class RESULT_TYPE {
-            public static final String DEFAULT = "default";
+            public static final String OBJECT_ARRAY = "object_array";
             // TODO Tobe deleted
             public static final String ICDC_AGGREGATION = "icdc_aggregation";
             public static final String GROUP_COUNT = "group_count";
@@ -55,7 +55,7 @@ public class Const {
             public static final String ARM_PROGRAM = "arm_program";
 
             public static final String INT_TOTAL_COUNT = "int_total_count";
-            public static final String STRING_LIST = "str_list";
+            public static final String STRING_ARRAY = "str_array";
             public static final String GLOBAL_ABOUT = "global_about";
             public static final String GLOBAL = "global";
             public static final String GLOBAL_MULTIPLE_MODEL = "global_multi_models";

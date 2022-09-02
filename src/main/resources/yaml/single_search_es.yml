@@ -7,9 +7,9 @@
 # Filter Type
   # - default(filter query in Elasticsearch triggered to filter by graphQL input arguments)
     # Required: selectedField
-  # - table(including pagination)
+  # - pagination(including pagination)
     # Required: none
-    # Optional: defaultSortField, alternativeSort
+    # Optional: defaultSortField, alternativeSortField
   # - aggregation
     # Required: selectedField
     # Optional: filter
@@ -36,14 +36,14 @@
       # on the purpose of total number of documents filtering multiple nested fields
 
 # Return Type
-  # - default @return List<Map<String, Object>>
+  # - object_array @return List<Map<String, Object>>
   # - aggregation @return List<Map<String, Object>>
   # - int @return Integer
   # - range @return Map<String, Object>
     # ex) {lowerBound: 0.00, upperBound: 0.00, subjects: XXX}
   # - arm_program @return List<Map<String, Object>>
   # - int_total_count @return Long
-  # - str_list @return List<String>
+  # - str_array @return List<String>
   # - global_about @return Map<String, Object>
     # ex) {type: about, page: XXXX, title: XXXX, text, XXXX}
   # - global @return Map<String, Object>
@@ -62,8 +62,8 @@
     # Optional: fragmentSize, preTag, postTag, fragmentSize
 
 # Query Pairing Must be Filter Type <-> Return Type
-  # default <-> default, str_list
-  # table <-> default
+  # default <-> object_array, str_array
+  # pagination <-> object_array
   # sub_aggregation <-> arm_program
   # aggregation <-> aggregation, int(int_total_aggregation, int_total_count)
   # range <-> range
@@ -72,44 +72,44 @@
 
 
 # Detailed Explanation
-  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
+  # alternativeSortField: sort desired field alternatively, especially sorting texts containing number
 queries:
   - name: subjectOverview
     index:
       - subjects
     filter:
-      type: table
+      type: pagination
       defaultSortField: subject_id_num
       # Declare alternative sort: key, value
-      alternativeSort:
+      alternativeSortField:
         subject_id: subject_id_num
     result:
-      type: default
+      type: object_array
 
   - name: sampleOverview
     index:
       - samples
     filter:
-      type: table
+      type: pagination
       defaultSortField: sample_id_num
       # Declare alternative sort: key, value
-      alternativeSort:
+      alternativeSortField:
         sample_id: sample_id_num
         subject_id: subject_id_num
     result:
-      type: default
+      type: object_array
 
   - name: fileOverview
     index:
       - files
     filter:
-      type: table
+      type: pagination
       defaultSortField: file_name
-      alternativeSort:
+      alternativeSortField:
         sample_id: sample_id_num
         subject_id: subject_id_num
     result:
-      type: default
+      type: object_array
 
   - name: fileIDsFromList
     index:
@@ -119,22 +119,22 @@ queries:
 #      selectedField: file_id
       selectedField: file_ids
       # Return All Documents If Fields Contained Empty String
-      returnAllParameters:
+      ignoreIfEmpty:
         - subject_ids
         - sample_ids
         - file_names
     # Return as List<String>
     result:
-      type: str_list
+      type: str_array
 
   - name: filesInList
     index:
       - files
     filter:
-      type: table
+      type: pagination
       defaultSortField: file_name
       # Return All Documents If Fields Contained Empty String
-      returnAllParameters:
+      ignoreIfEmpty:
         - file_ids
     result:
       type: default
@@ -146,7 +146,7 @@ queries:
       type: default
       caseInsensitive: true
       # Return All Documents If Fields Contained Empty String
-      returnAllParameters:
+      ignoreIfEmpty:
         - subject_ids
     result:
       type: default

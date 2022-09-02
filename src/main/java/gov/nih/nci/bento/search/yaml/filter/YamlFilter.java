@@ -19,8 +19,8 @@ public class YamlFilter {
     private boolean ignoreSelectedField;
     private boolean caseInsensitive;
     private int size;
-    private Map<String, String> alternativeSort;
-    private Set<String> returnAllParameters = new HashSet<>();
+    private Map<String, String> alternativeSortField;
+    private Set<String> ignoreIfEmpty = new HashSet<>();
 
     // Global Query Sets
     private List<YamlGlobalFilterType.GlobalQuerySet> searches;

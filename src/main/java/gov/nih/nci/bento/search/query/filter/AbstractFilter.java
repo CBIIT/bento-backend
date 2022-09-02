@@ -75,12 +75,12 @@ public abstract class AbstractFilter {
     }
 
     private boolean isDesiredFieldsExisted(Map<String, Object> args, FilterParam param) {
-        Set<String> conditionFieldSet = param.getReturnAllParameters();
+        Set<String> conditionFieldSet = param.getIgnoreIfEmpty();
         return conditionFieldSet != null && conditionFieldSet.size() > 0 && conditionFieldSet.stream().allMatch(item->args.containsKey(item));
     }
 
     private List<List<String>> fillRequiredElements(Map<String, Object> args, FilterParam param) {
-        Set<String> conditionFieldSet = param.getReturnAllParameters();
+        Set<String> conditionFieldSet = param.getIgnoreIfEmpty();
         List<List<String>> values = new ArrayList<>();
         if (conditionFieldSet == null) return values;
         args.forEach((k, v) -> {

@@ -7,9 +7,9 @@
 # Filter Type
   # - default(filter query in Elasticsearch triggered to filter by graphQL input arguments)
     # Required: selectedField
-  # - table(including pagination)
+  # - pagination(including pagination)
     # Required: none
-    # Optional: defaultSortField, alternativeSort
+    # Optional: defaultSortField, alternativeSortField
   # - aggregation
     # Required: selectedField
     # Optional: filter
@@ -27,14 +27,14 @@
       # query: same rules applied as required above
 
 # Return Type
-  # - default @return List<Map<String, Object>>
+  # - object_array @return List<Map<String, Object>>
   # - aggregation @return List<Map<String, Object>>
   # - int @return Integer
   # - range @return Map<String, Object>
     # ex) {lowerBound: 0.00, upperBound: 0.00, subjects: XXX}
   # - arm_program @return List<Map<String, Object>>
   # - int_total_count @return Long
-  # - str_list @return List<String>
+  # - str_array @return List<String>
   # - global_about @return Map<String, Object>
     # ex) {type: about, page: XXXX, title: XXXX, text, XXXX}
   # - global @return Map<String, Object>
@@ -50,64 +50,64 @@
     # Optional: fragmentSize, preTag, postTag, fragmentSize
 
 # Query Pairing Must be Filter Type <-> Return Type
-  # default <-> default, str_list
-  # table <-> default
+  # default <-> object_array, str_array
+  # pagination <-> object_array
   # sub_aggregation <-> arm_program
   # aggregation <-> aggregation, int, int_total_count
   # range <-> range
   # global <-> global, global_multi_models
 
 # Detailed Explanation
-  # alternativeSort: sort desired field alternatively, especially sorting texts containing number
+  # alternativeSortField: sort desired field alternatively, especially sorting texts containing number
 query:
   - name: caseOverview
     index:
       - cases
     filter:
-      type: table
+      type: pagination
       defaultSortField: case_id
     result:
-      type: default
+      type: object_array
 
 #    Change Elasticsearch Schema
   - name: sampleOverview
     index:
       - samples
     filter:
-      type: table
+      type: pagination
       defaultSortField: sample_ids
     result:
-      type: default
+      type: object_array
 
   - name: fileOverview
     index:
       - files
     filter:
-      type: table
+      type: pagination
       defaultSortField: file_name
     dynamicFilter:
       index:
-        - cases
+        - files
       dynamicField: case_id
       targetField: all_case_ids
     result:
-      type: default
+      type: object_array
 
   - name: filesInListDesc
     index:
       - files
     filter:
-      type: table
+      type: pagination
       sortDirection: desc
       defaultSortField: file_name
     result:
-      type: default
+      type: object_array
 
   - name: filesInList
     index:
       - files
     filter:
-      type: table
+      type: pagination
       defaultSortField: file_name
     result:
-      type: default
+      type: object_array

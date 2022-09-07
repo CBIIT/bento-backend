@@ -11,9 +11,9 @@ The following file will need to be edited to configure the Bento Backend Code to
 
 | File Type | Description                            |
 |-----------|----------------------------------------|
-| Single    | request a single query                 |
-| Facet     | request multiple queries at once       |
-| Global    | request a pre-determined global search |
+| Single    | Request a single query                 |
+| Facet     | Request multiple queries at once       |
+| Global    | Request a pre-determined global search |
 
    
 ## TODO Open-search yaml configuration
@@ -41,20 +41,30 @@ Indices:
   - result: Declare Desired Return Type
 
 
-# Filter Type
-| Filter Type     | Description                                                                                                                        |
-|-----------------|------------------------------------------------------------------------------------------------------------------------------------|
-| default         | Search it in the selectedField through Open-search index - Required: selectedField                                                 |
-| aggregation     | Search it to group the summary of documents into buckets <br/>- Required: selectedField <br/> - Optional: filter                   |
-| pagination      | Search it with pagination params including size, offset, and order-by <br/>- Optional: defaultSortField, alternativeSortField      |
-| range           | Search it within numerical boundary <br/>- Required: selectedField<br/> - Optional: filter                                         |
-| sub_aggregation | In addition to aggregation, supporting the summary of each document per bucket <br/>- Required: selectedField, subAggSelectedField |
-| global          | Searches it based on a precise value <br/> - Required: defaultSortField, query<br/> - Optional: typedSearch                        |
-| nested          | Searches it in a nested field objects <br/> - Required: defaultSortField, query<br/> - Optional: nestedParameters                  |
-| sum             | Sum up numerical values from the aggregated search. <br/> - Required: selectedField                                                |
+## Filter Type
+| Filter Type     | Description                                                                                                                                                                                                                                                                                                                                       |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| default         | Search in the selectedField through Open-search index <br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>selectedField</td>  <td>O</td>  <td>select field desc</td></tr> </tbody>  </table>                                                                                                       |
+| aggregation     | Search to group the summary of documents into buckets <br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>selectedField</td>  <td>O</td>  <td>select field desc</td></tr> <tr> <td>ignoreSelectedField</td>  <td>X</td>  <td>select field desc</td></tr></tbody>  </table>                         |
+| pagination      | Search with pagination params including size, offset, and order-by <br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>defaultSortField</td>  <td>X</td>  <td>select field desc</td></tr> <tr> <td>alternativeSortField</td>  <td>X</td>  <td>select field desc</td></tr> </tbody>  </table>       |
+| range           | Search within numerical boundary <br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>selectedField</td>  <td>O</td>  <td>select field desc</td></tr></tbody>  </table>                                                                                                                             |
+| sub_aggregation | In addition to aggregation, grouping the summary of each document per bucket <br/>  <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>selectedField</td>  <td>O</td>  <td>select field desc</td></tr><tr> <td>subAggSelectedField</td>  <td>O</td>  <td>select field desc</td></tr> </tbody>  </table> |
+| global          | Search based on a precise value<br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>defaultSortField</td>  <td>O</td>  <td>ffffff</td></tr> <tr> <td>query</td>  <td>O</td>  <td>query search desc</td></tr> <tr> <td>typedSearch</td>  <td>X</td>  <td>type search des</td></tr></tbody>  </table> |
+| nested          | Searches it in a nested field objects <br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>defaultSortField</td>  <td>O</td>  <td>select field desc</td></tr> <tr> <td>nestedParameters</td>  <td>X</td>  <td>select field desc</td></tr></tbody>  </table> <br/>                                   |
+| sum             | Sum up numerical values from the aggregated search. <br/> <table>  <tbody>  <tr>  <td>Name</td>  <td>Required</td>  <td>Description</td></tr> <tr> <td>selectedField</td>  <td>O</td>  <td>select field desc</td></tr> </tbody>  </table>                                                                                                         |
 
-# Query Configuration Result Type
-| Result Type         | Option                              | Example                                                                  |
+## Global Highlighter
+pre-requisite: In order to use highlight, a filter type must be stored as global
+
+| Name         | Required | Description                                                    |
+|--------------|----------|----------------------------------------------------------------|
+| fields       | O        | Array of fields to highlight                                   |
+| fragmentSize | X        | The size of the highlighted fragment. Default by 1             |
+| preTag       | X        | Use html tag to wrap before the highlighted text. Default by $ |
+| postTag      | X        | Use html tag to wrap after the highlighted text. Default by $  |
+
+## Query Configuration Result Type
+| Result Type         | Optional Method                     | Example                                                                  |
 |---------------------|-------------------------------------|--------------------------------------------------------------------------|
 | object_array        | -                                   | [object, object, object...]                                              |
 | group_count         | -                                   | {boy: 10, girl:20...}                                                    |
@@ -68,7 +78,7 @@ Indices:
 | arm_program         | -                                   | {program: 0, caseSize: 0, children: [{arm: 0, caseSize: 0, size: 0}...]} |
 | empty               | -                                   | 0                                                                        |
 
-# Query Configuration Filter & Result Pair Rule
+## Query Configuration Filter & Result Pair Rule
 | Query Type | Description                                                                                 |
 |------------|---------------------------------------------------------------------------------------------|
 | term       | Searches based on a precise value like an userid or a price<br/> Optional: integer, boolean |
@@ -76,7 +86,8 @@ Indices:
 | wildcard   | Searches items without knowing the exact words                                              |
 
 ## Query pairing
-A filter type must match with a result type
+A filter type must pair with a result type
+
 | Query Type      | Result Type                                              |
 |-----------------|----------------------------------------------------------|
 | default         | object_array, str_array                                  |
@@ -117,42 +128,6 @@ A filter type must match with a result type
     # Optional: nestedParameters
       # nestedParameters: declare number of fields to search. Multiple fields
       # on the purpose of total number of documents filtering multiple nested fields
-
-# Return Type
-# - object_array @return List<Map<String, Object>>
-# - aggregation @return List<Map<String, Object>>
-# - int @return Integer
-# - range @return Map<String, Object>
-    # ex) {lowerBound: 0.00, upperBound: 0.00, subjects: XXX}
-# - arm_program @return List<Map<String, Object>>
-# - int_total_count @return Long
-# - str_array @return List<String>
-# - global_about @return Map<String, Object>
-    # ex) {type: about, page: XXXX, title: XXXX, text, XXXX}
-# - global @return Map<String, Object>
-    # ex) {result: {A: XX, B: X...}, count: 9999}
-# - global_multi_models @return Map<String, Object>
-    #  ex) {result: {A: XX, B: X...}, count: 9999}
-# - global_multi_models @return Map<String, Object>
-# - nested_list @return List<Map<String, Object>>
-# - nested_total @return Integer
-
-# Highlight
-# Pre-requisite: Global Filter Type
-# highlight:
-    # Required: fields
-      # declare list of Strings to highlight
-    # Optional: fragmentSize, preTag, postTag, fragmentSize
-
-# Query Pairing Must be Filter Type <-> Return Type
-# default <-> object_array, str_array
-# pagination <-> object_array
-# sub_aggregation <-> arm_program
-# aggregation <-> aggregation, int(int_total_aggregation, int_total_count)
-# range <-> range
-# global <-> global, global_multi_models
-# nested <-> nested_list, nested_total
-
 
 # Detailed Explanation
 # alternativeSortField: sort desired field alternatively, especially sorting texts containing number

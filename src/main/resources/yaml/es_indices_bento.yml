@@ -14,6 +14,8 @@ Indices:
         type: keyword
       study_acronym:
         type: keyword
+      study_name:
+        type: keyword
       study_short_description:
         type: keyword
       lab_procedures:
@@ -64,8 +66,52 @@ Indices:
         type: keyword
       files:
         type: keyword
-
-
+      gender:
+        type: keyword
+      race:
+        type: keyword
+      ethnicity:
+        type: keyword
+      vital_status:
+        type: keyword
+      nuclear_grade:
+        type: keyword
+      recurrence_score:
+        type: keyword
+      primary_surgical_procedure:
+        type: keyword
+      chemotherapy_regimen_group:
+        type: keyword
+      chemotherapy_regimen:
+        type: keyword
+      endocrine_therapy_type:
+        type: keyword
+      dfs_event_indicator:
+        type: keyword
+      recurrence_free_indicator:
+        type: keyword
+      distant_recurrence_indicator:
+        type: keyword
+      dfs_event_type:
+        type: keyword
+      first_recurrence_type:
+        type: keyword
+      days_to_progression:
+        type: keyword
+      days_to_recurrence:
+        type: keyword
+      test_name:
+        type: keyword
+      num_samples:
+        type: integer
+      num_lab_procedures:
+        type: integer
+      cause_of_death:
+        type: keyword
+      disease_type:
+        type: keyword
+      tumor_largest_dimension_diameter:
+        type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
@@ -75,11 +121,13 @@ Indices:
       MATCH (ss)<-[:sample_of_study_subject]-(samp)
       MATCH (ss)<-[*..2]-(parent)<--(f:file)
       OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+      OPTIONAL MATCH (ss)<--(fu:follow_up)
       RETURN DISTINCT
       p.program_acronym AS programs,
       p.program_id AS program_id,
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       s.study_acronym AS study_acronym,
+      s.study_name AS study_name,
       s.study_short_description AS study_short_description,
       COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
       ss.study_subject_id AS subject_ids,
@@ -94,17 +142,40 @@ Indices:
       d.er_status AS er_status,
       d.pr_status AS pr_status,
       tp.endocrine_therapy_type AS endo_therapies,
+      demo.gender AS gender,
+      demo.race AS race,
+      demo.ethnicity AS ethnicity,
       demo.menopause_status AS  meno_status,
       demo.age_at_index AS age_at_index,
       demo.age_at_index AS age_at_index_gs,
       demo.survival_time AS survival_time,
       demo.survival_time_unit AS survival_time_unit,
+      demo.vital_status AS vital_status,
       COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
       COLLECT(DISTINCT samp.composition) AS composition,
       COLLECT(DISTINCT head(labels(parent))) AS association,
       COLLECT(DISTINCT f.file_type) AS file_type,
       COLLECT(DISTINCT f.file_id) AS files,
-      COLLECT(DISTINCT samp.sample_id) AS samples
+      COLLECT(DISTINCT samp.sample_id) AS samples,
+      demo.cause_of_death AS cause_of_death,
+      d.tumor_largest_dimension_diameter AS tumor_largest_dimension_diameter,
+      ss.disease_type AS disease_type,
+      d.nuclear_grade  AS nuclear_grade,
+      d.recurrence_score AS recurrence_score,
+      tp.primary_surgical_procedure AS primary_surgical_procedure,
+      tp.chemotherapy_regimen_group AS chemotherapy_regimen_group,
+      tp.chemotherapy_regimen AS chemotherapy_regimen,
+      tp.endocrine_therapy_type AS endocrine_therapy_type,
+      fu.dfs_event_indicator AS dfs_event_indicator,
+      fu.recurrence_free_indicator AS recurrence_free_indicator,
+      fu.distant_recurrence_indicator AS distant_recurrence_indicator,
+      fu.dfs_event_type AS dfs_event_type,
+      fu.first_recurrence_type AS first_recurrence_type,
+      fu.days_to_progression AS days_to_progression,
+      fu.days_to_recurrence AS days_to_recurrence,
+      lp.test_name AS test_name,
+      COUNT(DISTINCT samp) AS num_samples,
+      COUNT(DISTINCT lp) AS num_lab_procedures
       "
 
   - index_name: subject_ids
@@ -189,19 +260,17 @@ Indices:
         type: keyword
       association:
         type: keyword
-      file_type:
-        type: keyword
       age_at_index:
         type: integer
-
-
+      sample_type:
+        type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
-      MATCH (ss)<-[:sf_of_study_subject]-(sf)
-      MATCH (ss)<-[:diagnosis_of_study_subject]-(d)<-[:tp_of_diagnosis]-(tp)
-      MATCH (ss)<-[:demographic_of_study_subject]-(demo)
-      MATCH (ss)<-[:sample_of_study_subject]-(samp)
+      MATCH (ss:study_subject)-[:study_subject_of_study]->(s:study)-[:study_of_program]->(p:program)
+      MATCH (ss)<-[:sf_of_study_subject]-(sf:stratification_factor)
+      MATCH (ss)<-[:diagnosis_of_study_subject]-(d:diagnosis)<-[:tp_of_diagnosis]-(tp:therapeutic_procedure)
+      MATCH (ss)<-[:demographic_of_study_subject]-(demo:demographic_data)
+      MATCH (ss)<-[:sample_of_study_subject]-(samp:sample)
       MATCH (samp)<-[*]-(f:file)
       MATCH (parent)<--(f)
       OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
@@ -234,7 +303,7 @@ Indices:
       samp.composition AS composition,
       COLLECT(DISTINCT f.file_id) AS files,
       COLLECT(DISTINCT head(labels(parent))) AS association,
-      COLLECT(DISTINCT f.file_type) AS file_type
+      samp.sample_type AS sample_type
       "
   - index_name: files
     type: neo4j
@@ -373,16 +442,33 @@ Indices:
         type: keyword
       pubmed_id:
         type: keyword
+      program_full_description:
+        type: keyword
+      program_external_url:
+        type: keyword
+      institution_name:
+        type: keyword
       num_studies:
         type: integer
       num_subjects:
         type: integer
+      num_samples:
+        type: integer
+      num_lab_procedures:
+        type: integer
+      num_files:
+        type: integer
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (p:program)
-      OPTIONAL MATCH (p)<--(pf:file)
       OPTIONAL MATCH (p)<--(s:study)
       OPTIONAL MATCH (s)<--(ss:study_subject)
+      OPTIONAL MATCH (ss)<--(samp:sample)
+      OPTIONAL MATCH (p)-->(ins:institution)
+      OPTIONAL MATCH (p)<--(lp:laboratory_procedure)
+      OPTIONAL MATCH (p)<--(program_file:file)
+      OPTIONAL MATCH (s)<--(study_file:file)
+      OPTIONAL MATCH (samp)<--(sample_file:file)
       RETURN DISTINCT
         p.program_acronym AS program_code,
         p.program_acronym AS program_code_kw,
@@ -393,9 +479,15 @@ Indices:
         p.start_date AS start_date,
         p.end_date AS end_date,
         p.pubmed_id AS pubmed_id,
+        p.program_full_description AS program_full_description,
+        p.program_external_url AS program_external_url,
+        ins.institution_name AS institution_name,
         COUNT(DISTINCT s) AS num_studies,
         COUNT(DISTINCT ss) AS num_subjects,
-        COLLECT(DISTINCT pf.file_name) AS program_file_names
+        COUNT(DISTINCT samp) AS num_samples,
+        COUNT(DISTINCT lp) AS num_lab_procedures,
+        COUNT(DISTINCT program_file) + COUNT(DISTINCT study_file) + COUNT(DISTINCT sample_file) AS num_files,
+        COLLECT(DISTINCT program_file.file_name) AS program_file_names
       "
   - index_name: studies
     type: neo4j
@@ -403,8 +495,12 @@ Indices:
     mapping:
       program_id:
         type: search_as_you_type
+      program_id_kw:
+        type: keyword
       study_code:
         type: search_as_you_type
+      study_code_kw:
+        type: keyword
       study_id:
         type: search_as_you_type
       study_id_kw:
@@ -415,20 +511,42 @@ Indices:
         type: search_as_you_type
       study_file_names:
         type: search_as_you_type
-
+      study_full_description:
+        type: keyword
+      study_info:
+        type: keyword
+      num_subjects:
+        type: integer
+      num_files:
+        type: integer
+      num_samples:
+        type: integer
+      num_laboratory_procedures:
+        type: integer
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (s:study)
-      OPTIONAL MATCH (s)<--(sf:file)
       OPTIONAL MATCH (s)-->(p:program)
+      OPTIONAL MATCH (s)<-[:study_subject_of_study]-(ss:study_subject)
+      OPTIONAL MATCH (ss)<-[:sample_of_study_subject]-(samp:sample)
+      OPTIONAL MATCH (s)<-[:file_of_study]-(studyFile:file)
+      OPTIONAL MATCH (samp)<-[:file_of_sample]-(sampleFile:file)-[:file_of_laboratory_procedure]->(lp:laboratory_procedure)
       RETURN DISTINCT
         p.program_id AS program_id,
+        p.program_id AS program_id_kw,
         s.study_id AS study_id,
         s.study_id AS study_id_kw,
         s.study_acronym AS study_code,
+        s.study_acronym AS study_code_kw,
         s.study_name AS study_name,
         s.study_type AS study_type,
-        COLLECT(DISTINCT sf.file_name) AS study_file_names
+        COLLECT(DISTINCT studyFile.file_name) AS study_file_names,
+        s.study_full_description AS study_full_description,
+        s.study_acronym + ': ' + s.study_short_description AS study_info,
+        COUNT(DISTINCT ss) AS num_subjects,
+        COUNT(DISTINCT studyFile) + COUNT(DISTINCT sampleFile) AS num_files,
+        COUNT(DISTINCT samp) AS num_samples,
+        COUNT(DISTINCT lp) AS num_laboratory_procedures
       "
 
   - index_name: about_page

@@ -265,6 +265,116 @@ type ProgramInfo {
     num_subjects: Int
 }
 
+type ProgramDetail {
+    program_acronym: String
+    program_id: String
+    program_name: String
+    program_full_description: String
+    institution_name: String
+    program_external_url: String
+    num_subjects: Int
+    num_files: Int
+    num_samples: Int
+    num_lab_procedures: Int
+    disease_subtypes: [String]
+    studies: [StudyInfo]
+    diagnoses: [GroupCount2]
+}
+
+type StudyInfo {
+    study_acronym: String
+    study_name: String
+    study_full_description: String
+    study_type: String
+    study_info: String
+    num_subjects: Int
+}
+
+type SubjectDetail {
+    subject_id: String
+    program_acronym: String
+    program_id: String
+    study_acronym: String
+    study_name: String
+    gender: String
+    race: String
+    ethnicity: String
+    age_at_index: Int
+    menopause_status: String
+    vital_status: String
+    cause_of_death: String
+    disease_type: String
+    disease_subtype: String
+    tumor_grade: String
+    tumor_largest_dimension_diameter: Float
+    er_status: String
+    pr_status: String
+    nuclear_grade: String
+    recurrence_score: Int
+    primary_surgical_procedure: String
+    chemotherapy_regimen_group: String
+    chemotherapy_regimen: String
+    endocrine_therapy_type: String
+    dfs_event_indicator: String
+    recurrence_free_indicator: String
+    distant_recurrence_indicator: String
+    dfs_event_type: String
+    first_recurrence_type: String
+    days_to_progression: Int
+    days_to_recurrence: Int
+    test_name: String
+    files: [SubjectDetailFile]
+    samples: [SubjectDetailSample]
+    num_samples: Int
+    num_lab_procedures: Int
+}
+
+type SubjectDetailFile {
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
+type SubjectDetailSample {
+    sample_id: String
+    sample_anatomic_site: String
+    composition: String
+    method_of_sample_procurement: String
+    tissue_type: String
+    sample_type: String
+}
+
+type ArmDetail {
+    study_acronym: String
+    study_name: String
+    study_type: String
+    study_full_description: String
+    study_info: String
+    num_subjects: Int
+    num_files: Int
+    num_samples: Int
+    num_lab_procedures: Int
+    diagnoses: [GroupCount2]
+    files: [ArmFile]
+}
+
+type ArmFile {
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_format: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
 schema {
     query: QueryType
 }
@@ -385,4 +495,8 @@ type QueryType {
     idsLists: IdsListsES
 
     programInfo: [ProgramInfo]
+
+    programDetail(program_id: String):  ProgramDetail
+    subjectDetail(subject_id: String): SubjectDetail
+    armDetail(study_acronym: String): ArmDetail
 }

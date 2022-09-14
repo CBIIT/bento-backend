@@ -243,7 +243,8 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                 SUBJECTS_END_POINT, "diagnoses");
         studyResult.put("diagnoses", diagnosesGroupCounts);
         //Add arm files array to result
-        List<Map<String, Object>> filesResultList = esService.collectPage(Map.of("study_acronym", STUDY_ACRONYM), FILES_END_POINT,
+        List<Map<String, Object>> filesResultList = esService.collectPage(
+                Map.of("study_acronym", STUDY_ACRONYM, "association", "study"), FILES_END_POINT,
                 FILES_PROPERTIES);
         studyResult.put("files", filesResultList);
         return studyResult;

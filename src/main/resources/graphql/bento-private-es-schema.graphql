@@ -378,6 +378,8 @@ type QueryType {
         offset: Int = 0
     ): [FileDetail]
 
+    findSubjectIdsInListTest(subject_ids: [String] = []): [SubjectResult]
+
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult

@@ -3,6 +3,7 @@ package gov.nih.nci.bento.model;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import gov.nih.nci.bento.model.search.yaml.YamlQueryFactory;
 import gov.nih.nci.bento.service.ESService;
 import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
@@ -21,15 +22,18 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 public class PrivateESDataFetcher extends AbstractESDataFetcher {
     private static final Logger logger = LogManager.getLogger(PrivateESDataFetcher.class);
+    private final YamlQueryFactory yamlQueryFactory;
 
     public PrivateESDataFetcher(ESService esService) {
         super(esService);
+        yamlQueryFactory = new YamlQueryFactory(esService);
     }
 
     @Override
-    public RuntimeWiring buildRuntimeWiring() {
+    public RuntimeWiring buildRuntimeWiring() throws IOException {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
+                        .dataFetchers(yamlQueryFactory.createYamlQueries())
                         .dataFetcher("searchSubjects", env -> {
                             Map<String, Object> args = env.getArguments();
                             return searchSubjects(args);

@@ -327,7 +327,7 @@ Indices:
     "
 
 
-  - index_name: files
+  - index_name: case_files
     type: neo4j
     # type mapping for each property of the index
 
@@ -455,8 +455,8 @@ Indices:
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (f:file)-->(parent)
-      OPTIONAL MATCH (f)-[*]->(c:case)
+      MATCH (f:file)-[*]->(c:case)
+      MATCH (f)-->(parent)
       OPTIONAL MATCH (f)-->(samp:sample)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
       OPTIONAL MATCH (p:program)<--(s:study)<--(c)
@@ -576,12 +576,22 @@ Indices:
         type: keyword
       file_format:
         type: keyword
-      studyFileIds:
+      file_uuids:
+        type: keyword
+
+      file_name:
+        type: keyword
+      file_description:
+        type: keyword
+      file_size:
+        type: double
+      study_code:
         type: keyword
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (f:file)-->(s:study)<-[*]-(c:case)
+      MATCH (f:file)-->(s:study)
+      OPTIONAL MATCH (s)<-[*]-(c:case)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
       OPTIONAL MATCH (p:program)<--(s)
       OPTIONAL MATCH (c)<--(demo:demographic)
@@ -591,16 +601,13 @@ Indices:
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (c)<--(samp:sample)
       OPTIONAL MATCH (co)-->(a:study_arm)
-      WITH DISTINCT f, c, p, s, a, co, demo, diag, o, i, ci, samp,
-      COLLECT(DISTINCT CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
+      WITH DISTINCT f, c, p, s, a, co, demo, diag, o, i, ci, samp, CASE r.registration_origin WHEN s.clinical_study_designation THEN 'Not Applicable' ELSE r.registration_origin END AS bioB
       return
       p.program_acronym AS program,
       s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
+      s.clinical_study_designation AS study_code,
       s.clinical_study_type AS study_type,
-      CASE registrations
-      WHEN [] THEN ['Not Applicable']
-      ELSE registrations
-      END AS biobank,
+      COLLECT(DISTINCT bioB) AS biobank,
       COLLECT(DISTINCT CASE ci WHEN null THEN 'Single Study' ELSE 'Multiple Study' END) AS study_participation,
       COLLECT(DISTINCT co.cohort_description) AS cohort,
       COLLECT(DISTINCT demo.breed) AS breed,
@@ -616,5 +623,9 @@ Indices:
       'study' AS file_association,
       f.file_type AS file_type,
       f.file_format AS file_format,
-      f.uuid AS studyFileIds
+      f.uuid AS file_uuids,
+      f.file_name as file_name,
+      f.file_description as file_description,
+      f.file_size as file_size
+      ORDER BY file_uuids
     "

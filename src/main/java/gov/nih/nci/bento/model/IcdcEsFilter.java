@@ -31,8 +31,8 @@ public class IcdcEsFilter implements DataFetcher {
     final String CASES_COUNT_END_POINT = "/cases/_count";
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
-    final String FILES_END_POINT = "/files/_search";
-    final String FILES_COUNT_END_POINT = "/files/_count";
+    final String CASE_FILES_END_POINT = "/case_files/_search";
+    final String CASE_FILES_COUNT_END_POINT = "/case_files/_count";
     final String STUDY_FILES_END_POINT = "/study_files/_search";
     final String STUDY_FILES_COUNT_END_POINT = "/study_files/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
@@ -80,9 +80,13 @@ public class IcdcEsFilter implements DataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return sampleOverview(args);
                         })
-                        .dataFetcher("fileOverview", env -> {
+                        .dataFetcher("caseFileOverview", env -> {
                             Map<String, Object> args = env.getArguments();
-                            return fileOverview(args);
+                            return caseFileOverview(args);
+                        })
+                        .dataFetcher("studyFileOverview", env -> {
+                            Map<String, Object> args = env.getArguments();
+                            return studyFileOverview(args);
                         })
                 )
                 .build();
@@ -191,19 +195,19 @@ public class IcdcEsFilter implements DataFetcher {
                 AGG_NAME, "file_association",
                 WIDGET_QUERY, "caseCountByFileAssociation",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileAssociation",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, CASE_FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_type",
                 WIDGET_QUERY, "caseCountByFileType",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileType",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, CASE_FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_format",
                 WIDGET_QUERY, "caseCountByFileFormat",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileFormat",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, CASE_FILES_END_POINT
         ));
 
         List<String> agg_names = new ArrayList<>();
@@ -218,10 +222,10 @@ public class IcdcEsFilter implements DataFetcher {
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
         int numberOfSamples = sampleCountResult.get("count").getAsInt();
 
-        Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
-        fileCountRequest.setJsonEntity(gson.toJson(query));
-        JsonObject fileCountResult = esService.send(fileCountRequest);
-        int numberOfFiles = fileCountResult.get("count").getAsInt();
+        Request caseFileCountRequest = new Request("GET", CASE_FILES_COUNT_END_POINT);
+        caseFileCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject fileCountResult = esService.send(caseFileCountRequest);
+        int numberOfCaseFiles = fileCountResult.get("count").getAsInt();
 
         Request studyFileCountRequest = new Request("GET", STUDY_FILES_COUNT_END_POINT);
         studyFileCountRequest.setJsonEntity(gson.toJson(query));
@@ -246,7 +250,7 @@ public class IcdcEsFilter implements DataFetcher {
         data.put("numberOfStudies", aggs.get("study").size());
         data.put("numberOfCases", numberOfCases);
         data.put("numberOfSamples", numberOfSamples);
-        data.put("numberOfFiles", numberOfFiles);
+        data.put("numberOfFiles", numberOfCaseFiles + numberOfStudyFiles);
         data.put("numberOfStudyFiles", numberOfStudyFiles);
         data.put("numberOfAliquots", 0);
         data.put("volumeOfData", getVolumeOfData(params, "file_size"));
@@ -284,7 +288,7 @@ public class IcdcEsFilter implements DataFetcher {
     private double getVolumeOfData(Map<String, Object> params, String fieldName) throws IOException {
         Map<String, Object> query = esService.buildFacetFilterQuery(params);
         query = esService.addSumAggregation(query, fieldName);
-        Request request = new Request("GET", FILES_END_POINT);
+        Request request = new Request("GET", CASE_FILES_END_POINT);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
         return esService.retrieveSumAgg(jsonObject, fieldName);
@@ -470,7 +474,7 @@ public class IcdcEsFilter implements DataFetcher {
         return overview(SAMPLES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private List<Map<String, Object>> fileOverview(Map<String, Object> params) throws IOException {
+    private List<Map<String, Object>> caseFileOverview(Map<String, Object> params) throws IOException {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name"},
@@ -532,12 +536,44 @@ public class IcdcEsFilter implements DataFetcher {
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),
-                Map.entry("file_uuid", "file_uuid"),
+                Map.entry("file_uuid", "file_uuids"),
                 Map.entry("access_file", "file_size")
         );
 
-        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        return overview(CASE_FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
+
+
+    private List<Map<String, Object>> studyFileOverview(Map<String, Object> params) throws IOException {
+        // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
+        final String[][] PROPERTIES = new String[][]{
+                new String[]{"file_name", "file_name"},
+                new String[]{"file_type", "file_type"},
+                new String[]{"association", "file_association"},
+                new String[]{"file_description", "file_description"},
+                new String[]{"file_format", "file_format"},
+                new String[]{"file_size", "file_size"},
+                new String[]{"study_code", "study_code"},
+                new String[]{"file_uuid", "file_uuids"},
+        };
+
+        String defaultSort = "file_name"; // Default sort order
+
+        Map<String, String> mapping = Map.ofEntries(
+                Map.entry("file_name", "file_name"),
+                Map.entry("file_type", "file_type"),
+                Map.entry("association", "file_association"),
+                Map.entry("file_description", "file_description"),
+                Map.entry("file_format", "file_format"),
+                Map.entry("file_size", "file_size"),
+                Map.entry("study_code", "study_code"),
+                Map.entry("file_uuid", "file_uuids"),
+                Map.entry("access_file", "file_size")
+        );
+
+        return overview(STUDY_FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+    }
+
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
 

@@ -462,22 +462,91 @@ Indices:
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (f:file)-->(parent)
-      OPTIONAL MATCH (f)-->(fs:study)
-      OPTIONAL MATCH (fs)<-[*]-(fc:case)
-      OPTIONAL MATCH (f)-[*]->(c:case)
-      OPTIONAL MATCH (p:program)<--(s:study)<-[*]-(f)
-      WITH DISTINCT f, parent, s, p, COLLECT(DISTINCT fc) + COLLECT(DISTINCT c) AS cases
-      UNWIND cases AS c
-      OPTIONAL MATCH (f)-[*]->(samp:sample)
+      MATCH (f:file)-->(s:study)
+      MATCH (s)<-[*]-(c:case)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+      OPTIONAL MATCH (p:program)<--(s)
       OPTIONAL MATCH (c)<--(demo:demographic)
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)<--(r:registration)
-      OPTIONAL MATCH (c)-->(ci:canine_individual)
+      OPTIONAL MATCH (c)-->(co:cohort)
+      OPTIONAL MATCH (c)<--(samp:sample)
+      OPTIONAL MATCH (co)-->(a:study_arm)
+      WITH DISTINCT f, c, p, s, a, co, demo, diag, samp, o, i,
+        CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS participation,
+        CASE r.registration_origin WHEN s.clinical_study_designation THEN 'Not Applicable' ELSE r.registration_origin END AS bioB
+      return DISTINCT
+        p.program_acronym AS program,
+        s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
+        s.clinical_study_type AS study_type,
+        COLLECT(DISTINCT bioB) AS biobank,
+        COLLECT(DISTINCT participation) AS study_participation,
+        COLLECT(DISTINCT co.cohort_description) AS cohort,
+        COLLECT(DISTINCT demo.breed) AS breed,
+        COLLECT(DISTINCT diag.disease_term) AS diagnosis,
+        COLLECT(DISTINCT diag.primary_disease_site) as disease_site,
+        COLLECT(DISTINCT diag.stage_of_disease) AS stage_of_disease,
+        COLLECT(DISTINCT diag.best_response) AS response_to_treatment,
+        COLLECT(DISTINCT demo.sex) AS sex,
+        COLLECT(DISTINCT demo.neutered_indicator) AS neutered_status,
+        COLLECT(DISTINCT samp.summarized_sample_type) AS sample_type,
+        COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,
+        COLLECT(DISTINCT samp.sample_site) AS sample_site,
+        'study' AS file_association,
+        f.file_type AS file_type,
+        f.file_format AS file_format,
+
+        [] AS case_ids,
+        [] AS sample_ids,
+        f.uuid as file_uuids,
+
+        'study' AS parent_type,
+        'study' AS file_level,
+        f.file_name as file_name,
+        f.file_description as file_description,
+        f.file_size as file_size,
+        s.clinical_study_designation AS study_code,
+        null as physical_sample_type,
+        null as general_sample_pathology,
+        null as tumor_sample_origin,
+        null AS summarized_sample_type,
+        null as specific_sample_pathology,
+        null as date_of_sample_collection,
+        null as tumor_grade,
+        null as sample_chronology,
+        null as percentage_tumor,
+        null as necropsy_sample,
+        null as sample_preservation,
+        null as comment,
+        null as individual_id,
+        null AS patient_age_at_enrollment,
+        null AS neutered_indicator,
+        null AS weight,
+        null as primary_disease_site,
+        null as date_of_diagnosis,
+        null as histology_cytopathology,
+        null as histological_grade,
+        null AS best_response,
+        null as pathology_report,
+        null as treatment_data,
+        null as follow_up_data,
+        null as concurrent_disease,
+        null as concurrent_disease_type,
+        null AS cohort_description,
+        null as arm,
+        [] AS other_cases
+      UNION
+      MATCH (f:file)-[*]->(c:case)
+      MATCH (f)-->(parent)
+      OPTIONAL MATCH (f)-->(samp:sample)
+      OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
+      OPTIONAL MATCH (p:program)<--(s:study)<--(c)
+      OPTIONAL MATCH (c)<--(demo:demographic)
+      OPTIONAL MATCH (c)<--(diag:diagnosis)
+      OPTIONAL MATCH (c)<--(r:registration)
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (co)-->(a:study_arm)
-      WITH DISTINCT f, c, p, s, a, co, demo, diag, o, i, ci, samp, parent,
+      WITH DISTINCT f, c, p, s, a, co, demo, diag, o, i, samp, parent,
         COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
         p.program_acronym AS program,
@@ -487,7 +556,7 @@ Indices:
           WHEN [] THEN ['Not Applicable']
           ELSE registrations
         END AS biobank,
-        CASE ci WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
+        CASE i WHEN null THEN 'Single Study' ELSE 'Multiple Study' END AS study_participation,
         co.cohort_description AS cohort,
         demo.breed AS breed,
         diag.disease_term AS diagnosis,
@@ -507,6 +576,7 @@ Indices:
         samp.sample_id AS sample_ids,
         f.uuid as file_uuids,
 
+        'case' AS file_level,
         head(labels(parent)) AS parent_type,
         f.file_name as file_name,
         f.file_description as file_description,

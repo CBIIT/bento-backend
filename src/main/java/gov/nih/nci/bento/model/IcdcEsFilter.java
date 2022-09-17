@@ -94,125 +94,125 @@ public class IcdcEsFilter implements DataFetcher {
 
     private Map<String, Object> searchCases(Map<String, Object> params) throws IOException {
         final String AGG_NAME = "agg_name";
-        final String AGG_ENDPOINT = "agg_endpoint";
+        final String AGG_ENDPOINTS = "agg_endpoint";
         final String WIDGET_QUERY = "widgetQueryName";
         final String FILTER_COUNT_QUERY = "filterCountQueryName";
 
         // Query related values
-        final List<Map<String, String>> TERM_AGGS = new ArrayList<>();
+        final List<Map<String, Object>> TERM_AGGS = new ArrayList<>();
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "program",
                 WIDGET_QUERY, "caseCountByProgram",
                 FILTER_COUNT_QUERY, "filterCaseCountByProgram",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "study",
                 WIDGET_QUERY, "caseCountByStudyCode",
                 FILTER_COUNT_QUERY, "filterCaseCountByStudyCode",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "study_type",
                 WIDGET_QUERY, "caseCountByStudyType",
                 FILTER_COUNT_QUERY, "filterCaseCountByStudyType",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "biobank",
                 WIDGET_QUERY, "caseCountByBiobank",
                 FILTER_COUNT_QUERY, "filterCaseCountByBiobank",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "study_participation",
                 WIDGET_QUERY, "caseCountByStudyParticipation",
                 FILTER_COUNT_QUERY, "filterCaseCountByStudyParticipation",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "breed",
                 WIDGET_QUERY, "caseCountByBreed",
                 FILTER_COUNT_QUERY, "filterCaseCountByBreed",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "diagnosis",
                 WIDGET_QUERY, "caseCountByDiagnosis",
                 FILTER_COUNT_QUERY, "filterCaseCountByDiagnosis",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "disease_site",
                 WIDGET_QUERY, "caseCountByDiseaseSite",
                 FILTER_COUNT_QUERY, "filterCaseCountByDiseaseSite",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "stage_of_disease",
                 WIDGET_QUERY,"caseCountByStageOfDisease",
                 FILTER_COUNT_QUERY, "filterCaseCountByStageOfDisease",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "response_to_treatment",
                 WIDGET_QUERY,"caseCountByResponseToTreatment",
                 FILTER_COUNT_QUERY, "filterCaseCountByResponseToTreatment",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "sex",
                 WIDGET_QUERY, "caseCountByGender",
                 FILTER_COUNT_QUERY, "filterCaseCountBySex",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "neutered_status",
                 WIDGET_QUERY, "caseCountByNeuteredStatus",
                 FILTER_COUNT_QUERY, "filterCaseCountByNeuteredStatus",
-                AGG_ENDPOINT, CASES_END_POINT
+                AGG_ENDPOINTS, List.of(CASES_END_POINT)
         ));
 
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "sample_site",
                 WIDGET_QUERY, "caseCountBySampleSite",
                 FILTER_COUNT_QUERY, "filterCaseCountBySampleSite",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINTS, List.of(SAMPLES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "sample_type",
                 WIDGET_QUERY, "caseCountBySampleType",
                 FILTER_COUNT_QUERY, "filterCaseCountBySampleType",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINTS, List.of(SAMPLES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "sample_pathology",
                 WIDGET_QUERY, "caseCountBySamplePathology",
                 FILTER_COUNT_QUERY, "filterCaseCountBySamplePathology",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINTS, List.of(SAMPLES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_association",
                 WIDGET_QUERY, "caseCountByFileAssociation",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileAssociation",
-                AGG_ENDPOINT, CASE_FILES_END_POINT
+                AGG_ENDPOINTS, List.of(CASE_FILES_END_POINT, STUDY_FILES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_type",
                 WIDGET_QUERY, "caseCountByFileType",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileType",
-                AGG_ENDPOINT, CASE_FILES_END_POINT
+                AGG_ENDPOINTS, List.of(CASE_FILES_END_POINT, STUDY_FILES_END_POINT)
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_format",
                 WIDGET_QUERY, "caseCountByFileFormat",
                 FILTER_COUNT_QUERY, "filterCaseCountByFileFormat",
-                AGG_ENDPOINT, CASE_FILES_END_POINT
+                AGG_ENDPOINTS, List.of(CASE_FILES_END_POINT, STUDY_FILES_END_POINT)
         ));
 
         List<String> agg_names = new ArrayList<>();
         for (var agg: TERM_AGGS) {
-            agg_names.add(agg.get(AGG_NAME));
+            agg_names.add((String)agg.get(AGG_NAME));
         }
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
@@ -253,42 +253,77 @@ public class IcdcEsFilter implements DataFetcher {
         data.put("numberOfFiles", numberOfCaseFiles + numberOfStudyFiles);
         data.put("numberOfStudyFiles", numberOfStudyFiles);
         data.put("numberOfAliquots", 0);
-        data.put("volumeOfData", getVolumeOfData(params, "file_size"));
+        double caseFileVolume = getVolumeOfData(params, "file_size", CASE_FILES_END_POINT);
+        double studyFileVolume = getVolumeOfData(params, "file_size", STUDY_FILES_END_POINT);
+        data.put("volumeOfData", caseFileVolume + studyFileVolume);
 
 
         data.put("programsAndStudies", programsAndStudies(params));
 
         // widgets data and facet filter counts
         for (var agg: TERM_AGGS) {
-            String field = agg.get(AGG_NAME);
-            String widgetQueryName = agg.get(WIDGET_QUERY);
-            String filterCountQueryName = agg.get(FILTER_COUNT_QUERY);
-            String endpoint = agg.get(AGG_ENDPOINT);
+            String field = (String)agg.get(AGG_NAME);
+            String widgetQueryName = (String)agg.get(WIDGET_QUERY);
+            String filterCountQueryName = (String)agg.get(FILTER_COUNT_QUERY);
+            List<String> endpoints = (List<String>)agg.get(AGG_ENDPOINTS);
             // subjectCountByXXXX
             List<Map<String, Object>> widgetData;
-            if (endpoint.equals(CASES_END_POINT)) {
-                widgetData = getGroupCountHelper(aggs.get(field));
-                data.put(widgetQueryName, widgetData);
-            } else {
-                widgetData = subjectCountBy(field, params, endpoint);;
-                data.put(widgetQueryName, widgetData);
-            }
-            // filterSubjectCountByXXXX
-            if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
-                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
-                data.put(filterCountQueryName, filterCount);
-            } else {
-                data.put(filterCountQueryName, widgetData);
+            for (var endpoint: endpoints) {
+                if (endpoint.equals(CASES_END_POINT)) {
+                    widgetData = getGroupCountHelper(aggs.get(field));
+                } else {
+                    widgetData = subjectCountBy(field, params, endpoint);
+                }
+                mergeQueryData(data, widgetQueryName, widgetData);
+                // filterSubjectCountByXXXX
+                if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
+                    List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);
+                    mergeQueryData(data, filterCountQueryName, filterCount);
+                } else {
+                    mergeQueryData(data, filterCountQueryName, widgetData);
+                }
             }
         }
 
         return data;
     }
 
-    private double getVolumeOfData(Map<String, Object> params, String fieldName) throws IOException {
+    // Merge widget data or filter count data from different indexes into one
+    private void mergeQueryData(Map<String, Object> data, String key, List<Map<String, Object>> additionalData) {
+        List<Map<String, Object>> existingList = (List<Map<String, Object>>)data.get(key);
+        Map<String, Integer> newMap = new HashMap<>();
+        if (existingList != null) {
+            for (var entry : existingList) {
+                String group = (String) entry.get("group");
+                int count = (int) entry.get("count");
+                newMap.put(group, count);
+            }
+        }
+
+        for (var entry: additionalData) {
+            String group = (String)entry.get("group");
+            int count = (int)entry.get("count");
+            if (newMap.containsKey(group)) {
+                count += (int)data.get(group);
+            }
+            newMap.put(group, count);
+        }
+        List<Map<String, Object>> newList = new ArrayList<>();
+
+        for (var group: newMap.keySet()){
+            newList.add(Map.of(
+                    "group", group,
+                    "count", newMap.get(group)
+            ));
+        }
+
+        data.put(key, newList);
+    }
+
+    private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
         Map<String, Object> query = esService.buildFacetFilterQuery(params);
         query = esService.addSumAggregation(query, fieldName);
-        Request request = new Request("GET", CASE_FILES_END_POINT);
+        Request request = new Request("GET", indexName);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
         return esService.retrieveSumAgg(jsonObject, fieldName);

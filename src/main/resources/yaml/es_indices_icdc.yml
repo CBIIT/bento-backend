@@ -93,6 +93,7 @@ Indices:
       MATCH (c:case)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
       OPTIONAL MATCH (p:program)<--(s:study)<--(c)
+      OPTIONAL MATCH (s)<--(sf:file)
       OPTIONAL MATCH (c)<--(demo:demographic)
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)<--(r:registration)
@@ -103,6 +104,9 @@ Indices:
       OPTIONAL MATCH (f)-->(parent)
       OPTIONAL MATCH (co)-->(a:study_arm)
       WITH DISTINCT c, p, s, a, co, demo, diag, f, o, i, ci, samp, parent,
+        COLLECT(DISTINCT sf.file_type) AS study_file_types,
+        COLLECT(DISTINCT sf.file_format) AS study_file_formats,
+        COLLECT(DISTINCT CASE sf WHEN null THEN null ELSE 'study' END) AS study_file_association,
         COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
         p.program_acronym AS program,
@@ -129,9 +133,9 @@ Indices:
         COLLECT(DISTINCT samp.specific_sample_pathology) AS sample_pathology,
         COLLECT(DISTINCT samp.sample_site) AS sample_site,
         COLLECT(DISTINCT f.uuid) AS files,
-        COLLECT(DISTINCT head(labels(parent))) AS file_association,
-        COLLECT(DISTINCT f.file_type) AS file_type,
-        COLLECT(DISTINCT f.file_format) AS file_format,
+        COLLECT(DISTINCT head(labels(parent))) + study_file_association AS file_association,
+        COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
+        COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
         COLLECT(DISTINCT o.case_id) AS other_cases,
         i.canine_individual_id as individual_id,
         diag.primary_disease_site as primary_disease_site,
@@ -145,6 +149,7 @@ Indices:
         diag.concurrent_disease_type as concurrent_disease_type,
         a.arm as arm
       "
+
   - index_name: samples
     type: neo4j
     # type mapping for each property of the index
@@ -258,6 +263,7 @@ Indices:
       MATCH (samp:sample)-->(c:case)
       OPTIONAL MATCH (c)-->(i:canine_individual)<--(o:case)
       OPTIONAL MATCH (p:program)<--(s:study)<--(c)
+      OPTIONAL MATCH (s)<--(sf:file)
       OPTIONAL MATCH (c)<--(demo:demographic)
       OPTIONAL MATCH (c)<--(diag:diagnosis)
       OPTIONAL MATCH (c)<--(r:registration)
@@ -267,6 +273,9 @@ Indices:
       OPTIONAL MATCH (f)-->(parent)
       OPTIONAL MATCH (co)-->(a:study_arm)
       WITH DISTINCT c, p, s, a, co, demo, diag, f, o, i, ci, samp, parent,
+        COLLECT(DISTINCT sf.file_type) AS study_file_types,
+        COLLECT(DISTINCT sf.file_format) AS study_file_formats,
+        COLLECT(DISTINCT CASE sf WHEN null THEN null ELSE 'study' END) AS study_file_association,
         COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
       return
         p.program_acronym AS program,
@@ -288,9 +297,9 @@ Indices:
         samp.summarized_sample_type AS sample_type,
         samp.specific_sample_pathology AS sample_pathology,
         samp.sample_site AS sample_site,
-        COLLECT(DISTINCT head(labels(parent))) AS file_association,
-        COLLECT(DISTINCT f.file_type) AS file_type,
-        COLLECT(DISTINCT f.file_format) AS file_format,
+        COLLECT(DISTINCT head(labels(parent))) + study_file_association AS file_association,
+        COLLECT(DISTINCT f.file_type) + study_file_types AS file_type,
+        COLLECT(DISTINCT f.file_format) + study_file_formats AS file_format,
 
         c.case_id AS case_ids,
         samp.sample_id AS sample_ids,
@@ -323,7 +332,6 @@ Indices:
         co.cohort_description AS cohort_description,
         a.arm as arm,
         COLLECT(DISTINCT f.uuid) AS files
-
     "
 
 

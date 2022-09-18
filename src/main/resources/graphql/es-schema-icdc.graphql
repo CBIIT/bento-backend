@@ -66,7 +66,7 @@ type SampleOverviewES {
     arm: String
 }
 
-type CaseFileOverview {
+type FileOverviewES {
     file_name: String
     file_type: String
     association: String
@@ -111,17 +111,6 @@ type CaseFileOverview {
     cohort_description: String
     arm: String
     other_cases: [String]
-}
-
-type StudyFileOverview {
-    file_name: String
-    file_type: String
-    association: String
-    file_description: String
-    file_format: String
-    file_size: Float
-    study_code: String
-    file_uuid: String
 }
 
 type CaseOverviewES2 {
@@ -300,7 +289,8 @@ type QueryType {
         offset: Int = 0
     ): [SampleOverviewES]
 
-    caseFileOverview(
+    fileOverview(
+        file_level: [String] = [],
         case_ids: [String] = [],
         sample_ids: [String] = [],
         file_uuids: [String] = [],
@@ -328,34 +318,5 @@ type QueryType {
         sort_direction: String = "ASC",
         first: Int = 10,
         offset: Int = 0
-    ): [CaseFileOverview]
-
-    studyFileOverview(
-        file_uuids: [String] = [],
-        program: [String] = [],
-        study: [String] = [],
-        study_type: [String] = [],
-        biobank: [String] = [],
-        study_participation: [String] = [],
-        breed: [String] = [],
-        diagnosis: [String] = [],
-        disease_site: [String] = [],
-        stage_of_disease: [String] = [],
-        response_to_treatment: [String] = [],
-        sex: [String] = [],
-        neutered_status: [String] = [],
-
-        sample_site: [String] = [],
-        sample_type: [String] = [],
-        sample_pathology: [String] = [],
-
-        file_association: [String] = [],
-        file_type: [String] = [],
-        file_format: [String] = [],
-        order_by: String = "file_name",
-        sort_direction: String = "ASC",
-        first: Int = 10,
-        offset: Int = 0
-    ): [StudyFileOverview]
-
+    ): [FileOverviewES]
 }

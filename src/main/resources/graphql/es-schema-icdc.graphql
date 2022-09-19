@@ -290,6 +290,7 @@ type QueryType {
     ): [SampleOverviewES]
 
     fileOverview(
+        file_level: [String] = [],
         case_ids: [String] = [],
         sample_ids: [String] = [],
         file_uuids: [String] = [],

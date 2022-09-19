@@ -33,8 +33,6 @@ public class IcdcEsFilter implements DataFetcher {
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
     final String FILES_COUNT_END_POINT = "/files/_count";
-    final String STUDY_FILES_END_POINT = "/study_files/_search";
-    final String STUDY_FILES_COUNT_END_POINT = "/study_files/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
     final String NODES_COUNT_END_POINT = "/model_nodes/_count";
     final String PROPERTIES_END_POINT = "/model_properties/_search";
@@ -223,8 +221,11 @@ public class IcdcEsFilter implements DataFetcher {
         JsonObject fileCountResult = esService.send(fileCountRequest);
         int numberOfFiles = fileCountResult.get("count").getAsInt();
 
-        Request studyFileCountRequest = new Request("GET", STUDY_FILES_COUNT_END_POINT);
-        studyFileCountRequest.setJsonEntity(gson.toJson(query));
+        Request studyFileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
+        Map<String, Object> studyFileParam = new HashMap<>(params);
+        studyFileParam.put("file_level", List.of("study"));
+        Map<String, Object> studyFileQuery = esService.buildFacetFilterQuery(studyFileParam, Set.of(), Set.of("first"));
+        studyFileCountRequest.setJsonEntity(gson.toJson(studyFileQuery));
         JsonObject studyFileCountResult = esService.send(studyFileCountRequest);
         int numberOfStudyFiles = studyFileCountResult.get("count").getAsInt();
 
@@ -249,7 +250,7 @@ public class IcdcEsFilter implements DataFetcher {
         data.put("numberOfFiles", numberOfFiles);
         data.put("numberOfStudyFiles", numberOfStudyFiles);
         data.put("numberOfAliquots", 0);
-        data.put("volumeOfData", getVolumeOfData(params, "file_size"));
+        data.put("volumeOfData", getVolumeOfData(params, "file_size", FILES_END_POINT));
 
 
         data.put("programsAndStudies", programsAndStudies(params));
@@ -281,10 +282,10 @@ public class IcdcEsFilter implements DataFetcher {
         return data;
     }
 
-    private double getVolumeOfData(Map<String, Object> params, String fieldName) throws IOException {
+    private double getVolumeOfData(Map<String, Object> params, String fieldName, String indexName) throws IOException {
         Map<String, Object> query = esService.buildFacetFilterQuery(params);
         query = esService.addSumAggregation(query, fieldName);
-        Request request = new Request("GET", FILES_END_POINT);
+        Request request = new Request("GET", indexName);
         request.setJsonEntity(gson.toJson(query));
         JsonObject jsonObject = esService.send(request);
         return esService.retrieveSumAgg(jsonObject, fieldName);
@@ -475,7 +476,7 @@ public class IcdcEsFilter implements DataFetcher {
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"file_name", "file_name"},
                 new String[]{"file_type", "file_type"},
-                new String[]{"association", "parent_type"},
+                new String[]{"association", "file_association"},
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "file_size"},
@@ -524,7 +525,7 @@ public class IcdcEsFilter implements DataFetcher {
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("file_name", "file_name"),
                 Map.entry("file_type", "file_type"),
-                Map.entry("association", "parent_type"),
+                Map.entry("association", "file_association"),
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
@@ -532,7 +533,7 @@ public class IcdcEsFilter implements DataFetcher {
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),
-                Map.entry("file_uuid", "file_uuid"),
+                Map.entry("file_uuid", "file_uuids"),
                 Map.entry("access_file", "file_size")
         );
 

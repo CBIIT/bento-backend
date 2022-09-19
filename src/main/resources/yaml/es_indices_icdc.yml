@@ -494,7 +494,7 @@ Indices:
         f.file_type AS file_type,
         f.file_format AS file_format,
 
-        null AS case_ids,
+        COLLECT(DISTINCT c.case_id) AS case_ids,
         null AS sample_ids,
         f.uuid as file_uuids,
 

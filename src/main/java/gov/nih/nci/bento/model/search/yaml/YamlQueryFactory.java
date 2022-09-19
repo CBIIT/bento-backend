@@ -55,7 +55,10 @@ public class YamlQueryFactory {
             switch (filterType.getType()) {
                 case Const.YAML_QUERY.FILTER.DEFAULT:
                     return new DefaultFilter(FilterParam.builder()
-                            .args(param.getArgs()).build()).getSourceFilter();
+                            .args(param.getArgs())
+                            .caseInsensitive(filterType.isCaseInsensitive())
+                            .ignoreIfEmpty(filterType.getIgnoreIfEmpty()).build())
+                            .getSourceFilter();
                 default:
                     throw new IllegalArgumentException(filterType + " is not correctly declared as a filter type in yaml file. Please, correct it and try again.");
             }

@@ -62,10 +62,6 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                             Map<String, Object> args = env.getArguments();
                             return filesInList(args);
                         })
-                        .dataFetcher("findSubjectIdsInList", env -> {
-                            Map<String, Object> args = env.getArguments();
-                            return findSubjectIdsInList(args);
-                        })
                         .dataFetcher("idsLists", env -> idsLists())
                         .dataFetcher("programInfo", env -> programInfo())
                 )
@@ -578,18 +574,6 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
         }
 
         return range;
-    }
-
-    private List<Map<String, Object>> findSubjectIdsInList(Map<String, Object> params) throws IOException {
-        final String[][] properties = new String[][]{
-                new String[]{"subject_id", "subject_id"},
-                new String[]{"program_id", "program_id"}
-        };
-
-        Map<String, Object> query = esService.buildListQuery(params, Set.of(), true);
-        Request request = new Request("GET", SUBJECT_IDS_END_POINT);
-
-        return esService.collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
     }
 
     private List<Map<String, Object>> filesInList(Map<String, Object> params) throws IOException {

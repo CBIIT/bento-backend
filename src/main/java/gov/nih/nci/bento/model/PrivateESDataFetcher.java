@@ -602,7 +602,8 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                 new String[]{"file_description", "file_description"},
                 new String[]{"file_format", "file_format"},
                 new String[]{"file_size", "file_size"},
-                new String[]{"diagnosis", "diagnoses"}
+                new String[]{"diagnosis", "diagnoses"},
+                new String[]{"acl", "acl"}
         };
 
         String defaultSort = "file_name"; // Default sort order
@@ -618,10 +619,24 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("diagnosis", "diagnoses")
+                Map.entry("diagnosis", "diagnoses"),
+                Map.entry("acl", "acl")
         );
 
-        return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        List<Map<String, Object>> result = overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
+        final String ACL_KEY = "acl";
+        try{
+            for(Map<String, Object> resultElement: result){
+                String acl = (String) resultElement.get(ACL_KEY);
+                String[] acls = acl.replaceAll("\\]|\\[|'|\"", "").split(",");
+                resultElement.put(ACL_KEY, acls);
+            }
+        }
+        catch(ClassCastException | NullPointerException ex){
+            logger.error("Error occurred when splitting acl into String array");
+        }
+
+        return result;
     }
 
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {

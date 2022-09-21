@@ -32,6 +32,8 @@ public abstract class AbstractESDataFetcher {
     protected final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     protected final String FILES_END_POINT = "/files/_search";
     protected final String FILES_COUNT_END_POINT = "/files/_count";
+    protected final String LAB_PROCEDURE_END_POINT = "/lab_procedures/_search";
+    protected final String LAB_PROCEDURE_COUNT_END_POINT = "/lab_procedures/_count";
     protected final String NODES_END_POINT = "/model_nodes/_search";
     protected final String NODES_COUNT_END_POINT = "/model_nodes/_count";
     protected final String PROPERTIES_END_POINT = "/model_properties/_search";

@@ -64,7 +64,7 @@ public abstract class AbstractESDataFetcher {
     }
 
     // abstract methods
-    public abstract RuntimeWiring buildRuntimeWiring();
+    public abstract RuntimeWiring buildRuntimeWiring() throws IOException;
 
     protected Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
         return getSearchCategoriesResult(params, initSearchCategories());

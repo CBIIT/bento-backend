@@ -11,6 +11,15 @@ import java.util.*;
 @Service
 public class TypeMapperImpl implements TypeMapperService {
 
+    public TypeMapper<List<Map<String, Object>>> getList(Set<String> returnTypes) {
+        return (response) -> getMaps(response, returnTypes);
+    }
+
+    @NotNull
+    private List<Map<String, Object>> getMaps(SearchResponse response, Set<String> returnTypes) {
+        return getListHits(response, returnTypes);
+    }
+
     public TypeMapper<QueryResult> getQueryResult(Set<String> returnTypes) {
         return (response) -> getDefaultMaps(response, returnTypes);
     }

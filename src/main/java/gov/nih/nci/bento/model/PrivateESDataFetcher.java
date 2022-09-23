@@ -799,7 +799,7 @@ public class PrivateESDataFetcher extends AbstractESDataFetcher {
                 new String[]{"md5sum", "md5sum"}
         };
 
-        String defaultSort = "file_name"; // Default sort order
+        String defaultSort = "file_names"; // Default sort order
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("study_code", "study_acronym"),

@@ -455,7 +455,7 @@ public class IcdcEsFilter implements DataFetcher {
 
         Map<String, String> mapping = Map.ofEntries(
                 Map.entry("sample_id", "sample_ids"),
-                Map.entry("case_id", "case_id"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("sample_site", "sample_site"),
@@ -529,7 +529,7 @@ public class IcdcEsFilter implements DataFetcher {
                 Map.entry("file_description", "file_description"),
                 Map.entry("file_format", "file_format"),
                 Map.entry("file_size", "file_size"),
-                Map.entry("case_id", "case_id"),
+                Map.entry("case_id", "case_ids"),
                 Map.entry("breed", "breed"),
                 Map.entry("diagnosis", "diagnosis"),
                 Map.entry("study_code", "study_code"),

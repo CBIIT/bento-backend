@@ -1,13 +1,11 @@
 queries:
-  - name: findSubjectIdsInListTest
+  - name: findSubjectIdsInList
     index:
       - subjects
     filter:
       type: default
-# TODO
-#      caseInsensitive: true
-#      # Return All Documents If Fields Contained Empty String
-#      ignoreIfEmpty:
-#        - subject_ids
+      caseInsensitive: true
+      ignoreIfEmpty:
+        - subject_ids
     result:
       type: object_array

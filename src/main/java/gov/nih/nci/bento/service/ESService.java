@@ -108,16 +108,7 @@ public class ESService {
             if (excludedParams.contains(key)) {
                 continue;
             }
-            Object obj = params.get(key);
-
-            List<String> valueSet;
-            if (obj instanceof List) {
-                valueSet = (List<String>) obj;
-            } else {
-                String value = (String)obj;
-                valueSet = List.of(value);
-            }
-
+            List<String> valueSet = formatParameter(params.get(key));
             if (ignoreCase) {
                 List<String> lowerCaseValueSet = new ArrayList<>();
                 for (String value: valueSet) {
@@ -180,7 +171,7 @@ public class ESService {
                 }
             } else {
                 // Term parameters (default)
-                List<String> valueSet = (List<String>) params.get(key);
+                List<String> valueSet = formatParameter(params.get(key));
                 if (valueSet.size() > 0) {
                     filter.add(Map.of(
                             "terms", Map.of( key, valueSet)
@@ -317,6 +308,16 @@ public class ESService {
         return jsonObject.get("hits").getAsJsonObject().get("total").getAsJsonObject().get("value").getAsInt();
     }
 
+    public List<Map<String, Object>> collectPage(Map<String, Object> params, String endpoint, String[][] properties) throws IOException {
+        Map<String, Object> query = buildListQuery(params, Set.of(),false);
+        Request request = new Request("GET", endpoint);
+        return collectPage(request, query, properties);
+    }
+
+    public List<Map<String, Object>> collectPage(Request request, Map<String, Object> query, String[][] properties) throws IOException {
+        return collectPage(request, query, properties, ESService.MAX_ES_SIZE, 0);
+    }
+
     public List<Map<String, Object>> collectPage(Request request, Map<String, Object> query, String[][] properties, int pageSize, int offset) throws IOException {
         // data over limit of Elasticsearch, have to use roll API
         if (pageSize > MAX_ES_SIZE) {
@@ -422,6 +423,34 @@ public class ESService {
         return data;
     }
 
+    public List<Map<String, Object>> getFilteredGroupCount(Map<String, Object> params, String endpoint, String aggregationField) throws IOException {
+        return getFilteredGroupCount(params, endpoint, new String[]{aggregationField});
+    }
+
+    public List<Map<String, Object>> getFilteredGroupCount(Map<String, Object> params, String endpoint, String[] aggregationFields) throws IOException {
+        Map<String, Object> query = buildFacetFilterQuery(params);
+        query = addAggregations(query, aggregationFields);
+        Request request = new Request("GET", endpoint);
+        request.setJsonEntity(gson.toJson(query));
+        JsonObject result = send(request);
+        List<Map<String, Object>> groupCounts = new ArrayList<>();
+        JsonArray buckets = result
+                .getAsJsonObject("aggregations")
+                .getAsJsonObject("diagnoses")
+                .getAsJsonArray("buckets");
+        for (JsonElement element: buckets){
+            JsonObject groupCount = element.getAsJsonObject();
+            String group = groupCount.get("key").getAsString();
+            groupCounts.add(
+                    Map.of(
+                            "group", group,
+                            "subjects", groupCount.get("doc_count").getAsInt()
+                    )
+            );
+        }
+        return groupCounts;
+    }
+
     // Convert JsonElement into Java collections and primitives
     private Object getValue(JsonElement element) {
         Object value = null;
@@ -442,5 +471,14 @@ public class ESService {
             value = element.getAsString();
         }
         return value;
+    }
+
+    private List<String> formatParameter(Object param){
+        if (param instanceof List) {
+            return (List<String>) param;
+        } else {
+            String value = (String)param;
+            return List.of(value);
+        }
     }
 }

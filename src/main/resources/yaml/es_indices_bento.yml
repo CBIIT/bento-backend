@@ -24,6 +24,8 @@ Indices:
         type: keyword
       study_acronym:
         type: keyword
+      study_name:
+        type: keyword
       study_short_description:
         type: keyword
       lab_procedures:
@@ -42,8 +44,6 @@ Indices:
         type: keyword
       diagnosis_gs:
         type: search_as_you_type
-      recurrence_score:
-        type: keyword
       rc_scores:
         type: keyword
       tumor_size:
@@ -92,8 +92,52 @@ Indices:
         type: keyword
       files:
         type: keyword
-
-
+      gender:
+        type: keyword
+      race:
+        type: keyword
+      ethnicity:
+        type: keyword
+      vital_status:
+        type: keyword
+      nuclear_grade:
+        type: keyword
+      recurrence_score:
+        type: keyword
+      primary_surgical_procedure:
+        type: keyword
+      chemotherapy_regimen_group:
+        type: keyword
+      chemotherapy_regimen:
+        type: keyword
+      endocrine_therapy_type:
+        type: keyword
+      dfs_event_indicator:
+        type: keyword
+      recurrence_free_indicator:
+        type: keyword
+      distant_recurrence_indicator:
+        type: keyword
+      dfs_event_type:
+        type: keyword
+      first_recurrence_type:
+        type: keyword
+      days_to_progression:
+        type: keyword
+      days_to_recurrence:
+        type: keyword
+      test_name:
+        type: keyword
+      num_samples:
+        type: integer
+      num_lab_procedures:
+        type: integer
+      cause_of_death:
+        type: keyword
+      disease_type:
+        type: keyword
+      tumor_largest_dimension_diameter:
+        type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (ss:study_subject)-[:study_subject_of_study]->(s)-[:study_of_program]->(p)
@@ -103,6 +147,7 @@ Indices:
       MATCH (ss)<-[:sample_of_study_subject]-(samp)
       MATCH (ss)<-[*..2]-(parent)<--(f:file)
       OPTIONAL MATCH (f)-[:file_of_laboratory_procedure]->(lp)
+      OPTIONAL MATCH (ss)<--(fu:follow_up)
       RETURN DISTINCT
       'subject' AS type,
       p.program_acronym AS program,
@@ -113,6 +158,7 @@ Indices:
       (s.study_acronym + ': ' + s.study_short_description) AS studies,
       s.study_acronym AS study,
       s.study_acronym AS study_acronym,
+      s.study_name AS study_name,
       s.study_short_description AS study_short_description,
       COLLECT(DISTINCT lp.laboratory_procedure_id) AS lab_procedures,
       ss.study_subject_id AS subject_id,
@@ -135,18 +181,40 @@ Indices:
       tp.endocrine_therapy_type AS endocrine_therapy,
       tp.endocrine_therapy_type AS endo_therapies,
       demo.menopause_status AS  menopause_status,
+      demo.gender AS gender,
+      demo.race AS race,
+      demo.ethnicity AS ethnicity,
       demo.menopause_status AS  meno_status,
       demo.age_at_index AS age,
       demo.age_at_index AS age_at_index,
       demo.age_at_index AS age_at_index_gs,
       demo.survival_time AS survival_time,
       demo.survival_time_unit AS survival_time_unit,
+      demo.vital_status AS vital_status,
       COLLECT(DISTINCT samp.tissue_type) AS tissue_type,
       COLLECT(DISTINCT samp.composition) AS composition,
       COLLECT(DISTINCT head(labels(parent))) AS association,
       COLLECT(DISTINCT f.file_type) AS file_type,
       COLLECT(DISTINCT f.file_id) AS files,
-      COLLECT(DISTINCT samp.sample_id) AS samples
+      COLLECT(DISTINCT samp.sample_id) AS samples,
+      demo.cause_of_death AS cause_of_death,
+      d.tumor_largest_dimension_diameter AS tumor_largest_dimension_diameter,
+      ss.disease_type AS disease_type,
+      d.nuclear_grade  AS nuclear_grade,
+      tp.primary_surgical_procedure AS primary_surgical_procedure,
+      tp.chemotherapy_regimen_group AS chemotherapy_regimen_group,
+      tp.chemotherapy_regimen AS chemotherapy_regimen,
+      tp.endocrine_therapy_type AS endocrine_therapy_type,
+      fu.dfs_event_indicator AS dfs_event_indicator,
+      fu.recurrence_free_indicator AS recurrence_free_indicator,
+      fu.distant_recurrence_indicator AS distant_recurrence_indicator,
+      fu.dfs_event_type AS dfs_event_type,
+      fu.first_recurrence_type AS first_recurrence_type,
+      fu.days_to_progression AS days_to_progression,
+      fu.days_to_recurrence AS days_to_recurrence,
+      lp.test_name AS test_name,
+      COUNT(DISTINCT samp) AS num_samples,
+      COUNT(DISTINCT lp) AS num_lab_procedures
       "
 
   - index_name: subject_ids

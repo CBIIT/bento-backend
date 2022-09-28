@@ -271,13 +271,14 @@ Indices:
       OPTIONAL MATCH (c)-->(co:cohort)
       OPTIONAL MATCH (f:file)-[*]->(c)
       OPTIONAL MATCH (f)-->(parent)
+      OPTIONAL MATCH (sample_f)-->(samp)
       OPTIONAL MATCH (co)-->(a:study_arm)
-      WITH DISTINCT c, p, s, a, co, demo, diag, f, o, i, ci, samp, parent,
+      WITH DISTINCT c, p, s, a, co, demo, diag, f, sample_f, o, i, ci, samp, parent,
         COLLECT(DISTINCT sf.file_type) AS study_file_types,
         COLLECT(DISTINCT sf.file_format) AS study_file_formats,
         COLLECT(DISTINCT CASE sf WHEN null THEN null ELSE 'study' END) AS study_file_association,
         COLLECT(CASE r.registration_origin WHEN s.clinical_study_designation THEN null ELSE r.registration_origin END) AS registrations
-      return
+      return 
         p.program_acronym AS program,
         s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
         s.clinical_study_type AS study_type,
@@ -331,7 +332,7 @@ Indices:
         diag.concurrent_disease_type as concurrent_disease_type,
         co.cohort_description AS cohort_description,
         a.arm as arm,
-        COLLECT(DISTINCT f.uuid) AS files
+        COLLECT(DISTINCT sample_f.uuid) AS files
     "
 
   - index_name: files

@@ -17,8 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class IndexController {
 
 	private static final Logger logger = LogManager.getLogger(IndexController.class);
-
-	
 	
 	@RequestMapping(value = "/", produces = "text/html")
     public ModelAndView errorHtml(HttpServletRequest request) {

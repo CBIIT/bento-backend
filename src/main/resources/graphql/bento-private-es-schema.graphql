@@ -63,6 +63,7 @@ type FileOverview2 {
     file_format: String
     file_size: Float
     diagnosis: String
+    acl: [String]
 }
 
 type SearchResult {
@@ -231,6 +232,17 @@ type GlobalSearchResult {
     model: [GS_Model]
 }
 
+type PublicGlobalSearchResult {
+    program_count: Int
+    programs: [GS_Program]
+
+    about_count: Int
+    about_page: [GS_About]
+
+    model_count: Int
+    model: [GS_Model]
+}
+
 type SubjectResult {
     subject_id: String
     program_id: String
@@ -352,5 +364,4 @@ type QueryType {
     findSubjectIdsInList(subject_ids: [String] = []): [SubjectResult]
 
     globalSearch (input: String, first: Int = 10, offset: Int = 0): GlobalSearchResult
-
 }

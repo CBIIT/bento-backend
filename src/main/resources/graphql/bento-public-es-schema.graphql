@@ -1,0 +1,48 @@
+type GS_Program {
+    type: String
+    program_id: String
+    program_code: String
+    program_name: String
+}
+
+type GS_Model {
+    type: String
+    node_name: String
+    property_name: String
+    property_description: String
+    property_required: String
+    property_type: String
+    value: String
+    highlight: String
+}
+
+type GS_About {
+    page: String
+    title: String
+    type: String
+    text: String
+}
+
+type PublicGlobalSearchResult {
+    program_count: Int
+    programs: [GS_Program]
+
+    about_count: Int
+    about_page: [GS_About]
+
+    model_count: Int
+    model: [GS_Model]
+
+    study_count: Int
+    subject_count: Int
+    sample_count: Int
+    file_count: Int
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+    publicGlobalSearch (input: String, first: Int = 10, offset: Int = 0): PublicGlobalSearchResult
+}

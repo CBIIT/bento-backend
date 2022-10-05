@@ -304,7 +304,8 @@ Indices:
         type: keyword
       age_at_index:
         type: integer
-
+      acl:
+        type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (ss:study_subject)<-[*..2]-(parent)<--(f:file)
@@ -329,6 +330,7 @@ Indices:
       f.file_format AS file_format_gs,
       f.file_size AS file_size,
       f.md5sum AS md5sum,
+      f.acl AS acl,
       toInteger(split(f.file_id,'-')[2]) AS file_id_num,
       ss.disease_subtype AS diagnoses,
       sf.grouped_recurrence_score AS rc_scores,

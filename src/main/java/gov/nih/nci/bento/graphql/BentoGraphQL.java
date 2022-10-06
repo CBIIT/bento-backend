@@ -3,8 +3,7 @@ package gov.nih.nci.bento.graphql;
 import gov.nih.nci.bento.model.AbstractESDataFetcher;
 import gov.nih.nci.bento.model.AbstractNeo4jDataFetcher;
 import gov.nih.nci.bento.model.ConfigurationDAO;
-import gov.nih.nci.bento.model.IcdcEsFilter;
-import gov.nih.nci.bento.model.PrivateESDataFetcher;
+import gov.nih.nci.bento.model.GmbEsFilter;
 import gov.nih.nci.bento.model.PrivateNeo4jDataFetcher;
 import gov.nih.nci.bento.model.PublicESDataFetcher;
 import gov.nih.nci.bento.model.PublicNeo4jDataFetcher;
@@ -42,21 +41,8 @@ public class BentoGraphQL {
     public BentoGraphQL(ConfigurationDAO config, ESService esService, RedisService redisService) throws IOException {
         PublicNeo4jDataFetcher publicNeo4JDataFetcher = new PublicNeo4jDataFetcher(config, redisService);
         PrivateNeo4jDataFetcher privateNeo4jDataFetcher = new PrivateNeo4jDataFetcher(config, redisService);
-        AbstractESDataFetcher privateESDataFetcher;
+        AbstractESDataFetcher privateESDataFetcher = new GmbEsFilter(esService);
         AbstractESDataFetcher publicESDataFetcher;
-
-        switch (config.getProject()) {
-            case "icdc":
-                privateESDataFetcher = new IcdcEsFilter(esService);
-                break;
-            case "bento":
-                privateESDataFetcher = new PrivateESDataFetcher(esService);
-                break;
-            default:
-                logger.warn("Project \"" + config.getProject() + "\" is not supported! Use default " +
-                        "PrivateESDataFetcher class");
-                privateESDataFetcher = new PrivateESDataFetcher(esService);
-        }
 
         if (config.isEsFilterEnabled()){
             switch (config.getProject()) {

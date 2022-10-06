@@ -10,7 +10,6 @@ import graphql.schema.idl.RuntimeWiring;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.client.Request;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import java.util.regex.Pattern;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-public class GmbEsFilter implements DataFetcher{
+public class GmbEsFilter extends AbstractESDataFetcher {
     private static final Logger logger = LogManager.getLogger(GmbEsFilter.class);
 
     // parameters used in queries
@@ -70,12 +69,13 @@ public class GmbEsFilter implements DataFetcher{
     final Pattern PATTERN = Pattern.compile("[^a-zA-Z\\d\\s]", Pattern.CASE_INSENSITIVE);
 
 
-    @Autowired
-    ESService esService;
-
     private Gson gson = new GsonBuilder().serializeNulls().create();
 
-    @Override
+        public GmbEsFilter(ESService esService) {
+            super(esService);
+        }
+
+        @Override
     public RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type(newTypeWiring("QueryType")
@@ -337,7 +337,8 @@ public class GmbEsFilter implements DataFetcher{
         return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, mapping);
     }
 
-    private Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
+    @Override
+    public Map<String, Object> globalSearch(Map<String, Object> params) throws IOException {
         Map<String, Object> result = new HashMap<>();
         String input = (String) params.get("input");
         int size = (int) params.get("first");
@@ -603,81 +604,6 @@ public class GmbEsFilter implements DataFetcher{
                 "subject_ids", subject_ids
         );
         return result;
-    }
-
-    private List paginate(List org, int pageSize, int offset) {
-        List<Object> result = new ArrayList<>();
-        int size = org.size();
-        if (offset <= size -1) {
-            int end_index = offset + pageSize;
-            if (end_index > size) {
-                end_index = size;
-            }
-            result = org.subList(offset, end_index);
-        }
-        return result;
-    }
-
-    private List<Map<String, String>> searchAboutPage(String input) throws IOException {
-        final String ABOUT_CONTENT = "content.paragraph";
-        Map<String, Object> query = Map.of(
-                "query", Map.of("match", Map.of(ABOUT_CONTENT, input)),
-                "highlight", Map.of(
-                        "fields", Map.of(ABOUT_CONTENT, Map.of()),
-                        "pre_tags", GS_HIGHLIGHT_DELIMITER,
-                        "post_tags", GS_HIGHLIGHT_DELIMITER
-                ),
-                "size", ESService.MAX_ES_SIZE
-        );
-        Request request = new Request("GET", GS_ABOUT_END_POINT);
-        request.setJsonEntity(gson.toJson(query));
-        JsonObject jsonObject = esService.send(request);
-
-        List<Map<String, String>> result = new ArrayList<>();
-
-        for (JsonElement hit: jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray()) {
-            for (JsonElement highlight: hit.getAsJsonObject().get("highlight").getAsJsonObject().get(ABOUT_CONTENT).getAsJsonArray()) {
-                String page = hit.getAsJsonObject().get("_source").getAsJsonObject().get("page").getAsString();
-                String title = hit.getAsJsonObject().get("_source").getAsJsonObject().get("title").getAsString();
-                result.add(Map.of(
-                        GS_CATEGORY_TYPE, GS_ABOUT,
-                        "page", page,
-                        "title", title,
-                        "text", highlight.getAsString()
-                ));
-            }
-        }
-
-        return result;
-    }
-
-    private Map<String, Object> addHighlight(Map<String, Object> query, Map<String, Object> category) {
-        Map<String, Object> result = new HashMap<>(query);
-        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
-        Map<String, Object> highlightClauses = new HashMap<>();
-        for (String searchFieldName: searchFields) {
-            highlightClauses.put(searchFieldName, Map.of());
-        }
-
-        result.put("highlight", Map.of(
-                        "fields", highlightClauses,
-                        "pre_tags", "",
-                        "post_tags", "",
-                        "fragment_size", 1
-                )
-        );
-        return result;
-    }
-
-    private Map<String, Object> getGlobalSearchQuery(String input, Map<String, Object> category) {
-        List<String> searchFields = (List<String>)category.get(GS_SEARCH_FIELD);
-        List<Object> searchClauses = new ArrayList<>();
-        for (String searchFieldName: searchFields) {
-            searchClauses.add(Map.of("match_phrase_prefix", Map.of(searchFieldName, input)));
-        }
-        Map<String, Object> query = new HashMap<>();
-        query.put("query", Map.of("bool", Map.of("should", searchClauses)));
-        return query;
     }
 
 

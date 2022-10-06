@@ -18,26 +18,6 @@ import org.springframework.context.annotation.PropertySource;
 public class ConfigurationDAO {
 	private static final Logger logger = LogManager.getLogger(ConfigurationDAO.class);
 
-	@Autowired
-	private Environment env;
-
-	@Bean
-	public DataFetcher dataFetcher() {
-	    String project = env.getProperty("project", "bento").toLowerCase();
-	    switch (project) {
-			case "icdc":
-				return new IcdcEsFilter();
-			case "gmb":
-				return new GmbEsFilter();
-			case "bento":
-				return new BentoEsFilter();
-			default:
-				logger.warn("Project \"" + project + "\" is not supported! Use default BentoESFilter class");
-				return new BentoEsFilter();
-		}
-	}
-
-
 	//API Version
 	@Value("${bento.api.version}")
 	private String bentoApiVersion;

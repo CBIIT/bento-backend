@@ -224,7 +224,8 @@ public class CdsEsFilter implements DataFetcher {
                 new String[]{"gender", "genders"},
                 new String[]{"site", "site"},
                 new String[]{"samples", "samples"},
-                new String[]{"files", "files"}
+                new String[]{"files", "files"},
+                new String[]{"analyte_type", "analyte_type"}
         };
 
         String defaultSort = "subject_ids"; // Default sort order
@@ -234,7 +235,8 @@ public class CdsEsFilter implements DataFetcher {
                 Map.entry("study_acronym", "studies"),
                 Map.entry("phs_accession", "phs_accession"),
                 Map.entry("gender", "genders"),
-                Map.entry("site", "site")
+                Map.entry("site", "site"),
+                Map.entry("analyte_type", "analyte_type")
         );
 
         return overview(SUBJECTS_END_POINT, params, PROPERTIES, defaultSort, sortFieldMapping);
@@ -297,7 +299,8 @@ public class CdsEsFilter implements DataFetcher {
                 Map.entry("file_type", "file_type"),
                 Map.entry("file_size", "file_size"),
                 Map.entry("file_id", "file_id"),
-                Map.entry("md5sum", "md5sum")
+                Map.entry("md5sum", "md5sum"),
+                Map.entry("analyte_type", "analyte_type")
         );
 
         return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, sortFieldMapping);

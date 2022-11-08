@@ -57,6 +57,7 @@ type SearchResult {
     filterSubjectCountByGender: [GroupCount]
     filterSubjectCountByIsTumor: [GroupCount]
     filterSubjectCountByFileType: [GroupCount]
+    filterSubjectCountByAnalyteType: [GroupCount]
 }
 
 type GroupCount {
@@ -151,6 +152,7 @@ type QueryType {
         experimental_strategies: [String] = [],
         is_tumor: [String] = [],
         accesses: [String] = [],
+        analyte_type: [String] = []
     ): SearchResult
 
     subjectOverview (
@@ -161,6 +163,7 @@ type QueryType {
         experimental_strategies: [String] = [],
         is_tumor: [String] = [],
         accesses: [String] = [],
+        analyte_type: [String] = [],
 
         order_by: String = "",
         sort_direction: String = "ASC",
@@ -177,6 +180,7 @@ type QueryType {
         experimental_strategies: [String] = [],
         is_tumor: [String] = [],
         accesses: [String] = [],
+        analyte_type: [String] = [],
 
         order_by: String = "",
         sort_direction: String = "ASC",
@@ -195,6 +199,7 @@ type QueryType {
         is_tumor: [String] = [],
         accesses: [String] = [],
         phs_accession: [String] = [],
+        analyte_type: [String] = [],
 
         order_by: String = "",
         sort_direction: String = "ASC",

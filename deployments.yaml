@@ -2,10 +2,10 @@ Notes: Jenkins pipeline
 project: cds
 services:
   backend:
-    version: GMB-Develop.101
-    image: GMB-Develop.101
-    buildNumber: '101'
+    version: CDS-Develop.17
+    image: CDS-Develop.17
+    buildNumber: '17'
   frontend:
-    version: develop.78
-    image: develop.78
-    buildNumber: '78'
+    version: develop.23
+    image: develop.23
+    buildNumber: '23'

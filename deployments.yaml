@@ -6,6 +6,6 @@ services:
     image: CDS-Develop.17
     buildNumber: '17'
   frontend:
-    version: develop.24
-    image: develop.24
-    buildNumber: '24'
+    version: develop.25
+    image: develop.25
+    buildNumber: '25'

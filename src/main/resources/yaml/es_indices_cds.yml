@@ -187,7 +187,8 @@ Indices:
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (samp:sample)<--(f:file)
+      MATCH (f:file)
+      OPTIONAL MATCH (samp:sample)<--(f)
       OPTIONAL MATCH (p:participant)<--(samp)
       OPTIONAL MATCH (s:study)<--(p)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
@@ -202,11 +203,9 @@ Indices:
           samp.sample_id AS sample_ids,
           f.file_id AS file_ids,
           f.file_id AS file_id_gs,
-
           samp.sample_id AS sample_id,
           f.file_name AS file_names,
           f.file_name AS file_name_gs,
-
           s.phs_accession AS phs_accession,
           diag.primary_site AS site,
           samp.sample_type AS analyte_type,

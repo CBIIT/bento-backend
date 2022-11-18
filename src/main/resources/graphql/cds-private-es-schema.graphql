@@ -28,10 +28,8 @@ type FileOverview {
     sample_id: String
     experimental_strategy: String
     gender: String
-    site: String
     analyte_type: String
     is_tumor: String
-
     file_name: String
     file_type: String
     file_size: Float

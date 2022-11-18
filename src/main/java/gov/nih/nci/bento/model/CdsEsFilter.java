@@ -31,7 +31,7 @@ public class CdsEsFilter implements DataFetcher {
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
-    final String FILES_COUNT_END_POINT = "/distinct_files/_count";
+    final String FILES_COUNT_END_POINT = "/files/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
     final String NODES_COUNT_END_POINT = "/model_nodes/_count";
     final String PROPERTIES_END_POINT = "/model_properties/_search";
@@ -274,10 +274,8 @@ public class CdsEsFilter implements DataFetcher {
                 new String[]{"phs_accession", "phs_accession"},
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"sample_id", "sample_id"},
-
                 new String[]{"experimental_strategy", "experimental_strategies"},
                 new String[]{"gender", "genders"},
-                new String[]{"site", "site"},
                 new String[]{"analyte_type", "analyte_type"},
                 new String[]{"is_tumor", "is_tumor"},
                 new String[]{"file_name", "file_name"},
@@ -294,7 +292,10 @@ public class CdsEsFilter implements DataFetcher {
                 Map.entry("phs_accession", "phs_accession"),
                 Map.entry("subject_id", "subject_ids"),
                 Map.entry("sample_id", "sample_id"),
-
+                Map.entry("experimental_strategy", "experimental_strategy"),
+                Map.entry("gender", "gender"),
+                Map.entry("analyte_type", "analyte_type"),
+                Map.entry("is_tumor", "is_tumor"),
                 Map.entry("file_name", "file_name"),
                 Map.entry("file_type", "file_type"),
                 Map.entry("file_size", "file_size"),

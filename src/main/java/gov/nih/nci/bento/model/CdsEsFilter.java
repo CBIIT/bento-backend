@@ -300,8 +300,7 @@ public class CdsEsFilter implements DataFetcher {
                 Map.entry("file_type", "file_type"),
                 Map.entry("file_size", "file_size"),
                 Map.entry("file_id", "file_id"),
-                Map.entry("md5sum", "md5sum"),
-                Map.entry("analyte_type", "analyte_type")
+                Map.entry("md5sum", "md5sum")
         );
 
         return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, sortFieldMapping);

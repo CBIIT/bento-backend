@@ -112,7 +112,7 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "experimental_strategies",
                 WIDGET_QUERY, "subjectCountByExperimentalStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByExperimentalStrategy",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "accesses",

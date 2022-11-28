@@ -112,7 +112,7 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "experimental_strategies",
                 WIDGET_QUERY, "subjectCountByExperimentalStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByExperimentalStrategy",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "accesses",
@@ -292,7 +292,7 @@ public class CdsEsFilter implements DataFetcher {
                 Map.entry("phs_accession", "phs_accession"),
                 Map.entry("subject_id", "subject_ids"),
                 Map.entry("sample_id", "sample_id"),
-                Map.entry("experimental_strategy", "experimental_strategy"),
+                Map.entry("experimental_strategy", "experimental_strategies"),
                 Map.entry("gender", "gender"),
                 Map.entry("analyte_type", "analyte_type"),
                 Map.entry("is_tumor", "is_tumor"),
@@ -300,8 +300,7 @@ public class CdsEsFilter implements DataFetcher {
                 Map.entry("file_type", "file_type"),
                 Map.entry("file_size", "file_size"),
                 Map.entry("file_id", "file_id"),
-                Map.entry("md5sum", "md5sum"),
-                Map.entry("analyte_type", "analyte_type")
+                Map.entry("md5sum", "md5sum")
         );
 
         return overview(FILES_END_POINT, params, PROPERTIES, defaultSort, sortFieldMapping);

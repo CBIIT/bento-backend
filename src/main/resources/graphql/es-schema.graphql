@@ -63,6 +63,7 @@ type FileOverview2 {
     file_format: String
     file_size: Float
     diagnosis: String
+    experimental_strategy: String
 }
 
 type SearchResult {

@@ -6,6 +6,6 @@ services:
     image: CDS-Develop.41
     buildNumber: '41'
   frontend:
-    version: 2.0.0.29
-    image: 2.0.0.29
-    buildNumber: '29'
+    version: 2.0.0.31
+    image: 2.0.0.31
+    buildNumber: '31'

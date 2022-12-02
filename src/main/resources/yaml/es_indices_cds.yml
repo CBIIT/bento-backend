@@ -50,7 +50,7 @@ Indices:
       RETURN
           s.study_name AS studies,
           s.data_access_level AS accesses,
-          f.experimental_strategy_and_data_subtypes AS experimental_strategies,
+          collect(DISTINCT f.experimental_strategy_and_data_subtypes) AS experimental_strategies,
           s.phs_accession AS phs_accession,
           p.participant_id AS subject_ids,
           p.gender AS genders,
@@ -115,7 +115,7 @@ Indices:
       RETURN
           s.study_name AS studies,
           s.data_access_level AS accesses,
-          f.experimental_strategy_and_data_subtypes AS experimental_strategies,
+          collect(DISTINCT f.experimental_strategy_and_data_subtypes) AS experimental_strategies,
           p.participant_id AS subject_ids,
           p.gender AS genders,
           samp.sample_tumor_status AS is_tumor,

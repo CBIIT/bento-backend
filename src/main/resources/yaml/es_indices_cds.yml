@@ -20,24 +20,37 @@ Indices:
         type: keyword
       file_types:
         type: keyword
-
       study_gs:
         type: search_as_you_type
       subject_id_gs:
         type: search_as_you_type
       site_gs:
         type: search_as_you_type
-
       phs_accession:
         type: keyword
       analyte_type:
         type: keyword
       site:
         type: keyword
-
       samples:
         type: keyword
       files:
+        type: keyword
+      library_strategies:
+        type: keyword
+      library_sources:
+        type: keyword
+      library_selections:
+        type: keyword
+      library_layouts:
+        type: keyword
+      platforms:
+        type: keyword
+      instrument_models:
+        type: keyword
+      reference_genome_assemblies:
+        type: keyword
+      primary_diagnoses:
         type: keyword
 
 
@@ -47,6 +60,7 @@ Indices:
       OPTIONAL MATCH (p)<--(samp:sample)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
+      OPTIONAL MATCH (f)-->(g:genomic_info)
       RETURN
           s.study_name AS studies,
           s.data_access_level AS accesses,
@@ -56,16 +70,21 @@ Indices:
           p.gender AS genders,
           COLLECT(DISTINCT samp.sample_tumor_status) AS is_tumor,
           COLLECT(DISTINCT f.file_type) AS file_types,
-
           p.participant_id AS subject_id_gs,
           s.study_name AS study_gs,
           COLLECT(DISTINCT diag.primary_site) AS site,
-
           COLLECT(DISTINCT samp.sample_type) AS analyte_type,
           COLLECT(DISTINCT diag.primary_site) AS site_gs,
-
           COLLECT(DISTINCT samp.sample_id) AS samples,
-          COLLECT(DISTINCT f.file_id) AS files
+          COLLECT(DISTINCT f.file_id) AS files,
+          COLLECT(DISTINCT g.library_strategy) AS library_strategies,
+          COLLECT(DISTINCT g.library_source) AS library_sources,
+          COLLECT(DISTINCT g.library_selection) AS library_selections,
+          COLLECT(DISTINCT g.library_layout) AS library_layouts,
+          COLLECT(DISTINCT g.platform) AS platforms,
+          COLLECT(DISTINCT g.instrument_model) AS instrument_models,
+          COLLECT(DISTINCT g.reference_genome_assembly) AS reference_genome_assemblies,
+          COLLECT(DISTINCT diag.primary_diagnosis) AS primary_diagnoses
     "
 
   - index_name: samples
@@ -225,16 +244,28 @@ Indices:
         type: keyword
       study_name:
         type: search_as_you_type
+      study_data_types:
+        type: keyword
+#      acl:
+#        type: keyword
+      number_of_participants:
+        type: integer
+      number_of_samples:
+        type: integer
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (s:study)
+      OPTIONAL MATCH (s)<--(p:participant)
+      OPTIONAL MATCH (p)<--(samp:sample)
       RETURN
         s.study_name AS study_code,
         s.phs_accession AS phs_accession,
         s.phs_accession AS phs_accession_kw,
-        s.study_name AS study_name
-
+        s.study_name AS study_name,
+        s.study_data_types AS study_data_types,
+        COUNT(DISTINCT p) AS number_of_participants,
+        COUNT(DISTINCT samp) AS number_of_samples
     "
 
   - index_name: subject_ids

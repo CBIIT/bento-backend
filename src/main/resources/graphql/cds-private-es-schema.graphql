@@ -44,10 +44,25 @@ type SearchResult {
     numberOfFiles: Int
     numberOfDiseaseSites: Int
 
+    subjectCountByStudy: [GroupCount]
     subjectCountByExperimentalStrategy: [GroupCount]
+    subjectCountByAccess: [GroupCount]
     subjectCountByGender: [GroupCount]
     subjectCountByIsTumor: [GroupCount]
     subjectCountByAnalyteType: [GroupCount]
+    subjectCountByFileType: [GroupCount]
+    subjectCountByDiseaseSite: [GroupCount]
+    subjectCountByLibraryStrategy: [GroupCount]
+    subjectCountByLibrarySource: [GroupCount]
+    subjectCountByLibrarySelection: [GroupCount]
+    subjectCountByLibraryLayout: [GroupCount]
+    subjectCountByPlatform: [GroupCount]
+    subjectCountByInstrumentModel: [GroupCount]
+    subjectCountByReferenceGenomeAssembly: [GroupCount]
+    subjectCountByPrimaryDiagnosis: [GroupCount]
+    subjectCountByPhsAccession: [GroupCount]
+    subjectCountByStudyDataType: [GroupCount]
+    subjectCountByAcl: [GroupCount]
 
     filterSubjectCountByStudy: [GroupCount]
     filterSubjectCountByExperimentalStrategy: [GroupCount]
@@ -56,6 +71,26 @@ type SearchResult {
     filterSubjectCountByIsTumor: [GroupCount]
     filterSubjectCountByFileType: [GroupCount]
     filterSubjectCountByAnalyteType: [GroupCount]
+    filterSubjectCountByDiseaseSite: [GroupCount]
+    filterSubjectCountByLibraryStrategy: [GroupCount]
+    filterSubjectCountByLibrarySource: [GroupCount]
+    filterSubjectCountByLibrarySelection: [GroupCount]
+    filterSubjectCountByLibraryLayout: [GroupCount]
+    filterSubjectCountByPlatform: [GroupCount]
+    filterSubjectCountByInstrumentModel: [GroupCount]
+    filterSubjectCountByReferenceGenomeAssembly: [GroupCount]
+    filterSubjectCountByPrimaryDiagnosis: [GroupCount]
+    filterSubjectCountByPhsAccession: [GroupCount]
+    filterSubjectCountByStudyDataType: [GroupCount]
+    filterSubjectCountByAcl: [GroupCount]
+    filterSubjectCountByNumberOfStudyParticipants: RangeCount
+    filterSubjectCountByNumberOfStudySamples: RangeCount
+}
+
+type RangeCount {
+    lowerBound: Float
+    upperBound: Float
+    subjects: Int
 }
 
 type GroupCount {
@@ -143,25 +178,51 @@ schema {
 
 type QueryType {
     searchSubjects (
-        subject_ids: [String] = [],
-        studies: [String] = [],
+        accesses: [String] = [],
+        acl: [String] = [],
+        experimental_strategies: [String] = [],
         file_types: [String] = [],
         genders: [String] = [],
-        experimental_strategies: [String] = [],
+        instrument_models: [String] = [],
         is_tumor: [String] = [],
-        accesses: [String] = [],
-        analyte_type: [String] = []
+        library_layouts: [String] = [],
+        library_selections: [String] = [],
+        library_sources: [String] = [],
+        library_strategies: [String] = [],
+        number_of_study_participants: [Float] = [],
+        number_of_study_samples: [Float] = [],
+        phs_accession: [String] = [],
+        platforms: [String] = [],
+        primary_diagnoses: [String] = [],
+        reference_genome_assemblies: [String] = [],
+        site: [String] = [],
+        studies: [String] = [],
+        study_data_types: [String] = []
     ): SearchResult
 
     subjectOverview (
         subject_ids: [String] = [],
-        studies: [String] = [],
+
+        accesses: [String] = [],
+        acl: [String] = [],
+        experimental_strategies: [String] = [],
         file_types: [String] = [],
         genders: [String] = [],
-        experimental_strategies: [String] = [],
+        instrument_models: [String] = [],
         is_tumor: [String] = [],
-        accesses: [String] = [],
-        analyte_type: [String] = [],
+        library_layouts: [String] = [],
+        library_selections: [String] = [],
+        library_sources: [String] = [],
+        library_strategies: [String] = [],
+        number_of_study_participants: [Float] = [],
+        number_of_study_samples: [Float] = [],
+        phs_accession: [String] = [],
+        platforms: [String] = [],
+        primary_diagnoses: [String] = [],
+        reference_genome_assemblies: [String] = [],
+        site: [String] = [],
+        studies: [String] = [],
+        study_data_types: [String] = [],
 
         order_by: String = "",
         sort_direction: String = "ASC",
@@ -172,13 +233,27 @@ type QueryType {
     sampleOverview (
         subject_ids: [String] = [],
         sample_ids: [String] = [],
-        studies: [String] = [],
+
+        accesses: [String] = [],
+        acl: [String] = [],
+        experimental_strategies: [String] = [],
         file_types: [String] = [],
         genders: [String] = [],
-        experimental_strategies: [String] = [],
+        instrument_models: [String] = [],
         is_tumor: [String] = [],
-        accesses: [String] = [],
-        analyte_type: [String] = [],
+        library_layouts: [String] = [],
+        library_selections: [String] = [],
+        library_sources: [String] = [],
+        library_strategies: [String] = [],
+        number_of_study_participants: [Float] = [],
+        number_of_study_samples: [Float] = [],
+        phs_accession: [String] = [],
+        platforms: [String] = [],
+        primary_diagnoses: [String] = [],
+        reference_genome_assemblies: [String] = [],
+        site: [String] = [],
+        studies: [String] = [],
+        study_data_types: [String] = []
 
         order_by: String = "",
         sort_direction: String = "ASC",
@@ -190,14 +265,27 @@ type QueryType {
         subject_ids: [String] = [],
         sample_ids: [String] = [],
         file_ids: [String] = [],
-        studies: [String] = [],
+
+        accesses: [String] = [],
+        acl: [String] = [],
+        experimental_strategies: [String] = [],
         file_types: [String] = [],
         genders: [String] = [],
-        experimental_strategies: [String] = [],
+        instrument_models: [String] = [],
         is_tumor: [String] = [],
-        accesses: [String] = [],
+        library_layouts: [String] = [],
+        library_selections: [String] = [],
+        library_sources: [String] = [],
+        library_strategies: [String] = [],
+        number_of_study_participants: [Float] = [],
+        number_of_study_samples: [Float] = [],
         phs_accession: [String] = [],
-        analyte_type: [String] = [],
+        platforms: [String] = [],
+        primary_diagnoses: [String] = [],
+        reference_genome_assemblies: [String] = [],
+        site: [String] = [],
+        studies: [String] = [],
+        study_data_types: [String] = [],
 
         order_by: String = "",
         sort_direction: String = "ASC",

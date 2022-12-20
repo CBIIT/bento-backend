@@ -53,6 +53,7 @@ public class CdsEsFilter implements DataFetcher {
     final String GS_ABOUT = "about";
     final String GS_HIGHLIGHT_FIELDS = "highlight_fields";
     final String GS_HIGHLIGHT_DELIMITER = "$";
+    final Set<String> RANGE_PARAMS = Set.of("number_of_study_participants", "number_of_study_samples");
 
     @Autowired
     ESService esService;
@@ -148,7 +149,73 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "site",
                 WIDGET_QUERY, "subjectCountByDiseaseSite",
                 FILTER_COUNT_QUERY, "filterSubjectCountByDiseaseSite",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "library_strategies",
+                WIDGET_QUERY, "subjectCountByLibraryStrategy",
+                FILTER_COUNT_QUERY, "filterSubjectCountByLibraryStrategy",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "library_sources",
+                WIDGET_QUERY, "subjectCountByLibrarySource",
+                FILTER_COUNT_QUERY, "filterSubjectCountByLibrarySource",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "library_selections",
+                WIDGET_QUERY, "subjectCountByLibrarySelection",
+                FILTER_COUNT_QUERY, "filterSubjectCountByLibrarySelection",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "library_layouts",
+                WIDGET_QUERY, "subjectCountByLibraryLayout",
+                FILTER_COUNT_QUERY, "filterSubjectCountByLibraryLayout",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "platforms",
+                WIDGET_QUERY, "subjectCountByPlatform",
+                FILTER_COUNT_QUERY, "filterSubjectCountByPlatform",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "instrument_models",
+                WIDGET_QUERY, "subjectCountByInstrumentModel",
+                FILTER_COUNT_QUERY, "filterSubjectCountByInstrumentModel",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "reference_genome_assemblies",
+                WIDGET_QUERY, "subjectCountByReferenceGenomeAssembly",
+                FILTER_COUNT_QUERY, "filterSubjectCountByReferenceGenomeAssembly",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "primary_diagnoses",
+                WIDGET_QUERY, "subjectCountByPrimaryDiagnosis",
+                FILTER_COUNT_QUERY, "filterSubjectCountByPrimaryDiagnosis",
+                AGG_ENDPOINT, SUBJECTS_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "phs_accession",
+                WIDGET_QUERY, "subjectCountByPhsAccession",
+                FILTER_COUNT_QUERY, "filterSubjectCountByPhsAccession",
+                AGG_ENDPOINT, STUDIES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "study_data_types",
+                WIDGET_QUERY, "subjectCountByStudyDataType",
+                FILTER_COUNT_QUERY, "filterSubjectCountByStudyDataType",
+                AGG_ENDPOINT, STUDIES_END_POINT
+        ));
+        TERM_AGGS.add(Map.of(
+                AGG_NAME, "acl",
+                WIDGET_QUERY, "subjectCountByAcl",
+                FILTER_COUNT_QUERY, "filterSubjectCountByAcl",
+                AGG_ENDPOINT, STUDIES_END_POINT
         ));
 
 
@@ -158,7 +225,12 @@ public class CdsEsFilter implements DataFetcher {
         }
         final String[] TERM_AGG_NAMES = agg_names.toArray(new String[TERM_AGGS.size()]);
 
-        Map<String, Object> query = esService.buildFacetFilterQuery(params);
+        final Map<String, String> RANGE_AGGS = new HashMap<>();
+        RANGE_AGGS.put("number_of_study_participants",  "filterSubjectCountByNumberOfStudyParticipants");
+        RANGE_AGGS.put("number_of_study_samples",  "filterSubjectCountByNumberOfStudySamples");
+        final String[] RANGE_AGG_NAMES = RANGE_AGGS.keySet().toArray(new String[0]);
+
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS);
         Request sampleCountRequest = new Request("GET", SAMPLES_COUNT_END_POINT);
         sampleCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
@@ -176,7 +248,7 @@ public class CdsEsFilter implements DataFetcher {
 
 
         // Get aggregations
-        Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES);
+        Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
         Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
         subjectRequest.setJsonEntity(gson.toJson(aggQuery));
         JsonObject subjectResult = esService.send(subjectRequest);
@@ -213,6 +285,17 @@ public class CdsEsFilter implements DataFetcher {
             }
         }
 
+        Map<String, JsonObject> rangeAggs = esService.collectRangeAggs(subjectResult, RANGE_AGG_NAMES);
+
+        for (String field: RANGE_AGG_NAMES) {
+            String filterCountQueryName = RANGE_AGGS.get(field);
+            if (params.containsKey(field) && ((List<Double>)params.get(field)).size() >= 2) {
+                Map<String, Object> filterCount = rangeFilterSubjectCountBy(field, params);;
+                data.put(filterCountQueryName, filterCount);
+            } else {
+                data.put(filterCountQueryName, getRange(rangeAggs.get(field)));
+            }
+        }
         return data;
     }
 
@@ -309,7 +392,7 @@ public class CdsEsFilter implements DataFetcher {
     private List<Map<String, Object>> overview(String endpoint, Map<String, Object> params, String[][] properties, String defaultSort, Map<String, String> mapping) throws IOException {
 
         Request request = new Request("GET", endpoint);
-        Map<String, Object> query = esService.buildFacetFilterQuery(params, Set.of(), Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
+        Map<String, Object> query = esService.buildFacetFilterQuery(params, RANGE_PARAMS, Set.of(PAGE_SIZE, OFFSET, ORDER_BY, SORT_DIRECTION));
         String order_by = (String)params.get(ORDER_BY);
         String direction = ((String)params.get(SORT_DIRECTION)).toLowerCase();
         query.put("sort", mapSortOrder(order_by, direction, defaultSort, mapping));
@@ -451,10 +534,10 @@ public class CdsEsFilter implements DataFetcher {
                 GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "study_count",
                 GS_RESULT_FIELD, "studies",
-                GS_SEARCH_FIELD, List.of("phs_accession", "study_name", "study_code"),
-                GS_SORT_FIELD, "phs_accession_kw",
+                GS_SEARCH_FIELD, List.of("phs_accession_gs", "study_name", "study_code"),
+                GS_SORT_FIELD, "phs_accession",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"phs_accession", "phs_accession"},
+                        new String[]{"phs_accession", "phs_accession_gs"},
                         new String[]{"study_code", "study_code"},
                         new String[]{"study_name", "study_name"}
                 },

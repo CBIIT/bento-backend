@@ -12,5 +12,5 @@ module "cloudfront" {
   tags = var.tags
   create_files_bucket = var.create_files_bucket
   target_account_cloudone = var.target_account_cloudone
-  public_key_path = file("${path.module}/workspace/icdc_public_key.pem")
+  public_key_path = file("${path.module}/workspace/ctdc_public_key.pem")
 }

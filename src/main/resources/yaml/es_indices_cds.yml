@@ -173,9 +173,7 @@ Indices:
       MATCH (s:study)
       OPTIONAL MATCH (s)<--(p:participant)<--(samp:sample)
       WITH s, COUNT(DISTINCT p) as num_study_participants, COUNT(DISTINCT samp) as num_study_samples
-      MATCH (samp:sample)
-      OPTIONAL MATCH (p)<--(samp)
-      OPTIONAL MATCH (s)<--(p)
+      MATCH (s)<--(p:participant)<--(samp:sample)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       OPTIONAL MATCH (f)-->(g:genomic_info)
@@ -294,8 +292,7 @@ Indices:
       MATCH (s:study)<--(p:participant)
       OPTIONAL MATCH (p)<--(samp:sample)
       WITH s, COUNT(DISTINCT samp) as num_study_samples, COUNT(DISTINCT p) as num_study_participants
-      MATCH (f:file)
-      OPTIONAL MATCH (samp:sample)<--(f)
+      MATCH (s)<--(p:participant)<--(samp:sample)<--(f:file)
       OPTIONAL MATCH (p:participant)<--(samp)
       OPTIONAL MATCH (s)<--(p)
       OPTIONAL MATCH (p)<--(diag:diagnosis)

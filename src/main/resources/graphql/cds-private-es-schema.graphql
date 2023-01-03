@@ -178,6 +178,8 @@ schema {
 
 type QueryType {
     searchSubjects (
+        subject_ids: [String] = [],
+
         accesses: [String] = [],
         acl: [String] = [],
         experimental_strategies: [String] = [],

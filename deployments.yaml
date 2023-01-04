@@ -1,0 +1,15 @@
+Notes: Jenkins pipeline
+project: ctdc
+services:
+  backend:
+    version: 14.5.1.9
+    image: 14.5.1.9
+    buildNumber: '9'
+  frontend:
+    version: 3.9.0.85
+    image: 3.9.0.85
+    buildNumber: '85'
+  files:
+    version: main.34
+    image: main.34
+    buildNumber: '34'

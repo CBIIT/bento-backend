@@ -1,0 +1,52 @@
+- name: load opensearch
+  hosts: all
+  connection: local
+  gather_facts: no
+
+  tasks:
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{ item }}
+      loop:
+        - community.docker
+        - amazon.aws
+        - community.aws:<=3.2.0
+        - git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,icdc
+    - set_fact:
+       workspace: "{{ lookup('env','WORKSPACE') }}"
+#
+
+    #run data loader
+    - name: data loader stage
+      include_role:
+        name: bento.common.os_loader_one_click
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+        project_name: "{{ project_name }}"
+        platform: aws
+        region: us-east-1
+        tier: "{{ tier }}"
+        modelRepo: "{{ modelRepoUrl }}"
+        model_file1_name: "{{ model_file_1 }}"
+        model_file1: "config/{{ model_file1_name }}"
+        model_file2_name: "{{ model_file_2 }}"
+        model_file2: "config/{{ model_file2_name }}"
+        property_file: "config/{{ property_File }}"
+        frontendRepo: "{{ frontendRepoUrl }}"
+        about_file_name: "aboutPagesContent.yaml"
+        about_file_url:
+          dev: "https://github.com/CBIIT/bento-icdc-static-content/blob/develop/{{ about_file_name }}"
+          qa: "https://github.com/CBIIT/bento-icdc-static-content/blob/qa/{{ about_file_name }}"
+          qa2: "https://github.com/CBIIT/bento-icdc-static-content/blob/qa/{{ about_file_name }}"
+          stage: "https://github.com/CBIIT/bento-icdc-static-content/blob/stage/{{ about_file_name }}"
+          prod: "https://github.com/CBIIT/bento-icdc-static-content/blob/production/{{ about_file_name }}"
+        about_file: "config/{{ about_file_name }}"
+        backendRepo: "{{ backendRepoUrl }}"
+        indices_file_name: "{{ indices_File }}"
+        indices_file: "{{ indices_File }}"
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
+        neo4j_ip: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_ip', nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
+        #Elasticsearch
+        es_host: "https://{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='us-east-1' ) }}"
+

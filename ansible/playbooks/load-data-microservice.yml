@@ -1,0 +1,39 @@
+- name: load data
+  hosts: all
+  connection: local
+  gather_facts: no
+
+  tasks:
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        - community.docker
+        - amazon.aws
+        - community.aws:<=3.2.0
+        - git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,main
+    
+    #run data loader
+    - name: data loader stage
+      include_role:
+        name: bento.common.data_loader
+      vars:
+        workspace: "{{ lookup('env','WORKSPACE') }}"
+        model_file1: "{{workspace}}/{{project_name}}-model/model-desc/{{model_file_1}}"
+        model_file2: "{{workspace}}/{{project_name}}-model/model-desc/{{model_file_2}}"
+        property_file: "config/{{property_File}}"
+        ansible_python_interpreter: /usr/bin/python3
+        project_name: "{{project_name}}"
+        platform: aws
+        region: us-east-1
+        tier: "{{tier}}"
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
+        neo4j_ip: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_ip', nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
+        s3_folder: "{{ s3_folder }}"
+        wipe_db: "{{ wipe_db }}"
+        cheat_mode: "{{ cheat_mode }}"
+        split_transactions: "{{ split_transactions }}"
+        data_bucket: "{{data_bucket}}"
+        #Elasticsearch
+        es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='us-east-1' ) }}"

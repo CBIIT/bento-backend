@@ -1,0 +1,36 @@
+- name: build frontend microservice
+  hosts: all
+  connection: local
+  gather_facts: no
+  become: yes
+
+  tasks:
+    #install collections
+    - name: install collections
+      command: ansible-galaxy collection install {{ item }}
+      loop:
+        - community.docker
+        #- git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,main
+        - git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,ctdc
+
+    #docker login
+    - name: docker login
+      include_role:
+        name: bento.common.ecr_login
+      vars:
+        region: us-east-1
+
+    #frontend build
+    - name: build frontend
+      include_role:
+        name: bento.common.build_frontend
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+        workspace: "{{ lookup('env','WORKSPACE') }}"
+        build_number: "{{ lookup('env','BUILD_NUMBER') }}"
+        project_name: "{{ project_name }}"
+        image_version: "{{ lookup('env','FE_VERSION') }}"
+        container_name: "frontend"
+        container_build_path: "{{ workspace }}/{{ project_name }}-frontend"
+        dockerfile_path: "{{ workspace }}/playbooks/docker/dockerfiles/frontend-ctdc-dockerfile"
+        container_registry_url: "{{ ecr_repo }}"

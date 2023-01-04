@@ -1,0 +1,113 @@
+- name: deploy backend microservice
+  hosts: all
+  connection: local
+  gather_facts: no
+
+  tasks:
+    #install collections
+    - name: install aws collection
+      command: ansible-galaxy collection install {{item}}
+      loop:
+        - community.docker
+        - amazon.aws
+        - community.aws:<=3.2.0
+        #- git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,main
+        - git+https://github.com/CBIIT/datacommons-devops.git#/ansible/collections/bento/common/,ctdc
+
+    #docker login
+    - name: docker login
+      include_role:
+        name: bento.common.ecr_login
+      vars:
+        region: us-east-1
+
+    #deploy backend
+    - name: deploy stage for backend microservice
+      include_role:
+        name: bento.common.ecs
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+        execution_role: "{% if iam_prefix is defined and iam_prefix != '' %}{{ iam_prefix }}-{{ project_name }}-{{ tier }}-ecs-task-execution-role{% else %}{{ project_name }}-{{ tier }}-task-execution-role{% endif %}"
+        task_role: "{% if iam_prefix is defined and iam_prefix != '' %}{{ iam_prefix }}-{{ project_name }}-{{ tier }}-ecs-task-role{% else %}{{ project_name }}-{{ tier }}-task-role{% endif %}"
+        project_name: "{{ project_name }}"
+        platform: aws
+        region: us-east-1
+        container_name: "backend"
+        auth_enabled: "true"
+        image_version: "{{ lookup('env','BE_VERSION') }}"
+        tier: "{{ lookup('env','TIER') }}"
+        ecs_cluster_name: "{{ project_name }}-{{ tier }}-ecs"
+        neo4j_user: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_user', nested=true, region='us-east-1' ) }}"
+        neo4j_ip: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_ip', nested=true, region='us-east-1' ) }}"
+        neo4j_password: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.neo4j_password', nested=true, region='us-east-1' ) }}"
+        newrelic_license_key: "{{ lookup('amazon.aws.aws_secret', 'monitoring/newrelic.api_key', nested=true, region='us-east-1' ) }}"
+        sumo_collector_endpoint: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_endpoint', nested=true, region='us-east-1' ) }}"
+        sumo_collector_token: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.sumo_collector_token_backend', nested=true, region='us-east-1' ) }}"
+        container_port: 8080
+        container_memory: 1024
+        container_cpu: 512
+        container_image_url: "{{ ecr_repo }}/{{ project_name }}-{{ container_name }}"
+        #Elasticsearch
+        es_host: "{{ lookup('amazon.aws.aws_secret', 'bento/{{ project_name }}/{{ tier }}.es_host', nested=true, region='us-east-1' ) }}"
+        es_schema: "{% if project_name == 'bento' %}es-schema.graphql{% else %}es-schema-{{ project_name }}.graphql{% endif %}"
+        enable_es_filter: "true"
+        #Redis vars
+        enable_redis: "false"
+        redis_port: "6379"
+        use_cluster: "true"
+        redis_host: localhost
+        #Entrypoint
+        container_entrypoint:
+          - "/bin/ash"
+          - "-c"
+          - 'wget "https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip" -O newrelic-java.zip && rm -rf newrelic && unzip -o newrelic-java.zip && bin/catalina.sh run'
+        #Environment
+        container_env:
+          - name: PROJECT
+            value: "{{ project_name }}"
+          ## Versions
+          - name: BENTO_API_VERSION
+            value: "{{ image_version }}"
+          ## Database
+          - name: NEO4J_URL
+            value: "bolt://{{ neo4j_ip }}:7687"
+          - name: NEO4J_USER
+            value: "{{ neo4j_user }}"
+          - name: NEO4J_PASSWORD
+            value: "{{ neo4j_password }}"
+          - name: NEO4J_GRAPHQL_ENDPOINT
+            value: "http://{{ neo4j_ip }}:7474/graphql/"
+          ## Opensearch
+          - name: ES_HOST
+            value: "{{ es_host }}"
+          - name: ES_SCHEMA
+            value: "{{ es_schema }}"
+          - name: ES_FILTER_ENABLED
+            value: "{{ enable_es_filter }}"
+          ## Redis
+          - name: REDIS_ENABLE
+            value: "{{ enable_redis }}"
+          - name: REDIS_USE_CLUSTER
+            value: "{{ use_cluster }}"
+          - name: REDIS_HOST
+            value: "{{ redis_host }}"
+          - name: REDIS_PORT
+            value: "{{ redis_port }}"
+          - name: REDIS_FILTER_ENABLE
+            value: "false"
+          ## New Relic
+          - name: NEW_RELIC_LICENSE_KEY
+            value: "{{ newrelic_license_key }}"
+          - name: NEW_RELIC_APP_NAME
+            value: "{{ project_name }}-{{ platform }}-{{ tier }}-{{ container_name }}"
+          - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+            value: "true"
+          - name: NEW_RELIC_HOST
+            value: "gov-collector.newrelic.com"
+          - name: NEW_RELIC_LOG_FILE_NAME
+            value: "STDOUT"
+          - name: NEW_RELIC_LABELS
+            value: "Project:{{ project_name }};Environment:{{ tier }}"
+          ## Java
+          - name: JAVA_OPTS
+            value: "-javaagent:/usr/local/tomcat/newrelic/newrelic.jar"

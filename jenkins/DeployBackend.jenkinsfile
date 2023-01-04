@@ -1,0 +1,33 @@
+@Library('datacommons-jenkins-shared-library@post_build_jobs') _
+deployApp(
+    label: "slave-ncias-d2947-c",
+    parameterName: "BackendTag",
+    repoName: "bento-backend",
+    playbookRepoUrl: "https://github.com/CBIIT/ctdc-deployments",
+    playbookRepoBranch: "main",
+    playbook: "ansible/playbooks/deploy-backend-microservice.yml",
+    inventory: "ansible/playbooks/hosts",
+    tier: "${params.Environment}",
+    projectName: "${params.ProjectName}",
+    slackSecretPath: "notification/slack",
+    slackSecretName: "ctdc_slack_url",
+    deploymentRepoUrl: "https://github.com/CBIIT/ctdc-deployments",
+    deploymentCheckoutDirectory: "ctdc-deployments",
+    deploymentFile: "ctdc-deployments/deployments.yaml",
+    service: "backend",
+    extraAnsibleVars: [
+        iam_prefix: "power-user",
+        subdomain: "trialcommons",
+        domain_name: "cancer.gov"
+    ],
+	postBuildJobs: [
+	    [
+			jobPath: "_default/_lower/ICDC/_one_click/_jobs/OpensearchLoader",
+			jobParams: [string(name: 'Environment', value: "${params.Environment}"), string(name: 'ProjectName', value: "${projectName}")]
+		]
+    ],
+    useDockerAgent: true,
+    agentImage: "ncidockerhub.nci.nih.gov/icdc/jenkins-agent-ansible",
+    dockerRegistryUrl: "https://ncidockerhub.nci.nih.gov",
+    registryCredentialsId: "ncidockerhub"
+)

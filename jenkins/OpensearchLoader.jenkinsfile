@@ -1,0 +1,25 @@
+@Library('datacommons-jenkins-shared-library@ctdc_test') _
+loadOpensearch(
+	label: "slave-ncias-d2957-c",
+    playbookRepoUrl: "https://github.com/CBIIT/ctdc-deployments",
+    playbookRepoBranch: "main",
+	playbook: "ansible/playbooks/load-opensearch-microservice.yml",
+    inventory: "ansible/playbooks/hosts",
+    tier: "${params.Environment}",
+    projectName: "${params.ProjectName}",
+    model_file1: "ctdc-model.yml",
+    model_file2: "ctdc-model-props.yml",
+    property_file: "props-ctdc.yml",
+    indices_file: "es_indices_ctdc.yml",
+    slackSecretPath: "notification/slack",
+    slackSecretName: "ctdc_slack_url",
+	modelRepoUrl: "https://raw.githubusercontent.com/CBIIT/ctdc-model-tool",
+    //frontendRepoUrl: "https://github.com/CBIIT/bento-ctdc-frontend",
+	backendRepoUrl: "https://raw.githubusercontent.com/CBIIT/bento-backend",
+    useDockerAgent: false,
+    agentImage: "ncidockerhub.nci.nih.gov/icdc/cicd-microservices-ecs",
+    dockerRegistryUrl: "https://ncidockerhub.nci.nih.gov",
+    registryCredentialsId: "ncidockerhub",
+    useCustomBranch: "yes",
+    customBranch: "main"
+)

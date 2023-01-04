@@ -1,0 +1,32 @@
+@Library('datacommons-jenkins-shared-library@ctdc_test') _
+buildAndDeploy(
+    label: "slave-ncias-d2947-c",
+    parameterName: "FrontendTag",
+    codeRepoUrl: "https://github.com/CBIIT/bento-ctdc-frontend",
+    checkoutDirectory: "ctdc-frontend",
+    playbookRepoUrl: "https://github.com/CBIIT/ctdc-deployments",
+    playbookRepoBranch: "main",
+    buildPlaybook: "ansible/playbooks/build-frontend-microservice.yml",
+    deployPlaybook: "ansible/playbooks/deploy-frontend-microservice.yml",
+    inventory: "ansible/playbooks/hosts",
+    tier: "${params.Environment}",
+    projectName: "${params.ProjectName}",
+    slackSecretPath: "notification/slack",
+    slackSecretName: "ctdc_slack_url",
+    appVersionName: "FE_VERSION",
+    deploymentRepoUrl: "https://github.com/CBIIT/ctdc-deployments",
+    deploymentCheckoutDirectory: "ctdc-deployments",
+    deploymentFile: "ctdc-deployments/deployments.yaml",
+    service: "frontend",
+    extraAnsibleVars: [
+        iam_prefix: "power-user",
+        subdomain: "trialcommons",
+        domain_name: "cancer.gov"
+    ],
+    useDockerAgent: false,
+    nodeMemory: "4096",
+    //agentImage: "ncidockerhub.nci.nih.gov/icdc/cicd-microservices-ecs",
+	agentImage: "ncidockerhub.nci.nih.gov/icdc/jenkins-agent-ansible",
+    dockerRegistryUrl: "https://ncidockerhub.nci.nih.gov",
+    registryCredentialsId: "ncidockerhub"
+)

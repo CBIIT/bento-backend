@@ -6,9 +6,9 @@ services:
     image: CTDC-Develop.5
     buildNumber: '5'
   frontend:
-    version: v1.0.0.6
-    image: v1.0.0.6
-    buildNumber: '6'
+    version: v1.0.0.7
+    image: v1.0.0.7
+    buildNumber: '7'
   files:
     version: main.11
     image: main.11

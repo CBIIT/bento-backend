@@ -72,7 +72,7 @@ Indices:
       OPTIONAL MATCH (p)<--(samp:sample)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
-      OPTIONAL MATCH (f)-->(g:genomic_info)
+      OPTIONAL MATCH (f)<--(g:genomic_info)
       RETURN
           s.data_access_level AS accesses,
           s.acl AS acl,
@@ -176,7 +176,7 @@ Indices:
       MATCH (s)<--(p:participant)<--(samp:sample)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
-      OPTIONAL MATCH (f)-->(g:genomic_info)
+      OPTIONAL MATCH (f)<--(g:genomic_info)
       RETURN
           s.data_access_level AS accesses,
           s.acl AS acl,
@@ -296,7 +296,7 @@ Indices:
       OPTIONAL MATCH (p:participant)<--(samp)
       OPTIONAL MATCH (s)<--(p)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
-      OPTIONAL MATCH (f)-->(g:genomic_info)
+      OPTIONAL MATCH (f)<--(g:genomic_info)
       RETURN
           s.data_access_level AS accesses,
           s.acl AS acl,

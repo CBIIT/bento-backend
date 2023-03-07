@@ -73,7 +73,7 @@ Indices:
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       OPTIONAL MATCH (f)<--(g:genomic_info)
-      WITH s, p, samp, diag, f, g, num_study_participants, num_study_samples, \"^\s*$\" AS empty_string, \"Not Specified\" as ns
+      WITH s, p, samp, diag, f, g, num_study_participants, num_study_samples, \"^\\s*$\" AS empty_string, \"Not Specified\" as ns
       RETURN
           apoc.text.replace(s.data_access_level, empty_string, ns) AS accesses,
           apoc.text.replace(s.acl, empty_string, ns) AS acl,
@@ -178,7 +178,7 @@ Indices:
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       OPTIONAL MATCH (f)<--(g:genomic_info)
-      WITH num_study_participants, num_study_samples, s, p, samp, diag, f, g, \"^\s*$\" AS empty_string, \"Not Specified\" as ns
+      WITH num_study_participants, num_study_samples, s, p, samp, diag, f, g, \"^\\s*$\" AS empty_string, \"Not Specified\" as ns
       RETURN
           apoc.text.replace(s.data_access_level, empty_string, ns) AS accesses,
           apoc.text.replace(s.acl, empty_string, ns) AS acl,
@@ -299,7 +299,7 @@ Indices:
       OPTIONAL MATCH (s)<--(p)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
-      WITH s, p, samp, f, diag, g, num_study_samples, num_study_participants, \"^\s*$\" AS empty_string, \"Not Specified\" as ns
+      WITH s, p, samp, f, diag, g, num_study_samples, num_study_participants, \"^\\s*$\" AS empty_string, \"Not Specified\" as ns
       RETURN
           apoc.text.replace(s.data_access_level, empty_string, ns) AS accesses,
           apoc.text.replace(s.acl, empty_string, ns) AS acl,

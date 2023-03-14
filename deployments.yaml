@@ -6,6 +6,6 @@ services:
     image: 24.6.0.48
     buildNumber: '48'
   frontend:
-    version: 2.0.0.65
-    image: 2.0.0.65
-    buildNumber: '65'
+    version: 3.0.0.67
+    image: 3.0.0.67
+    buildNumber: '67'

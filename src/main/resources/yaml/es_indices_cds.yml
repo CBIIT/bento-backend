@@ -12,6 +12,8 @@ Indices:
         type: keyword
       acl:
         type: keyword
+      analyte_type:
+        type: keyword
       experimental_strategies:
         type: keyword
       file_types:
@@ -101,6 +103,7 @@ Indices:
           
           COLLECT(DISTINCT f.file_id) AS files,
           COLLECT(DISTINCT samp.sample_id) AS samples,
+          COLLECT(DISTINCT samp.sample_type) AS analyte_type,
           p.participant_id AS subject_ids
     "
 

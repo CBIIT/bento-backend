@@ -113,7 +113,7 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "experimental_strategies",
                 WIDGET_QUERY, "subjectCountByExperimentalStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByExperimentalStrategy",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "accesses",
@@ -131,19 +131,19 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "is_tumor",
                 WIDGET_QUERY,"subjectCountByIsTumor",
                 FILTER_COUNT_QUERY, "filterSubjectCountByIsTumor",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "analyte_type",
                 WIDGET_QUERY, "subjectCountByAnalyteType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAnalyteType",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_types",
                 WIDGET_QUERY, "subjectCountByFileType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByFileType",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "site",
@@ -203,19 +203,19 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "phs_accession",
                 WIDGET_QUERY, "subjectCountByPhsAccession",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPhsAccession",
-                AGG_ENDPOINT, STUDIES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "study_data_types",
                 WIDGET_QUERY, "subjectCountByStudyDataType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByStudyDataType",
-                AGG_ENDPOINT, STUDIES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "acl",
                 WIDGET_QUERY, "subjectCountByAcl",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAcl",
-                AGG_ENDPOINT, STUDIES_END_POINT
+                AGG_ENDPOINT, SUBJECTS_END_POINT
         ));
 
 

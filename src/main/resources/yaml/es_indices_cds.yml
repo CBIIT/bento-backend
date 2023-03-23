@@ -12,6 +12,8 @@ Indices:
         type: keyword
       acl:
         type: keyword
+      analyte_type:
+        type: keyword
       experimental_strategies:
         type: keyword
       file_types:
@@ -100,6 +102,7 @@ Indices:
           apoc.text.replace(s.study_name, empty_string, ns) AS study_gs,
           apoc.text.replace(p.participant_id, empty_string, ns) AS subject_id_gs,
           
+          COLLECT(DISTINCT apoc.text.replace(samp.sample_type, empty_string, ns)) AS analyte_type,
           COLLECT(DISTINCT apoc.text.replace(f.file_id, empty_string, ns)) AS files,
           COLLECT(DISTINCT apoc.text.replace(samp.sample_id, empty_string, ns)) AS samples,
           apoc.text.replace(p.participant_id, empty_string, ns) AS subject_ids

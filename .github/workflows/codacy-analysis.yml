@@ -1,6 +1,4 @@
 name: Codacy Security Scan
-
-# set on trigger to run on push to main branch, pull request on any branch, and on a schedule
 on:
   push:
     branches:
@@ -10,11 +8,11 @@ on:
       - '**'
   schedule:
     - cron: '0 0 * * *'
-
 jobs:
   Build-and-Scan:
     name: Maven Package and Codacy SAST 
     runs-on: ubuntu-latest
+    environment: codacy
     strategy:
       matrix:
         java: ['11', '17']

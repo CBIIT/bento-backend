@@ -6,6 +6,6 @@ services:
     image: 24.6.1-CDS-Develop.52
     buildNumber: '52'
   frontend:
-    version: 3.0.0.71
-    image: 3.0.0.71
-    buildNumber: '71'
+    version: 3.0.0.72
+    image: 3.0.0.72
+    buildNumber: '72'

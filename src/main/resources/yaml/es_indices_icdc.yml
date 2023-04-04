@@ -478,7 +478,10 @@ Indices:
         p.program_acronym AS program,
         s.clinical_study_designation + ' ('+ s.accession_id+')' AS study,
         s.clinical_study_type AS study_type,
-        COLLECT(DISTINCT bioB) AS biobank,
+        CASE COLLECT(DISTINCT bioB)
+          WHEN [] THEN ['Not Applicable']
+          ELSE COLLECT(DISTINCT bioB)
+        END AS biobank,
         COLLECT(DISTINCT participation) AS study_participation,
         COLLECT(DISTINCT co.cohort_description) AS cohort,
         COLLECT(DISTINCT demo.breed) AS breed,

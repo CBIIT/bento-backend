@@ -356,6 +356,8 @@ Indices:
         type: search_as_you_type
       program_sort_order:
         type: search_as_you_type
+      program_sort_order_kw:
+        type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (p:program)
@@ -365,7 +367,8 @@ Indices:
         coalesce(p.program_short_description, not_specified) AS program_short_description,
         coalesce(p.program_full_description, not_specified) AS program_full_description,
         coalesce(p.program_external_url, not_specified) AS program_external_url,
-        coalesce(p.program_sort_order, not_specified) AS program_sort_order
+        coalesce(p.program_sort_order, not_specified) AS program_sort_order,
+        coalesce(p.program_sort_order, not_specified) AS program_sort_order_kw
     "
 
   - index_name: studies

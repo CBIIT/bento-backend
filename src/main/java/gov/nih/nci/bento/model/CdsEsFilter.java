@@ -598,7 +598,7 @@ public class CdsEsFilter implements DataFetcher {
                 GS_RESULT_FIELD, "programs",
                 GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_full_description",
                         "program_external_url", "program_sort_order"),
-                GS_SORT_FIELD, "program_sort_order",
+                GS_SORT_FIELD, "program_sort_order_kw",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"program_name", "program_name"},
                         new String[]{"program_short_description", "program_short_description"},

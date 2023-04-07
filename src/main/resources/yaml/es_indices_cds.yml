@@ -342,6 +342,31 @@ Indices:
           apoc.text.replace(p.participant_id, empty_string, ns) AS subject_ids
     "
 
+  - index_name: programs
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      program_name:
+        type: search_as_you_type
+      program_short_description:
+        type: search_as_you_type
+      program_full_description:
+        type: search_as_you_type
+      program_external_url:
+        type: search_as_you_type
+      program_sort_order:
+        type: search_as_you_type
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+      MATCH (p:program)
+      RETURN
+        p.program_name AS program_name,
+        p.program_short_description AS program_short_description,
+        p.program_full_description AS program_full_description,
+        p.program_external_url AS program_external_url,
+        p.program_sort_order AS program_sort_order
+    "
+
   - index_name: studies
     type: neo4j
     # type mapping for each property of the index

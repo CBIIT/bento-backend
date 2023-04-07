@@ -359,12 +359,13 @@ Indices:
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (p:program)
+      WITH p, \"Not Specified\" AS not_specified
       RETURN
         p.program_name AS program_name,
-        p.program_short_description AS program_short_description,
-        p.program_full_description AS program_full_description,
-        p.program_external_url AS program_external_url,
-        p.program_sort_order AS program_sort_order
+        coalesce(p.program_short_description, not_specified) AS program_short_description,
+        coalesce(p.program_full_description, not_specified) AS program_full_description,
+        coalesce(p.program_external_url, not_specified) AS program_external_url,
+        coalesce(p.program_sort_order, not_specified) AS program_sort_order
     "
 
   - index_name: studies

@@ -1,0 +1,47 @@
+name: Codacy Security Scan
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  Build-and-Scan:
+    name: Maven Package and Codacy SAST 
+    runs-on: ubuntu-latest
+    environment: codacy
+    strategy:
+      matrix:
+        java: ['11', '17']
+      fail-fast: false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@main
+      - name: Remove Example Properties File 
+        run: rm $GITHUB_WORKSPACE/src/main/resources/application_example.properties 
+      - name: Rename Properties File 
+        run: mv $GITHUB_WORKSPACE/src/main/resources/application.properties.j2 $GITHUB_WORKSPACE/src/main/resources/application.properties
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.4
+        with: 
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build SprintBoot Application 
+        run: mvn clean package -DskipTests=true 
+      - name: Rename WAR Artifact 
+        run: mv $GITHUB_WORKSPACE/target/Bento-0.0.1.war $GITHUB_WORKSPACE/target/ROOT.war 
+      - name: Run Codacy Analysis CLI
+        uses: codacy/codacy-analysis-cli-action@master
+        with:
+          tool: spotbugs
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          upload: true
+          max-allowed-issues: 2147483647
+          verbose: true
+          allow-network: true 
+          skip-uncommitted-files-check: true
+          force-file-permissions: true

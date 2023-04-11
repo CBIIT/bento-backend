@@ -383,8 +383,8 @@ Indices:
         apoc.text.replace(f.file_id, empty_string, ns) AS file_id,
         apoc.text.replace(f.file_name, empty_string, ns) AS file_name,
         apoc.text.replace(f.file_type, empty_string, ns) AS file_type,
-        COALESCE(apoc.text.replace(f.file_size, empty_string, ns), ns) AS file_size,
-        COALESCE(apoc.text.replace(f.md5sum, empty_string, ns), ns) AS md5sum,
+        apoc.text.replace(f.file_size, empty_string, ns) AS file_size,
+        apoc.text.replace(f.md5sum, empty_string, ns) AS md5sum,
         apoc.text.replace(samp.sample_id, empty_string, ns) AS sample_id,
         apoc.text.replace(p.participant_id, empty_string, ns) AS participant_id
       RETURN

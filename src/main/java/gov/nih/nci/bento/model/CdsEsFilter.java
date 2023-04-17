@@ -32,6 +32,8 @@ public class CdsEsFilter implements DataFetcher {
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
     final String FILES_COUNT_END_POINT = "/files/_count";
+    final String PROGRAMS_END_POINT = "/programs/_search";
+    final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
     final String NODES_COUNT_END_POINT = "/model_nodes/_count";
     final String PROPERTIES_END_POINT = "/model_properties/_search";
@@ -107,7 +109,7 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "studies",
                 WIDGET_QUERY, "subjectCountByStudy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByStudy",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "experimental_strategies",
@@ -119,25 +121,25 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "accesses",
                 WIDGET_QUERY, "subjectCountByAccess",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAccess",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "genders",
                 WIDGET_QUERY, "subjectCountByGender",
                 FILTER_COUNT_QUERY, "filterSubjectCountByGender",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "is_tumor",
                 WIDGET_QUERY,"subjectCountByIsTumor",
                 FILTER_COUNT_QUERY, "filterSubjectCountByIsTumor",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "analyte_type",
                 WIDGET_QUERY, "subjectCountByAnalyteType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAnalyteType",
-                AGG_ENDPOINT, SAMPLES_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_types",
@@ -149,73 +151,73 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "site",
                 WIDGET_QUERY, "subjectCountByDiseaseSite",
                 FILTER_COUNT_QUERY, "filterSubjectCountByDiseaseSite",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_strategies",
                 WIDGET_QUERY, "subjectCountByLibraryStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibraryStrategy",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_sources",
                 WIDGET_QUERY, "subjectCountByLibrarySource",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibrarySource",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_selections",
                 WIDGET_QUERY, "subjectCountByLibrarySelection",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibrarySelection",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_layouts",
                 WIDGET_QUERY, "subjectCountByLibraryLayout",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibraryLayout",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "platforms",
                 WIDGET_QUERY, "subjectCountByPlatform",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPlatform",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "instrument_models",
                 WIDGET_QUERY, "subjectCountByInstrumentModel",
                 FILTER_COUNT_QUERY, "filterSubjectCountByInstrumentModel",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "reference_genome_assemblies",
                 WIDGET_QUERY, "subjectCountByReferenceGenomeAssembly",
                 FILTER_COUNT_QUERY, "filterSubjectCountByReferenceGenomeAssembly",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "primary_diagnoses",
                 WIDGET_QUERY, "subjectCountByPrimaryDiagnosis",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPrimaryDiagnosis",
-                AGG_ENDPOINT, SUBJECTS_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "phs_accession",
                 WIDGET_QUERY, "subjectCountByPhsAccession",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPhsAccession",
-                AGG_ENDPOINT, STUDIES_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "study_data_types",
                 WIDGET_QUERY, "subjectCountByStudyDataType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByStudyDataType",
-                AGG_ENDPOINT, STUDIES_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "acl",
                 WIDGET_QUERY, "subjectCountByAcl",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAcl",
-                AGG_ENDPOINT, STUDIES_END_POINT
+                AGG_ENDPOINT, FILES_END_POINT
         ));
 
 
@@ -249,9 +251,9 @@ public class CdsEsFilter implements DataFetcher {
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
-        Request subjectRequest = new Request("GET", SUBJECTS_END_POINT);
-        subjectRequest.setJsonEntity(gson.toJson(aggQuery));
-        JsonObject subjectResult = esService.send(subjectRequest);
+        Request fileRequest = new Request("GET", FILES_END_POINT);
+        fileRequest.setJsonEntity(gson.toJson(aggQuery));
+        JsonObject subjectResult = esService.send(fileRequest);
         Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, TERM_AGG_NAMES);
 
         Map<String, Object> data = new HashMap<>();
@@ -269,7 +271,7 @@ public class CdsEsFilter implements DataFetcher {
             String endpoint = agg.get(AGG_ENDPOINT);
             // subjectCountByXXXX
             List<Map<String, Object>> widgetData;
-            if (endpoint.equals(SUBJECTS_END_POINT)) {
+            if (endpoint.equals(FILES_END_POINT)) {
                 widgetData = getGroupCountHelper(aggs.get(field));
                 data.put(widgetQueryName, widgetData);
             } else {
@@ -588,6 +590,23 @@ public class CdsEsFilter implements DataFetcher {
                         new String[]{"file_type", "file_type"}
                 },
                 GS_CATEGORY_TYPE, "file"
+        ));
+        searchCategories.add(Map.of(
+                GS_END_POINT, PROGRAMS_END_POINT,
+                GS_COUNT_ENDPOINT, PROGRAMS_COUNT_END_POINT,
+                GS_COUNT_RESULT_FIELD, "program_count",
+                GS_RESULT_FIELD, "programs",
+                GS_SEARCH_FIELD, List.of("program_name", "program_short_description", "program_full_description",
+                        "program_external_url", "program_sort_order"),
+                GS_SORT_FIELD, "program_sort_order_kw",
+                GS_COLLECT_FIELDS, new String[][]{
+                        new String[]{"program_name", "program_name"},
+                        new String[]{"program_short_description", "program_short_description"},
+                        new String[]{"program_full_description", "program_full_description"},
+                        new String[]{"program_external_url", "program_external_url"},
+                        new String[]{"program_sort_order", "program_sort_order"}
+                },
+                GS_CATEGORY_TYPE, "program"
         ));
         searchCategories.add(Map.of(
                 GS_END_POINT, NODES_END_POINT,

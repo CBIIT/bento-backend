@@ -147,6 +147,14 @@ type GS_About {
     text: String
 }
 
+type GS_Program {
+    program_name: String
+    program_short_description: String
+    program_full_description: String
+    program_external_url: String
+    program_sort_order: String
+}
+
 type GlobalSearchResult {
     study_count: Int
     studies: [GS_Study]
@@ -159,6 +167,9 @@ type GlobalSearchResult {
 
     file_count: Int
     files: [GS_File]
+
+    program_count: Int
+    programs: [GS_Program]
 
     about_count: Int
     about_page: [GS_About]

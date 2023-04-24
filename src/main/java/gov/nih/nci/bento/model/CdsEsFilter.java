@@ -604,7 +604,8 @@ public class CdsEsFilter implements DataFetcher {
                         new String[]{"program_short_description", "program_short_description"},
                         new String[]{"program_full_description", "program_full_description"},
                         new String[]{"program_external_url", "program_external_url"},
-                        new String[]{"program_sort_order", "program_sort_order"}
+                        new String[]{"program_sort_order", "program_sort_order"},
+                        new String[]{"type", "type"}
                 },
                 GS_CATEGORY_TYPE, "program"
         ));

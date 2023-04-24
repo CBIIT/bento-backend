@@ -153,6 +153,7 @@ type GS_Program {
     program_full_description: String
     program_external_url: String
     program_sort_order: String
+    type: String
 }
 
 type GlobalSearchResult {

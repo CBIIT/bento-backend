@@ -9,3 +9,7 @@ services:
     version: 3.0.0.76
     image: 3.0.0.76
     buildNumber: '76'
+  files:
+    version: 2.3.0-develop.18
+    image: 2.3.0-develop.18
+    buildNumber: '18'

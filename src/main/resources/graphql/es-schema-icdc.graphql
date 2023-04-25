@@ -202,6 +202,22 @@ type SearchResult {
     filterCaseCountByFileFormat: [GroupCountES]
 }
 
+type ClinicalDataNodeCounts {
+    agent: Int,
+    cycle: Int,
+    visit: Int,
+    follow_up: Int,
+    adverse_event: Int,
+    off_treatment: Int,
+    off_study: Int,
+    prior_therapy: Int,
+    prior_surgery: Int,
+    agent_administration: Int,
+    physical_exam: Int,
+    vital_signs: Int,
+    disease_extent: Int,
+    lab_exam: Int
+}
 
 schema {
     query: QueryType
@@ -319,4 +335,98 @@ type QueryType {
         first: Int = 10,
         offset: Int = 0
     ): [FileOverviewES]
+
+    clinicalDataNodeCounts(study_code: String!): ClinicalDataNodeCounts @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (sa:study_arm)<-[:of_study_arm]-(a:agent)
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (c)<-[:of_case]-(fu:follow_up)
+    OPTIONAL MATCH (c)<-[:of_case]-(ae:adverse_event)
+    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
+    OPTIONAL MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
+    OPTIONAL MATCH (c)-[:went_off_study]->(os:off_study)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
+    OPTIONAL MATCH (v)<-[:on_visit]-(aa:agent_administration)
+    OPTIONAL MATCH (v)<-[:on_visit]-(pe:physical_exam)
+    OPTIONAL MATCH (v)<-[:on_visit]-(vs:vital_signs)
+    OPTIONAL MATCH (v)<-[:on_visit]-(de:disease_extent)
+    OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
+    RETURN {
+        agent: COUNT(DISTINCT a),
+        cycle: COUNT(DISTINCT cy),
+        visit: COUNT(DISTINCT v),
+        follow_up: COUNT(DISTINCT fu),
+        adverse_event: COUNT(DISTINCT ae),
+        off_treatment: COUNT(DISTINCT ot),
+        off_study: COUNT(DISTINCT os),
+        prior_therapy: COUNT(DISTINCT pt),
+        prior_surgery: COUNT(DISTINCT ps),
+        agent_administration: COUNT(DISTINCT aa),
+        physical_exam: COUNT(DISTINCT pe),
+        vital_signs: COUNT(DISTINCT vs),
+        disease_extent: COUNT(DISTINCT de),
+        lab_exam: COUNT(DISTINCT le)
+    }
+    """)
+
+    clinicalDataNodeCaseCounts(study_code: String!): ClinicalDataNodeCounts @cypher(statement: """
+    MATCH (s:study)
+    WHERE s.clinical_study_designation = $study_code
+    OPTIONAL MATCH (sa:study_arm)<-[:of_study_arm]-(a:agent)
+    OPTIONAL MATCH (s)<-[*1..2]-(c:case)
+    OPTIONAL MATCH (c)<-[:of_case]-(cy:cycle)
+    OPTIONAL MATCH (c)<-[*1..2]-(v:visit)
+    OPTIONAL MATCH (c)<-[:of_case]-(fu:follow_up)
+    OPTIONAL MATCH (c)-[:had_adverse_event]->(ae:adverse_event)
+    OPTIONAL MATCH (c)<-[:of_case]-(e:enrollment)
+    OPTIONAL MATCH (c)-[:went_off_treatment]->(ot:off_treatment)
+    OPTIONAL MATCH (c)-[:went_off_study]->(os:off_study)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(pt:prior_therapy)
+    OPTIONAL MATCH (e)<-[:at_enrollment]-(ps:prior_surgery)
+    OPTIONAL MATCH (v)<-[:on_visit]-(aa:agent_administration)
+    OPTIONAL MATCH (v)<-[:on_visit]-(pe:physical_exam)
+    OPTIONAL MATCH (v)<-[:on_visit]-(vs:vital_signs)
+    OPTIONAL MATCH (v)<-[:on_visit]-(de:disease_extent)
+    OPTIONAL MATCH (v)<-[:on_visit]-(le:lab_exam)
+    RETURN {
+        agent: COUNT(DISTINCT a),
+        cycle: COUNT(DISTINCT cy.case_id),
+        visit: COUNT(DISTINCT left(v.visit_id, 13)),
+        follow_up: COUNT(DISTINCT fu),
+        adverse_event: COUNT(DISTINCT ae),
+        off_treatment: COUNT(DISTINCT ot),
+        off_study: COUNT(DISTINCT os),
+        prior_therapy: COUNT(DISTINCT pt),
+        prior_surgery: COUNT(DISTINCT ps),
+        agent_administration: COUNT(DISTINCT aa),
+        physical_exam: COUNT(DISTINCT pe.case_id),
+        vital_signs: COUNT(DISTINCT vs.case_id),
+        disease_extent: COUNT(DISTINCT de.case_id),
+        lab_exam: COUNT(DISTINCT le)
+    }
+    """)
+
+    clinicalDataNodeNames: [String] @cypher(statement: """
+    UNWIND [
+        'AGENT',
+        'CYCLE',
+        'VISIT',
+        'PRIOR THERAPY',
+        'PRIOR SURGERY',
+        'AGENT ADMINISTRATION',
+        'PHYSICAL EXAM',
+        'VITAL SIGNS',
+        'LAB EXAM',
+        'ADVERSE EVENT',
+        'DISEASE EXTENT',
+        'FOLLOW UP',
+        'OFF STUDY',
+        'OFF TREATMENT'
+    ] AS clinical_data_node_names
+    RETURN clinical_data_node_names
+    """)
 }

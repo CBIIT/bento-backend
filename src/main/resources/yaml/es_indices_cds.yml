@@ -87,7 +87,7 @@ Indices:
         COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
         COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
         COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_sources, empty_string, ns)) AS library_sources, 
+        COLLECT(DISTINCT apoc.text.replace(g.library_source, empty_string, ns)) AS library_sources, 
         COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
         COALESCE(num_study_participants, 0) AS number_of_study_participants, 
         COALESCE(num_study_samples, 0) AS number_of_study_samples, 
@@ -220,7 +220,7 @@ Indices:
         COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
         COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
         COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_sources, empty_string, ns)) AS library_sources, 
+        COLLECT(DISTINCT apoc.text.replace(g.library_source, empty_string, ns)) AS library_sources, 
         COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
         COALESCE(num_study_participants, 0) AS number_of_study_participants, 
         COALESCE(num_study_samples, 0) AS number_of_study_samples, 
@@ -352,7 +352,7 @@ Indices:
       OPTIONAL MATCH (p)-->(s:study)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
-      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"\\W+\\s\") AS es
+      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[^-_A-Za-z0-9]+[\\s]{0}\") AS es
       WITH 
         f, samp, p, s, diag, g, es,
         COUNT(DISTINCT samp) as num_study_samples,
@@ -369,7 +369,7 @@ Indices:
         COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
         COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
         COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_sources, empty_string, ns)) AS library_sources, 
+        COLLECT(DISTINCT apoc.text.replace(g.library_source, empty_string, ns)) AS library_sources, 
         COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
         COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
         COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples, 

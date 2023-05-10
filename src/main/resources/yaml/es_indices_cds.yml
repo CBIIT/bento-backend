@@ -87,7 +87,7 @@ Indices:
         COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
         COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
         COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_sources, 
+        COLLECT(DISTINCT apoc.text.replace(g.library_sources, empty_string, ns)) AS library_sources, 
         COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
         COALESCE(num_study_participants, 0) AS number_of_study_participants, 
         COALESCE(num_study_samples, 0) AS number_of_study_samples, 
@@ -220,7 +220,7 @@ Indices:
         COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
         COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
         COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_sources, 
+        COLLECT(DISTINCT apoc.text.replace(g.library_sources, empty_string, ns)) AS library_sources, 
         COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
         COALESCE(num_study_participants, 0) AS number_of_study_participants, 
         COALESCE(num_study_samples, 0) AS number_of_study_samples, 
@@ -352,8 +352,9 @@ Indices:
       OPTIONAL MATCH (p)-->(s:study)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
+      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"\\W+\\s\") AS es
       WITH 
-        f, samp, p, s, diag, g,
+        f, samp, p, s, diag, g, es,
         COUNT(DISTINCT samp) as num_study_samples,
         COUNT(DISTINCT p) as num_study_participants,
         \"^\\s*$\" AS empty_string, 
@@ -361,14 +362,14 @@ Indices:
       WITH
         apoc.text.replace(s.data_access_level, empty_string, ns) AS access,
         apoc.text.replace(s.acl, empty_string, ns) AS acl,
-        COLLECT(DISTINCT apoc.text.replace(f.experimental_strategy_and_data_subtypes, empty_string, ns)) AS experimental_strategies,
+        apoc.text.replace(es, empty_string, ns) AS experimental_strategies,
         COLLECT(DISTINCT apoc.text.replace(f.file_type, empty_string, ns)) AS file_types,
         apoc.text.replace(p.gender, empty_string, ns) AS genders,
         COLLECT(DISTINCT apoc.text.replace(g.instrument_model, empty_string, ns)) AS instrument_models,
         COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
         COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
         COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_sources, 
+        COLLECT(DISTINCT apoc.text.replace(g.library_sources, empty_string, ns)) AS library_sources, 
         COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
         COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
         COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples, 
@@ -507,6 +508,20 @@ Indices:
         p.participant_id AS subject_id,
         toLower(p.participant_id) AS subject_ids
     "
+
+  # used for getting count of unique file ids
+  - index_name: file_ids
+    type: neo4j
+    # type mapping for each property of the index
+    mapping:
+      file_id:
+        type: keyword
+    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
+    cypher_query: "
+    MATCH (f:file)
+    RETURN DISTINCT
+      f.file_id AS file_id
+  "
 
   - index_name: about_page
     type: about_file

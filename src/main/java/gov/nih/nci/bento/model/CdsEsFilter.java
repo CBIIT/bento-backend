@@ -31,7 +31,7 @@ public class CdsEsFilter implements DataFetcher {
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
-    final String FILES_COUNT_END_POINT = "/files/_count";
+    final String FILES_COUNT_END_POINT = "/file_ids/_count";
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
     final String NODES_END_POINT = "/model_nodes/_search";

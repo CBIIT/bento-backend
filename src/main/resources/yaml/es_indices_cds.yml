@@ -352,7 +352,7 @@ Indices:
       OPTIONAL MATCH (p)-->(s:study)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
-      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[^-_A-Za-z0-9]+[\\s]{0}\") AS es
+      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS es
       WITH 
         f, samp, p, s, diag, g, es,
         COUNT(DISTINCT samp) as num_study_samples,

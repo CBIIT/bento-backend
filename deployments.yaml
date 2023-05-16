@@ -10,6 +10,6 @@ services:
     image: 3.0.0.81
     buildNumber: '81'
   files:
-    version: 2.3.0-develop.20
-    image: 2.3.0-develop.20
-    buildNumber: '20'
+    version: 2.3.0.23
+    image: 2.3.0.23
+    buildNumber: '23'

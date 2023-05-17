@@ -510,17 +510,85 @@ Indices:
     "
 
   # used for getting count of unique file ids
-  - index_name: file_ids
+  - index_name: files_count
     type: neo4j
     # type mapping for each property of the index
     mapping:
+      # Filter properties
+      accesses:
+        type: keyword
+      acl:
+        type: keyword
+      experimental_strategies:
+        type: keyword
+      file_types:
+        type: keyword
+      genders:
+        type: keyword
+      instrument_models:
+        type: keyword
+      is_tumor:
+        type: keyword
+      library_layouts:
+        type: keyword
+      library_selections:
+        type: keyword
+      library_sources:
+        type: keyword
+      library_strategies:
+        type: keyword
+      number_of_study_participants:
+        type: integer
+      number_of_study_samples:
+        type: integer
+      phs_accession:
+        type: keyword
+      platforms:
+        type: keyword
+      primary_diagnoses:
+        type: keyword
+      reference_genome_assemblies:
+        type: keyword
+      site:
+        type: keyword
+      studies:
+        type: keyword
+      study_data_types:
+        type: keyword
       file_id:
         type: keyword
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
     MATCH (f:file)
-    RETURN DISTINCT
-      f.file_id AS file_id
+    OPTIONAL MATCH (f)-->(samp:sample)
+    OPTIONAL MATCH (samp)-->(p:participant)
+    OPTIONAL MATCH (p)-->(s:study)
+    OPTIONAL MATCH (p)<--(diag:diagnosis)
+    OPTIONAL MATCH (f)<--(g:genomic_info)
+    WITH f, samp, p, s, diag, g
+    RETURN DISTINCT 
+        f.file_id AS file_id,
+        f.experimental_strategy_and_data_subtypes AS experimental_strategies,
+        f.file_type AS file_types,
+        s.data_access_level AS accesses,
+        s.acl AS acl,
+        s.phs_accession AS phs_accession,
+        s.study_name AS studies,
+        s.study_data_types AS study_data_types,
+        p.gender AS genders,
+        COLLECT(DISTINCT diag.primary_diagnosis) AS primary_diagnoses,
+        COLLECT(DISTINCT diag.primary_site) AS site,
+        samp.sample_type AS analyte_type,
+        samp.sample_tumor_status AS is_tumor,
+        COLLECT(DISTINCT g.reference_genome_assembly) AS reference_genome_assemblies,
+        COLLECT(DISTINCT g.platform) AS platforms,
+        COLLECT(DISTINCT g.instrument_model) AS instrument_models,
+        COLLECT(DISTINCT g.library_layout) AS library_layouts,
+        COLLECT(DISTINCT g.library_selection) AS library_selections,
+        COLLECT(DISTINCT g.library_source) AS library_sources,
+        COLLECT(DISTINCT g.library_strategy) AS library_strategies,
+        COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
+        COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples
   "
 
   - index_name: about_page

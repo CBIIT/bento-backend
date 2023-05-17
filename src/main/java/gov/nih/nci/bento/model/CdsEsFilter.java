@@ -31,7 +31,7 @@ public class CdsEsFilter implements DataFetcher {
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
-    final String FILES_COUNT_END_POINT = "/file_ids/_count";
+    final String FILES_COUNT_END_POINT = "/files_count/_count";
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
@@ -220,7 +220,6 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_ENDPOINT, FILES_END_POINT
         ));
 
-
         List<String> agg_names = new ArrayList<>();
         for (var agg: TERM_AGGS) {
             agg_names.add(agg.get(AGG_NAME));
@@ -238,16 +237,15 @@ public class CdsEsFilter implements DataFetcher {
         JsonObject sampleCountResult = esService.send(sampleCountRequest);
         int numberOfSamples = sampleCountResult.get("count").getAsInt();
 
-        Request fileCountRequest = new Request("GET", FILES_COUNT_END_POINT);
-        fileCountRequest.setJsonEntity(gson.toJson(query));
-        JsonObject fileCountResult = esService.send(fileCountRequest);
-        int numberOfFiles = fileCountResult.get("count").getAsInt();
-
         Request subjectCountRequest = new Request("GET", SUBJECTS_COUNT_END_POINT);
         subjectCountRequest.setJsonEntity(gson.toJson(query));
         JsonObject subjectCountResult = esService.send(subjectCountRequest);
         int numberOfSubjects = subjectCountResult.get("count").getAsInt();
 
+        Request filesCountRequest = new Request("GET", FILES_COUNT_END_POINT);
+        filesCountRequest.setJsonEntity(gson.toJson(query));
+        JsonObject filesCountResult = esService.send(filesCountRequest);
+        int numberOfFiles = filesCountResult.get("count").getAsInt();
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
@@ -277,13 +275,6 @@ public class CdsEsFilter implements DataFetcher {
             } else {
                 widgetData = subjectCountBy(field, params, endpoint);;
                 data.put(widgetQueryName, widgetData);
-            }
-            // filterSubjectCountByXXXX
-            if (params.containsKey(field) && ((List<String>)params.get(field)).size() > 0) {
-                List<Map<String, Object>> filterCount = filterSubjectCountBy(field, params, endpoint);;
-                data.put(filterCountQueryName, filterCount);
-            } else {
-                data.put(filterCountQueryName, widgetData);
             }
         }
 

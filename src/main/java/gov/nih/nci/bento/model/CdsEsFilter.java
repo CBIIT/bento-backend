@@ -30,8 +30,9 @@ public class CdsEsFilter implements DataFetcher {
     final String SUBJECT_IDS_END_POINT = "/subject_ids/_search";
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
+    final String FILES_FILTER_END_POINT = "/files_filter/_search";
     final String FILES_END_POINT = "/files/_search";
-    final String FILES_COUNT_END_POINT = "/files_count/_count";
+    final String FILES_COUNT_END_POINT = "/files/_count";
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
     final String NODES_END_POINT = "/model_nodes/_search";
@@ -109,115 +110,115 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "studies",
                 WIDGET_QUERY, "subjectCountByStudy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByStudy",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "experimental_strategies",
                 WIDGET_QUERY, "subjectCountByExperimentalStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByExperimentalStrategy",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "accesses",
                 WIDGET_QUERY, "subjectCountByAccess",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAccess",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "genders",
                 WIDGET_QUERY, "subjectCountByGender",
                 FILTER_COUNT_QUERY, "filterSubjectCountByGender",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "is_tumor",
                 WIDGET_QUERY,"subjectCountByIsTumor",
                 FILTER_COUNT_QUERY, "filterSubjectCountByIsTumor",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "analyte_type",
                 WIDGET_QUERY, "subjectCountByAnalyteType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAnalyteType",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "file_types",
                 WIDGET_QUERY, "subjectCountByFileType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByFileType",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "site",
                 WIDGET_QUERY, "subjectCountByDiseaseSite",
                 FILTER_COUNT_QUERY, "filterSubjectCountByDiseaseSite",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_strategies",
                 WIDGET_QUERY, "subjectCountByLibraryStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibraryStrategy",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_sources",
                 WIDGET_QUERY, "subjectCountByLibrarySource",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibrarySource",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_selections",
                 WIDGET_QUERY, "subjectCountByLibrarySelection",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibrarySelection",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "library_layouts",
                 WIDGET_QUERY, "subjectCountByLibraryLayout",
                 FILTER_COUNT_QUERY, "filterSubjectCountByLibraryLayout",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "platforms",
                 WIDGET_QUERY, "subjectCountByPlatform",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPlatform",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "instrument_models",
                 WIDGET_QUERY, "subjectCountByInstrumentModel",
                 FILTER_COUNT_QUERY, "filterSubjectCountByInstrumentModel",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "reference_genome_assemblies",
                 WIDGET_QUERY, "subjectCountByReferenceGenomeAssembly",
                 FILTER_COUNT_QUERY, "filterSubjectCountByReferenceGenomeAssembly",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "primary_diagnoses",
                 WIDGET_QUERY, "subjectCountByPrimaryDiagnosis",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPrimaryDiagnosis",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "phs_accession",
                 WIDGET_QUERY, "subjectCountByPhsAccession",
                 FILTER_COUNT_QUERY, "filterSubjectCountByPhsAccession",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "study_data_types",
                 WIDGET_QUERY, "subjectCountByStudyDataType",
                 FILTER_COUNT_QUERY, "filterSubjectCountByStudyDataType",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "acl",
                 WIDGET_QUERY, "subjectCountByAcl",
                 FILTER_COUNT_QUERY, "filterSubjectCountByAcl",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_FILTER_END_POINT
         ));
 
         List<String> agg_names = new ArrayList<>();
@@ -249,7 +250,7 @@ public class CdsEsFilter implements DataFetcher {
 
         // Get aggregations
         Map<String, Object> aggQuery = esService.addAggregations(query, TERM_AGG_NAMES, RANGE_AGG_NAMES);
-        Request fileRequest = new Request("GET", FILES_END_POINT);
+        Request fileRequest = new Request("GET", FILES_FILTER_END_POINT);
         fileRequest.setJsonEntity(gson.toJson(aggQuery));
         JsonObject subjectResult = esService.send(fileRequest);
         Map<String, JsonArray> aggs = esService.collectTermAggs(subjectResult, TERM_AGG_NAMES);
@@ -269,7 +270,7 @@ public class CdsEsFilter implements DataFetcher {
             String endpoint = agg.get(AGG_ENDPOINT);
             // subjectCountByXXXX
             List<Map<String, Object>> widgetData;
-            if (endpoint.equals(FILES_END_POINT)) {
+            if (endpoint.equals(FILES_FILTER_END_POINT)) {
                 widgetData = getGroupCountHelper(aggs.get(field));
                 data.put(widgetQueryName, widgetData);
             } else {
@@ -347,6 +348,7 @@ public class CdsEsFilter implements DataFetcher {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"study_acronym", "studies"},
+                new String[]{"accesses", "accesses"},
                 new String[]{"phs_accession", "phs_accession"},
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"sample_id", "sample_id"},
@@ -365,6 +367,7 @@ public class CdsEsFilter implements DataFetcher {
 
         Map<String, String> sortFieldMapping = Map.ofEntries(
                 Map.entry("study_acronym", "studies"),
+                Map.entry("accesses", "accesses"),
                 Map.entry("phs_accession", "phs_accession"),
                 Map.entry("subject_id", "subject_ids"),
                 Map.entry("sample_id", "sample_id"),

@@ -23,6 +23,7 @@ type SampleOverview {
 
 type FileOverview {
     study_acronym: String
+    accesses: String
     phs_accession: String
     subject_id: String
     sample_id: String

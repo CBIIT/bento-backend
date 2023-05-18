@@ -462,7 +462,7 @@ Indices:
       WITH
         s.study_access AS access,
         s.acl AS acl,
-        f.experimental_strategy_and_data_subtypes AS experimental_strategies,
+        apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS experimental_strategies,
         COLLECT(DISTINCT f.file_type) AS file_types,
         p.gender AS genders,
         COLLECT(DISTINCT g.instrument_model) AS instrument_models,
@@ -608,20 +608,6 @@ Indices:
         p.participant_id AS subject_id,
         toLower(p.participant_id) AS subject_ids
     "
-
-  # used for getting count of unique file ids
-  - index_name: file_ids
-    type: neo4j
-    # type mapping for each property of the index
-    mapping:
-      file_id:
-        type: keyword
-    # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
-    cypher_query: "
-    MATCH (f:file)
-    RETURN DISTINCT
-      f.file_id AS file_id
-  "
 
   - index_name: about_page
     type: about_file

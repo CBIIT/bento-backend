@@ -31,6 +31,7 @@ public class CdsEsFilter implements DataFetcher {
     final String SAMPLES_END_POINT = "/samples/_search";
     final String SAMPLES_COUNT_END_POINT = "/samples/_count";
     final String FILES_END_POINT = "/files/_search";
+    final String FILES_EXPERIMENTAL_STRATEGY_END_POINT = "/file_experimental_strategies/_search";
     final String FILES_COUNT_END_POINT = "/file_ids/_count";
     final String PROGRAMS_END_POINT = "/programs/_search";
     final String PROGRAMS_COUNT_END_POINT = "/programs/_count";
@@ -115,7 +116,7 @@ public class CdsEsFilter implements DataFetcher {
                 AGG_NAME, "experimental_strategies",
                 WIDGET_QUERY, "subjectCountByExperimentalStrategy",
                 FILTER_COUNT_QUERY, "filterSubjectCountByExperimentalStrategy",
-                AGG_ENDPOINT, FILES_END_POINT
+                AGG_ENDPOINT, FILES_EXPERIMENTAL_STRATEGY_END_POINT
         ));
         TERM_AGGS.add(Map.of(
                 AGG_NAME, "accesses",
@@ -356,6 +357,7 @@ public class CdsEsFilter implements DataFetcher {
         // Following String array of arrays should be in form of "GraphQL_field_name", "ES_field_name"
         final String[][] PROPERTIES = new String[][]{
                 new String[]{"study_acronym", "studies"},
+                new String[]{"accesses", "accesses"},
                 new String[]{"phs_accession", "phs_accession"},
                 new String[]{"subject_id", "subject_ids"},
                 new String[]{"sample_id", "sample_id"},
@@ -374,6 +376,7 @@ public class CdsEsFilter implements DataFetcher {
 
         Map<String, String> sortFieldMapping = Map.ofEntries(
                 Map.entry("study_acronym", "studies"),
+                Map.entry("accesses", "accesses"),
                 Map.entry("phs_accession", "phs_accession"),
                 Map.entry("subject_id", "subject_ids"),
                 Map.entry("sample_id", "sample_id"),

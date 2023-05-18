@@ -268,6 +268,109 @@ Indices:
         sample_id AS sample_ids,
         subject_ids AS subject_ids
     "
+  - index_name: file_experimental_strategies
+    type: neo4j
+    mapping:
+      file_id:
+        type: keyword
+      # Filter properties
+      accesses:
+        type: keyword
+      acl:
+        type: keyword
+      experimental_strategies:
+        type: keyword
+      file_types:
+        type: keyword
+      genders:
+        type: keyword
+      instrument_models:
+        type: keyword
+      is_tumor:
+        type: keyword
+      library_layouts:
+        type: keyword
+      library_selections:
+        type: keyword
+      library_sources:
+        type: keyword
+      library_strategies:
+        type: keyword
+      number_of_study_participants:
+        type: integer
+      number_of_study_samples:
+        type: integer
+      phs_accession:
+        type: keyword
+      platforms:
+        type: keyword
+      primary_diagnoses:
+        type: keyword
+      reference_genome_assemblies:
+        type: keyword
+      site:
+        type: keyword
+      studies:
+        type: keyword
+      study_data_types:
+        type: keyword
+    cypher_query: "
+      MATCH (f:file)
+      OPTIONAL MATCH (f)-->(samp:sample)
+      OPTIONAL MATCH (samp)-->(p:participant)
+      OPTIONAL MATCH (p)-->(s:study)
+      OPTIONAL MATCH (p)<--(diag:diagnosis)
+      OPTIONAL MATCH (f)<--(g:genomic_info)
+      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS es
+      WITH 
+        f, samp, p, s, diag, g, es,
+        COUNT(DISTINCT samp) as num_study_samples,
+        COUNT(DISTINCT p) as num_study_participants
+      WITH
+        s.study_access AS access,
+        s.acl AS acl,
+        es AS experimental_strategies,
+        COLLECT(DISTINCT f.file_type) AS file_types,
+        p.gender AS genders,
+        COLLECT(DISTINCT g.instrument_model) AS instrument_models,
+        COLLECT(DISTINCT samp.sample_tumor_status) AS is_tumor,
+        COLLECT(DISTINCT g.library_layout) AS library_layouts, 
+        COLLECT(DISTINCT g.library_selection) AS library_selections, 
+        COLLECT(DISTINCT g.library_source) AS library_sources, 
+        COLLECT(DISTINCT g.library_strategy) AS library_strategies, 
+        COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
+        COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples, 
+        s.phs_accession AS phs_accession, 
+        COLLECT(DISTINCT g.platform) AS platforms, 
+        COLLECT(DISTINCT diag.primary_diagnosis) AS primary_diagnoses, 
+        COLLECT(DISTINCT g.reference_genome_assembly) AS reference_genome_assemblies, 
+        COLLECT(DISTINCT diag.primary_site) AS site, 
+        s.study_name AS studies, 
+        s.study_data_types AS study_data_types,
+        f.file_id AS file_id
+      RETURN
+        access AS accesses,
+        acl AS acl,
+        experimental_strategies AS experimental_strategies,
+        file_types AS file_types,
+        genders AS genders,
+        instrument_models AS instrument_models,
+        is_tumor AS is_tumor,
+        library_layouts AS library_layouts,
+        library_selections AS library_selections,
+        library_sources AS library_sources,
+        library_strategies AS library_strategies,
+        number_of_study_participants AS number_of_study_participants,
+        number_of_study_samples AS number_of_study_samples,
+        phs_accession AS phs_accession,
+        platforms AS platforms,
+        primary_diagnoses AS primary_diagnoses,
+        reference_genome_assemblies AS reference_genome_assemblies,
+        site AS site,
+        studies AS studies,
+        study_data_types AS study_data_types,
+        file_id AS file_id
+      "
 
 # Files index
   - index_name: files
@@ -352,42 +455,39 @@ Indices:
       OPTIONAL MATCH (p)-->(s:study)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
-      UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS es
       WITH 
-        f, samp, p, s, diag, g, es,
+        f, samp, p, s, diag, g,
         COUNT(DISTINCT samp) as num_study_samples,
-        COUNT(DISTINCT p) as num_study_participants,
-        \"^\\s*$\" AS empty_string, 
-        \"Not specified in data\" as ns
+        COUNT(DISTINCT p) as num_study_participants
       WITH
-        apoc.text.replace(s.data_access_level, empty_string, ns) AS access,
-        apoc.text.replace(s.acl, empty_string, ns) AS acl,
-        apoc.text.replace(es, empty_string, ns) AS experimental_strategies,
-        COLLECT(DISTINCT apoc.text.replace(f.file_type, empty_string, ns)) AS file_types,
-        apoc.text.replace(p.gender, empty_string, ns) AS genders,
-        COLLECT(DISTINCT apoc.text.replace(g.instrument_model, empty_string, ns)) AS instrument_models,
-        COLLECT(DISTINCT apoc.text.replace(samp.sample_tumor_status, empty_string, ns)) AS is_tumor,
-        COLLECT(DISTINCT apoc.text.replace(g.library_layout, empty_string, ns)) AS library_layouts, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_selection, empty_string, ns)) AS library_selections, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_source, empty_string, ns)) AS library_sources, 
-        COLLECT(DISTINCT apoc.text.replace(g.library_strategy, empty_string, ns)) AS library_strategies, 
+        s.study_access AS access,
+        s.acl AS acl,
+        f.experimental_strategy_and_data_subtypes AS experimental_strategies,
+        COLLECT(DISTINCT f.file_type) AS file_types,
+        p.gender AS genders,
+        COLLECT(DISTINCT g.instrument_model) AS instrument_models,
+        COLLECT(DISTINCT samp.sample_tumor_status) AS is_tumor,
+        COLLECT(DISTINCT g.library_layout) AS library_layouts, 
+        COLLECT(DISTINCT g.library_selection) AS library_selections, 
+        COLLECT(DISTINCT g.library_source) AS library_sources, 
+        COLLECT(DISTINCT g.library_strategy) AS library_strategies, 
         COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
         COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples, 
-        apoc.text.replace(s.phs_accession, empty_string, ns) AS phs_accession, 
-        COLLECT(DISTINCT apoc.text.replace(g.platform, empty_string, ns)) AS platforms, 
-        COLLECT(DISTINCT apoc.text.replace(diag.primary_diagnosis, empty_string, ns)) AS primary_diagnoses, 
-        COLLECT(DISTINCT apoc.text.replace(g.reference_genome_assembly, empty_string, ns)) AS reference_genome_assemblies, 
-        COLLECT(DISTINCT apoc.text.replace(diag.primary_site, empty_string, ns)) AS site, 
-        apoc.text.replace(s.study_name, empty_string, ns) AS studies, 
-        apoc.text.replace(s.study_data_types, empty_string, ns) AS study_data_types,
-        apoc.text.replace(samp.sample_type, empty_string, ns) AS analyte_type,
-        apoc.text.replace(f.file_id, empty_string, ns) AS file_id,
-        apoc.text.replace(f.file_name, empty_string, ns) AS file_name,
-        apoc.text.replace(f.file_type, empty_string, ns) AS file_type,
+        s.phs_accession AS phs_accession, 
+        COLLECT(DISTINCT g.platform) AS platforms, 
+        COLLECT(DISTINCT diag.primary_diagnosis) AS primary_diagnoses, 
+        COLLECT(DISTINCT g.reference_genome_assembly) AS reference_genome_assemblies, 
+        COLLECT(DISTINCT diag.primary_site) AS site, 
+        s.study_name AS studies, 
+        s.study_data_types AS study_data_types,
+        samp.sample_type AS analyte_type,
+        f.file_id AS file_id,
+        f.file_name AS file_name,
+        f.file_type AS file_type,
         f.file_size AS file_size,
-        apoc.text.replace(f.md5sum, empty_string, ns) AS md5sum,
-        apoc.text.replace(samp.sample_id, empty_string, ns) AS sample_id,
-        apoc.text.replace(p.participant_id, empty_string, ns) AS participant_id
+        f.md5sum AS md5sum,
+        samp.sample_id AS sample_id,
+        p.participant_id AS participant_id
       RETURN
         access AS accesses,
         acl AS acl,

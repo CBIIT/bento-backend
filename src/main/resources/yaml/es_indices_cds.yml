@@ -315,16 +315,12 @@ Indices:
       study_data_types:
         type: keyword
     cypher_query: "
-      MATCH (f:file)-->(:sample)-->(:participant)-->(s:study)
-      OPTIONAL MATCH (p:participant)-->(s)
-      OPTIONAL MATCH (samp:sample)-->(p)
+      MATCH (f:file)-->(samp:sample)-->(p:participant)-->(s:study)
       WITH 
-        f,
+        s,
         COUNT(DISTINCT p) AS number_of_study_participants, 
         COUNT(DISTINCT samp) AS number_of_study_samples
-      OPTIONAL MATCH (f)-->(samp:sample)
-      OPTIONAL MATCH (samp)-->(p:participant)
-      OPTIONAL MATCH (p)-->(s:study)
+      MATCH (f:file)-->(samp:sample)-->(p:participant)-->(s)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
       UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS es
@@ -453,16 +449,12 @@ Indices:
         type: search_as_you_type
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (f:file)-->(:sample)-->(:participant)-->(s:study)
-      OPTIONAL MATCH (p:participant)-->(s)
-      OPTIONAL MATCH (samp:sample)-->(p)
+      MATCH (f:file)-->(samp:sample)-->(p:participant)-->(s:study)
       WITH 
-        f,
+        s,
         COUNT(DISTINCT p) AS number_of_study_participants, 
         COUNT(DISTINCT samp) AS number_of_study_samples
-      OPTIONAL MATCH (f)-->(samp:sample)
-      OPTIONAL MATCH (samp)-->(p:participant)
-      OPTIONAL MATCH (p)-->(s:study)
+      MATCH (f:file)-->(samp:sample)-->(p:participant)-->(s)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
       WITH 

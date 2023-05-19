@@ -539,12 +539,13 @@ public class CdsEsFilter implements DataFetcher {
                 GS_COUNT_ENDPOINT, STUDIES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "study_count",
                 GS_RESULT_FIELD, "studies",
-                GS_SEARCH_FIELD, List.of("phs_accession_gs", "study_name", "study_code"),
+                GS_SEARCH_FIELD, List.of("phs_accession_gs", "study_name_gs", "study_code_gs", "study_data_types_gs"),
                 GS_SORT_FIELD, "phs_accession",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"phs_accession", "phs_accession_gs"},
-                        new String[]{"study_code", "study_code"},
-                        new String[]{"study_name", "study_name"}
+                        new String[]{"study_code", "study_code_gs"},
+                        new String[]{"study_name", "study_name_gs"},
+                        new String[]{"study_data_types", "study_data_types_gs"}
                 },
                 GS_CATEGORY_TYPE, "study"
 
@@ -554,12 +555,13 @@ public class CdsEsFilter implements DataFetcher {
                 GS_COUNT_ENDPOINT, SUBJECTS_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "subject_count",
                 GS_RESULT_FIELD, "subjects",
-                GS_SEARCH_FIELD, List.of("subject_id_gs", "site_gs"),
+                GS_SEARCH_FIELD, List.of("study_gs", "subject_id_gs", "site_gs", "gender_gs"),
                 GS_SORT_FIELD, "subject_ids",
                 GS_COLLECT_FIELDS, new String[][]{
                         new String[]{"study", "study_gs"},
                         new String[]{"subject_id", "subject_id_gs"},
-                        new String[]{"site", "site_gs"}
+                        new String[]{"site", "site_gs"},
+                        new String[]{"gender", "gender_gs"}
                 },
                 GS_CATEGORY_TYPE, "subject"
         ));
@@ -571,10 +573,9 @@ public class CdsEsFilter implements DataFetcher {
                 GS_SEARCH_FIELD, List.of("sample_id_gs", "is_tumor_gs", "analyte_type_gs"),
                 GS_SORT_FIELD, "sample_id",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"subject_id", "subject_id"},
-                        new String[]{"sample_id", "sample_id"},
-                        new String[]{"is_tumor", "is_tumor"},
-                        new String[]{"analyte_type", "analyte_type"}
+                        new String[]{"sample_id", "sample_id_gs"},
+                        new String[]{"is_tumor", "is_tumor_gs"},
+                        new String[]{"analyte_type", "analyte_type_gs"}
                 },
                 GS_CATEGORY_TYPE, "sample"
         ));
@@ -583,14 +584,28 @@ public class CdsEsFilter implements DataFetcher {
                 GS_COUNT_ENDPOINT, FILES_COUNT_END_POINT,
                 GS_COUNT_RESULT_FIELD, "file_count",
                 GS_RESULT_FIELD, "files",
-                GS_SEARCH_FIELD, List.of("file_id_gs", "file_name_gs", "file_type_gs"),
+                GS_SEARCH_FIELD, List.of("subject_id_gs","sample_id_gs","file_id_gs","file_name_gs",
+                        "file_type_gs","accesses_gs","acl_gs","experimental_strategies_gs","instrument_models_gs",
+                        "library_layouts_gs","library_selections_gs","library_sources_gs","library_strategies_gs",
+                        "platforms_gs","reference_genome_assemblies_gs","sites_gs"),
                 GS_SORT_FIELD, "file_id",
                 GS_COLLECT_FIELDS, new String[][]{
-                        new String[]{"subject_id", "subject_ids"},
-                        new String[]{"sample_id", "sample_id"},
-                        new String[]{"file_id", "file_id"},
-                        new String[]{"file_name", "file_name"},
-                        new String[]{"file_type", "file_type"}
+                        new String[]{"subject_id", "subject_id_gs"},
+                        new String[]{"sample_id", "sample_id_gs"},
+                        new String[]{"file_id", "file_id_gs"},
+                        new String[]{"file_name", "file_name_gs"},
+                        new String[]{"file_type", "file_type_gs"},
+                        new String[]{"accesses", "accesses_gs"},
+                        new String[]{"acl","acl_gs"},
+                        new String[]{"experimental_strategies","experimental_strategies_gs"},
+                        new String[]{"instrument_models","instrument_models_gs"},
+                        new String[]{"library_layouts","library_layouts_gs"},
+                        new String[]{"library_selections","library_selections_gs"},
+                        new String[]{"library_sources","library_sources_gs"},
+                        new String[]{"library_strategies","library_strategies_gs"},
+                        new String[]{"platforms","platforms_gs"},
+                        new String[]{"reference_genome_assemblies","reference_genome_assemblies_gs"},
+                        new String[]{"sites","sites_gs"}
                 },
                 GS_CATEGORY_TYPE, "file"
         ));

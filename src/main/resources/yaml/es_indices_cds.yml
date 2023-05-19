@@ -55,6 +55,8 @@ Indices:
         type: search_as_you_type
       subject_id_gs:
         type: search_as_you_type
+      gender_gs:
+        type: search_as_you_type
       # Overview properties
       files:
         type: keyword
@@ -109,6 +111,7 @@ Indices:
         experimental_strategies AS experimental_strategies,
         file_types AS file_types,
         genders AS genders,
+        genders AS gender_gs,
         instrument_models AS instrument_models,
         is_tumor AS is_tumor,
         library_layouts AS library_layouts,
@@ -447,6 +450,32 @@ Indices:
         type: search_as_you_type
       file_type_gs:
         type: search_as_you_type
+      subject_id_gs:
+        type: search_as_you_type
+      sample_id_gs:
+        type: search_as_you_type
+      accesses_gs:
+        type: search_as_you_type
+      acl_gs:
+        type: search_as_you_type
+      experimental_strategies_gs:
+        type: search_as_you_type
+      instrument_models_gs:
+        type: search_as_you_type
+      library_layouts_gs:
+        type: search_as_you_type
+      library_selections_gs:
+        type: search_as_you_type
+      library_sources_gs:
+        type: search_as_you_type
+      library_strategies_gs:
+        type: search_as_you_type
+      platforms_gs:
+        type: search_as_you_type
+      reference_genome_assemblies_gs:
+        type: search_as_you_type
+      sites_gs:
+        type: search_as_you_type
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (f:file)-->(samp:sample)-->(p:participant)-->(s:study)
@@ -522,7 +551,20 @@ Indices:
         participant_id AS subject_ids,
         file_id AS file_id_gs,
         file_name AS file_name_gs,
-        file_type AS file_type_gs
+        file_type AS file_type_gs,
+        participant_id AS subject_id_gs,
+        sample_id AS sample_id_gs,
+        access AS accesses_gs,
+        acl AS acl_gs,
+        experimental_strategies AS experimental_strategies_gs,
+        instrument_models AS instrument_models_gs,
+        library_layouts AS library_layouts_gs,
+        library_selections AS library_selections_gs,
+        library_sources AS library_sources_gs,
+        library_strategies AS library_strategies_gs,
+        platforms AS platforms_gs,
+        reference_genome_assemblies AS reference_genome_assemblies_gs,
+        site AS sites_gs
     "
 
   - index_name: programs
@@ -560,17 +602,22 @@ Indices:
     # type mapping for each property of the index
     mapping:
       study_code:
-        type: search_as_you_type
-      phs_accession_gs:
-        type: search_as_you_type
+        type: keyword
       phs_accession:
         type: keyword
-      study_name:
-        type: search_as_you_type
       study_data_types:
         type: keyword
       acl:
         type: keyword
+      study_code_gs:
+        type: search_as_you_type
+      phs_accession_gs:
+        type: search_as_you_type
+      study_name_gs:
+        type: search_as_you_type
+      study_data_types_gs:
+        type: search_as_you_type
+
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
@@ -579,10 +626,13 @@ Indices:
       OPTIONAL MATCH (p)<--(samp:sample)
       RETURN
         s.study_name AS study_code,
+        s.study_name AS study_code_gs,
         s.phs_accession AS phs_accession_gs,
         s.phs_accession AS phs_accession,
         s.study_name AS study_name,
+        s.study_name AS study_name_gs,
         s.study_data_types AS study_data_types,
+        s.study_data_types AS study_data_types_gs,
         s.acl AS acl,
         COUNT(DISTINCT p) AS number_of_participants,
         COUNT(DISTINCT samp) AS number_of_samples

@@ -102,6 +102,7 @@ type GroupCount {
 type GS_Study {
     type: String
     phs_accession: String
+    study_data_types: String
     study_name: String
     study_code: String
 }
@@ -111,11 +112,11 @@ type GS_Subject {
     study: String
     subject_id: String
     site: String
+    gender: String
 }
 
 type GS_Sample {
     type: String
-    subject_id: String
     sample_id: String
     is_tumor: String
     analyte_type: String
@@ -128,6 +129,17 @@ type GS_File {
     file_id: String
     file_name: String
     file_type: String
+    accesses: String
+    acl: String
+    experimental_strategies: [String]
+    instrument_models: [String]
+    library_layouts: [String]
+    library_selections: [String]
+    library_sources: [String]
+    library_strategies: [String]
+    platforms: [String]
+    reference_genome_assemblies: [String]
+    sites: [String]
 }
 
 type GS_Model {

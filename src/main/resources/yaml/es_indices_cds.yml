@@ -315,7 +315,13 @@ Indices:
       study_data_types:
         type: keyword
     cypher_query: "
-      MATCH (f:file)
+      MATCH (f:file)-->(:sample)-->(:participant)-->(s:study)
+      OPTIONAL MATCH (p:participant)-->(s)
+      OPTIONAL MATCH (samp:sample)-->(p)
+      WITH 
+        f,
+        COUNT(DISTINCT p) AS number_of_study_participants, 
+        COUNT(DISTINCT samp) AS number_of_study_samples
       OPTIONAL MATCH (f)-->(samp:sample)
       OPTIONAL MATCH (samp)-->(p:participant)
       OPTIONAL MATCH (p)-->(s:study)
@@ -323,10 +329,10 @@ Indices:
       OPTIONAL MATCH (f)<--(g:genomic_info)
       UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS es
       WITH 
-        f, samp, p, s, diag, g, es,
-        COUNT(DISTINCT samp) as num_study_samples,
-        COUNT(DISTINCT p) as num_study_participants
+        f, samp, p, s, diag, g, es, number_of_study_participants, number_of_study_samples
       WITH
+        number_of_study_participants, 
+        number_of_study_samples,
         s.study_access AS access,
         s.acl AS acl,
         es AS experimental_strategies,
@@ -338,8 +344,6 @@ Indices:
         COLLECT(DISTINCT g.library_selection) AS library_selections, 
         COLLECT(DISTINCT g.library_source) AS library_sources, 
         COLLECT(DISTINCT g.library_strategy) AS library_strategies, 
-        COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
-        COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples, 
         s.phs_accession AS phs_accession, 
         COLLECT(DISTINCT g.platform) AS platforms, 
         COLLECT(DISTINCT diag.primary_diagnosis) AS primary_diagnoses, 
@@ -449,17 +453,23 @@ Indices:
         type: search_as_you_type
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (f:file)
+      MATCH (f:file)-->(:sample)-->(:participant)-->(s:study)
+      OPTIONAL MATCH (p:participant)-->(s)
+      OPTIONAL MATCH (samp:sample)-->(p)
+      WITH 
+        f,
+        COUNT(DISTINCT p) AS number_of_study_participants, 
+        COUNT(DISTINCT samp) AS number_of_study_samples
       OPTIONAL MATCH (f)-->(samp:sample)
       OPTIONAL MATCH (samp)-->(p:participant)
       OPTIONAL MATCH (p)-->(s:study)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
       WITH 
-        f, samp, p, s, diag, g,
-        COUNT(DISTINCT samp) as num_study_samples,
-        COUNT(DISTINCT p) as num_study_participants
+        f, samp, p, s, diag, g, number_of_study_participants, number_of_study_samples
       WITH
+        number_of_study_participants, 
+        number_of_study_samples,
         s.study_access AS access,
         s.acl AS acl,
         apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS experimental_strategies,
@@ -471,8 +481,6 @@ Indices:
         COLLECT(DISTINCT g.library_selection) AS library_selections, 
         COLLECT(DISTINCT g.library_source) AS library_sources, 
         COLLECT(DISTINCT g.library_strategy) AS library_strategies, 
-        COALESCE(COUNT(DISTINCT p), 0) AS number_of_study_participants, 
-        COALESCE(COUNT(DISTINCT samp), 0) AS number_of_study_samples, 
         s.phs_accession AS phs_accession, 
         COLLECT(DISTINCT g.platform) AS platforms, 
         COLLECT(DISTINCT diag.primary_diagnosis) AS primary_diagnoses, 

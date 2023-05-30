@@ -67,16 +67,19 @@ Indices:
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (p:participant)
-      OPTIONAL MATCH (p)-->(s:study)
-      OPTIONAL MATCH (p)<--(samp:sample)
-      OPTIONAL MATCH (p)<--(diag:diagnosis)
+      MATCH (s:study)
+      OPTIONAL MATCH (p:participant)-->(s)
+      OPTIONAL MATCH (samp:sample)-->(p)
+      WITH s, COUNT(DISTINCT p) as num_study_participants, COUNT(DISTINCT samp) as num_study_samples
+      MATCH (p:participant)-->(s)
+      OPTIONAL MATCH (samp:sample)-->(p)
       OPTIONAL MATCH (samp)<--(f:file)
+      OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (f)<--(g:genomic_info)
       WITH
         samp, p, s, diag, f, g,
-        COUNT(DISTINCT p) as num_study_participants,
-        COUNT(DISTINCT samp) as num_study_samples,
+        num_study_participants,
+        num_study_samples,
         \"^\\s*$\" AS empty_string,
         \"Not specified in data\" as ns
       WITH
@@ -201,16 +204,19 @@ Indices:
 
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
-      MATCH (samp:sample)
-      OPTIONAL MATCH (samp)-->(p:participant)
+      MATCH (s:study)
+      OPTIONAL MATCH (p:participant)-->(s)
+      OPTIONAL MATCH (samp:sample)-->(p)
+      WITH s, COUNT(DISTINCT p) as num_study_participants, COUNT(DISTINCT samp) as num_study_samples
+      MATCH (samp:sample)-->(p:participant)-->(s)
       OPTIONAL MATCH (p)-->(s:study)
       OPTIONAL MATCH (p)<--(diag:diagnosis)
       OPTIONAL MATCH (samp)<--(f:file)
       OPTIONAL MATCH (f)<--(g:genomic_info)
       WITH
         samp, p, s, diag, f, g,
-        COUNT(DISTINCT p) as num_study_participants,
-        COUNT(DISTINCT samp) as num_study_samples,
+        num_study_participants,
+        num_study_samples,
         \"^\\s*$\" AS empty_string,
         \"Not specified in data\" as ns
       WITH
@@ -234,7 +240,7 @@ Indices:
         COLLECT(DISTINCT apoc.text.replace(diag.primary_site, empty_string, ns)) AS site, 
         apoc.text.replace(s.study_name, empty_string, ns) AS studies, 
         apoc.text.replace(s.study_data_types, empty_string, ns) AS study_data_types,
-        
+
         apoc.text.replace(samp.sample_type, empty_string, ns) AS analyte_type,
         COLLECT(DISTINCT apoc.text.replace(f.file_id, empty_string, ns)) AS files,
         apoc.text.replace(samp.sample_id, empty_string, ns) AS sample_id,

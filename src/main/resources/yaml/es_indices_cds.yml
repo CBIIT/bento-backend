@@ -85,7 +85,7 @@ Indices:
       WITH
         apoc.text.replace(s.data_access_level, empty_string, ns) AS access,
         apoc.text.replace(s.acl, empty_string, ns) AS acl,
-        COLLECT(DISTINCT apoc.text.replace(f.experimental_strategy_and_data_subtypes, empty_string, ns)) AS experimental_strategies,
+        apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS experimental_strategies,
         COLLECT(DISTINCT apoc.text.replace(f.file_type, empty_string, ns)) AS file_types,
         apoc.text.replace(p.gender, empty_string, ns) AS genders,
         COLLECT(DISTINCT apoc.text.replace(g.instrument_model, empty_string, ns)) AS instrument_models,
@@ -222,7 +222,7 @@ Indices:
       WITH
         apoc.text.replace(s.data_access_level, empty_string, ns) AS access,
         apoc.text.replace(s.acl, empty_string, ns) AS acl,
-        COLLECT(DISTINCT apoc.text.replace(f.experimental_strategy_and_data_subtypes, empty_string, ns)) AS experimental_strategies,
+        apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS experimental_strategies,
         COLLECT(DISTINCT apoc.text.replace(f.file_type, empty_string, ns)) AS file_types,
         apoc.text.replace(p.gender, empty_string, ns) AS genders,
         COLLECT(DISTINCT apoc.text.replace(g.instrument_model, empty_string, ns)) AS instrument_models,

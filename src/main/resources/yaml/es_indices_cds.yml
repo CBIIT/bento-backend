@@ -81,7 +81,6 @@ Indices:
           samp, p, s, diag, f, g, num_study_participants, num_study_samples,
           \"Not applicable\" AS na
       WITH
-          //Study values
           num_study_participants,
           num_study_samples,
           s.data_access_level AS access,
@@ -89,18 +88,18 @@ Indices:
           s.phs_accession AS phs_accession,
           s.study_name AS studies, 
           s.study_data_types AS study_data_types,
-          //Participant values
+
           p.gender AS genders,
           p.participant_id AS subject_ids,
-          //Sample values
+
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(samp.sample_tumor_status, na))) AS is_tumor,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(samp.sample_type, na))) AS analyte_type,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(samp.sample_id, na))) AS samples,
-          //File values
+
           apoc.coll.sort(apoc.coll.toSet(apoc.coll.flatten(COLLECT (apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\")), true))) AS experimental_strategies,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(f.file_type, na))) AS file_types,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(f.file_id, na))) AS files,
-          //Genomic Info values
+
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_layout, na))) AS library_layouts, 
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_selection, na))) AS library_selections, 
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_source, na))) AS library_sources, 
@@ -108,7 +107,7 @@ Indices:
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.instrument_model, na))) AS instrument_models,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.platform, na))) AS platforms,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.reference_genome_assembly, na))) AS reference_genome_assemblies,
-          //Diagnosis values
+
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_diagnosis, na))) AS primary_diagnoses,
           apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_site, na))) AS site
       RETURN
@@ -139,7 +138,7 @@ Indices:
           files AS files,
           samples AS samples,
           subject_ids AS subject_ids
-    "
+      "
 
 # Samples index
   - index_name: samples
@@ -220,7 +219,7 @@ Indices:
         samp, p, s, diag, f, g, num_study_participants, num_study_samples,
         \"Not applicable\" AS na
       WITH
-        //Study values
+
         num_study_participants,
         num_study_samples,
         s.data_access_level AS access,
@@ -228,18 +227,18 @@ Indices:
         s.phs_accession AS phs_accession,
         s.study_name AS studies, 
         s.study_data_types AS study_data_types,
-        //Participant values
+
         p.gender AS genders,
         p.participant_id AS subject_ids,
-        //Sample values
+
         samp.sample_tumor_status AS is_tumor,
         samp.sample_type AS analyte_type,
         samp.sample_id AS sample_id,
-        //File values
+
         apoc.coll.sort(apoc.coll.toSet(apoc.coll.flatten(COLLECT (apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\")), true))) AS experimental_strategies,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(f.file_type, na))) AS file_types,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(f.file_id, na))) AS files,
-        //Genomic Info values
+
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_layout, na))) AS library_layouts, 
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_selection, na))) AS library_selections, 
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_source, na))) AS library_sources, 
@@ -247,7 +246,7 @@ Indices:
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.instrument_model, na))) AS instrument_models,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.platform, na))) AS platforms,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.reference_genome_assembly, na))) AS reference_genome_assemblies,
-        //Diagnosis values
+
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_diagnosis, na))) AS primary_diagnoses,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_site, na))) AS site
       RETURN
@@ -344,7 +343,7 @@ Indices:
         samp, p, s, diag, f, g, num_study_participants, num_study_samples, experimental_strategies,
         \"Not applicable\" AS na
       WITH
-        //Study values
+
         num_study_participants,
         num_study_samples,
         s.data_access_level AS access,
@@ -352,14 +351,14 @@ Indices:
         s.phs_accession AS phs_accession,
         s.study_name AS studies, 
         s.study_data_types AS study_data_types,
-        //Participant values
+
         p.gender AS genders,
         p.participant_id AS subject_ids,
-        //Sample values
+
         samp.sample_tumor_status AS is_tumor,
         samp.sample_type AS analyte_type,
         samp.sample_id AS sample_ids,
-        //File values
+
         experimental_strategies,
         f.file_type AS file_types,
         f.file_id AS files,
@@ -367,7 +366,7 @@ Indices:
         f.file_type AS file_type,
         f.file_size AS file_size,
         f.md5sum AS md5sum,
-        //Genomic Info values
+
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_layout, na))) AS library_layouts, 
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_selection, na))) AS library_selections, 
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_source, na))) AS library_sources, 
@@ -375,7 +374,7 @@ Indices:
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.instrument_model, na))) AS instrument_models,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.platform, na))) AS platforms,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.reference_genome_assembly, na))) AS reference_genome_assemblies,
-        //Diagnosis values
+
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_diagnosis, na))) AS primary_diagnoses,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_site, na))) AS site
       RETURN
@@ -547,7 +546,7 @@ Indices:
         samp, p, s, diag, f, g, num_study_participants, num_study_samples,
         \"Not applicable\" AS na
       WITH
-        //Study values
+
         num_study_participants,
         num_study_samples,
         s.data_access_level AS access,
@@ -555,14 +554,14 @@ Indices:
         s.phs_accession AS phs_accession,
         s.study_name AS studies, 
         s.study_data_types AS study_data_types,
-        //Participant values
+
         p.gender AS genders,
         p.participant_id AS subject_ids,
-        //Sample values
+
         samp.sample_tumor_status AS is_tumor,
         samp.sample_type AS analyte_type,
         samp.sample_id AS sample_ids,
-        //File values
+
         apoc.coll.sort(apoc.coll.toSet(apoc.coll.flatten(COLLECT (apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\")), true))) AS experimental_strategies,
         f.file_type AS file_types,
         f.file_id AS files,
@@ -570,7 +569,7 @@ Indices:
         f.file_type AS file_type,
         f.file_size AS file_size,
         f.md5sum AS md5sum,
-        //Genomic Info values
+
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_layout, na))) AS library_layouts, 
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_selection, na))) AS library_selections, 
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.library_source, na))) AS library_sources, 
@@ -578,7 +577,7 @@ Indices:
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.instrument_model, na))) AS instrument_models,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.platform, na))) AS platforms,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(g.reference_genome_assembly, na))) AS reference_genome_assemblies,
-        //Diagnosis values
+
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_diagnosis, na))) AS primary_diagnoses,
         apoc.coll.sort(COLLECT(DISTINCT COALESCE(diag.primary_site, na))) AS site
       RETURN

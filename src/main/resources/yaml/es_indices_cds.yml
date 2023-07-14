@@ -79,7 +79,7 @@ Indices:
       OPTIONAL MATCH (f)<--(g:genomic_info)
       WITH
           samp, p, s, diag, f, g, num_study_participants, num_study_samples,
-          \"Not applicable\" AS na
+          \"Not specified in data\" AS na
       WITH
           num_study_participants,
           num_study_samples,
@@ -217,7 +217,7 @@ Indices:
       OPTIONAL MATCH (f)<--(g:genomic_info)
       WITH
         samp, p, s, diag, f, g, num_study_participants, num_study_samples,
-        \"Not applicable\" AS na
+        \"Not specified in data\" AS na
       WITH
 
         num_study_participants,
@@ -341,7 +341,7 @@ Indices:
       UNWIND apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\") AS experimental_strategies
       WITH
         samp, p, s, diag, f, g, num_study_participants, num_study_samples, experimental_strategies,
-        \"Not applicable\" AS na
+        \"Not specified in data\" AS na
       WITH
 
         num_study_participants,
@@ -544,7 +544,7 @@ Indices:
       OPTIONAL MATCH (g:genomic_info)-->(f)
       WITH
         samp, p, s, diag, f, g, num_study_participants, num_study_samples,
-        \"Not applicable\" AS na
+        \"Not specified in data\" AS na
       WITH
 
         num_study_participants,

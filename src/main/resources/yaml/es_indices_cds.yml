@@ -352,12 +352,12 @@ Indices:
         s.study_name AS studies, 
         s.study_data_types AS study_data_types,
 
-        p.gender AS genders,
-        p.participant_id AS subject_ids,
+        COALESCE(p.gender, na) AS genders,
+        COALESCE(p.participant_id, na) AS subject_ids,
 
-        samp.sample_tumor_status AS is_tumor,
-        samp.sample_type AS analyte_type,
-        samp.sample_id AS sample_ids,
+        COALESCE(samp.sample_tumor_status, na) AS is_tumor,
+        COALESCE(samp.sample_type, na) AS analyte_type,
+        COALESCE(samp.sample_id, na) AS sample_ids,
 
         experimental_strategies,
         f.file_type AS file_types,
@@ -555,12 +555,12 @@ Indices:
         s.study_name AS studies, 
         s.study_data_types AS study_data_types,
 
-        p.gender AS genders,
-        p.participant_id AS subject_ids,
+        COALESCE(p.gender, na) AS genders,
+        COALESCE(p.participant_id, na) AS subject_ids,
 
-        samp.sample_tumor_status AS is_tumor,
-        samp.sample_type AS analyte_type,
-        samp.sample_id AS sample_ids,
+        COALESCE(samp.sample_tumor_status, na) AS is_tumor,
+        COALESCE(samp.sample_type, na) AS analyte_type,
+        COALESCE(samp.sample_id, na) AS sample_ids,
 
         apoc.coll.sort(apoc.coll.toSet(apoc.coll.flatten(COLLECT (apoc.text.split(f.experimental_strategy_and_data_subtypes,\"[;,]\\s{0,1}\")), true))) AS experimental_strategies,
         f.file_type AS file_types,

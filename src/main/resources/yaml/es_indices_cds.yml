@@ -83,7 +83,7 @@ Indices:
       WITH
           num_study_participants,
           num_study_samples,
-          s.data_access_level AS access,
+          s.study_access AS access,
           s.acl AS acl,
           s.phs_accession AS phs_accession,
           s.study_name AS studies, 
@@ -222,7 +222,7 @@ Indices:
 
         num_study_participants,
         num_study_samples,
-        s.data_access_level AS access,
+        s.study_access AS access,
         s.acl AS acl,
         s.phs_accession AS phs_accession,
         s.study_name AS studies, 
@@ -346,7 +346,7 @@ Indices:
 
         num_study_participants,
         num_study_samples,
-        s.data_access_level AS access,
+        s.study_access AS access,
         s.acl AS acl,
         s.phs_accession AS phs_accession,
         s.study_name AS studies, 
@@ -549,7 +549,7 @@ Indices:
 
         num_study_participants,
         num_study_samples,
-        s.data_access_level AS access,
+        s.study_access AS access,
         s.acl AS acl,
         s.phs_accession AS phs_accession,
         s.study_name AS studies, 

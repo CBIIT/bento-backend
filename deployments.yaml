@@ -6,9 +6,9 @@ services:
     image: 24.6.1.97
     buildNumber: '97'
   frontend:
-    version: 3.0.2.141
-    image: 3.0.2.141
-    buildNumber: '141'
+    version: 3.0.2.142
+    image: 3.0.2.142
+    buildNumber: '142'
   files:
     version: 2.3.1.25
     image: 2.3.1.25

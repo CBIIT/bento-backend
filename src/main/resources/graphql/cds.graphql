@@ -1,0 +1,381 @@
+type diagnosis {
+  diagnosis_id: String
+  disease_type: String
+  vital_status: String
+  primary_diagnosis: String
+  primary_site: String
+  age_at_diagnosis: Int
+  tumor_grade: String
+  tumor_stage_clinical_m: String
+  tumor_stage_clinical_n: String
+  tumor_stage_clinical_t: String
+  morphology: String
+  incidence_type: String
+  progression_or_recurrence: String
+  days_to_recurrence: Int
+  days_to_last_followup: Int
+  last_known_disease_status: String
+  days_to_last_known_status: Int
+  participant: participant @relation(name:"of_participant", direction:OUT)
+}
+
+type file {
+  file_id: String
+  file_name: String
+  file_type: String
+  file_description: String
+  file_size: Float
+  md5sum: String
+  file_url_in_cds: String
+  experimental_strategy_and_data_subtypes: String
+  study: study @relation(name:"of_study", direction:OUT)
+  samples: [sample] @relation(name:"from_sample", direction:OUT)
+  genomic_info: genomic_info @relation(name:"of_file", direction:IN)
+}
+
+type genomic_info {
+  library_id: String
+  bases: Int
+  number_of_reads: Int
+  avg_read_length: Float
+  coverage: Float
+  reference_genome_assembly: String
+  custom_assembly_fasta_file_for_alignment: String
+  design_description: String
+  library_strategy: String
+  library_layout: String
+  library_source: String
+  library_selection: String
+  platform: String
+  instrument_model: String
+  sequence_alignment_software: String
+  files: [file] @relation(name:"from_genomic_info", direction:IN)
+  samples: [sample] @relation(name:"in_genomic_info", direction:IN)
+  file: file @relation(name:"of_file", direction:OUT)
+}
+
+type participant {
+  participant_id: String
+  race: String
+  gender: String
+  ethnicity: String
+  dbGaP_subject_id: String
+  study: study @relation(name:"of_study", direction:OUT)
+  diagnoses: [diagnosis] @relation(name:"of_participant", direction:IN)
+  specimens: [specimen] @relation(name:"of_participant", direction:IN)
+  samples: [sample] @relation(name:"of_participant", direction:IN)
+}
+
+type program {
+  program_name: String
+  program_acronym: String
+  program_short_description: String
+  program_full_description: String
+  program_external_url: String
+  program_sort_order: Int
+  studies: [study] @relation(name:"of_program", direction:IN)
+}
+
+type sample {
+  sample_id: String
+  sample_type: String
+  sample_tumor_status: String
+  sample_anatomic_site: String
+  sample_age_at_collection: Int
+  derived_from_specimen: String
+  biosample_accession: String
+  participant: participant @relation(name:"of_participant", direction:OUT)
+  specimen: specimen @relation(name:"of_specimen", direction:OUT)
+  files: [file] @relation(name:"from_sample", direction:IN)
+  genomic_info: [genomic_info] @relation(name:"in_genomic_info", direction:OUT)
+}
+
+type specimen {
+  specimen_id: String
+  participant: participant @relation(name:"of_participant", direction:OUT)
+  samples: [sample] @relation(name:"of_specimen", direction:IN)
+}
+
+type study {
+  study_name: String
+  study_acronym: String
+  study_description: String
+  short_description: String
+  study_external_url: String
+  primary_investigator_name: String
+  primary_investigator_email: String
+  co_investigator_name: String
+  co_investigator_email: String
+  phs_accession: String
+  bioproject_accession: String
+  index_date: String
+  cds_requestor: String
+  funding_agency: String
+  funding_source_program_name: String
+  grant_id: String
+  clinical_trial_system: String
+  clinical_trial_identifier: String
+  clinical_trial_arm: String
+  organism_species: String
+  adult_or_childhood_study: String
+  data_types: String
+  file_types: String
+  data_access_level: String
+  cds_primary_bucket: String
+  cds_secondary_bucket: String
+  cds_tertiary_bucket: String
+  number_of_participants: Float
+  number_of_samples: Float
+  study_data_types: String
+  file_types_and_format: String
+  size_of_data_being_uploaded: Float
+  size_of_data_being_uploaded_unit: String
+  size_of_data_being_uploaded_original: Float
+  size_of_data_being_uploaded_original_unit: String
+  acl: String
+  study_access: String
+  program: program @relation(name:"of_program", direction:OUT)
+  participants: [participant] @relation(name:"of_study", direction:IN)
+  files: [file] @relation(name:"of_study", direction:IN)
+}
+
+type treatment {
+  treatment_id: String
+  treatment_type: String
+  treatment_outcome: String
+  days_to_treatment: Int
+  therapeutic_agents: String
+}
+
+type FileInfo {
+    subject_id: String
+    file_name: String
+    file_type: String
+    association: String
+    file_description: String
+    file_size: Float
+    file_id: String
+    md5sum: String
+}
+
+type SubjectDetail {
+    subject_id: String
+    study_acronym: String
+    study_name: String
+    gender: String
+    site: [String]
+    files: [file]
+    samples: [sample]
+    numberOfSamples: Int
+    numberOfDiseaseSites: Int
+    numberOfFiles: Int
+}
+
+type StudyDetail {
+    study_name: String
+    phs_accession: String
+    study_acronym: String
+    study_description: String
+    data_types: String
+    study_external_url: String
+    numberOfSubjects: Int
+    numberOfSamples: Int
+    numberOfDiseaseSites: Int
+    numberOfFiles: Int
+}
+
+type StudyInfo {
+    study_name: String
+    phs_accession: String
+    data_type: String
+    numberOfSubjects: Int
+    numberOfFiles: Int
+    study_access: String
+}
+
+type IdsLists {
+    subjectIds: [String]
+}
+
+type ProgramDetail {
+    program: String
+    program_name: String
+    program_url: String
+    program_short_description: String
+    num_studies: Int
+    num_participants: Int
+    num_files: Int
+    num_samples: Int
+    num_disease_sites: Int
+    study_participants: [GroupCountNeo4j]
+    studies: [ProgramDetailStudy]
+}
+
+type ProgramDetailStudy {
+    accession: String
+    study_access: String
+    study_name: String
+    study_description: String
+    short_description: String
+    num_participants: Int
+    num_samples: Int
+}
+
+type ProgramListEntry {
+    acronym: String
+    name: String
+    website: String
+    num_studies: Int
+}
+
+type GroupCountNeo4j {
+    group: String
+    subjects: Int
+}
+
+schema {
+    query: QueryType
+}
+
+type QueryType {
+    schemaVersion: String @cypher(statement: "RETURN '1.2.0'")
+
+    numberOfStudies: Int @cypher(statement: "MATCH (n:study) RETURN COUNT(n)")
+    numberOfSubjects: Int @cypher(statement: "MATCH (n:participant) RETURN COUNT(n)")
+    numberOfSamples: Int @cypher(statement: "MATCH (n:sample) RETURN COUNT(n)")
+    numberOfFiles: Int @cypher(statement: "MATCH (n:file) RETURN COUNT(n)")
+    numberOfDiseaseSites: Int @cypher(statement: "MATCH (n:diagnosis) RETURN COUNT(DISTINCT n.primary_site) AS site")
+
+
+    "Get lists of all subject ids, used by Local Find"
+    idsLists: IdsLists @cypher(statement: """
+        MATCH (p:participant)
+        WITH COLLECT(DISTINCT p.participant_id) as study_subjects
+        RETURN {
+            subjectIds: study_subjects
+        }
+    """, passThrough: true)
+
+
+    # Study Detail Page
+    studyDetail(phs_accession: String): StudyDetail @cypher(statement:  """
+        MATCH (s:study {phs_accession: $phs_accession})
+        OPTIONAL MATCH (s)<--(p:participant)
+        OPTIONAL MATCH (p)<--(samp:sample)
+        OPTIONAL MATCH (p)<--(diag:diagnosis)
+        OPTIONAL MATCH (s)<--(f:file)
+        RETURN {
+            study_name: s.study_name,
+            phs_accession: s.phs_accession,
+            study_acronym: s.study_acronym,
+            study_description: s.study_description,
+            data_types: s.study_data_types,
+            study_external_url: s.study_external_url,
+            numberOfSubjects: COUNT(DISTINCT p),
+            numberOfSamples: COUNT(DISTINCT samp),
+            numberOfDiseaseSites: COUNT(DISTINCT diag.primary_site),
+            numberOfFiles: COUNT(DISTINCT f)
+        }
+    """, passThrough: true)
+
+
+    # Subject Detail Page
+    subjectDetail(subject_id: String): SubjectDetail @cypher(statement:  """
+        MATCH (s:study)<--(p:participant {participant_id: $subject_id})
+        OPTIONAL MATCH (p)<--(samp:sample)
+        OPTIONAL MATCH (p)<--(diag:diagnosis)
+        OPTIONAL MATCH (samp)<--(f:file)
+        RETURN {
+            subject_id: p.participant_id,
+            study_acronym: s.study_acronym,
+            study_name: s.study_name,
+            gender: p.gender,
+            site: COLLECT(DISTINCT samp.sample_anatomic_site),
+            samples: COLLECT(DISTINCT samp{.*}),
+            files: COLLECT(DISTINCT f{.*}),
+            numberOfSamples: COUNT(DISTINCT samp),
+            numberOfDiseaseSites: COUNT(DISTINCT diag.primary_site),
+            numberOfFiles: COUNT(DISTINCT f)
+        }
+    """, passThrough: true)
+
+    samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: """
+        MATCH (p:participant {participant_id: $subject_id})<--(samp:sample)
+        RETURN samp{.*}
+    """, passThrough: true)
+
+    studyList: [StudyInfo] @cypher(statement: """
+        MATCH (s:study)
+        OPTIONAL MATCH (p:participant)-->(s)
+        WITH s, count(distinct p) AS num_participants
+        OPTIONAL MATCH (f:file)-->(s)
+        WITH s, num_participants, count(distinct f) as num_files
+        RETURN {
+            phs_accession: s.phs_accession,
+            study_name: s.study_name,
+            data_type: s.study_data_types,
+            study_access: s.study_access,
+            numberOfSubjects: num_participants,
+            numberOfFiles: num_files
+        }
+    """, passThrough: true)
+
+    programDetail(program_name: String!): ProgramDetail @cypher(statement: """
+        MATCH (p:program {program_name: $program_name})
+        OPTIONAL MATCH (p)<-[:of_program]-(s:study)
+        OPTIONAL MATCH (s)<-[:of_study]-(part:participant)
+        OPTIONAL MATCH (part)<-[:of_participant]-(samp:sample)
+        OPTIONAL MATCH (samp)<-[:from_sample]-(f:file)
+        OPTIONAL MATCH (part)<--(diag:diagnosis)
+        WITH p,
+            COUNT(DISTINCT s) AS num_studies,
+            COUNT(DISTINCT part) AS num_participants,
+            COUNT(DISTINCT f) AS num_files,
+            COUNT(DISTINCT samp) AS num_samples,
+            COUNT(DISTINCT diag.primary_site) AS num_disease_sites
+        OPTIONAL MATCH (p)<-[:of_program]-(s:study)
+        OPTIONAL MATCH (s)<-[:of_study]-(part:participant)
+        OPTIONAL MATCH (part)<-[:of_participant]-(samp:sample)
+        OPTIONAL MATCH (samp)<-[:from_sample]-(f:file)
+        WITH p, num_studies, num_participants, num_files, num_samples, num_disease_sites,
+            {
+                group: s.study_name,
+                subjects: COUNT(DISTINCT part)
+            } AS study_participants,
+            {
+                accession: s.phs_accession, 
+                study_access: s.study_access,
+                study_name: s.study_name,
+                study_description: s.study_description,
+                short_description: s.short_description,
+                num_participants: COUNT(DISTINCT part),
+                num_samples: COUNT(DISTINCT samp)
+            } AS study
+        WITH p, num_studies, num_participants, num_files, num_samples, num_disease_sites,
+            COLLECT(DISTINCT study_participants) AS study_participants, COLLECT(DISTINCT study) AS studies
+        RETURN {
+            program: p.program_acronym,
+            program_name: p.program_name,
+            program_url: p.program_external_url,
+            program_short_description: p.program_short_description,
+            num_studies: num_studies,
+            num_participants: num_participants,
+            num_files: num_files,
+            num_samples: num_samples,
+            num_disease_sites: num_disease_sites,
+            study_participants: study_participants,
+            studies: studies
+        }
+    """, passThrough: true) 
+
+    programList: [ProgramListEntry] @cypher(statement: """
+        MATCH (p:program)
+        OPTIONAL MATCH (p)<-[:of_program]-(s:study)
+        RETURN DISTINCT {
+            acronym: p.program_acronym,
+            name: p.program_name,
+            website: p.program_external_url,
+            num_studies: COUNT(DISTINCT s)
+        }
+    """, passThrough: true)
+}

@@ -13,7 +13,4 @@ target/
 *.iml
 .sts4-cache/*
 logs/
-src/main/resources/graphql/cds.graphql
-src/main/resources/graphql/cds-queries.graphql
-src/main/resources/graphql/cds-doc.graphql
 src/main/resources/yaml/test-queries.1k.bento.yaml

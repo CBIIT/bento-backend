@@ -1,7 +1,0 @@
-FROM nginx:alpine
-
-RUN apk add --no-cache gettext
-COPY nginx-entrypoint.sh /
-COPY ./dist /usr/share/nginx/html
-
-ENTRYPOINT [ "sh", "/nginx-entrypoint.sh" ]

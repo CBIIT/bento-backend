@@ -1,8 +1,4 @@
-logs/
-.classpath
-target/
-.classpath
-.settings/
+.settings
 .project
 .DS_Store
 .factorypath
@@ -10,7 +6,9 @@ target/
 .apt_generated
 .apt_generated_tests
 .idea
-*.iml
+.classpath
 .sts4-cache/*
 logs/
-src/main/resources/yaml/test-queries.1k.bento.yaml
+target/
+*.iml
+src/main/resources/application.properties

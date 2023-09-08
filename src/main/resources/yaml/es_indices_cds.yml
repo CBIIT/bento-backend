@@ -327,7 +327,7 @@ Indices:
         type: keyword
     cypher_query: "
       MATCH (s:study)
-      OPTIONAL MATCH (p:participant)-->(s0)
+      OPTIONAL MATCH (p:participant)-->(s)
       OPTIONAL MATCH (samp:sample)-->(p)
       WITH 
         s, 
@@ -531,7 +531,7 @@ Indices:
     # Cypher query will be used to retrieve data from Neo4j, and index into Elasticsearch
     cypher_query: "
       MATCH (s:study)
-      OPTIONAL MATCH (p:participant)-->(s0)
+      OPTIONAL MATCH (p:participant)-->(s)
       OPTIONAL MATCH (samp:sample)-->(p)
       WITH 
         s, 

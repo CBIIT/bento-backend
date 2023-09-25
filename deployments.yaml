@@ -10,6 +10,6 @@ services:
     image: 3.0.4.160
     buildNumber: '160'
   files:
-    version: main.32
-    image: main.32
-    buildNumber: '32'
+    version: main.35
+    image: main.35
+    buildNumber: '35'

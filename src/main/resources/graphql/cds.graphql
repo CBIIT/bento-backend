@@ -261,42 +261,58 @@ type QueryType {
     studyDetail(phs_accession: String): StudyDetail @cypher(statement:  """
         MATCH (s:study {phs_accession: $phs_accession})
         OPTIONAL MATCH (s)<--(p:participant)
-        OPTIONAL MATCH (p)<--(samp:sample)
-        OPTIONAL MATCH (p)<--(diag:diagnosis)
+        WITH s, {numberOfSubjects: count(distinct p)} AS output
+        OPTIONAL MATCH (s)<--(:participant)<--(samp:sample)
+        WITH s, apoc.map.merge(output, {
+            numberOfSamples: count(distinct samp)
+        }) AS output
+        OPTIONAL MATCH (s)<--(:participant)<--(diag:diagnosis)
+        WITH s, apoc.map.merge(output, {
+            numberOfDiseaseSites: count(distinct diag.primary_site)
+        }) AS output
         OPTIONAL MATCH (s)<--(f:file)
-        RETURN {
-            study_name: s.study_name,
-            phs_accession: s.phs_accession,
-            study_acronym: s.study_acronym,
-            study_description: s.study_description,
-            data_types: s.study_data_types,
-            study_external_url: s.study_external_url,
-            numberOfSubjects: COUNT(DISTINCT p),
-            numberOfSamples: COUNT(DISTINCT samp),
-            numberOfDiseaseSites: COUNT(DISTINCT diag.primary_site),
-            numberOfFiles: COUNT(DISTINCT f)
-        }
+        WITH s, apoc.map.merge(output, {
+            numberOfFiles: count(distinct f)
+        }) AS output
+        RETURN
+            apoc.map.merge(output, {
+                study_name: s.study_name,
+                phs_accession: s.phs_accession,
+                study_acronym: s.study_acronym,
+                study_description: s.study_description,
+                data_types: s.study_data_types,
+                study_external_url: s.study_external_url
+            })
     """, passThrough: true)
 
 
     # Subject Detail Page
     subjectDetail(subject_id: String): SubjectDetail @cypher(statement:  """
         MATCH (s:study)<--(p:participant {participant_id: $subject_id})
-        OPTIONAL MATCH (p)<--(samp:sample)
-        OPTIONAL MATCH (p)<--(diag:diagnosis)
-        OPTIONAL MATCH (samp)<--(f:file)
-        RETURN {
-            subject_id: p.participant_id,
+        WITH p, {
             study_acronym: s.study_acronym,
-            study_name: s.study_name,
-            gender: p.gender,
+            study_name: s.study_name
+        } AS output
+        OPTIONAL MATCH (p)<--(samp:sample)
+        WITH p, apoc.map.merge(output, {
             site: COLLECT(DISTINCT samp.sample_anatomic_site),
             samples: COLLECT(DISTINCT samp{.*}),
+            numberOfSamples: COUNT(DISTINCT samp)
+        }) AS output
+        OPTIONAL MATCH (p)<--(diag:diagnosis)
+        WITH p, apoc.map.merge(output, {
+            numberOfDiseaseSites: COUNT(DISTINCT diag.primary_site)
+        }) AS output
+        OPTIONAL MATCH (p)<--(:sample)<--(f:file)
+        WITH p, apoc.map.merge(output, {
             files: COLLECT(DISTINCT f{.*}),
-            numberOfSamples: COUNT(DISTINCT samp),
-            numberOfDiseaseSites: COUNT(DISTINCT diag.primary_site),
             numberOfFiles: COUNT(DISTINCT f)
-        }
+        }) AS output
+        RETURN
+            apoc.map.merge(output, {
+                subject_id: p.participant_id,
+                gender: p.gender
+            })
     """, passThrough: true)
 
     samplesForSubjectId(subject_id: String!): [sample] @cypher(statement: """

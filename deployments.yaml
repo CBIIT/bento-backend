@@ -10,6 +10,6 @@ services:
     image: 3.0.4.162
     buildNumber: '162'
   files:
-    version: cds-multistage.41
-    image: cds-multistage.41
-    buildNumber: '41'
+    version: cds-multistage.42
+    image: cds-multistage.42
+    buildNumber: '42'

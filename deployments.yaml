@@ -6,9 +6,9 @@ services:
     image: 24.6.0-CDS-Develop.43
     buildNumber: '43'
   frontend:
-    version: 4.0.0.177
-    image: 4.0.0.177
-    buildNumber: '177'
+    version: 4.0.0.179
+    image: 4.0.0.179
+    buildNumber: '179'
   files:
     version: cds-multistage.42
     image: cds-multistage.42

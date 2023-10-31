@@ -6,9 +6,9 @@ services:
     image: 2.0.0.19
     buildNumber: '19'
   frontend:
-    version: 4.0.0.185
-    image: 4.0.0.185
-    buildNumber: '185'
+    version: 4.0.0.186
+    image: 4.0.0.186
+    buildNumber: '186'
   files:
     version: cds-multistage.42
     image: cds-multistage.42
